@@ -1,0 +1,35 @@
+import Foundation
+import ServiceManagement
+import OSLog
+
+/// Coordinates enabling or disabling Launchy as a login item.
+enum LaunchAtLoginManager {
+    private static let loginItemLogger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "Launchy",
+        category: "LaunchAtLogin"
+    )
+
+    /// Attempts to update the login item state using the best API available for the platform.
+    static func setEnabled(_ shouldEnableLoginItem: Bool) {
+        if #available(macOS 13.0, *) {
+            do {
+                if shouldEnableLoginItem {
+                    try SMAppService.mainApp.register()
+                } else {
+                    try SMAppService.mainApp.unregister()
+                }
+            } catch {
+                loginItemLogger.error("Failed to update login item state: \(error.localizedDescription, privacy: .public)")
+            }
+        } else {
+            guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
+                loginItemLogger.error("Missing bundle identifier; cannot toggle login item.")
+                return
+            }
+            let didUpdateLoginItem = SMLoginItemSetEnabled(bundleIdentifier as CFString, shouldEnableLoginItem)
+            if !didUpdateLoginItem {
+                loginItemLogger.error("SMLoginItemSetEnabled returned false for identifier \(bundleIdentifier, privacy: .public).")
+            }
+        }
+    }
+}

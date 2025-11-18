@@ -16,5 +16,8 @@ xcuserdata/
 *.xcuserstate
 *.moved-aside
 
+# Bundled app artifacts
+Launchy.app/
+
 # Shell scripts in the repository root
 /*.sh

@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# Swift Package Manager artifacts
+/.build
+/.swiftpm
+Packages/
+
+# Local development tooling metadata
+.vscode/
+.sandbox-home/
+
+# Xcode derived data
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.moved-aside
+
+# Shell scripts in the repository root
+/*.sh

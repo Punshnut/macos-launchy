@@ -127,6 +127,14 @@ struct LauncherView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
         .frame(width: containerSize.width, height: containerSize.height)
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onEnded { _ in
+                    handleBackgroundTap()
+                },
+            including: .gesture
+        )
     }
 
     /// Calculates how many pages are required to show all apps.
@@ -256,6 +264,31 @@ struct LauncherView: View {
         currentPageIndex = min(currentPageIndex + 1, totalPageCount - 1)
     }
 
+    /// Hides the fullscreen launcher when the blurred background is clicked.
+    private func handleBackgroundTap() {
+        guard launcherMode == .fullscreenOldMac else { return }
+        guard isAnimatingLauncherDismissal == false else { return }
+        guard isInteractiveViewHit() == false else { return }
+        isAnimatingLauncherDismissal = true
+        performCloseAnimation()
+    }
+
+    /// Returns true when the click landed on an interactive SwiftUI-backed control.
+    private func isInteractiveViewHit() -> Bool {
+        guard let window = activeHostingWindow(),
+              let contentView = window.contentView,
+              let event = NSApp?.currentEvent else {
+            return false
+        }
+
+        let locationInWindow = event.locationInWindow
+        let locationInContent = contentView.convert(locationInWindow, from: nil)
+        guard contentView.bounds.contains(locationInContent) else { return false }
+        guard let hitView = contentView.hitTest(locationInContent) else { return false }
+
+        return hitView.isDescended(from: NSButton.self) || hitView.isDescended(from: NSTextField.self)
+    }
+
     /// Chooses the proper background view for the configured style.
     private func backgroundLayer() -> some View {
         switch backgroundStylePreference {
@@ -282,7 +315,7 @@ struct LauncherView: View {
     private func topContentInset(for containerHeight: CGFloat) -> CGFloat {
         guard launcherMode == .fullscreenOldMac else { return 0 }
         guard containerHeight.isFinite else { return 0 }
-        return max(0, containerHeight / 6)
+        return max(0, containerHeight / 12)
     }
 
     /// Custom search field that mirrors the glassy Launchpad design.
@@ -482,6 +515,20 @@ private struct ScrollWheelPagerOverlay: NSViewRepresentable {
         override func hitTest(_ point: NSPoint) -> NSView? {
             nil
         }
+    }
+}
+
+private extension NSView {
+    /// Walks superviews to determine whether the hierarchy includes the target type.
+    func isDescended(from type: NSView.Type) -> Bool {
+        var current: NSView? = self
+        while let view = current {
+            if view.isKind(of: type) {
+                return true
+            }
+            current = view.superview
+        }
+        return false
     }
 }
 

@@ -45,7 +45,9 @@ final class LauncherWindowController: NSWindowController {
 
         let visible = screen.visibleFrame
         let width = min(size.width, visible.width * 0.9)
-        let height = min(size.height, visible.height * 0.9)
+        // Give floaty mode a bit more breathing room by borrowing ~10% of the screen height.
+        let expandedHeight = size.height + visible.height * 0.1
+        let height = min(expandedHeight, visible.height * 0.9)
         let x = visible.midX - width / 2
         let y = visible.midY - height / 2
         return NSRect(x: x, y: y, width: width, height: height)

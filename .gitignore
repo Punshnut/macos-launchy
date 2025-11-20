@@ -18,6 +18,7 @@ xcuserdata/
 
 # Bundled app artifacts
 Launchy.app/
+Launchy.dmg
 
 # Shell scripts in the repository root
 /*.sh

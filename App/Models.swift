@@ -17,16 +17,16 @@ struct AppItem: Identifiable, Hashable {
 
 /// Determines the overall presentation style of the launcher UI.
 enum LauncherMode: String, CaseIterable, Hashable, Codable {
-    case floaty
     case fullscreenOldMac
+    case floaty
 
     /// User-facing description shown in pickers.
     var displayName: String {
         switch self {
-        case .floaty:
-            return "Floaty Panel"
         case .fullscreenOldMac:
             return "Fullscreen"
+        case .floaty:
+            return "Floaty Panel"
         }
     }
 }
@@ -98,7 +98,7 @@ extension LauncherSettings {
             launchesAtLogin: false,
             hiddenBundleIDs: [],
             backgroundStylePreference: .automatic,
-            selectedLauncherMode: .floaty,
+            selectedLauncherMode: .fullscreenOldMac,
             isMenuBarIconVisible: true,
             isDockIconVisible: true,
             globalHotkeyDescription: "Cmd+Shift+Space"
@@ -125,7 +125,7 @@ extension LauncherSettings {
             launchesAtLogin: try container.decodeIfPresent(Bool.self, forKey: .launchesAtLogin) ?? false,
             hiddenBundleIDs: try container.decodeIfPresent([String].self, forKey: .hiddenBundleIDs) ?? [],
             backgroundStylePreference: try container.decodeIfPresent(PreferredBackgroundStyle.self, forKey: .backgroundStylePreference) ?? .automatic,
-            selectedLauncherMode: try container.decodeIfPresent(LauncherMode.self, forKey: .selectedLauncherMode) ?? .floaty,
+            selectedLauncherMode: try container.decodeIfPresent(LauncherMode.self, forKey: .selectedLauncherMode) ?? .fullscreenOldMac,
             isMenuBarIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isMenuBarIconVisible) ?? true,
             isDockIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isDockIconVisible) ?? true,
             globalHotkeyDescription: try container.decodeIfPresent(String.self, forKey: .globalHotkeyDescription) ?? "Cmd+Shift+Space"

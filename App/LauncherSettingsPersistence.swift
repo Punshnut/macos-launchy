@@ -6,7 +6,7 @@ enum LauncherSettingsPersistence {
         static let settingsPayload = "launcher.settings.payload"
     }
 
-    /// Registers the default values so future reads always produce `.floaty` until changed.
+    /// Registers the default values so future reads always produce `.fullscreenOldMac` until changed.
     static func registerDefaults(userDefaults: UserDefaults = .standard) {
         guard userDefaults.data(forKey: Keys.settingsPayload) == nil else { return }
         saveSettings(
@@ -21,7 +21,7 @@ enum LauncherSettingsPersistence {
         saveSettings(LauncherSettings.defaults, userDefaults: userDefaults)
     }
 
-    /// Reads the persisted launcher mode, falling back to `.floaty` if nothing has been saved.
+    /// Reads the persisted launcher mode, falling back to `.fullscreenOldMac` if nothing has been saved.
     static func launcherMode(userDefaults: UserDefaults = .standard) -> LauncherMode {
         loadSettings(userDefaults: userDefaults).selectedLauncherMode
     }

@@ -1,13 +1,13 @@
 # Launchy
 
-Launchy is a featherweight macOS launcher that feels like part of the system: floaty, ultra-fast, and absolutely minimal. It silently indexes every bundle you already have, keeps a translucent HUD ready on any Space, and launches apps with a single tap.
+Launchy is a featherweight macOS launcher that feels like part of the system: fullscreen-first, ultra-fast, and absolutely minimal. It silently indexes every bundle you already have, keeps an edge-to-edge HUD ready on any Space (with an optional floaty palette), and launches apps with a single tap.
 
 ## Why Launchy?
 
 - **Instant indexing** - Scans `/Applications` plus your user Applications directory, deduplicates bundles, and caches icons so the grid is populated the moment Launchy appears.
 - **All signal, no chrome** - Uses a translucent HUD with adaptive grid and pagination to keep even dense libraries easy to scan.
-- **Floaty-first design** - The default HUD floats above every Space, keeps blur + shadow grounding, and can optionally hide the Dock tile so it never steals focus.
-- **Fullscreen focus** - Switch (`Cmd`+`Option`+`F`) into the classic fullscreen canvas for demos or single-monitor work; Launchy stretches edge-to-edge with matching materials.
+- **Fullscreen by default** - Launchy opens as a fullscreen canvas for clean focus; switch to the floaty palette when you want something lighter that stays out of the way.
+- **Floaty on tap** - Toggle (`Cmd`+`Option`+`F`) into the floating HUD that can live across every Space and optionally hide the Dock tile so it never steals focus.
 - **Wheel + gesture paging** - Flick the trackpad, swipe horizontally, or spin the mouse wheel anywhere over the HUD to flip between pages without leaving home row.
 - **Personalized controls** - Decide which bundles show up, pick the glass/transparent/solid background, keep Launchy visible on all Spaces, and toggle login+Dock/menu bar presence with one settings pane.
 - **Pure SwiftUI** - A lean 100% Swift + SwiftUI stack means it's easy to theme, extend, or embed.
@@ -17,14 +17,14 @@ Launchy is a featherweight macOS launcher that feels like part of the system: fl
 
 The latest drop brings two experience upgrades:
 
-1. **Floaty HUD by default** - Launchy launches as a floating palette so it never steals focus, can ride along on every Space, and disappears whenever you jump back into work. Hide the Dock icon for peak stealth or keep it around when you want to Option-click back in.
-2. **One-tap fullscreen** - Toggle fullscreen (`Cmd`+`Option`+`F` or the menu bar command) to flood the screen with the same glassy interface, perfect for single-display setups or live demos. You get the same blur/backdrop consistency, icon scaling, and paging gestures without any special wiring.
+1. **Fullscreen standard** - Launchy now starts in fullscreen so you get a wall-to-wall launcher immediately. It keeps the same glassy materials, icon scaling, and paging gestures.
+2. **Floaty palette option** - Toggle (`Cmd`+`Option`+`F` or the menu bar command) into the floaty HUD that can ride along on every Space and disappear the moment you jump back into work. Hide the Dock icon for stealth or keep it handy for Option-clicking back in.
 
 Wire these behaviors into your preferred shortcuts or automation tools to keep Launchy ready in any context.
 
 ## Wheel + Gesture Paging
 
-Launchylistens for scroll wheel and trackpad gestures even when your pointer is idling over empty space. Horizontal swipes with a trackpad, Magic Mouse, or any device that reports precise deltas will accumulate until they cross a threshold, then flip to the next or previous page. Classic ratcheting mouse wheels also work vertically, which means every user can breeze through huge libraries without aiming for the Next/Previous buttons.
+Launchy listens for scroll wheel and trackpad gestures even when your pointer is idling over empty space. Horizontal swipes with a trackpad, Magic Mouse, or any device that reports precise deltas will accumulate until they cross a threshold, then flip to the next or previous page. Classic ratcheting mouse wheels also work vertically, which means every user can breeze through huge libraries without aiming for the Next/Previous buttons.
 
 The gesture overlay is transparent and keeps hit-testing off, so you still interact with buttons, search, and icons exactly as before. Once Launchy fades out, the gesture monitor tears itself down so the rest of macOS never notices.
 
@@ -57,7 +57,7 @@ Before shipping, make sure the bundle identifier, signing certificates, and nota
 ## Usage tips
 
 - Assign Launchy to a hotkey or gesture via your favorite automation utility.
-- Hover for floaty mode, tap the fullscreen toggle (or shortcut) for wall-to-wall Launchy.
+- Launchy opens fullscreen by default; toggle the floaty palette (or shortcut) when you want it to hover instead.
 - Scroll, swipe, or nudge the mouse wheel anywhere over the HUD to flip pages instantly.
 - Search, favorites, or metadata filters can be layered on top of the existing grid with minimal SwiftUI code.
 

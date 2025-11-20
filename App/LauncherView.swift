@@ -10,10 +10,9 @@ struct LauncherView: View {
     /// Current presentation mode so layout can adapt between floaty and fullscreen.
     var launcherMode: LauncherMode = .floaty
 
-    private let gridColumns = [
-        GridItem(.adaptive(minimum: 120), spacing: 16, alignment: .top)
-    ]
-    private let appsPerPage = 30
+    private let columnsPerPage = 7
+    private let rowsPerPage = 5
+    private var appsPerPage: Int { columnsPerPage * rowsPerPage }
     private let launcherDismissalAnimationDuration: TimeInterval = 0.25
     private let launcherDismissalSlideOffset: CGFloat = 28
 
@@ -37,6 +36,13 @@ struct LauncherView: View {
     /// Builds the full-screen filling layers for either floaty or fullscreen modes.
     private func launcherContent(for containerSize: CGSize) -> some View {
         let topInset = topContentInset(for: containerSize.height)
+        let layout = LauncherLayoutMetrics(
+            containerSize: containerSize,
+            launcherMode: launcherMode,
+            topInset: topInset,
+            columnsPerPage: columnsPerPage,
+            rowsPerPage: rowsPerPage
+        )
 
         return ZStack {
             backgroundLayer()
@@ -45,53 +51,48 @@ struct LauncherView: View {
             VStack(spacing: 0) {
                 topContentSpacer(height: topInset)
 
-                VStack(spacing: 12) {
-                    TextField("Search apps", text: $searchQuery)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal, 20)
+                VStack(spacing: layout.sectionSpacing) {
+                    searchField(layout: layout)
 
                     ZStack {
-                        ScrollView {
-                            Group {
-                                if filteredApps.isEmpty {
-                                    emptyStateView()
-                                        .frame(maxWidth: .infinity, minHeight: 360)
-                                        .padding(40)
-                                } else {
-                                    LazyVGrid(columns: gridColumns, spacing: 24) {
-                                        ForEach(appsForCurrentPage) { app in
-                                            Button {
-                                                launchApplication(app)
-                                            } label: {
-                                                VStack(spacing: 8) {
-                                                    iconView(for: app)
-                                                        .resizable()
-                                                        .aspectRatio(contentMode: .fit)
-                                                        .frame(width: 64, height: 64)
-                                                    Text(app.displayName)
-                                                        .font(.caption)
-                                                        .multilineTextAlignment(.center)
-                                                        .lineLimit(2)
-                                                        .frame(maxWidth: .infinity)
-                                                }
-                                                .padding(12)
-                                                .frame(maxWidth: .infinity)
+                        Group {
+                            if filteredApps.isEmpty {
+                                emptyStateView()
+                                    .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
+                            } else {
+                                LazyVGrid(
+                                    columns: layout.gridColumns,
+                                    alignment: .center,
+                                    spacing: layout.iconSpacing
+                                ) {
+                                    ForEach(appsForCurrentPage) { app in
+                                        Button {
+                                            launchApplication(app)
+                                        } label: {
+                                            VStack(spacing: 10) {
+                                                iconView(for: app)
+                                                    .resizable()
+                                                    .aspectRatio(contentMode: .fit)
+                                                    .frame(
+                                                        width: layout.iconDimension,
+                                                        height: layout.iconDimension
+                                                    )
+                                                Text(app.displayName)
+                                                    .font(.system(size: 13, weight: .medium))
+                                                    .multilineTextAlignment(.center)
+                                                    .foregroundColor(.primary)
+                                                    .lineLimit(2)
+                                                    .frame(maxWidth: .infinity)
                                             }
-                                            .buttonStyle(.plain)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 12)
-                                                    .fill(Color(nsColor: .windowBackgroundColor))
-                                            )
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 12)
-                                                    .strokeBorder(Color(nsColor: .separatorColor))
-                                            )
-                                            .contentShape(RoundedRectangle(cornerRadius: 12))
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, 4)
                                         }
+                                        .buttonStyle(.plain)
+                                        .contentShape(Rectangle())
                                     }
                                 }
+                                .frame(maxWidth: .infinity, minHeight: layout.gridHeight, alignment: .top)
                             }
-                            .padding(20)
                         }
                         .disabled(isAnimatingLauncherDismissal)
 
@@ -100,7 +101,7 @@ struct LauncherView: View {
                             onPreviousPage: { goToPreviousPage() },
                             onNextPage: { goToNextPage() }
                         )
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
                         .allowsHitTesting(false)
                     }
 
@@ -119,9 +120,9 @@ struct LauncherView: View {
                         }
                         .disabled(appLibrary.isEmpty || currentPageIndex >= totalPageCount - 1)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 12)
                 }
+                .padding(.horizontal, layout.horizontalPadding)
+                .padding(.bottom, layout.bottomPadding)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
@@ -282,6 +283,27 @@ struct LauncherView: View {
         guard launcherMode == .fullscreenOldMac else { return 0 }
         guard containerHeight.isFinite else { return 0 }
         return max(0, containerHeight / 6)
+    }
+
+    /// Custom search field that mirrors the glassy Launchpad design.
+    private func searchField(layout: LauncherLayoutMetrics) -> some View {
+        TextField("Search apps", text: $searchQuery)
+            .textFieldStyle(.plain)
+            .font(.system(size: layout.searchFieldFontSize, weight: .medium))
+            .foregroundColor(.primary)
+            .padding(.horizontal, 18)
+            .frame(height: layout.searchFieldHeight)
+            .background(
+                VisualEffectBackground(material: .menu, blendingMode: .withinWindow)
+                    .clipShape(RoundedRectangle(cornerRadius: layout.searchFieldCornerRadius, style: .continuous))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: layout.searchFieldCornerRadius, style: .continuous)
+                    .strokeBorder(Color.white.opacity(0.25))
+            )
+            .shadow(color: .black.opacity(0.2), radius: 12, y: 4)
+            .frame(maxWidth: layout.searchFieldWidth)
+            .frame(maxWidth: .infinity)
     }
 }
 
@@ -460,6 +482,122 @@ private struct ScrollWheelPagerOverlay: NSViewRepresentable {
         override func hitTest(_ point: NSPoint) -> NSView? {
             nil
         }
+    }
+}
+
+/// Describes layout constants for the launcher grid based on the current mode + size.
+private struct LauncherLayoutMetrics {
+    let containerSize: CGSize
+    let launcherMode: LauncherMode
+    let topInset: CGFloat
+    let columnsPerPage: Int
+    let rowsPerPage: Int
+
+    var sectionSpacing: CGFloat {
+        switch launcherMode {
+        case .floaty:
+            return 20
+        case .fullscreenOldMac:
+            return 28
+        }
+    }
+
+    var horizontalPadding: CGFloat {
+        switch launcherMode {
+        case .floaty:
+            return 32
+        case .fullscreenOldMac:
+            return max(60, containerSize.width * 0.08)
+        }
+    }
+
+    var bottomPadding: CGFloat {
+        switch launcherMode {
+        case .floaty:
+            return 28
+        case .fullscreenOldMac:
+            return 56
+        }
+    }
+
+    var iconSpacing: CGFloat {
+        switch launcherMode {
+        case .floaty:
+            return 14
+        case .fullscreenOldMac:
+            let base = min(containerSize.width, containerSize.height) / 40
+            return max(20, min(base, 60))
+        }
+    }
+
+    var searchFieldWidth: CGFloat {
+        let cap: CGFloat = launcherMode == .floaty ? 520 : 620
+        let available = max(containerSize.width - horizontalPadding * 2, 320)
+        return min(cap, available)
+    }
+
+    var searchFieldHeight: CGFloat {
+        launcherMode == .floaty ? 46 : 52
+    }
+
+    var searchFieldCornerRadius: CGFloat {
+        launcherMode == .floaty ? 18 : 22
+    }
+
+    var searchFieldFontSize: CGFloat {
+        launcherMode == .floaty ? 17 : 18
+    }
+
+    var gridColumns: [GridItem] {
+        Array(
+            repeating: GridItem(.flexible(), spacing: iconSpacing, alignment: .top),
+            count: columnsPerPage
+        )
+    }
+
+    var iconDimension: CGFloat {
+        let widthAllowance = (gridContentWidth - horizontalSpacingTotal) / CGFloat(columnsPerPage)
+        let heightAllowance = (availableGridHeight - verticalSpacingTotal) / CGFloat(rowsPerPage)
+        let base = min(widthAllowance, heightAllowance)
+        let desiredMax: CGFloat = launcherMode == .floaty ? 102 : 140
+        let desiredMin: CGFloat = launcherMode == .floaty ? 70 : 96
+
+        guard base.isFinite, base > 0 else {
+            return desiredMin
+        }
+
+        if base < desiredMin {
+            return base
+        }
+
+        return min(base, desiredMax)
+    }
+
+    var gridHeight: CGFloat {
+        let height = iconDimension * CGFloat(rowsPerPage) + verticalSpacingTotal
+        return max(height, 0)
+    }
+
+    private var gridContentWidth: CGFloat {
+        max(containerSize.width - horizontalPadding * 2, 0)
+    }
+
+    private var availableGridHeight: CGFloat {
+        let consumed = topInset + bottomPadding + searchFieldHeight + estimatedPagerHeight + sectionSpacing * 2
+        let remaining = containerSize.height - consumed
+        return max(remaining, 0)
+    }
+
+    private var verticalSpacingTotal: CGFloat {
+        iconSpacing * CGFloat(rowsPerPage - 1)
+    }
+
+    private var horizontalSpacingTotal: CGFloat {
+        iconSpacing * CGFloat(columnsPerPage - 1)
+    }
+
+    private var estimatedPagerHeight: CGFloat {
+        40
     }
 }
 

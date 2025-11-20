@@ -45,15 +45,15 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Reads a persisted boolean indicating whether the Dock icon should remain visible.
-    static func showDockIcon(userDefaults: UserDefaults = .standard) -> Bool {
-        loadSettings(userDefaults: userDefaults).isDockIconVisible
+    /// Reads a persisted boolean indicating whether the Dock icon should remain visible in floaty mode.
+    static func showFloatyDockIcon(userDefaults: UserDefaults = .standard) -> Bool {
+        loadSettings(userDefaults: userDefaults).isFloatyDockIconVisible
     }
 
-    /// Persists the Dock icon visibility preference.
-    static func setShowDockIcon(_ isVisible: Bool, userDefaults: UserDefaults = .standard) {
+    /// Persists the Dock icon visibility preference for floaty mode.
+    static func setShowFloatyDockIcon(_ isVisible: Bool, userDefaults: UserDefaults = .standard) {
         updateSettings(userDefaults: userDefaults) { settings in
-            settings.isDockIconVisible = isVisible
+            settings.isFloatyDockIconVisible = isVisible
         }
     }
 

@@ -13,13 +13,13 @@ final class LauncherWindowController: NSWindowController {
 
         switch launcherMode {
         case .floaty:
-            let frame = Self.initialFrame(for: Self.preferredFloatyContentSize)
+            let frame = Self.initialFloatyFrame(for: Self.preferredFloatyContentSize)
             launcherHostingController.preferredContentSize = frame.size
-            let panel = FloatyLauncherWindow(contentRect: frame)
-            panel.contentViewController = launcherHostingController
-            panel.setFrame(frame, display: false)
-            panel.center()
-            window = panel
+            let floatyPanel = FloatyLauncherWindow(contentRect: frame)
+            floatyPanel.contentViewController = launcherHostingController
+            floatyPanel.setFrame(frame, display: false)
+            floatyPanel.center()
+            window = floatyPanel
         case .fullscreenOldMac:
             let frame = Self.fullscreenFrame()
             launcherHostingController.preferredContentSize = frame.size
@@ -37,8 +37,8 @@ final class LauncherWindowController: NSWindowController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    /// Centers the non-fullscreen window and constrains it to the visible screen area.
-    private static func initialFrame(for size: NSSize) -> NSRect {
+    /// Centers the floaty panel window and constrains it to the visible screen area.
+    private static func initialFloatyFrame(for size: NSSize) -> NSRect {
         guard let screen = NSScreen.main else {
             return NSRect(origin: .zero, size: size)
         }

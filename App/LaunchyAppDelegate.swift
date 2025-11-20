@@ -20,6 +20,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         bootstrapApplication()
     }
 
+    /// Reopens the launcher when the Dock icon is clicked while the app is already running.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        applyLauncherMode()
+        launcherWindowController?.present()
+        return true
+    }
+
     /// Releases observers and menu bar items before the process quits.
     func applicationWillTerminate(_ notification: Notification) {
         settingsObservationTask?.cancel()
@@ -108,7 +115,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private func updateActivationPolicy(for mode: LauncherMode) {
         switch mode {
         case .floaty:
-            if launcherSettings.isDockIconVisible {
+            if launcherSettings.isFloatyDockIconVisible {
                 NSApp.setActivationPolicy(.regular)
                 NSApp.activate(ignoringOtherApps: true)
             } else {

@@ -20,6 +20,7 @@ final class AppDiscoveryService {
         } else {
             self.applicationSearchDirectories = [
                 URL(fileURLWithPath: "/Applications", isDirectory: true),
+                URL(fileURLWithPath: "/System/Applications", isDirectory: true),
                 fileSystem.homeDirectoryForCurrentUser.appendingPathComponent("Applications", isDirectory: true)
             ]
         }
@@ -73,15 +74,16 @@ final class AppDiscoveryService {
 
     /// Lists `.app` bundles inside the provided directory.
     private func discoverApplications(in searchDirectory: URL) -> [AppItem] {
-        guard let directoryContents = try? fileSystem.contentsOfDirectory(
+        guard let enumerator = fileSystem.enumerator(
             at: searchDirectory,
             includingPropertiesForKeys: [.isDirectoryKey],
-            options: [.skipsHiddenFiles]
+            options: [.skipsHiddenFiles, .skipsPackageDescendants]
         ) else {
             return []
         }
 
-        return directoryContents
+        return enumerator
+            .compactMap { $0 as? URL }
             .filter { $0.pathExtension == "app" }
             .compactMap(buildAppItem)
     }

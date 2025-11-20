@@ -65,7 +65,7 @@ struct LauncherSettings: Hashable, Codable {
     /// Toggles the presence of the menu bar shortcut icon.
     var isMenuBarIconVisible: Bool
     /// Determines whether Launchy should keep a Dock icon around while in floaty mode.
-    var isDockIconVisible: Bool
+    var isFloatyDockIconVisible: Bool
     /// Placeholder text describing the user’s preferred hotkey.
     var globalHotkeyDescription: String
 
@@ -76,7 +76,7 @@ struct LauncherSettings: Hashable, Codable {
         backgroundStylePreference: PreferredBackgroundStyle,
         selectedLauncherMode: LauncherMode,
         isMenuBarIconVisible: Bool,
-        isDockIconVisible: Bool,
+        isFloatyDockIconVisible: Bool,
         globalHotkeyDescription: String
     ) {
         self.isVisibleOnAllSpaces = isVisibleOnAllSpaces
@@ -85,7 +85,7 @@ struct LauncherSettings: Hashable, Codable {
         self.backgroundStylePreference = backgroundStylePreference
         self.selectedLauncherMode = selectedLauncherMode
         self.isMenuBarIconVisible = isMenuBarIconVisible
-        self.isDockIconVisible = isDockIconVisible
+        self.isFloatyDockIconVisible = isFloatyDockIconVisible
         self.globalHotkeyDescription = globalHotkeyDescription
     }
 }
@@ -100,7 +100,7 @@ extension LauncherSettings {
             backgroundStylePreference: .automatic,
             selectedLauncherMode: .fullscreenOldMac,
             isMenuBarIconVisible: true,
-            isDockIconVisible: true,
+            isFloatyDockIconVisible: true,
             globalHotkeyDescription: "Cmd+Shift+Space"
         )
     }
@@ -114,7 +114,7 @@ extension LauncherSettings {
         case backgroundStylePreference
         case selectedLauncherMode
         case isMenuBarIconVisible
-        case isDockIconVisible
+        case isFloatyDockIconVisible = "isDockIconVisible"
         case globalHotkeyDescription
     }
 
@@ -127,7 +127,7 @@ extension LauncherSettings {
             backgroundStylePreference: try container.decodeIfPresent(PreferredBackgroundStyle.self, forKey: .backgroundStylePreference) ?? .automatic,
             selectedLauncherMode: try container.decodeIfPresent(LauncherMode.self, forKey: .selectedLauncherMode) ?? .fullscreenOldMac,
             isMenuBarIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isMenuBarIconVisible) ?? true,
-            isDockIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isDockIconVisible) ?? true,
+            isFloatyDockIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isFloatyDockIconVisible) ?? true,
             globalHotkeyDescription: try container.decodeIfPresent(String.self, forKey: .globalHotkeyDescription) ?? "Cmd+Shift+Space"
         )
     }
@@ -140,7 +140,7 @@ extension LauncherSettings {
         try container.encode(backgroundStylePreference, forKey: .backgroundStylePreference)
         try container.encode(selectedLauncherMode, forKey: .selectedLauncherMode)
         try container.encode(isMenuBarIconVisible, forKey: .isMenuBarIconVisible)
-        try container.encode(isDockIconVisible, forKey: .isDockIconVisible)
+        try container.encode(isFloatyDockIconVisible, forKey: .isFloatyDockIconVisible)
         try container.encode(globalHotkeyDescription, forKey: .globalHotkeyDescription)
     }
 }

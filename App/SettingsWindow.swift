@@ -60,10 +60,10 @@ final class SettingsWindowStore: NSObject, ObservableObject {
     }
 
     /// Persists whether the Dock icon should remain visible in floaty mode.
-    func setDockIconVisible(_ isVisible: Bool) {
-        guard settingsSnapshot.isDockIconVisible != isVisible else { return }
-        settingsSnapshot.isDockIconVisible = isVisible
-        LauncherSettingsPersistence.setShowDockIcon(isVisible)
+    func setFloatyDockIconVisible(_ isVisible: Bool) {
+        guard settingsSnapshot.isFloatyDockIconVisible != isVisible else { return }
+        settingsSnapshot.isFloatyDockIconVisible = isVisible
+        LauncherSettingsPersistence.setShowFloatyDockIcon(isVisible)
     }
 
     /// Persists the stubbed hotkey text.
@@ -201,8 +201,8 @@ struct SettingsWindow: View {
     private var dockIconSection: some View {
         VStack(alignment: .leading, spacing: 4) {
             Toggle("Show Dock icon (Floaty mode only)", isOn: Binding(
-                get: { settingsStore.settingsSnapshot.isDockIconVisible },
-                set: { settingsStore.setDockIconVisible($0) }
+                get: { settingsStore.settingsSnapshot.isFloatyDockIconVisible },
+                set: { settingsStore.setFloatyDockIconVisible($0) }
             ))
             .disabled(settingsStore.settingsSnapshot.selectedLauncherMode != .floaty)
 

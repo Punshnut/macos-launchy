@@ -35,7 +35,7 @@ struct LauncherView: View {
 
     /// Builds the full-screen filling layers for either floaty or fullscreen modes.
     private func launcherContent(for containerSize: CGSize) -> some View {
-        let topInset = topContentInset(for: containerSize.height)
+        let topInset = fullscreenTopContentInset(for: containerSize.height)
         let layout = LauncherLayoutMetrics(
             containerSize: containerSize,
             launcherMode: launcherMode,
@@ -49,7 +49,7 @@ struct LauncherView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                topContentSpacer(height: topInset)
+                fullscreenTopContentSpacer(height: topInset)
 
                 VStack(spacing: layout.sectionSpacing) {
                     searchField(layout: layout)
@@ -106,7 +106,7 @@ struct LauncherView: View {
                     }
 
                     HStack(spacing: 16) {
-                        Button("Previous") {
+                        Button("<") {
                             goToPreviousPage()
                         }
                         .disabled(currentPageIndex == 0 || appLibrary.isEmpty)
@@ -115,7 +115,7 @@ struct LauncherView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
 
-                        Button("Next") {
+                        Button(">") {
                             goToNextPage()
                         }
                         .disabled(appLibrary.isEmpty || currentPageIndex >= totalPageCount - 1)
@@ -131,7 +131,7 @@ struct LauncherView: View {
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onEnded { _ in
-                    handleBackgroundTap()
+                    handleFullscreenBackgroundTap()
                 },
             including: .gesture
         )
@@ -265,7 +265,7 @@ struct LauncherView: View {
     }
 
     /// Hides the fullscreen launcher when the blurred background is clicked.
-    private func handleBackgroundTap() {
+    private func handleFullscreenBackgroundTap() {
         guard launcherMode == .fullscreenOldMac else { return }
         guard isAnimatingLauncherDismissal == false else { return }
         guard isInteractiveViewHit() == false else { return }
@@ -303,7 +303,7 @@ struct LauncherView: View {
 
     /// Inserts the top spacer only when fullscreen mode is active.
     @ViewBuilder
-    private func topContentSpacer(height: CGFloat) -> some View {
+    private func fullscreenTopContentSpacer(height: CGFloat) -> some View {
         if height > 0 {
             Color.clear
                 .frame(height: height)
@@ -312,7 +312,7 @@ struct LauncherView: View {
     }
 
     /// Calculates how far the content should sit from the top edge in fullscreen mode.
-    private func topContentInset(for containerHeight: CGFloat) -> CGFloat {
+    private func fullscreenTopContentInset(for containerHeight: CGFloat) -> CGFloat {
         guard launcherMode == .fullscreenOldMac else { return 0 }
         guard containerHeight.isFinite else { return 0 }
         return max(0, containerHeight / 12)
@@ -324,12 +324,29 @@ struct LauncherView: View {
             .textFieldStyle(.plain)
             .font(.system(size: layout.searchFieldFontSize, weight: .medium))
             .foregroundColor(.primary)
-            .padding(.horizontal, 18)
+            .onSubmit {
+                launchFirstSearchResultIfNeeded()
+            }
+            .padding(.leading, 18)
+            .padding(.trailing, 44)
             .frame(height: layout.searchFieldHeight)
             .background(
                 VisualEffectBackground(material: .menu, blendingMode: .withinWindow)
                     .clipShape(RoundedRectangle(cornerRadius: layout.searchFieldCornerRadius, style: .continuous))
             )
+            .overlay(alignment: .trailing) {
+                if searchQuery.isEmpty == false {
+                    Button {
+                        searchQuery = ""
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.primary.opacity(0.55))
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.trailing, 14)
+                }
+            }
             .overlay(
                 RoundedRectangle(cornerRadius: layout.searchFieldCornerRadius, style: .continuous)
                     .strokeBorder(Color.white.opacity(0.25))
@@ -337,6 +354,14 @@ struct LauncherView: View {
             .shadow(color: .black.opacity(0.2), radius: 12, y: 4)
             .frame(maxWidth: layout.searchFieldWidth)
             .frame(maxWidth: .infinity)
+    }
+
+    /// Launches the first matched app when a user submits the search field.
+    private func launchFirstSearchResultIfNeeded() {
+        let trimmedQuery = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmedQuery.isEmpty == false else { return }
+        guard let firstMatch = filteredApps.first else { return }
+        launchApplication(firstMatch)
     }
 }
 

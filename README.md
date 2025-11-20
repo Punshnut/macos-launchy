@@ -13,11 +13,11 @@ Launchy is a featherweight macOS launcher that feels like part of the system: fu
 - **Pure SwiftUI** - A lean 100% Swift + SwiftUI stack means it's easy to theme, extend, or embed.
 - **Free forever** - MIT licensed; donations only keep the roadmap humming.
 
-## Floaty + Fullscreen Update
+## Floaty + Fullscreen
 
 The latest drop brings two experience upgrades:
 
-1. **Fullscreen standard** - Launchy now starts in fullscreen so you get a wall-to-wall launcher immediately. It keeps the same glassy materials, icon scaling, and paging gestures.
+1. **Fullscreen standard** - Launchy starts in fullscreen so you get a wall-to-wall launcher immediately. It keeps the same glassy materials, icon scaling, and paging gestures.
 2. **Floaty palette option** - Toggle (`Cmd`+`Option`+`F` or the menu bar command) into the floaty HUD that can ride along on every Space and disappear the moment you jump back into work. Hide the Dock icon for stealth or keep it handy for Option-clicking back in.
 
 Wire these behaviors into your preferred shortcuts or automation tools to keep Launchy ready in any context.
@@ -36,24 +36,6 @@ The gesture overlay is transparent and keeps hit-testing off, so you still inter
 - **Menu bar + shortcuts** - `Cmd`+`,` opens settings, `Cmd`+`Option`+`F` toggles layouts, and a dedicated Command Menu exposes reload + reset utilities for power users.
 - **Fast icon caching** - `AppDiscoveryService` resolves and caches icons once, so switching layouts, paging, or relaunching is effectively instant even on large libraries.
 
-## Quick start
-
-1. **Clone & open**
-   ```bash
-   git clone https://github.com/your-org/macos-launchy.git
-   cd macos-launchy
-   open Package.swift
-   ```
-2. **Build the `.app`**
-   ```bash
-   ./build_app.sh
-   ```
-3. **Package or notarize (optional)**
-   - `./build_dmg.sh` wraps the bundle into a drag-and-drop DMG.
-   - `./notarize_async.sh` signs and submits via `xcrun notarytool`, then polls for the result.
-
-Before shipping, make sure the bundle identifier, signing certificates, and notary profile match your Apple Developer Team.
-
 ## Usage tips
 
 - Assign Launchy to a hotkey or gesture via your favorite automation utility.
@@ -61,21 +43,11 @@ Before shipping, make sure the bundle identifier, signing certificates, and nota
 - Scroll, swipe, or nudge the mouse wheel anywhere over the HUD to flip pages instantly.
 - Search, favorites, or metadata filters can be layered on top of the existing grid with minimal SwiftUI code.
 
-## Build & versioning
-
-- **Current version:** `v0.1a`
-- Update the `APP_VERSION` constant near the top of `build_app.sh` when you cut a new release; the script rewrites `CFBundleShortVersionString` and `CFBundleVersion`.
-- Scripts expect modern Xcode toolchains and `xcrun` utilities available in your `PATH`.
-
 ## Make it yours
 
 - Customize `LauncherView` to add keyboard navigation, filters, or different grid densities.
 - Extend `AppDiscoveryService` if you want to watch additional directories or surface metadata-based filters.
 - Reuse `LauncherWindowController` as a floating palette inside another product; the floaty and fullscreen behaviors are reusable.
-
-## Contributing
-
-Pull requests, design sketches, and bug reports are very welcome-polish and accessibility ideas especially. Open an issue if you want to bounce ideas before building.
 
 ## License & support
 

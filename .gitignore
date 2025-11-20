@@ -19,6 +19,8 @@ xcuserdata/
 # Bundled app artifacts
 Launchy.app/
 Launchy.dmg
+Launchy Dev Install.dmg
+.notarytool-submissions/
 
 # Shell scripts in the repository root
 /*.sh

@@ -554,7 +554,7 @@ struct LauncherView: View {
         switch target {
         case .app:
             action = { mergeItemsIfNeeded(dragged: dragged, onto: target) }
-            delay = suppressReorder ? 0 : 0.6
+            delay = suppressReorder ? 1.0 : 0.6
         case .folder(let folder):
             if suppressReorder {
                 action = { openFolderForDrag(folder, draggedItem: dragged) }
@@ -742,7 +742,7 @@ struct LauncherView: View {
         }
 
         var updated = sizes
-        let targetPage = targetPageHint ?? pageIndex(forLinearIndex: insertingIndex, sizes: updated) ?? updated.count
+        let targetPage = max(targetPageHint ?? pageIndex(forLinearIndex: insertingIndex, sizes: updated) ?? updated.count, 0)
         if targetPage >= updated.count {
             updated.append(contentsOf: Array(repeating: 0, count: targetPage - updated.count + 1))
         }

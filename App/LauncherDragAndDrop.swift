@@ -9,6 +9,9 @@ struct PageReorderDropDelegate: DropDelegate {
     var performReorder: (LauncherItem, Int) -> Int?
     var afterReorder: (Int?) -> Void
 
+    private static var lastPageSwitchDate: Date = .distantPast
+    private static let minSwitchInterval: TimeInterval = 1.0
+
     func dropEntered(info: DropInfo) {
         handleDropUpdate(info)
     }
@@ -27,6 +30,9 @@ struct PageReorderDropDelegate: DropDelegate {
         guard let draggedItem else { return }
         guard pageCapacity > 0 else { return }
 
+        let now = Date()
+        guard now.timeIntervalSince(Self.lastPageSwitchDate) >= Self.minSwitchInterval else { return }
+
         let destinationIndex = LauncherGridConfiguration.insertionIndex(
             for: targetPage,
             itemsCount: items.count,
@@ -34,6 +40,9 @@ struct PageReorderDropDelegate: DropDelegate {
         )
 
         let finalIndex = performReorder(draggedItem, destinationIndex)
+        if finalIndex != nil {
+            Self.lastPageSwitchDate = now
+        }
         afterReorder(finalIndex)
     }
 }

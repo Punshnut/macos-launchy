@@ -44,7 +44,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         private let onNextPage: () -> Void
         private var scrollMonitorToken: Any?
         private var horizontalDeltaAccumulator: CGFloat = 0
-        private let precisionThreshold: CGFloat = 20
+        private let precisionThreshold: CGFloat = 60
 
         init(onPreviousPage: @escaping () -> Void, onNextPage: @escaping () -> Void) {
             self.onPreviousPage = onPreviousPage
@@ -104,7 +104,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         private func processHorizontalScroll(delta: CGFloat, isPrecise: Bool) -> Bool {
             guard abs(delta) > 0.01 else { return false }
 
-            let threshold = isPrecise ? precisionThreshold : 1
+            let threshold = isPrecise ? precisionThreshold : 3
             horizontalDeltaAccumulator += delta
 
             if horizontalDeltaAccumulator <= -threshold {

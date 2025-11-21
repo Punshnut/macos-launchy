@@ -140,6 +140,21 @@ enum LauncherSettingsPersistence {
         loadSettings(userDefaults: userDefaults).fillsGapsAutomatically
     }
 
+    /// Returns true when the user has finished the introduction flow.
+    static func hasCompletedIntroduction(userDefaults: UserDefaults = .standard) -> Bool {
+        loadSettings(userDefaults: userDefaults).hasCompletedIntroduction
+    }
+
+    /// Persists whether the introduction has been completed.
+    static func setHasCompletedIntroduction(
+        _ value: Bool,
+        userDefaults: UserDefaults = .standard
+    ) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.hasCompletedIntroduction = value
+        }
+    }
+
     /// Persists the gap collapsing preference.
     static func setFillsGapsAutomatically(_ value: Bool, userDefaults: UserDefaults = .standard) {
         updateSettings(userDefaults: userDefaults) { settings in

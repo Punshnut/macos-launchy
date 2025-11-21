@@ -18,8 +18,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var statusBarItem: NSStatusItem?
     private var statusBarMenu: NSMenu?
     private lazy var settingsWindowPresenter = SettingsWindowController()
+    private lazy var introductionPresenter = IntroductionWindowController.shared
 
-    /// Finishes bootstrapping the app by loading settings, refreshing apps, and showing the window.
+    /// Finishes bootstrapping the app by loading settings, refreshing apps, and preparing the window.
     func applicationDidFinishLaunching(_ notification: Notification) {
         bootstrapApplication()
         removeDefaultMainMenuItems()
@@ -27,8 +28,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Reopens the launcher when the Dock icon is clicked while the app is already running.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        applyLauncherMode()
-        launcherWindowManager?.presentWindow()
+        toggleLauncherVisibility()
         return true
     }
 
@@ -78,8 +78,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         // 1 & 6) Load apps and immediately apply hidden/background style choices.
         refreshLauncherItems()
 
-        // 3) Build the launcher window so the UI is ready for the hotkey.
-        applyLauncherMode()
+        // 3) Build the launcher window so the UI is ready for the hotkey without surfacing it yet.
+        applyLauncherMode(shouldPresentWindow: false)
 
         // 4) `LaunchyApp` declares the SwiftUI `SettingsWindow` scene, so nothing else is needed here.
 
@@ -89,6 +89,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         updateStatusItemVisibility()
         observeSettingsChanges()
         observeArrangementResetRequests()
+        showIntroductionIfNeeded()
     }
 
     /// Hides unused top-level macOS menu bar items.
@@ -102,47 +103,53 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Applies the current launcher mode, rebuilding the window when the persisted value changes.
-    func applyLauncherMode() {
+    func applyLauncherMode(shouldPresentWindow: Bool = true) {
         let mode = currentSettings.selectedLauncherMode
         if currentLauncherMode == mode {
             if let controller = launcherWindowManager {
                 controller.update(rootView: buildLauncherView())
             } else {
-                rebuildWindow(for: mode)
+                rebuildWindow(for: mode, shouldPresentWindow: shouldPresentWindow)
             }
             return
         }
 
         currentLauncherMode = mode
-        updateActivationPolicy(for: mode)
-        rebuildWindow(for: mode)
+        updateActivationPolicy(for: mode, shouldActivate: shouldPresentWindow)
+        rebuildWindow(for: mode, shouldPresentWindow: shouldPresentWindow)
     }
 
     /// Creates a fresh `LauncherWindowController` using the provided mode.
-    private func rebuildWindow(for mode: LauncherMode) {
+    private func rebuildWindow(for mode: LauncherMode, shouldPresentWindow: Bool) {
         launcherWindowManager?.close()
 
         let view = buildLauncherView()
 
         let controller = LauncherWindowController(rootView: view, launcherMode: mode)
-        controller.presentWindow()
+        if shouldPresentWindow {
+            controller.presentWindow()
+        }
         launcherWindowManager = controller
     }
 
     /// Adjusts the app's activation policy so the Dock and Spaces behave appropriately for each mode.
-    private func updateActivationPolicy(for mode: LauncherMode) {
+    private func updateActivationPolicy(for mode: LauncherMode, shouldActivate: Bool) {
         switch mode {
         case .floaty:
             if currentSettings.isFloatyDockIconVisible {
                 NSApp.setActivationPolicy(.regular)
-                NSApp.activate(ignoringOtherApps: true)
+                if shouldActivate {
+                    NSApp.activate(ignoringOtherApps: true)
+                }
             } else {
                 NSApp.setActivationPolicy(.accessory)
                 NSApp.dockTile.display()
             }
         case .fullscreenOldMac:
             NSApp.setActivationPolicy(.regular)
-            NSApp.activate(ignoringOtherApps: true)
+            if shouldActivate {
+                NSApp.activate(ignoringOtherApps: true)
+            }
         }
     }
 
@@ -269,10 +276,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Shows or hides the launcher window whenever the hotkey fires.
     private func toggleLauncherVisibility() {
-        guard let launcherWindowManager else {
-            applyLauncherMode()
-            return
+        if launcherWindowManager == nil {
+            applyLauncherMode(shouldPresentWindow: false)
         }
+
+        guard let launcherWindowManager else { return }
 
         guard let window = launcherWindowManager.window else {
             launcherWindowManager.presentWindow()
@@ -282,7 +290,20 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         if window.isVisible {
             window.orderOut(nil)
         } else {
+            activateApplicationForCurrentModeIfNeeded()
             launcherWindowManager.presentWindow()
+        }
+    }
+
+    /// Activates the app when the current launcher mode expects a regular foreground experience.
+    private func activateApplicationForCurrentModeIfNeeded() {
+        switch currentSettings.selectedLauncherMode {
+        case .floaty:
+            if currentSettings.isFloatyDockIconVisible {
+                NSApp.activate(ignoringOtherApps: true)
+            }
+        case .fullscreenOldMac:
+            NSApp.activate(ignoringOtherApps: true)
         }
     }
 
@@ -315,6 +336,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Shows or rebuilds the launcher when the user clicks the menu bar item.
     @objc private func showLauncherFromStatusItem(_ sender: Any?) {
         applyLauncherMode()
+        activateApplicationForCurrentModeIfNeeded()
         launcherWindowManager?.presentWindow()
     }
 
@@ -327,6 +349,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Opens the settings window regardless of activation policy.
     func showSettingsWindow() {
         settingsWindowPresenter.showWindowAndActivate()
+    }
+
+    /// Presents the Launchy introduction flow.
+    func showIntroduction(startingAt step: Int = 0, markCompletionOnFinish: Bool = true) {
+        introductionPresenter.present(startingAt: step, markCompletionOnFinish: markCompletionOnFinish)
     }
 
     /// Opens the settings window from the status item click.
@@ -368,5 +395,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             pageSizes = newPageSizes
             itemOrderStore.saveOrderedItems(reorderedItems, pageSizes: newPageSizes)
         }
+    }
+
+    /// Shows the introduction dialog on first launch.
+    private func showIntroductionIfNeeded() {
+        guard currentSettings.hasCompletedIntroduction == false else { return }
+        showIntroduction()
     }
 }

@@ -216,6 +216,8 @@ struct LauncherSettings: Hashable, Codable {
     var layoutToggleHotkey: HotkeyDescriptor?
     /// Whether the grid should collapse gaps by pulling items forward.
     var fillsGapsAutomatically: Bool
+    /// Whether the user has already gone through the Launchy introduction.
+    var hasCompletedIntroduction: Bool
 
     init(
         isVisibleOnAllSpaces: Bool,
@@ -228,7 +230,8 @@ struct LauncherSettings: Hashable, Codable {
         isFloatyDockIconVisible: Bool,
         launcherHotkey: HotkeyDescriptor?,
         layoutToggleHotkey: HotkeyDescriptor?,
-        fillsGapsAutomatically: Bool
+        fillsGapsAutomatically: Bool,
+        hasCompletedIntroduction: Bool
     ) {
         self.isVisibleOnAllSpaces = isVisibleOnAllSpaces
         self.launchesAtLogin = launchesAtLogin
@@ -241,6 +244,7 @@ struct LauncherSettings: Hashable, Codable {
         self.launcherHotkey = launcherHotkey
         self.layoutToggleHotkey = layoutToggleHotkey
         self.fillsGapsAutomatically = fillsGapsAutomatically
+        self.hasCompletedIntroduction = hasCompletedIntroduction
     }
 }
 
@@ -258,7 +262,8 @@ extension LauncherSettings {
             isFloatyDockIconVisible: true,
             launcherHotkey: .toggleLauncher,
             layoutToggleHotkey: nil,
-            fillsGapsAutomatically: false
+            fillsGapsAutomatically: false,
+            hasCompletedIntroduction: false
         )
     }
 }
@@ -276,6 +281,7 @@ extension LauncherSettings {
         case launcherHotkey
         case layoutToggleHotkey
         case fillsGapsAutomatically
+        case hasCompletedIntroduction
     }
 
     init(from decoder: Decoder) throws {
@@ -293,7 +299,8 @@ extension LauncherSettings {
             isFloatyDockIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isFloatyDockIconVisible) ?? true,
             launcherHotkey: try container.decodeIfPresent(HotkeyDescriptor.self, forKey: .launcherHotkey) ?? .toggleLauncher,
             layoutToggleHotkey: try container.decodeIfPresent(HotkeyDescriptor.self, forKey: .layoutToggleHotkey),
-            fillsGapsAutomatically: try container.decodeIfPresent(Bool.self, forKey: .fillsGapsAutomatically) ?? false
+            fillsGapsAutomatically: try container.decodeIfPresent(Bool.self, forKey: .fillsGapsAutomatically) ?? false,
+            hasCompletedIntroduction: try container.decodeIfPresent(Bool.self, forKey: .hasCompletedIntroduction) ?? false
         )
     }
 
@@ -310,5 +317,6 @@ extension LauncherSettings {
         try container.encode(launcherHotkey, forKey: .launcherHotkey)
         try container.encode(layoutToggleHotkey, forKey: .layoutToggleHotkey)
         try container.encode(fillsGapsAutomatically, forKey: .fillsGapsAutomatically)
+        try container.encode(hasCompletedIntroduction, forKey: .hasCompletedIntroduction)
     }
 }

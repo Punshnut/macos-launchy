@@ -19,6 +19,7 @@ xcuserdata/
 # Bundled app artifacts
 Launchy.app/
 Launchy.dmg
+*.dmg
 Launchy Dev Install.dmg
 .notarytool-submissions/
 

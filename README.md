@@ -1,6 +1,6 @@
 # Launchy
 
-Launchy is a featherweight macOS launcher that feels like part of the system: fullscreen-first, ultra-fast, and absolutely minimal. It silently scans your apps, keeps an edge-to-edge HUD ready on any Space, and opens things in one tap.
+Launchy is a featherweight macOS app launcher that feels like part of the system: fullscreen-first, ultra-fast, and absolutely minimal. It silently scans your apps, keeps an edge-to-edge HUD ready on any Space, and opens things in one tap.
 
 ## What you get (at a glance)
 
@@ -36,4 +36,4 @@ Launchy is a featherweight macOS launcher that feels like part of the system: fu
 - **License:** MIT. Use it anywhere, just keep the notice.
 - **Support Launchy:** Optional upgrades or donations are a nice signal boost but never gate existing features.
 
-Make with ❤️
+Made with ❤️

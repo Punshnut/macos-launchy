@@ -765,7 +765,7 @@ struct SettingsWindow: View {
     private var aboutActions: some View {
         HStack(spacing: 14) {
             Button {
-                showIntroPlaceholder()
+                openIntroduction()
             } label: {
                 Label("Revisit Introduction...", systemImage: "sparkles")
             }
@@ -880,13 +880,8 @@ struct SettingsWindow: View {
             )
     }
 
-    private func showIntroPlaceholder() {
-        let alert = NSAlert()
-        alert.alertStyle = .informational
-        alert.messageText = "Intro coming soon"
-        alert.informativeText = "This button will revisit Launchy's onboarding once it is wired up."
-        alert.addButton(withTitle: "OK")
-        alert.runModal()
+    private func openIntroduction() {
+        IntroductionWindowController.shared.present(startingAt: 0, markCompletionOnFinish: false)
     }
 
     private func confirmArrangementReset() {
@@ -1196,7 +1191,7 @@ final class SettingsWindowController: NSWindowController {
 
 // MARK: - Frosted Elements and Window Controls
 
-private struct FrostedBackgroundView: NSViewRepresentable {
+struct FrostedBackgroundView: NSViewRepresentable {
     let material: NSVisualEffectView.Material
 
     func makeNSView(context: Context) -> NSVisualEffectView {
@@ -1215,7 +1210,7 @@ private struct FrostedBackgroundView: NSViewRepresentable {
     }
 }
 
-private enum WindowControlKind: CaseIterable, Identifiable {
+enum WindowControlKind: CaseIterable, Identifiable {
     case close, minimize, zoom
 
     var id: String {
@@ -1241,7 +1236,7 @@ private enum WindowControlKind: CaseIterable, Identifiable {
     }
 }
 
-private struct WindowControlDot: View {
+struct WindowControlDot: View {
     let kind: WindowControlKind
     let action: () -> Void
 
@@ -1259,7 +1254,7 @@ private struct WindowControlDot: View {
     }
 }
 
-private struct HostingWindowFinder: NSViewRepresentable {
+struct HostingWindowFinder: NSViewRepresentable {
     let onResolve: (NSWindow?) -> Void
 
     func makeNSView(context: Context) -> NSView {
@@ -1279,7 +1274,7 @@ private struct HostingWindowFinder: NSViewRepresentable {
 
 // MARK: - Scroll Background Helper
 
-private struct GlassListScrollBackground: ViewModifier {
+struct GlassListScrollBackground: ViewModifier {
     func body(content: Content) -> some View {
         content
             .background(
@@ -1300,7 +1295,7 @@ private struct GlassListScrollBackground: ViewModifier {
     }
 }
 
-private extension View {
+extension View {
     func glassListScrollBackground() -> some View {
         modifier(GlassListScrollBackground())
     }

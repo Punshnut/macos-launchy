@@ -6,7 +6,8 @@ import SwiftUI
 final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var launcherWindowManager: LauncherWindowController?
     private let applicationDiscovery = AppDiscoveryService()
-    private let hotkeyCoordinator = HotkeyManager()
+    private let launcherHotkeyManager = HotkeyManager()
+    private let layoutHotkeyManager = HotkeyManager(descriptor: nil)
     private let itemOrderStore = ItemArrangementStore()
     private var orderedItems: [LauncherItem] = []
     private var pageSizes: [Int] = []
@@ -36,7 +37,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         settingsStreamTask?.cancel()
         arrangementResetTask?.cancel()
         removeStatusItem()
-        hotkeyCoordinator.deactivate()
+        launcherHotkeyManager.deactivate()
+        layoutHotkeyManager.deactivate()
     }
 
     /// Reloads applications via the debug menu, clearing stale icon caches beforehand.
@@ -82,7 +84,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         // 4) `LaunchyApp` declares the SwiftUI `SettingsWindow` scene, so nothing else is needed here.
 
         // 5) Wire the global hotkey so it toggles the launcher window on demand.
-        configureHotkeyManager()
+        configureHotkeyManagers()
 
         updateStatusItemVisibility()
         observeSettingsChanges()
@@ -234,6 +236,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
         applyLauncherMode()
         updateStatusItemVisibility()
+        refreshHotkeyRegistrations()
     }
 
     /// Clears saved arrangement data and reloads apps from disk.
@@ -244,12 +247,24 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         applyLauncherMode()
     }
 
-    /// Sets up the global hotkey used to toggle the launcher window.
-    private func configureHotkeyManager() {
-        hotkeyCoordinator.onHotkeyPressed = { [weak self] in
+    /// Sets up global hotkeys for toggling the launcher and switching layouts.
+    private func configureHotkeyManagers() {
+        launcherHotkeyManager.onHotkeyPressed = { [weak self] in
             self?.toggleLauncherVisibility()
         }
-        hotkeyCoordinator.activate()
+        layoutHotkeyManager.onHotkeyPressed = { [weak self] in
+            self?.toggleLauncherModeShortcut()
+        }
+        refreshHotkeyRegistrations()
+    }
+
+    /// Applies the persisted hotkey selections to the running listeners.
+    private func refreshHotkeyRegistrations() {
+        launcherHotkeyManager.update(descriptor: currentSettings.launcherHotkey)
+        launcherHotkeyManager.activate()
+
+        layoutHotkeyManager.update(descriptor: currentSettings.layoutToggleHotkey)
+        layoutHotkeyManager.activate()
     }
 
     /// Shows or hides the launcher window whenever the hotkey fires.

@@ -18,7 +18,8 @@ Launchy is a featherweight macOS launcher that feels like part of the system: fu
 
 ## Keyboard shortcuts
 
-- **Toggle fullscreen ⇄ floaty palette:** `Cmd` + `Option` + `F`
+- **Toggle fullscreen ⇄ floaty palette:** configurable in Settings (no default)
+- **Show / hide Launchy:** configurable in Settings (defaults to `Cmd` + `Shift` + `Space`)
 - **Open settings:** `Cmd` + `,`
 - **Reload / reset tools:** See the Command Menu inside the app (menu bar icon).
 
@@ -28,6 +29,7 @@ Launchy is a featherweight macOS launcher that feels like part of the system: fu
 - Floaty palette stays visible across Spaces; fullscreen keeps focus when you want a clean, wall-to-wall launcher.
 - The search bar filters by app name or bundle ID so even odd tools are a few keystrokes away.
 - Hide apps you never want to see from the settings list; Launchy remembers your choices.
+- Set global shortcuts for showing Launchy and flipping layouts in Settings; tap Delete in the recorder to clear them.
 
 ## License & support
 

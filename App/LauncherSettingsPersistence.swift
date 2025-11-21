@@ -111,9 +111,28 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Reads the stubbed global hotkey string.
-    static func globalHotkeyDisplay(userDefaults: UserDefaults = .standard) -> String {
-        loadSettings(userDefaults: userDefaults).globalHotkeyDescription
+    /// Reads the stored launcher hotkey.
+    static func launcherHotkey(userDefaults: UserDefaults = .standard) -> HotkeyDescriptor? {
+        loadSettings(userDefaults: userDefaults).launcherHotkey
+    }
+
+    /// Persists the selected launcher hotkey.
+    static func setLauncherHotkey(_ value: HotkeyDescriptor?, userDefaults: UserDefaults = .standard) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.launcherHotkey = value
+        }
+    }
+
+    /// Reads the shortcut used to flip between floaty and fullscreen modes.
+    static func layoutToggleHotkey(userDefaults: UserDefaults = .standard) -> HotkeyDescriptor? {
+        loadSettings(userDefaults: userDefaults).layoutToggleHotkey
+    }
+
+    /// Persists the layout toggle shortcut.
+    static func setLayoutToggleHotkey(_ value: HotkeyDescriptor?, userDefaults: UserDefaults = .standard) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.layoutToggleHotkey = value
+        }
     }
 
     /// Reads whether the grid should collapse gaps.
@@ -125,13 +144,6 @@ enum LauncherSettingsPersistence {
     static func setFillsGapsAutomatically(_ value: Bool, userDefaults: UserDefaults = .standard) {
         updateSettings(userDefaults: userDefaults) { settings in
             settings.fillsGapsAutomatically = value
-        }
-    }
-
-    /// Persists the stubbed global hotkey string.
-    static func setGlobalHotkeyDisplay(_ value: String, userDefaults: UserDefaults = .standard) {
-        updateSettings(userDefaults: userDefaults) { settings in
-            settings.globalHotkeyDescription = value
         }
     }
 

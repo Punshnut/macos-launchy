@@ -210,8 +210,10 @@ struct LauncherSettings: Hashable, Codable {
     var isMenuBarIconVisible: Bool
     /// Determines whether Launchy should keep a Dock icon around while in floaty mode.
     var isFloatyDockIconVisible: Bool
-    /// Placeholder text describing the user’s preferred hotkey.
-    var globalHotkeyDescription: String
+    /// Global hotkey used to show or hide Launchy.
+    var launcherHotkey: HotkeyDescriptor?
+    /// Optional shortcut for toggling between floaty and fullscreen layouts.
+    var layoutToggleHotkey: HotkeyDescriptor?
     /// Whether the grid should collapse gaps by pulling items forward.
     var fillsGapsAutomatically: Bool
 
@@ -224,7 +226,8 @@ struct LauncherSettings: Hashable, Codable {
         selectedLauncherMode: LauncherMode,
         isMenuBarIconVisible: Bool,
         isFloatyDockIconVisible: Bool,
-        globalHotkeyDescription: String,
+        launcherHotkey: HotkeyDescriptor?,
+        layoutToggleHotkey: HotkeyDescriptor?,
         fillsGapsAutomatically: Bool
     ) {
         self.isVisibleOnAllSpaces = isVisibleOnAllSpaces
@@ -235,7 +238,8 @@ struct LauncherSettings: Hashable, Codable {
         self.selectedLauncherMode = selectedLauncherMode
         self.isMenuBarIconVisible = isMenuBarIconVisible
         self.isFloatyDockIconVisible = isFloatyDockIconVisible
-        self.globalHotkeyDescription = globalHotkeyDescription
+        self.launcherHotkey = launcherHotkey
+        self.layoutToggleHotkey = layoutToggleHotkey
         self.fillsGapsAutomatically = fillsGapsAutomatically
     }
 }
@@ -252,7 +256,8 @@ extension LauncherSettings {
             selectedLauncherMode: .fullscreenOldMac,
             isMenuBarIconVisible: true,
             isFloatyDockIconVisible: true,
-            globalHotkeyDescription: "Cmd+Shift+Space",
+            launcherHotkey: .toggleLauncher,
+            layoutToggleHotkey: nil,
             fillsGapsAutomatically: false
         )
     }
@@ -268,7 +273,8 @@ extension LauncherSettings {
         case selectedLauncherMode
         case isMenuBarIconVisible
         case isFloatyDockIconVisible = "isDockIconVisible"
-        case globalHotkeyDescription
+        case launcherHotkey
+        case layoutToggleHotkey
         case fillsGapsAutomatically
     }
 
@@ -285,7 +291,8 @@ extension LauncherSettings {
             selectedLauncherMode: try container.decodeIfPresent(LauncherMode.self, forKey: .selectedLauncherMode) ?? .fullscreenOldMac,
             isMenuBarIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isMenuBarIconVisible) ?? true,
             isFloatyDockIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isFloatyDockIconVisible) ?? true,
-            globalHotkeyDescription: try container.decodeIfPresent(String.self, forKey: .globalHotkeyDescription) ?? "Cmd+Shift+Space",
+            launcherHotkey: try container.decodeIfPresent(HotkeyDescriptor.self, forKey: .launcherHotkey) ?? .toggleLauncher,
+            layoutToggleHotkey: try container.decodeIfPresent(HotkeyDescriptor.self, forKey: .layoutToggleHotkey),
             fillsGapsAutomatically: try container.decodeIfPresent(Bool.self, forKey: .fillsGapsAutomatically) ?? false
         )
     }
@@ -300,7 +307,8 @@ extension LauncherSettings {
         try container.encode(selectedLauncherMode, forKey: .selectedLauncherMode)
         try container.encode(isMenuBarIconVisible, forKey: .isMenuBarIconVisible)
         try container.encode(isFloatyDockIconVisible, forKey: .isFloatyDockIconVisible)
-        try container.encode(globalHotkeyDescription, forKey: .globalHotkeyDescription)
+        try container.encode(launcherHotkey, forKey: .launcherHotkey)
+        try container.encode(layoutToggleHotkey, forKey: .layoutToggleHotkey)
         try container.encode(fillsGapsAutomatically, forKey: .fillsGapsAutomatically)
     }
 }

@@ -1,6 +1,7 @@
 import SwiftUI
 import Combine
 import AppKit
+import Carbon
 
 /// Backing store responsible for loading apps and persisting launcher settings toggles.
 @MainActor
@@ -73,11 +74,23 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         LauncherSettingsPersistence.setShowFloatyDockIcon(isVisible)
     }
 
-    /// Persists the stubbed hotkey text.
-    func setHotkeyDisplay(_ value: String) {
-        guard settingsSnapshot.globalHotkeyDescription != value else { return }
-        settingsSnapshot.globalHotkeyDescription = value
-        LauncherSettingsPersistence.setGlobalHotkeyDisplay(value)
+    /// Persists the selected global hotkey used to toggle Launchy.
+    func setLauncherHotkey(_ descriptor: HotkeyDescriptor?) {
+        guard settingsSnapshot.launcherHotkey != descriptor else { return }
+        settingsSnapshot.launcherHotkey = descriptor
+        LauncherSettingsPersistence.setLauncherHotkey(descriptor)
+    }
+
+    /// Persists the shortcut used to flip between floaty and fullscreen layouts.
+    func setLayoutToggleHotkey(_ descriptor: HotkeyDescriptor?) {
+        guard settingsSnapshot.layoutToggleHotkey != descriptor else { return }
+        settingsSnapshot.layoutToggleHotkey = descriptor
+        LauncherSettingsPersistence.setLayoutToggleHotkey(descriptor)
+    }
+
+    /// Restores the launcher hotkey back to its default value.
+    func resetLauncherHotkeyToDefault() {
+        setLauncherHotkey(.toggleLauncher)
     }
 
     /// Persists whether gaps should be collapsed automatically.
@@ -182,6 +195,8 @@ struct SettingsWindow: View {
                 set: { settingsStore.setFillsGapsAutomatically($0) }
             ))
 
+            hotkeySection
+
             VStack(alignment: .leading, spacing: 8) {
                 Button {
                     confirmArrangementReset()
@@ -194,23 +209,6 @@ struct SettingsWindow: View {
                 Text("Deletes your saved ordering and folders, then rebuilds pages from scratch. Type RESET to confirm.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-            }
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Global hotkey")
-                    .font(.headline)
-                HStack {
-                    TextField("Cmd+Shift+Space", text: Binding(
-                        get: { settingsStore.settingsSnapshot.globalHotkeyDescription },
-                        set: { settingsStore.setHotkeyDisplay($0) }
-                    ))
-                    .textFieldStyle(.roundedBorder)
-                    .frame(width: 160)
-
-                    Text("Shortcut capture is not implemented yet.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
             }
         }
     }
@@ -232,7 +230,7 @@ struct SettingsWindow: View {
             .labelsHidden()
             .pickerStyle(.segmented)
 
-            Text("Use Cmd+Option+F to toggle layouts instantly from the menu bar.")
+            Text("Add a layout toggle shortcut below to flip modes instantly from anywhere.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -282,6 +280,32 @@ struct SettingsWindow: View {
                     .accessibilityLabel(colorOption.displayName)
                 }
             }
+        }
+    }
+
+    /// Section that captures global shortcuts for launching and toggling layouts.
+    private var hotkeySection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Keyboard shortcuts")
+                .font(.headline)
+
+            HotkeyRecorderRow(
+                title: "Toggle Launchy",
+                message: "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space.",
+                hotkey: settingsStore.settingsSnapshot.launcherHotkey,
+                placeholder: "Click to record",
+                onChange: { settingsStore.setLauncherHotkey($0) },
+                onReset: { settingsStore.resetLauncherHotkeyToDefault() }
+            )
+
+            HotkeyRecorderRow(
+                title: "Switch fullscreen ⇄ floaty",
+                message: "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable.",
+                hotkey: settingsStore.settingsSnapshot.layoutToggleHotkey,
+                placeholder: "Add shortcut",
+                onChange: { settingsStore.setLayoutToggleHotkey($0) },
+                showResetButton: false
+            )
         }
     }
 
@@ -381,6 +405,170 @@ struct SettingsWindow: View {
         let token = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         guard token == "RESET" else { return }
         settingsStore.requestArrangementReset()
+    }
+}
+
+private struct HotkeyRecorderRow: View {
+    let title: String
+    let message: String
+    let hotkey: HotkeyDescriptor?
+    let placeholder: String
+    let onChange: (HotkeyDescriptor?) -> Void
+    var onReset: (() -> Void)?
+    var showResetButton: Bool = true
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.subheadline)
+            HStack(spacing: 8) {
+                HotkeyRecorderField(hotkey: hotkey, placeholder: placeholder, onChange: onChange)
+                    .frame(width: 220, height: 30)
+
+                if showResetButton, let onReset {
+                    Button("Reset") {
+                        onReset()
+                    }
+                }
+
+                Button("Clear") {
+                    onChange(nil)
+                }
+                .disabled(hotkey == nil)
+            }
+            Text(message)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+private struct HotkeyRecorderField: NSViewRepresentable {
+    var hotkey: HotkeyDescriptor?
+    var placeholder: String
+    var onChange: (HotkeyDescriptor?) -> Void
+
+    func makeNSView(context: Context) -> HotkeyRecorderTextField {
+        let view = HotkeyRecorderTextField()
+        view.placeholderText = placeholder
+        view.onHotkeyChange = onChange
+        view.hotkey = hotkey
+        return view
+    }
+
+    func updateNSView(_ nsView: HotkeyRecorderTextField, context: Context) {
+        nsView.placeholderText = placeholder
+        nsView.hotkey = hotkey
+        nsView.onHotkeyChange = onChange
+    }
+}
+
+private final class HotkeyRecorderTextField: NSTextField {
+    var hotkey: HotkeyDescriptor? {
+        didSet { updateDisplay() }
+    }
+
+    var placeholderText: String = "Click to record" {
+        didSet { updateDisplay() }
+    }
+
+    var onHotkeyChange: ((HotkeyDescriptor?) -> Void)?
+
+    private var isRecording = false
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        isBordered = true
+        isEditable = false
+        isSelectable = false
+        drawsBackground = true
+        backgroundColor = .controlBackgroundColor
+        focusRingType = .default
+        alignment = .center
+        font = .systemFont(ofSize: NSFont.systemFontSize)
+        cell?.wraps = false
+        cell?.isScrollable = true
+        updateDisplay()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override var acceptsFirstResponder: Bool { true }
+
+    override func becomeFirstResponder() -> Bool {
+        let success = super.becomeFirstResponder()
+        isRecording = true
+        updateDisplay()
+        return success
+    }
+
+    override func resignFirstResponder() -> Bool {
+        isRecording = false
+        updateDisplay()
+        return super.resignFirstResponder()
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        window?.makeFirstResponder(self)
+        isRecording = true
+        updateDisplay()
+    }
+
+    override func keyDown(with event: NSEvent) {
+        handleKeyEvent(event)
+    }
+
+    private func handleKeyEvent(_ event: NSEvent) {
+        let deleteKeyCodes: Set<UInt16> = [
+            UInt16(kVK_Delete),
+            UInt16(kVK_ForwardDelete)
+        ]
+
+        if event.keyCode == UInt16(kVK_Escape) {
+            isRecording = false
+            window?.makeFirstResponder(nil)
+            updateDisplay()
+            return
+        }
+
+        if deleteKeyCodes.contains(event.keyCode) {
+            hotkey = nil
+            onHotkeyChange?(nil)
+            isRecording = false
+            window?.makeFirstResponder(nil)
+            updateDisplay()
+            return
+        }
+
+        guard let descriptor = HotkeyDescriptor(event: event) else {
+            NSSound.beep()
+            return
+        }
+
+        hotkey = descriptor
+        onHotkeyChange?(descriptor)
+        isRecording = false
+        window?.makeFirstResponder(nil)
+        updateDisplay()
+    }
+
+    private func updateDisplay() {
+        if isRecording {
+            stringValue = ""
+            placeholderString = "Press shortcut…"
+            return
+        }
+
+        if let hotkey {
+            stringValue = hotkey.displayString
+            placeholderString = placeholderText
+        } else {
+            stringValue = ""
+            placeholderString = placeholderText
+        }
     }
 }
 

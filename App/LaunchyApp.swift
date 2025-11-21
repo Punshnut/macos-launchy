@@ -23,7 +23,6 @@ struct LaunchyApp: App {
                 Button("Toggle Launcher Layout") {
                     appDelegate.toggleLauncherModeShortcut()
                 }
-                .keyboardShortcut("f", modifiers: [.command, .option])
             }
 
             CommandMenu("Debug") {

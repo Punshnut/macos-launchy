@@ -40,9 +40,9 @@ struct LauncherLayoutMetrics {
     var searchToGridSpacing: CGFloat {
         switch launcherMode {
         case .floaty:
-            return 0
+            return 20
         case .fullscreenOldMac:
-            return 12
+            return 20
         }
     }
 

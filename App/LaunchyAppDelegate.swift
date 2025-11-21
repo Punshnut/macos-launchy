@@ -4,41 +4,42 @@ import SwiftUI
 /// Coordinates non-SwiftUI lifecycle tasks such as discovery, window management, and menu bar logic.
 @MainActor
 final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
-    private var launcherWindowController: LauncherWindowController?
-    private let appDiscoveryService = AppDiscoveryService()
-    private let globalHotkeyManager = HotkeyManager()
-    private let appArrangementStore = AppArrangementStore()
-    private var installedApplications: [AppItem] = []
-    private var activeLauncherMode: LauncherMode?
-    private var launcherSettings = LauncherSettings.defaults
-    private var settingsObservationTask: Task<Void, Never>?
-    private var menuBarStatusItem: NSStatusItem?
-    private var statusItemMenu: NSMenu?
-    private lazy var settingsWindowController = SettingsWindowController()
+    private var launcherWindowManager: LauncherWindowController?
+    private let applicationDiscovery = AppDiscoveryService()
+    private let hotkeyCoordinator = HotkeyManager()
+    private let appOrderStore = AppArrangementStore()
+    private var orderedApplications: [AppItem] = []
+    private var currentLauncherMode: LauncherMode?
+    private var currentSettings = LauncherSettings.defaults
+    private var settingsStreamTask: Task<Void, Never>?
+    private var statusBarItem: NSStatusItem?
+    private var statusBarMenu: NSMenu?
+    private lazy var settingsWindowPresenter = SettingsWindowController()
 
     /// Finishes bootstrapping the app by loading settings, refreshing apps, and showing the window.
     func applicationDidFinishLaunching(_ notification: Notification) {
         bootstrapApplication()
+        removeDefaultMainMenuItems()
     }
 
     /// Reopens the launcher when the Dock icon is clicked while the app is already running.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         applyLauncherMode()
-        launcherWindowController?.present()
+        launcherWindowManager?.presentWindow()
         return true
     }
 
     /// Releases observers and menu bar items before the process quits.
     func applicationWillTerminate(_ notification: Notification) {
-        settingsObservationTask?.cancel()
+        settingsStreamTask?.cancel()
         removeStatusItem()
-        globalHotkeyManager.deactivate()
+        hotkeyCoordinator.deactivate()
     }
 
     /// Reloads applications via the debug menu, clearing stale icon caches beforehand.
     func reloadAppsFromDebugMenu() {
-        appDiscoveryService.clearIconCache()
-        reloadVisibleApps()
+        applicationDiscovery.clearIconCache()
+        refreshLauncherApps()
         applyLauncherMode()
     }
 
@@ -51,13 +52,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Cycles through the available background styles to help preview launcher appearance.
     func toggleTestBackgroundStyles() {
         let styles = LauncherSettings.PreferredBackgroundStyle.allCases
-        guard let currentIndex = styles.firstIndex(of: launcherSettings.backgroundStylePreference) else {
+        guard let currentIndex = styles.firstIndex(of: currentSettings.backgroundStylePreference) else {
             return
         }
 
         let nextIndex = (currentIndex + 1) % styles.count
         let nextStyle = styles[nextIndex]
-        launcherSettings.backgroundStylePreference = nextStyle
+        currentSettings.backgroundStylePreference = nextStyle
         LauncherSettingsPersistence.setPreferredBackgroundStyle(nextStyle)
         applyLauncherMode()
     }
@@ -66,11 +67,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private func bootstrapApplication() {
         // 2) Initialize launcher settings persisted from prior sessions.
         LauncherSettingsPersistence.registerDefaults()
-        launcherSettings = LauncherSettingsPersistence.loadSettings()
-        LaunchAtLoginManager.setEnabled(launcherSettings.launchesAtLogin)
+        currentSettings = LauncherSettingsPersistence.loadSettings()
+        LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
 
         // 1 & 6) Load apps and immediately apply hidden/background style choices.
-        reloadVisibleApps()
+        refreshLauncherApps()
 
         // 3) Build the launcher window so the UI is ready for the hotkey.
         applyLauncherMode()
@@ -84,39 +85,49 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         observeSettingsChanges()
     }
 
+    /// Hides unused top-level macOS menu bar items.
+    private func removeDefaultMainMenuItems() {
+        guard let mainMenu = NSApp.mainMenu else { return }
+        let titlesToRemove: Set<String> = ["Edit", "View", "Window", "Help"]
+        let itemsToRemove = mainMenu.items.filter { titlesToRemove.contains($0.title) }
+        for item in itemsToRemove {
+            mainMenu.removeItem(item)
+        }
+    }
+
     /// Applies the current launcher mode, rebuilding the window when the persisted value changes.
     func applyLauncherMode() {
-        let mode = launcherSettings.selectedLauncherMode
-        if activeLauncherMode == mode {
-            if let controller = launcherWindowController {
-                controller.update(rootView: makeLauncherView())
+        let mode = currentSettings.selectedLauncherMode
+        if currentLauncherMode == mode {
+            if let controller = launcherWindowManager {
+                controller.update(rootView: buildLauncherView())
             } else {
                 rebuildWindow(for: mode)
             }
             return
         }
 
-        activeLauncherMode = mode
+        currentLauncherMode = mode
         updateActivationPolicy(for: mode)
         rebuildWindow(for: mode)
     }
 
     /// Creates a fresh `LauncherWindowController` using the provided mode.
     private func rebuildWindow(for mode: LauncherMode) {
-        launcherWindowController?.close()
+        launcherWindowManager?.close()
 
-        let view = makeLauncherView()
+        let view = buildLauncherView()
 
         let controller = LauncherWindowController(rootView: view, launcherMode: mode)
-        controller.present()
-        launcherWindowController = controller
+        controller.presentWindow()
+        launcherWindowManager = controller
     }
 
     /// Adjusts the app's activation policy so the Dock and Spaces behave appropriately for each mode.
     private func updateActivationPolicy(for mode: LauncherMode) {
         switch mode {
         case .floaty:
-            if launcherSettings.isFloatyDockIconVisible {
+            if currentSettings.isFloatyDockIconVisible {
                 NSApp.setActivationPolicy(.regular)
                 NSApp.activate(ignoringOtherApps: true)
             } else {
@@ -131,7 +142,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Ensures the menu bar status item matches the persisted setting.
     private func updateStatusItemVisibility() {
-        if launcherSettings.isMenuBarIconVisible {
+        if currentSettings.isMenuBarIconVisible {
             createStatusItemIfNeeded()
         } else {
             removeStatusItem()
@@ -140,7 +151,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Lazily builds the status bar icon and menu actions.
     private func createStatusItemIfNeeded() {
-        guard menuBarStatusItem == nil else { return }
+        guard statusBarItem == nil else { return }
 
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = item.button {
@@ -169,23 +180,23 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         quitItem.target = self
         menu.addItem(quitItem)
 
-        statusItemMenu = menu
-        menuBarStatusItem = item
+        statusBarMenu = menu
+        statusBarItem = item
     }
 
     /// Removes the status bar item if one has been created.
     private func removeStatusItem() {
-        if let item = menuBarStatusItem {
+        if let item = statusBarItem {
             NSStatusBar.system.removeStatusItem(item)
-            menuBarStatusItem = nil
+            statusBarItem = nil
         }
-        statusItemMenu = nil
+        statusBarMenu = nil
     }
 
     /// Responds to shared `LauncherSettings` updates so the UI reacts instantly.
     private func observeSettingsChanges() {
-        settingsObservationTask?.cancel()
-        settingsObservationTask = Task.detached { [weak self] in
+        settingsStreamTask?.cancel()
+        settingsStreamTask = Task.detached { [weak self] in
             let notifications = NotificationCenter.default.notifications(named: .launcherSettingsDidChange)
             for await _ in notifications {
                 guard let self else { continue }
@@ -196,12 +207,12 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Handles work that needs to happen after settings mutate elsewhere.
     private func handleSettingsChange() {
-        let previousHidden = Set(launcherSettings.hiddenBundleIDs)
-        launcherSettings = LauncherSettingsPersistence.loadSettings()
-        LaunchAtLoginManager.setEnabled(launcherSettings.launchesAtLogin)
-        let hiddenChanged = previousHidden != Set(launcherSettings.hiddenBundleIDs)
+        let previousHidden = Set(currentSettings.hiddenBundleIDs)
+        currentSettings = LauncherSettingsPersistence.loadSettings()
+        LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
+        let hiddenChanged = previousHidden != Set(currentSettings.hiddenBundleIDs)
         if hiddenChanged {
-            reloadVisibleApps()
+            refreshLauncherApps()
         }
         applyLauncherMode()
         updateStatusItemVisibility()
@@ -209,28 +220,28 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Sets up the global hotkey used to toggle the launcher window.
     private func configureHotkeyManager() {
-        globalHotkeyManager.onHotkeyPressed = { [weak self] in
+        hotkeyCoordinator.onHotkeyPressed = { [weak self] in
             self?.toggleLauncherVisibility()
         }
-        globalHotkeyManager.activate()
+        hotkeyCoordinator.activate()
     }
 
     /// Shows or hides the launcher window whenever the hotkey fires.
     private func toggleLauncherVisibility() {
-        guard let launcherWindowController else {
+        guard let launcherWindowManager else {
             applyLauncherMode()
             return
         }
 
-        guard let window = launcherWindowController.window else {
-            launcherWindowController.present()
+        guard let window = launcherWindowManager.window else {
+            launcherWindowManager.presentWindow()
             return
         }
 
         if window.isVisible {
             window.orderOut(nil)
         } else {
-            launcherWindowController.present()
+            launcherWindowManager.presentWindow()
         }
     }
 
@@ -251,7 +262,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Presents the status item's menu anchored to the button.
     private func showStatusItemMenu(with event: NSEvent, from button: NSStatusBarButton) {
-        guard let menu = statusItemMenu else { return }
+        guard let menu = statusBarMenu else { return }
         NSMenu.popUpContextMenu(menu, with: event, for: button)
     }
 
@@ -263,18 +274,18 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Shows or rebuilds the launcher when the user clicks the menu bar item.
     @objc private func showLauncherFromStatusItem(_ sender: Any?) {
         applyLauncherMode()
-        launcherWindowController?.present()
+        launcherWindowManager?.presentWindow()
     }
 
     /// Cycles between floaty and fullscreen layouts when triggered from a menu/shortcut.
     func toggleLauncherModeShortcut() {
-        let nextMode: LauncherMode = launcherSettings.selectedLauncherMode == .floaty ? .fullscreenOldMac : .floaty
+        let nextMode: LauncherMode = currentSettings.selectedLauncherMode == .floaty ? .fullscreenOldMac : .floaty
         LauncherSettingsPersistence.setLauncherMode(nextMode)
     }
 
     /// Opens the settings window regardless of activation policy.
     func showSettingsWindow() {
-        settingsWindowController.showWindowAndActivate()
+        settingsWindowPresenter.showWindowAndActivate()
     }
 
     /// Opens the settings window from the status item click.
@@ -288,26 +299,26 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Rebuilds the visible apps list using the current hidden settings.
-    private func reloadVisibleApps() {
-        let hiddenBundleIDs = Set(launcherSettings.hiddenBundleIDs)
-        installedApplications = appArrangementStore.arrangedApps(
-            from: appDiscoveryService
+    private func refreshLauncherApps() {
+        let hiddenBundleIDs = Set(currentSettings.hiddenBundleIDs)
+        orderedApplications = appOrderStore.arrangedApps(
+            from: applicationDiscovery
                 .reloadApps(hiddenBundleIDs: hiddenBundleIDs)
-                .map(appDiscoveryService.loadIcon),
-            appsPerPage: LauncherGridConfiguration.appsPerPage
+                .map(applicationDiscovery.loadIcon),
+            pageCapacity: LauncherGridConfiguration.pageCapacity
         )
     }
 
     /// Assembles the launcher SwiftUI view with the latest settings.
-    private func makeLauncherView() -> LauncherView {
+    private func buildLauncherView() -> LauncherView {
         LauncherView(
-            appLibrary: installedApplications,
-            backgroundStylePreference: launcherSettings.backgroundStylePreference,
-            launcherMode: launcherSettings.selectedLauncherMode
+            appCatalog: orderedApplications,
+            backgroundStylePreference: currentSettings.backgroundStylePreference,
+            launcherMode: currentSettings.selectedLauncherMode
         ) { [weak self] reorderedApps in
             guard let self else { return }
-            installedApplications = reorderedApps
-            appArrangementStore.saveOrderedApps(reorderedApps)
+            orderedApplications = reorderedApps
+            appOrderStore.saveOrderedApps(reorderedApps)
         }
     }
 }

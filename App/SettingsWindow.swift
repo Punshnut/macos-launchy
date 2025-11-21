@@ -8,10 +8,10 @@ final class SettingsWindowStore: NSObject, ObservableObject {
     /// Latest persisted settings payload mirrored into memory for the UI.
     @Published private(set) var settingsSnapshot: LauncherSettings
     /// Collection of applications discovered on disk for the hidden-apps table.
-    @Published private(set) var discoveredApplications: [AppItem] = []
+    @Published private(set) var discoveredApps: [AppItem] = []
 
     private let appDiscoveryService: AppDiscoveryService
-    private var settingsObservationTask: Task<Void, Never>?
+    private var settingsStreamTask: Task<Void, Never>?
 
     /// Configures the store with dependencies (mainly useful for previews/tests) and preloads data.
     init(discoveryService: AppDiscoveryService = AppDiscoveryService()) {
@@ -23,7 +23,7 @@ final class SettingsWindowStore: NSObject, ObservableObject {
     }
 
     deinit {
-        settingsObservationTask?.cancel()
+        settingsStreamTask?.cancel()
     }
 
     /// Reloads the list of apps on a background queue.
@@ -32,7 +32,7 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let discoveredApps = discoveryEngine.reloadApps().map(discoveryEngine.loadIcon)
             Task { @MainActor [weak self] in
-                self?.discoveredApplications = discoveredApps
+                self?.discoveredApps = discoveredApps
             }
         }
     }
@@ -94,8 +94,8 @@ final class SettingsWindowStore: NSObject, ObservableObject {
 
     /// Observes cross-process setting updates and mirrors them locally.
     private func observeSettingsChanges() {
-        settingsObservationTask?.cancel()
-        settingsObservationTask = Task.detached { [weak self] in
+        settingsStreamTask?.cancel()
+        settingsStreamTask = Task.detached { [weak self] in
             let notifications = NotificationCenter.default.notifications(named: .launcherSettingsDidChange)
             for await _ in notifications {
                 guard let self else { continue }
@@ -232,14 +232,14 @@ struct SettingsWindow: View {
     /// Scrollable list of discovered apps where each entry has a hide checkbox.
     private var hiddenAppsList: some View {
         Group {
-            if settingsStore.discoveredApplications.isEmpty {
+            if settingsStore.discoveredApps.isEmpty {
                 Text("Scanning for applications...")
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.vertical, 8)
             } else {
                 LazyVStack(alignment: .leading, spacing: 0) {
-                    ForEach(Array(settingsStore.discoveredApplications.enumerated()), id: \.element.id) { index, app in
+                    ForEach(Array(settingsStore.discoveredApps.enumerated()), id: \.element.id) { index, app in
                         Toggle(isOn: Binding(
                             get: { settingsStore.isHidden(app) },
                             set: { settingsStore.setHidden($0, for: app) }
@@ -258,7 +258,7 @@ struct SettingsWindow: View {
                         .padding(.horizontal, 12)
                         .padding(.vertical, 10)
 
-                        if index < settingsStore.discoveredApplications.count - 1 {
+                        if index < settingsStore.discoveredApps.count - 1 {
                             Divider()
                                 .padding(.leading, 44)
                         }

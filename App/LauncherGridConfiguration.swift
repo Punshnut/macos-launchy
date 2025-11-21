@@ -4,5 +4,8 @@ import Foundation
 enum LauncherGridConfiguration {
     static let columnsPerPage = 7
     static let rowsPerPage = 5
-    static var appsPerPage: Int { columnsPerPage * rowsPerPage }
+    /// Total number of apps displayed on a single grid page.
+    static var pageCapacity: Int { columnsPerPage * rowsPerPage }
+    /// Backwards-compatible alias until callers migrate to `pageCapacity`.
+    static var appsPerPage: Int { pageCapacity }
 }

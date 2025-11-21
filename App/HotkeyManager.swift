@@ -3,28 +3,28 @@ import Carbon
 
 /// Descriptor describing the key code/modifier combination for a global hotkey.
 struct HotkeyDescriptor: Equatable {
-    let keyCodeValue: UInt32
-    let modifierOptions: NSEvent.ModifierFlags
+    let keyCode: UInt32
+    let modifierFlags: NSEvent.ModifierFlags
 
     /// Default shortcut used to toggle the launcher until settings support lands.
     static let toggleLauncher = HotkeyDescriptor(
-        keyCodeValue: UInt32(kVK_Space),
-        modifierOptions: [.command, .shift]
+        keyCode: UInt32(kVK_Space),
+        modifierFlags: [.command, .shift]
     )
 
     /// Converts modern `NSEvent` modifiers to the Carbon bitmask expected by `RegisterEventHotKey`.
     var carbonModifierMask: UInt32 {
         var mask: UInt32 = 0
-        if modifierOptions.contains(.command) {
+        if modifierFlags.contains(.command) {
             mask |= UInt32(cmdKey)
         }
-        if modifierOptions.contains(.option) {
+        if modifierFlags.contains(.option) {
             mask |= UInt32(optionKey)
         }
-        if modifierOptions.contains(.shift) {
+        if modifierFlags.contains(.shift) {
             mask |= UInt32(shiftKey)
         }
-        if modifierOptions.contains(.control) {
+        if modifierFlags.contains(.control) {
             mask |= UInt32(controlKey)
         }
         return mask
@@ -40,22 +40,22 @@ protocol HotkeyRegistering {
 /// Coordinates registering a system-wide hotkey and notifying observers when it fires.
 @MainActor
 final class HotkeyManager {
-    private let hotkeyDescriptor: HotkeyDescriptor
+    private let registeredHotkey: HotkeyDescriptor
     private let hotkeyRegistrar: HotkeyRegistering
-    private var isListeningForEvents = false
+    private var isHotkeyActive = false
 
     /// Invoked whenever the registered hotkey is pressed.
     var onHotkeyPressed: (() -> Void)?
 
     init(descriptor: HotkeyDescriptor = .toggleLauncher, registrar: HotkeyRegistering = CarbonHotkeyRegistrar()) {
-        self.hotkeyDescriptor = descriptor
+        self.registeredHotkey = descriptor
         self.hotkeyRegistrar = registrar
     }
 
     /// Attempts to register the configured hotkey, no-opping if already active.
     func activate() {
-        guard isListeningForEvents == false else { return }
-        let didRegisterHotkey = hotkeyRegistrar.beginListening(descriptor: hotkeyDescriptor) { [weak self] in
+        guard isHotkeyActive == false else { return }
+        let didRegisterHotkey = hotkeyRegistrar.beginListening(descriptor: registeredHotkey) { [weak self] in
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 self.onHotkeyPressed?()
@@ -63,7 +63,7 @@ final class HotkeyManager {
         }
 
         if didRegisterHotkey {
-            isListeningForEvents = true
+            isHotkeyActive = true
         } else {
             assertionFailure("Failed to register global hotkey.")
         }
@@ -71,9 +71,9 @@ final class HotkeyManager {
 
     /// Unregisters the hotkey so it is released back to the system.
     func deactivate() {
-        guard isListeningForEvents else { return }
+        guard isHotkeyActive else { return }
         hotkeyRegistrar.endListening()
-        isListeningForEvents = false
+        isHotkeyActive = false
     }
 }
 
@@ -104,7 +104,7 @@ final class CarbonHotkeyRegistrar: HotkeyRegistering {
         let hotKeyID = EventHotKeyID(signature: Self.hotKeySignature, id: 1)
         var localHotKeyRef: EventHotKeyRef?
         let status = RegisterEventHotKey(
-            descriptor.keyCodeValue,
+            descriptor.keyCode,
             descriptor.carbonModifierMask,
             hotKeyID,
             GetEventDispatcherTarget(),

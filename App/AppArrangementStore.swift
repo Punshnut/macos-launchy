@@ -24,7 +24,7 @@ final class AppArrangementStore {
     }
 
     /// Returns apps sorted using the persisted order while inserting any new discoveries.
-    func arrangedApps(from discoveredApps: [AppItem], appsPerPage: Int) -> [AppItem] {
+    func arrangedApps(from discoveredApps: [AppItem], pageCapacity: Int) -> [AppItem] {
         var lookup: [String: AppItem] = Dictionary(
             uniqueKeysWithValues: discoveredApps.map { ($0.bundleIdentifier, $0) }
         )
@@ -46,7 +46,7 @@ final class AppArrangementStore {
         }
 
         for app in remainingApps {
-            let insertIndex = firstAvailableInsertionIndex(currentCount: orderedApps.count, appsPerPage: appsPerPage)
+            let insertIndex = firstAvailableInsertionIndex(currentCount: orderedApps.count, pageCapacity: pageCapacity)
             orderedApps.insert(app, at: insertIndex)
         }
 
@@ -61,13 +61,13 @@ final class AppArrangementStore {
         saveBundleOrder()
     }
 
-    private func firstAvailableInsertionIndex(currentCount: Int, appsPerPage: Int) -> Int {
-        guard appsPerPage > 0 else { return currentCount }
-        if currentCount < appsPerPage {
+    private func firstAvailableInsertionIndex(currentCount: Int, pageCapacity: Int) -> Int {
+        guard pageCapacity > 0 else { return currentCount }
+        if currentCount < pageCapacity {
             return currentCount
         }
 
-        let remainder = currentCount % appsPerPage
+        let remainder = currentCount % pageCapacity
         if remainder == 0 {
             return currentCount
         } else {

@@ -4,27 +4,27 @@ import SwiftUI
 /// Configures and presents the right window type for the selected launcher mode.
 final class LauncherWindowController: NSWindowController {
     private static let preferredFloatyContentSize = NSSize(width: 960, height: 830)
-    private let launcherHostingController: NSHostingController<LauncherView>
+    private let launcherContentHost: NSHostingController<LauncherView>
 
     /// Wraps the provided SwiftUI content inside either a panel or fullscreen window.
     init(rootView: LauncherView, launcherMode: LauncherMode) {
-        self.launcherHostingController = NSHostingController(rootView: rootView)
+        launcherContentHost = NSHostingController(rootView: rootView)
         let window: NSWindow
 
         switch launcherMode {
         case .floaty:
             let frame = Self.initialFloatyFrame(for: Self.preferredFloatyContentSize)
-            launcherHostingController.preferredContentSize = frame.size
+            launcherContentHost.preferredContentSize = frame.size
             let floatyPanel = FloatyLauncherWindow(contentRect: frame)
-            floatyPanel.contentViewController = launcherHostingController
+            floatyPanel.contentViewController = launcherContentHost
             floatyPanel.setFrame(frame, display: false)
             floatyPanel.center()
             window = floatyPanel
         case .fullscreenOldMac:
             let frame = Self.fullscreenFrame()
-            launcherHostingController.preferredContentSize = frame.size
+            launcherContentHost.preferredContentSize = frame.size
             let fullscreen = FullscreenLauncherWindow(contentRect: frame)
-            fullscreen.contentViewController = launcherHostingController
+            fullscreen.contentViewController = launcherContentHost
             fullscreen.setFrame(frame, display: true)
             window = fullscreen
         }
@@ -63,7 +63,7 @@ final class LauncherWindowController: NSWindowController {
     }
 
     /// Presents the window using the right ordering semantics for panels vs regular windows.
-    func present() {
+    func presentWindow() {
         guard let window else { return }
         let originalFrame = window.frame
         let shouldAnimateEntrance = window.isVisible == false
@@ -86,7 +86,7 @@ final class LauncherWindowController: NSWindowController {
 
     /// Replaces the hosted SwiftUI content while keeping the same window instance alive.
     func update(rootView: LauncherView) {
-        launcherHostingController.rootView = rootView
+        launcherContentHost.rootView = rootView
     }
 
     /// Prepares the launcher window to animate in from a subtle offset.

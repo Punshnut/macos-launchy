@@ -7,6 +7,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var launcherWindowController: LauncherWindowController?
     private let appDiscoveryService = AppDiscoveryService()
     private let globalHotkeyManager = HotkeyManager()
+    private let appArrangementStore = AppArrangementStore()
     private var installedApplications: [AppItem] = []
     private var activeLauncherMode: LauncherMode?
     private var launcherSettings = LauncherSettings.defaults
@@ -289,9 +290,12 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Rebuilds the visible apps list using the current hidden settings.
     private func reloadVisibleApps() {
         let hiddenBundleIDs = Set(launcherSettings.hiddenBundleIDs)
-        installedApplications = appDiscoveryService
-            .reloadApps(hiddenBundleIDs: hiddenBundleIDs)
-            .map(appDiscoveryService.loadIcon)
+        installedApplications = appArrangementStore.arrangedApps(
+            from: appDiscoveryService
+                .reloadApps(hiddenBundleIDs: hiddenBundleIDs)
+                .map(appDiscoveryService.loadIcon),
+            appsPerPage: LauncherGridConfiguration.appsPerPage
+        )
     }
 
     /// Assembles the launcher SwiftUI view with the latest settings.
@@ -300,6 +304,10 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             appLibrary: installedApplications,
             backgroundStylePreference: launcherSettings.backgroundStylePreference,
             launcherMode: launcherSettings.selectedLauncherMode
-        )
+        ) { [weak self] reorderedApps in
+            guard let self else { return }
+            installedApplications = reorderedApps
+            appArrangementStore.saveOrderedApps(reorderedApps)
+        }
     }
 }

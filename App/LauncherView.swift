@@ -9,27 +9,47 @@ struct LauncherView: View {
     var backgroundStylePreference: LauncherSettings.PreferredBackgroundStyle = .automatic
     /// Current presentation mode so layout can adapt between floaty and fullscreen.
     var launcherMode: LauncherMode = .floaty
+    /// Callback fired whenever the user changes the arrangement.
+    var onAppOrderChange: (([AppItem]) -> Void)?
 
-    private let columnsPerPage = 7
-    private let rowsPerPage = 5
-    private var appsPerPage: Int { columnsPerPage * rowsPerPage }
+    private var appsPerPage: Int { LauncherGridConfiguration.appsPerPage }
     private let launcherDismissalAnimationDuration: TimeInterval = 0.25
     private let launcherDismissalSlideOffset: CGFloat = 28
 
+    @State private var arrangedApps: [AppItem]
+    @State private var draggingApp: AppItem?
     @State private var currentPageIndex = 0
     @State private var isAnimatingLauncherDismissal = false
     @State private var searchQuery = ""
+
+    init(
+        appLibrary: [AppItem],
+        backgroundStylePreference: LauncherSettings.PreferredBackgroundStyle = .automatic,
+        launcherMode: LauncherMode = .floaty,
+        onAppOrderChange: (([AppItem]) -> Void)? = nil
+    ) {
+        self.appLibrary = appLibrary
+        self.backgroundStylePreference = backgroundStylePreference
+        self.launcherMode = launcherMode
+        self.onAppOrderChange = onAppOrderChange
+        _arrangedApps = State(initialValue: appLibrary)
+    }
 
     /// Builds the full launcher UI including background, grid, and pager controls.
     var body: some View {
         GeometryReader { proxy in
             launcherContent(for: proxy.size)
         }
-        .onChange(of: appLibrary) { _ in
+        .onChange(of: appLibrary) { newValue in
+            arrangedApps = newValue
             currentPageIndex = 0
         }
         .onChange(of: searchQuery) { _ in
             currentPageIndex = 0
+        }
+        .onChange(of: arrangedApps) { _ in
+            let maxPage = max(totalPageCount - 1, 0)
+            currentPageIndex = min(currentPageIndex, maxPage)
         }
     }
 
@@ -40,9 +60,10 @@ struct LauncherView: View {
             containerSize: containerSize,
             launcherMode: launcherMode,
             topInset: topInset,
-            columnsPerPage: columnsPerPage,
-            rowsPerPage: rowsPerPage
+            columnsPerPage: LauncherGridConfiguration.columnsPerPage,
+            rowsPerPage: LauncherGridConfiguration.rowsPerPage
         )
+        let canReorder = searchQuery.isEmpty
 
         return ZStack {
             backgroundLayer()
@@ -51,8 +72,9 @@ struct LauncherView: View {
             VStack(spacing: 0) {
                 fullscreenTopContentSpacer(height: topInset)
 
-                VStack(spacing: layout.sectionSpacing) {
+                VStack(spacing: 0) {
                     searchField(layout: layout)
+                        .padding(.bottom, layout.searchToGridSpacing)
 
                     ZStack {
                         Group {
@@ -60,38 +82,65 @@ struct LauncherView: View {
                                 emptyStateView()
                                     .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
                             } else {
-                                LazyVGrid(
-                                    columns: layout.gridColumns,
-                                    alignment: .center,
-                                    spacing: layout.iconSpacing
-                                ) {
-                                    ForEach(appsForCurrentPage) { app in
-                                        Button {
-                                            launchApplication(app)
-                                        } label: {
-                                            VStack(spacing: 10) {
-                                                iconView(for: app)
-                                                    .resizable()
-                                                    .aspectRatio(contentMode: .fit)
-                                                    .frame(
-                                                        width: layout.iconDimension,
-                                                        height: layout.iconDimension
-                                                    )
-                                                Text(app.displayName)
-                                                    .font(.system(size: 13, weight: .medium))
-                                                    .multilineTextAlignment(.center)
-                                                    .foregroundColor(.primary)
-                                                    .lineLimit(2)
-                                                    .frame(maxWidth: .infinity)
+                                GeometryReader { gridProxy in
+                                    LazyVGrid(
+                                        columns: layout.gridColumns,
+                                        alignment: .center,
+                                        spacing: layout.iconSpacing
+                                    ) {
+                                        ForEach(Array(appsForCurrentPage.enumerated()), id: \.element.id) { _, app in
+                                            let cell = Button {
+                                                launchApplication(app)
+                                            } label: {
+                                                VStack(spacing: 10) {
+                                                    iconView(for: app)
+                                                        .resizable()
+                                                        .aspectRatio(contentMode: .fit)
+                                                        .frame(
+                                                            width: layout.iconDimension,
+                                                            height: layout.iconDimension
+                                                        )
+                                                    Text(app.displayName)
+                                                        .font(.system(size: 13, weight: .medium))
+                                                        .multilineTextAlignment(.center)
+                                                        .foregroundColor(.primary)
+                                                        .lineLimit(2)
+                                                        .frame(maxWidth: .infinity)
+                                                }
+                                                .frame(maxWidth: .infinity)
+                                                .padding(.vertical, 4)
                                             }
-                                            .frame(maxWidth: .infinity)
-                                            .padding(.vertical, 4)
+                                            .buttonStyle(.plain)
+                                            .contentShape(Rectangle())
+
+                                            if canReorder {
+                                                cell
+                                                    .onDrag {
+                                                        draggingApp = app
+                                                        return NSItemProvider(object: NSString(string: app.bundleIdentifier))
+                                                    }
+                                            } else {
+                                                cell
+                                            }
                                         }
-                                        .buttonStyle(.plain)
-                                        .contentShape(Rectangle())
                                     }
+                                    .frame(maxWidth: .infinity, minHeight: layout.gridHeight, alignment: .top)
+                                    .contentShape(Rectangle())
+                                    .onDrop(
+                                        of: [.text],
+                                        delegate: GridReorderDropDelegate(
+                                            layout: layout,
+                                            gridSize: gridProxy.size,
+                                            currentPageIndex: currentPageIndex,
+                                            appsPerPage: appsPerPage,
+                                            apps: $arrangedApps,
+                                            draggingApp: $draggingApp,
+                                            performReorder: reorderApp(_:to:),
+                                            afterReorder: updatePageAfterDrop(at:)
+                                        )
+                                    )
                                 }
-                                .frame(maxWidth: .infinity, minHeight: layout.gridHeight, alignment: .top)
+                                .frame(height: layout.gridHeight)
                             }
                         }
                         .disabled(isAnimatingLauncherDismissal)
@@ -103,23 +152,65 @@ struct LauncherView: View {
                         )
                         .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
                         .allowsHitTesting(false)
+
+                        KeyPressPagerOverlay(
+                            isEnabled: shouldEnableGesturePaging,
+                            onPreviousPage: { goToPreviousPage() },
+                            onNextPage: { goToNextPage() }
+                        )
+                        .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
+                        .allowsHitTesting(false)
                     }
+                    .padding(.top, layout.gridVerticalOffset)
 
                     HStack(spacing: 16) {
-                        Button("<") {
+                        let previousButton = Button("<") {
                             goToPreviousPage()
                         }
-                        .disabled(currentPageIndex == 0 || appLibrary.isEmpty)
+                        .disabled(currentPageIndex == 0 || arrangedApps.isEmpty)
+
+                        if canReorder {
+                            previousButton.onDrop(
+                                of: [.text],
+                                delegate: PageReorderDropDelegate(
+                                    targetPageIndex: currentPageIndex - 1,
+                                    appsPerPage: appsPerPage,
+                                    apps: $arrangedApps,
+                                    draggingApp: $draggingApp,
+                                    performReorder: reorderApp(_:to:),
+                                    afterReorder: updatePageAfterDrop(at:)
+                                )
+                            )
+                        } else {
+                            previousButton
+                        }
 
                         Text(pageIndicatorLabel)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
 
-                        Button(">") {
+                        let nextButton = Button(">") {
                             goToNextPage()
                         }
-                        .disabled(appLibrary.isEmpty || currentPageIndex >= totalPageCount - 1)
+                        .disabled(arrangedApps.isEmpty || currentPageIndex >= totalPageCount - 1)
+
+                        if canReorder {
+                            nextButton.onDrop(
+                                of: [.text],
+                                delegate: PageReorderDropDelegate(
+                                    targetPageIndex: currentPageIndex + 1,
+                                    appsPerPage: appsPerPage,
+                                    apps: $arrangedApps,
+                                    draggingApp: $draggingApp,
+                                    performReorder: reorderApp(_:to:),
+                                    afterReorder: updatePageAfterDrop(at:)
+                                )
+                            )
+                        } else {
+                            nextButton
+                        }
                     }
+                    .padding(.top, layout.gridToPagerSpacing)
                 }
                 .padding(.horizontal, layout.horizontalPadding)
                 .padding(.bottom, layout.bottomPadding)
@@ -156,11 +247,37 @@ struct LauncherView: View {
         let endIndex = min(startIndex + appsPerPage, filteredApps.count)
         return Array(filteredApps[startIndex..<endIndex])
     }
+    
+    /// Moves the dragged app to a new linear position and persists the arrangement.
+    @discardableResult
+    private func reorderApp(_ app: AppItem, to targetIndex: Int) -> Int? {
+        guard let originalIndex = arrangedApps.firstIndex(of: app) else { return nil }
+        var updated = arrangedApps
+        updated.remove(at: originalIndex)
+
+        let boundedIndex = max(0, min(targetIndex, updated.count))
+        if originalIndex == boundedIndex {
+            return nil
+        }
+
+        updated.insert(app, at: boundedIndex)
+        arrangedApps = updated
+        onAppOrderChange?(updated)
+        return boundedIndex
+    }
+
+    /// Keeps the visible page pinned to where the moved app now lives.
+    private func updatePageAfterDrop(at index: Int?) {
+        guard let index, appsPerPage > 0 else { return }
+        let targetPage = index / appsPerPage
+        let maxPage = max(totalPageCount - 1, 0)
+        currentPageIndex = min(max(targetPage, 0), maxPage)
+    }
 
     /// Generates the friendly page indicator label.
     private var pageIndicatorLabel: String {
         if filteredApps.isEmpty {
-            return appLibrary.isEmpty ? "No apps found" : "No matching apps"
+            return arrangedApps.isEmpty ? "No apps found" : "No matching apps"
         }
         return "Page \(currentPageIndex + 1) of \(totalPageCount)"
     }
@@ -168,8 +285,8 @@ struct LauncherView: View {
     /// Filters the full list of apps based on the current search query.
     private var filteredApps: [AppItem] {
         let trimmedQuery = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard trimmedQuery.isEmpty == false else { return appLibrary }
-        return appLibrary.filter { app in
+        guard trimmedQuery.isEmpty == false else { return arrangedApps }
+        return arrangedApps.filter { app in
             app.displayName.localizedCaseInsensitiveContains(trimmedQuery) ||
             app.bundleIdentifier.localizedCaseInsensitiveContains(trimmedQuery)
         }
@@ -190,12 +307,12 @@ struct LauncherView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 32, weight: .light))
                 .foregroundColor(.secondary)
-            Text(appLibrary.isEmpty ? "No apps found" : "No matching apps")
+            Text(arrangedApps.isEmpty ? "No apps found" : "No matching apps")
                 .font(.title3)
-            if appLibrary.isEmpty == false && searchQuery.isEmpty == false {
+            if arrangedApps.isEmpty == false && searchQuery.isEmpty == false {
                 Text("Try a different search term.")
                     .foregroundStyle(.secondary)
-            } else if appLibrary.isEmpty {
+            } else if arrangedApps.isEmpty {
                 Text("Launchy has not indexed any applications yet.")
                     .foregroundStyle(.secondary)
             }
@@ -543,6 +660,222 @@ private struct ScrollWheelPagerOverlay: NSViewRepresentable {
     }
 }
 
+/// Captures left/right arrow key presses (when not typing) to trigger page changes.
+private struct KeyPressPagerOverlay: NSViewRepresentable {
+    var isEnabled: Bool
+    var onPreviousPage: () -> Void
+    var onNextPage: () -> Void
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onPreviousPage: onPreviousPage, onNextPage: onNextPage)
+    }
+
+    func makeNSView(context: Context) -> KeyCaptureView {
+        let view = KeyCaptureView()
+        view.coordinator = context.coordinator
+        context.coordinator.hostingView = view
+        return view
+    }
+
+    func updateNSView(_ nsView: KeyCaptureView, context: Context) {
+        context.coordinator.hostingView = nsView
+        context.coordinator.isEnabled = isEnabled
+    }
+
+    static func dismantleNSView(_ nsView: KeyCaptureView, coordinator: Coordinator) {
+        coordinator.stopMonitoring()
+    }
+
+    @MainActor
+    final class Coordinator {
+        var isEnabled: Bool = true {
+            didSet {
+                if isEnabled == false {
+                    stopMonitoring()
+                } else {
+                    startMonitoringIfNeeded()
+                }
+            }
+        }
+
+        weak var hostingView: NSView?
+
+        private let onPreviousPage: () -> Void
+        private let onNextPage: () -> Void
+        private var keyMonitor: Any?
+
+        init(onPreviousPage: @escaping () -> Void, onNextPage: @escaping () -> Void) {
+            self.onPreviousPage = onPreviousPage
+            self.onNextPage = onNextPage
+        }
+
+        func startMonitoringIfNeeded() {
+            guard keyMonitor == nil else { return }
+            keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+                self?.handleKey(event)
+                return event
+            }
+        }
+
+        func stopMonitoring() {
+            if let keyMonitor {
+                NSEvent.removeMonitor(keyMonitor)
+            }
+            keyMonitor = nil
+        }
+
+        private func handleKey(_ event: NSEvent) {
+            guard isEnabled else { return }
+            guard let view = hostingView, view.window != nil else { return }
+
+            if let responder = event.window?.firstResponder, responder is NSTextView {
+                return
+            }
+
+            let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+            guard modifiers.isEmpty else { return }
+
+            switch event.keyCode {
+            case 123: // left arrow
+                onPreviousPage()
+            case 124: // right arrow
+                onNextPage()
+            default:
+                break
+            }
+        }
+    }
+
+    /// Transparent host view that keeps the coordinator tied to the active window.
+    final class KeyCaptureView: NSView {
+        weak var coordinator: Coordinator?
+
+        override init(frame frameRect: NSRect) {
+            super.init(frame: frameRect)
+            translatesAutoresizingMaskIntoConstraints = false
+        }
+
+        @available(*, unavailable)
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        override func viewDidMoveToWindow() {
+            super.viewDidMoveToWindow()
+            if window != nil {
+                coordinator?.hostingView = self
+                coordinator?.startMonitoringIfNeeded()
+            } else {
+                coordinator?.hostingView = nil
+                coordinator?.stopMonitoring()
+            }
+        }
+
+        override func hitTest(_ point: NSPoint) -> NSView? {
+            nil
+        }
+    }
+}
+
+/// Enables dropping items onto the grid background or pager buttons to move across pages.
+private struct PageReorderDropDelegate: DropDelegate {
+    let targetPageIndex: Int
+    let appsPerPage: Int
+    @Binding var apps: [AppItem]
+    @Binding var draggingApp: AppItem?
+    var performReorder: (AppItem, Int) -> Int?
+    var afterReorder: (Int?) -> Void
+
+    func dropEntered(info: DropInfo) {
+        handleDropUpdate(info)
+    }
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        handleDropUpdate(info)
+        return DropProposal(operation: .move)
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        draggingApp = nil
+        return true
+    }
+
+    private func handleDropUpdate(_ info: DropInfo) {
+        guard let draggingApp else { return }
+        guard appsPerPage > 0 else { return }
+
+        let clampedPage = max(targetPageIndex, 0)
+        let pageStart = clampedPage * appsPerPage
+        let pageEnd = min(pageStart + appsPerPage, apps.count)
+        let destinationIndex = min(pageEnd, max(apps.count, 0))
+
+        let finalIndex = performReorder(draggingApp, destinationIndex)
+        afterReorder(finalIndex)
+    }
+}
+
+/// Reorders items as the cursor moves across the grid, so neighbors slide aside in real time.
+private struct GridReorderDropDelegate: DropDelegate {
+    let layout: LauncherLayoutMetrics
+    let gridSize: CGSize
+    let currentPageIndex: Int
+    let appsPerPage: Int
+    @Binding var apps: [AppItem]
+    @Binding var draggingApp: AppItem?
+    var performReorder: (AppItem, Int) -> Int?
+    var afterReorder: (Int?) -> Void
+
+    func dropEntered(info: DropInfo) {
+        handleDropUpdate(info)
+    }
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        handleDropUpdate(info)
+        return DropProposal(operation: .move)
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        draggingApp = nil
+        return true
+    }
+
+    private func handleDropUpdate(_ info: DropInfo) {
+        guard let draggingApp else { return }
+        guard appsPerPage > 0 else { return }
+
+        let targetIndex = targetIndex(for: info.location)
+        let finalIndex = performReorder(draggingApp, targetIndex)
+        afterReorder(finalIndex)
+    }
+
+    /// Converts a cursor point into a linear index within the overall arranged apps.
+    private func targetIndex(for location: CGPoint) -> Int {
+        let columns = LauncherGridConfiguration.columnsPerPage
+        let rows = LauncherGridConfiguration.rowsPerPage
+
+        let totalSpacingX = layout.iconSpacing * CGFloat(columns - 1)
+        let totalSpacingY = layout.iconSpacing * CGFloat(rows - 1)
+
+        let cellWidth = max((gridSize.width - totalSpacingX) / CGFloat(columns), 1)
+        let cellHeight = max((gridSize.height - totalSpacingY) / CGFloat(rows), 1)
+
+        let clampedX = min(max(location.x, 0), gridSize.width - 0.001)
+        let clampedY = min(max(location.y, 0), gridSize.height - 0.001)
+
+        let column = min(
+            max(Int((clampedX / (cellWidth + layout.iconSpacing)).rounded(.down)), 0),
+            columns - 1
+        )
+        let row = min(
+            max(Int((clampedY / (cellHeight + layout.iconSpacing)).rounded(.down)), 0),
+            rows - 1
+        )
+
+        let linearIndex = currentPageIndex * appsPerPage + row * columns + column
+        return min(max(linearIndex, 0), apps.count)
+    }
+}
+
 private extension NSView {
     /// Walks superviews to determine whether the hierarchy includes the target type.
     func isDescended(from type: NSView.Type) -> Bool {
@@ -564,15 +897,6 @@ private struct LauncherLayoutMetrics {
     let topInset: CGFloat
     let columnsPerPage: Int
     let rowsPerPage: Int
-
-    var sectionSpacing: CGFloat {
-        switch launcherMode {
-        case .floaty:
-            return 20
-        case .fullscreenOldMac:
-            return 28
-        }
-    }
 
     var horizontalPadding: CGFloat {
         switch launcherMode {
@@ -597,8 +921,35 @@ private struct LauncherLayoutMetrics {
         case .floaty:
             return 14
         case .fullscreenOldMac:
-            let base = min(containerSize.width, containerSize.height) / 40
-            return max(20, min(base, 60))
+        let base = min(containerSize.width, containerSize.height) / 40
+        return max(20, min(base, 60))
+        }
+    }
+
+    var searchToGridSpacing: CGFloat {
+        switch launcherMode {
+        case .floaty:
+            return 0
+        case .fullscreenOldMac:
+            return 12
+        }
+    }
+
+    var gridToPagerSpacing: CGFloat {
+        switch launcherMode {
+        case .floaty:
+            return 20
+        case .fullscreenOldMac:
+            return 28
+        }
+    }
+
+    var gridVerticalOffset: CGFloat {
+        switch launcherMode {
+        case .floaty:
+            return -6
+        case .fullscreenOldMac:
+            return -24
         }
     }
 
@@ -629,7 +980,11 @@ private struct LauncherLayoutMetrics {
 
     var iconDimension: CGFloat {
         let widthAllowance = (gridContentWidth - horizontalSpacingTotal) / CGFloat(columnsPerPage)
-        let heightAllowance = (availableGridHeight - verticalSpacingTotal) / CGFloat(rowsPerPage)
+        let chromeAllowance = cellVerticalChrome * CGFloat(rowsPerPage)
+        let heightAllowance = max(
+            (availableGridHeight - verticalSpacingTotal - chromeAllowance) / CGFloat(rowsPerPage),
+            1
+        )
         let base = min(widthAllowance, heightAllowance)
         let desiredMax: CGFloat = launcherMode == .floaty ? 102 : 140
         let desiredMin: CGFloat = launcherMode == .floaty ? 70 : 96
@@ -646,7 +1001,8 @@ private struct LauncherLayoutMetrics {
     }
 
     var gridHeight: CGFloat {
-        let height = iconDimension * CGFloat(rowsPerPage) + verticalSpacingTotal
+        let rowHeight = iconDimension + cellVerticalChrome
+        let height = rowHeight * CGFloat(rowsPerPage) + verticalSpacingTotal
         return max(height, 0)
     }
 
@@ -655,7 +1011,7 @@ private struct LauncherLayoutMetrics {
     }
 
     private var availableGridHeight: CGFloat {
-        let consumed = topInset + bottomPadding + searchFieldHeight + estimatedPagerHeight + sectionSpacing * 2
+        let consumed = topInset + bottomPadding + searchFieldHeight + estimatedPagerHeight + searchToGridSpacing + gridToPagerSpacing
         let remaining = containerSize.height - consumed
         return max(remaining, 0)
     }
@@ -670,6 +1026,21 @@ private struct LauncherLayoutMetrics {
 
     private var estimatedPagerHeight: CGFloat {
         40
+    }
+
+    private var cellVerticalChrome: CGFloat {
+        let labelHeight = labelLineHeight * 2 // up to two lines of text
+        let padding: CGFloat = 8 // .padding(.vertical, 4)
+        let spacing: CGFloat = 10 // VStack spacing between icon and label
+        return labelHeight + padding + spacing
+    }
+
+    private var labelLineHeight: CGFloat {
+        labelFont.ascender - labelFont.descender + labelFont.leading
+    }
+
+    private var labelFont: NSFont {
+        .systemFont(ofSize: 13, weight: .medium)
     }
 }
 

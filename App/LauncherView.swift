@@ -22,11 +22,15 @@ struct LauncherView: View {
     /// Data source backing the grid.
     let itemCatalog: [LauncherItem]
     /// Selected background presentation.
-    var backgroundStylePreference: LauncherSettings.PreferredBackgroundStyle = .automatic
+    var backgroundStylePreference: LauncherSettings.PreferredBackgroundStyle = .standard
+    /// Selected solid color when the solid background is active.
+    var solidBackgroundColor: LauncherSettings.SolidBackgroundColor = .system
     /// Current presentation mode so layout can adapt between floaty and fullscreen.
     var launcherMode: LauncherMode = .floaty
+    /// Whether items should collapse upward to fill earlier gaps.
+    var fillsGapsAutomatically: Bool = true
     /// Callback fired whenever the user changes the arrangement.
-    var onItemOrderChange: (([LauncherItem]) -> Void)?
+    var onItemOrderChange: (([LauncherItem], [Int]) -> Void)?
 
     private var pageCapacity: Int { LauncherGridConfiguration.pageCapacity }
     private let closeAnimationDuration: TimeInterval = 0.25
@@ -46,19 +50,27 @@ struct LauncherView: View {
     @State private var folderHoverWithSuppressedReorder = false
     @State private var isEditingFolderName = false
     @State private var folderNameDraft = ""
+    @State private var pageSizes: [Int]
     @FocusState private var isFolderNameFieldFocused: Bool
+    @Environment(\.colorScheme) private var colorScheme
 
     init(
         itemCatalog: [LauncherItem],
-        backgroundStylePreference: LauncherSettings.PreferredBackgroundStyle = .automatic,
+        initialPageSizes: [Int] = [],
+        backgroundStylePreference: LauncherSettings.PreferredBackgroundStyle = .standard,
+        solidBackgroundColor: LauncherSettings.SolidBackgroundColor = .system,
         launcherMode: LauncherMode = .floaty,
-        onItemOrderChange: (([LauncherItem]) -> Void)? = nil
+        fillsGapsAutomatically: Bool = true,
+        onItemOrderChange: (([LauncherItem], [Int]) -> Void)? = nil
     ) {
         self.itemCatalog = itemCatalog
         self.backgroundStylePreference = backgroundStylePreference
+        self.solidBackgroundColor = solidBackgroundColor
         self.launcherMode = launcherMode
+        self.fillsGapsAutomatically = fillsGapsAutomatically
         self.onItemOrderChange = onItemOrderChange
         _orderedItems = State(initialValue: itemCatalog)
+        _pageSizes = State(initialValue: initialPageSizes)
     }
 
     /// Builds the full launcher UI including background, grid, and pager controls.
@@ -68,6 +80,11 @@ struct LauncherView: View {
         }
         .onChange(of: itemCatalog) { newValue in
             orderedItems = newValue
+            if fillsGapsAutomatically {
+                pageSizes = densePageSizes(for: newValue.count)
+            } else {
+                pageSizes = normalizePageSizes(pageSizes, itemCount: newValue.count)
+            }
             currentPage = 0
         }
         .onChange(of: activeFolder) { newValue in
@@ -88,6 +105,11 @@ struct LauncherView: View {
             currentPage = 0
         }
         .onChange(of: orderedItems) { newItems in
+            if fillsGapsAutomatically {
+                pageSizes = densePageSizes(for: newItems.count)
+            } else {
+                pageSizes = normalizePageSizes(pageSizes, itemCount: newItems.count)
+            }
             let maxPage = max(pageCount - 1, 0)
             currentPage = min(currentPage, maxPage)
             if let activeFolder,
@@ -192,7 +214,13 @@ struct LauncherView: View {
                                                 items: $orderedItems,
                                                 draggedItem: $draggedItem,
                                                 shouldSuppressReorder: { isDragReorderSuppressed() },
-                                                performReorder: reorderItem(_:to:preferSwap:),
+                                                performReorder: { item, targetIndex, preferSwap in
+                                                    reorderItem(
+                                                        item,
+                                                        to: targetIndex,
+                                                        preferSwap: preferSwap
+                                                    )
+                                                },
                                                 afterReorder: updatePageAfterDrop(at:),
                                                 onDropOnItem: handleFolderHover(dragged:onto:),
                                                 onFolderHoverExit: cancelFolderHover
@@ -236,7 +264,10 @@ struct LauncherView: View {
                                     pageCapacity: pageCapacity,
                                     items: $orderedItems,
                                     draggedItem: $draggedItem,
-                                    performReorder: reorderItem(_:to:),
+                                    performReorder: { item, _ in
+                                        let index = pageDropInsertionIndex(for: currentPage - 1)
+                                        return reorderItem(item, to: index, targetPageHint: currentPage - 1)
+                                    },
                                     afterReorder: updatePageAfterDrop(at:)
                                 )
                             )
@@ -261,7 +292,10 @@ struct LauncherView: View {
                                     pageCapacity: pageCapacity,
                                     items: $orderedItems,
                                     draggedItem: $draggedItem,
-                                    performReorder: reorderItem(_:to:),
+                                    performReorder: { item, _ in
+                                        let index = pageDropInsertionIndex(for: currentPage + 1)
+                                        return reorderItem(item, to: index, targetPageHint: currentPage + 1)
+                                    },
                                     afterReorder: updatePageAfterDrop(at:)
                                 )
                             )
@@ -291,16 +325,28 @@ struct LauncherView: View {
         )
     }
 
+    private var usesGappedLayout: Bool {
+        fillsGapsAutomatically == false && searchText.isEmpty
+    }
+
+    private var displayPageSizes: [Int] {
+        guard filteredItemList.isEmpty == false else { return [] }
+        if searchText.isEmpty == false {
+            return densePageSizes(for: filteredItemList.count)
+        }
+        return activePageSizes(for: orderedItems.count)
+    }
+
     /// Calculates how many pages are required to show all apps.
     private var pageCount: Int {
         guard filteredItemList.isEmpty == false else { return 1 }
-        return (filteredItemList.count + pageCapacity - 1) / pageCapacity
+        return max(displayPageSizes.count, 1)
     }
 
     /// Page count ignoring active search filters, used by context menus.
     private var fullPageCount: Int {
         guard orderedItems.isEmpty == false else { return 1 }
-        return (orderedItems.count + pageCapacity - 1) / pageCapacity
+        return max(activePageSizes(for: orderedItems.count).count, 1)
     }
 
     /// Determines when gesture-driven paging should be active.
@@ -317,9 +363,10 @@ struct LauncherView: View {
     /// Returns the slice of apps that should be visible for the current page index.
     private var itemsForVisiblePage: [LauncherItem] {
         guard filteredItemList.isEmpty == false else { return [] }
-        let startIndex = currentPage * pageCapacity
-        guard startIndex < filteredItemList.count else { return [] }
-        let endIndex = min(startIndex + pageCapacity, filteredItemList.count)
+        let sizes = displayPageSizes
+        guard sizes.indices.contains(currentPage) else { return [] }
+        let startIndex = pageStartIndex(for: currentPage, sizes: sizes)
+        let endIndex = min(startIndex + sizes[currentPage], filteredItemList.count)
         return Array(filteredItemList[startIndex..<endIndex])
     }
 
@@ -331,8 +378,14 @@ struct LauncherView: View {
 
     /// Moves the dragged app to a new linear position and persists the arrangement.
     @discardableResult
-    private func reorderItem(_ item: LauncherItem, to targetIndex: Int, preferSwap: Bool = false) -> Int? {
+    private func reorderItem(
+        _ item: LauncherItem,
+        to targetIndex: Int,
+        preferSwap: Bool = false,
+        targetPageHint: Int? = nil
+    ) -> Int? {
         guard let originalIndex = orderedItems.firstIndex(of: item) else { return nil }
+        let currentSizes = activePageSizes(for: orderedItems.count)
         var updated = orderedItems
         if preferSwap,
            targetIndex < updated.count,
@@ -340,7 +393,7 @@ struct LauncherView: View {
            targetIndex != originalIndex {
             updated.swapAt(originalIndex, targetIndex)
             orderedItems = updated
-            onItemOrderChange?(updated)
+            persistOrderChange(using: fillsGapsAutomatically ? nil : currentSizes)
             return targetIndex
         } else {
             updated.remove(at: originalIndex)
@@ -350,9 +403,16 @@ struct LauncherView: View {
                 return nil
             }
 
+            let afterRemovalSizes = pageSizesAfterRemoval(currentSizes, removingIndex: originalIndex, currentCount: orderedItems.count)
             updated.insert(item, at: boundedIndex)
+            let afterInsertSizes = pageSizesAfterInsertion(
+                afterRemovalSizes,
+                insertingIndex: boundedIndex,
+                resultingCount: updated.count,
+                targetPageHint: targetPageHint
+            )
             orderedItems = updated
-            onItemOrderChange?(updated)
+            persistOrderChange(using: afterInsertSizes)
             return boundedIndex
         }
     }
@@ -407,7 +467,7 @@ struct LauncherView: View {
         orderedItems = removal.items
         activeFolder = folder
         currentPage = folderIndex / max(pageCapacity, 1)
-        onItemOrderChange?(removal.items)
+        persistOrderChange()
     }
 
     /// Updates a folder in the ordered list and propagates the change outward.
@@ -423,7 +483,7 @@ struct LauncherView: View {
         updated[idx] = .folder(folder)
         orderedItems = updated
         activeFolder = folder
-        onItemOrderChange?(updated)
+        persistOrderChange()
     }
 
     /// Removes the dragged app from its folder and inserts it into the root grid to continue dragging.
@@ -452,7 +512,7 @@ struct LauncherView: View {
 
         orderedItems = updated
         activeFolder = nil
-        onItemOrderChange?(updated)
+        persistOrderChange()
         folderDragContext = nil
         return .app(app)
     }
@@ -529,7 +589,9 @@ struct LauncherView: View {
 
         var updated = orderedItems
         guard let draggedIndex = updated.firstIndex(of: dragged) else { return }
+        let currentSizes = activePageSizes(for: orderedItems.count)
         updated.remove(at: draggedIndex)
+        var workingSizes = pageSizesAfterRemoval(currentSizes, removingIndex: draggedIndex, currentCount: orderedItems.count)
         guard let targetIndex = updated.firstIndex(of: target) else { return }
 
         var folder: FolderItem
@@ -547,15 +609,18 @@ struct LauncherView: View {
 
         updated.remove(at: targetIndex)
         updated.insert(.folder(folder), at: targetIndex)
+        workingSizes = pageSizesAfterRemoval(workingSizes, removingIndex: targetIndex, currentCount: orderedItems.count - 1)
+        let finalSizes = pageSizesAfterInsertion(workingSizes, insertingIndex: targetIndex, resultingCount: updated.count)
         orderedItems = updated
-        onItemOrderChange?(updated)
+        persistOrderChange(using: finalSizes)
         updatePageAfterDrop(at: targetIndex)
     }
 
     /// Keeps the visible page pinned to where the moved app now lives.
     private func updatePageAfterDrop(at index: Int?) {
-        guard let index, pageCapacity > 0 else { return }
-        let targetPage = index / pageCapacity
+        guard let index else { return }
+        let sizes = activePageSizes(for: orderedItems.count)
+        guard let targetPage = pageIndex(forLinearIndex: index, sizes: sizes) else { return }
         let maxPage = max(pageCount - 1, 0)
         currentPage = min(max(targetPage, 0), maxPage)
     }
@@ -566,6 +631,138 @@ struct LauncherView: View {
             return orderedItems.isEmpty ? "No items found" : "No matching items"
         }
         return "Page \(currentPage + 1) of \(pageCount)"
+    }
+
+    private func activePageSizes(for itemCount: Int) -> [Int] {
+        guard itemCount > 0 else { return [] }
+        if fillsGapsAutomatically {
+            return densePageSizes(for: itemCount)
+        }
+        let normalized = normalizePageSizes(pageSizes, itemCount: itemCount)
+        return normalized.isEmpty ? densePageSizes(for: itemCount) : normalized
+    }
+
+    private func densePageSizes(for itemCount: Int) -> [Int] {
+        guard itemCount > 0, pageCapacity > 0 else { return [] }
+        var remaining = itemCount
+        var sizes: [Int] = []
+        while remaining > 0 {
+            let count = min(pageCapacity, remaining)
+            sizes.append(count)
+            remaining -= count
+        }
+        return sizes
+    }
+
+    private func normalizePageSizes(_ raw: [Int], itemCount: Int) -> [Int] {
+        guard itemCount > 0, pageCapacity > 0 else { return [] }
+
+        var remaining = itemCount
+        var normalized: [Int] = []
+
+        for size in raw where remaining > 0 {
+            var chunk = size
+            while chunk > 0 && remaining > 0 {
+                let portion = min(chunk, pageCapacity, remaining)
+                guard portion > 0 else { break }
+                normalized.append(portion)
+                remaining -= portion
+                chunk -= portion
+            }
+        }
+
+        while remaining > 0 {
+            let portion = min(pageCapacity, remaining)
+            normalized.append(portion)
+            remaining -= portion
+        }
+
+        return normalized
+    }
+
+    private func pageStartIndex(for page: Int, sizes: [Int]) -> Int {
+        guard page > 0, sizes.isEmpty == false else { return 0 }
+        let safePage = min(page, sizes.count)
+        return sizes.prefix(safePage).reduce(0, +)
+    }
+
+    private func pageIndex(forLinearIndex index: Int, sizes: [Int]) -> Int? {
+        var remaining = index
+        for (page, size) in sizes.enumerated() {
+            guard size > 0 else { continue }
+            if remaining < size {
+                return page
+            }
+            remaining -= size
+        }
+        return sizes.isEmpty ? nil : sizes.count - 1
+    }
+
+    private func insertionIndexForPage(_ page: Int, sizes: [Int]) -> Int {
+        guard sizes.isEmpty == false else { return 0 }
+        let boundedPage = max(page, 0)
+        if boundedPage >= sizes.count {
+            return sizes.reduce(0, +)
+        }
+        let start = pageStartIndex(for: boundedPage, sizes: sizes)
+        return start + sizes[boundedPage]
+    }
+
+    private func pageDropInsertionIndex(for page: Int) -> Int {
+        var sizes = activePageSizes(for: orderedItems.count)
+        let boundedPage = max(page, 0)
+        if boundedPage >= sizes.count {
+            sizes.append(contentsOf: Array(repeating: 0, count: boundedPage - sizes.count + 1))
+        }
+        return insertionIndexForPage(boundedPage, sizes: sizes)
+    }
+
+    private func pageSizesAfterRemoval(_ sizes: [Int], removingIndex: Int, currentCount: Int) -> [Int] {
+        if fillsGapsAutomatically {
+            return densePageSizes(for: max(currentCount - 1, 0))
+        }
+
+        guard let page = pageIndex(forLinearIndex: removingIndex, sizes: sizes) else {
+            return normalizePageSizes(sizes, itemCount: max(currentCount - 1, 0))
+        }
+        var updated = sizes
+        updated[page] = max(updated[page] - 1, 0)
+        updated = trimTrailingEmptyPages(updated)
+        return normalizePageSizes(updated, itemCount: max(currentCount - 1, 0))
+    }
+
+    private func pageSizesAfterInsertion(
+        _ sizes: [Int],
+        insertingIndex: Int,
+        resultingCount: Int,
+        targetPageHint: Int? = nil
+    ) -> [Int] {
+        if fillsGapsAutomatically {
+            return densePageSizes(for: resultingCount)
+        }
+
+        var updated = sizes
+        let targetPage = targetPageHint ?? pageIndex(forLinearIndex: insertingIndex, sizes: updated) ?? updated.count
+        if targetPage >= updated.count {
+            updated.append(contentsOf: Array(repeating: 0, count: targetPage - updated.count + 1))
+        }
+        updated[targetPage] += 1
+        return normalizePageSizes(updated, itemCount: resultingCount)
+    }
+
+    private func trimTrailingEmptyPages(_ sizes: [Int]) -> [Int] {
+        var mutable = sizes
+        while let last = mutable.last, last == 0 {
+            mutable.removeLast()
+        }
+        return mutable
+    }
+
+    private func persistOrderChange(using updatedSizes: [Int]? = nil) {
+        let normalized = updatedSizes
+            ?? (fillsGapsAutomatically ? densePageSizes(for: orderedItems.count) : normalizePageSizes(pageSizes, itemCount: orderedItems.count))
+        pageSizes = normalized
+        onItemOrderChange?(orderedItems, normalized)
     }
 
     /// Filters the full list of apps based on the current search query.
@@ -927,13 +1124,47 @@ struct LauncherView: View {
     /// Chooses the proper background view for the configured style.
     private func backgroundView() -> some View {
         switch backgroundStylePreference {
-        case .automatic:
-            return AnyView(VisualEffectBackground(material: .hudWindow, blendingMode: .behindWindow))
+        case .standard:
+            if launcherMode == .floaty && colorScheme == .light {
+                return AnyView(lightBlurBackground())
+            } else {
+                return AnyView(darkBlurBackground())
+            }
+        case .light:
+            return AnyView(
+                lightBlurBackground()
+            )
+        case .solid:
+            return AnyView(Color(nsColor: solidBackgroundColor.nsColor))
         case .transparent:
             return AnyView(Color.clear)
-        case .solid:
-            return AnyView(Color(nsColor: .windowBackgroundColor))
         }
+    }
+
+    private func darkBlurBackground() -> VisualEffectBackground {
+        blurBackground(material: .hudWindow, preferredAppearance: .vibrantDark)
+    }
+
+    private func lightBlurBackground() -> VisualEffectBackground {
+        blurBackground(
+            material: .menu,
+            blendingMode: .withinWindow,
+            preferredAppearance: .vibrantLight
+        )
+    }
+
+    /// Helper for building a blurred background with optional appearance.
+    private func blurBackground(
+        material: NSVisualEffectView.Material,
+        blendingMode: NSVisualEffectView.BlendingMode = .behindWindow,
+        preferredAppearance: NSAppearance.Name? = nil
+    ) -> VisualEffectBackground {
+        let appearance = preferredAppearance.flatMap { NSAppearance(named: $0) }
+        return VisualEffectBackground(
+            material: material,
+            blendingMode: blendingMode,
+            appearance: appearance
+        )
     }
 
     /// Inserts the top spacer only when fullscreen mode is active.
@@ -1207,7 +1438,7 @@ struct LauncherView: View {
         }
 
         orderedItems = items
-        onItemOrderChange?(items)
+        persistOrderChange()
     }
 
     /// Saves an updated folder name.
@@ -1254,7 +1485,7 @@ struct LauncherView: View {
 
         if let removal = removeAppFromHierarchy(app) {
             orderedItems = removal.items
-            onItemOrderChange?(removal.items)
+            persistOrderChange()
             currentPage = min(currentPage, fullPageCount - 1)
         }
     }
@@ -1280,17 +1511,20 @@ struct LauncherView: View {
         if activeFolder?.id == folder.id {
             activeFolder = folder
         }
-        onItemOrderChange?(updated)
+        persistOrderChange()
     }
 
     /// Moves an item (or app extracted from a folder) to a target page.
     private func moveItem(_ item: LauncherItem, toPage targetPage: Int) {
         var items = orderedItems
+        let currentSizes = activePageSizes(for: items.count)
         let itemToInsert: LauncherItem
+        var workingSizes = currentSizes
 
         switch item {
         case .app(let app):
             guard let removal = removeAppFromHierarchy(app) else { return }
+            workingSizes = pageSizesAfterRemoval(currentSizes, removingIndex: removal.suggestedIndex, currentCount: items.count)
             items = removal.items
             itemToInsert = .app(removal.app)
         case .folder(let folder):
@@ -1300,42 +1534,61 @@ struct LauncherView: View {
                 }
                 return false
             }) else { return }
+            workingSizes = pageSizesAfterRemoval(currentSizes, removingIndex: index, currentCount: items.count)
             itemToInsert = items.remove(at: index)
         }
 
-        let updatedPageCount = max((items.count + pageCapacity - 1) / max(pageCapacity, 1), 1)
-        let boundedPage = max(0, min(targetPage, updatedPageCount - 1))
-
-        insert(itemToInsert, into: &items, atPage: boundedPage)
+        let boundedPage = max(0, targetPage)
+        if boundedPage >= workingSizes.count {
+            workingSizes.append(contentsOf: Array(repeating: 0, count: boundedPage - workingSizes.count + 1))
+        }
+        let insertionIndex = insertionIndexForPage(boundedPage, sizes: workingSizes)
+        items.insert(itemToInsert, at: insertionIndex)
+        let finalSizes = pageSizesAfterInsertion(
+            workingSizes,
+            insertingIndex: insertionIndex,
+            resultingCount: items.count,
+            targetPageHint: boundedPage
+        )
         orderedItems = items
-        currentPage = boundedPage
-        onItemOrderChange?(items)
+        pageSizes = finalSizes
+        currentPage = min(boundedPage, max(finalSizes.count - 1, 0))
+        persistOrderChange(using: finalSizes)
     }
 
     /// Inserts a launcher item at the end of the requested page slice.
-    private func insert(_ item: LauncherItem, into items: inout [LauncherItem], atPage page: Int) {
+    @discardableResult
+    private func insert(_ item: LauncherItem, into items: inout [LauncherItem], atPage page: Int) -> [Int] {
         guard pageCapacity > 0 else {
             items.append(item)
-            return
+            return activePageSizes(for: items.count)
         }
 
-        let startIndex = max(page, 0) * pageCapacity
-        let safeStart = min(startIndex, items.count)
-        let endIndex = min(safeStart + pageCapacity, items.count)
-        let insertionIndex = min(endIndex, items.count)
+        var baseSizes = activePageSizes(for: items.count)
+        if page >= baseSizes.count {
+            baseSizes.append(contentsOf: Array(repeating: 0, count: page - baseSizes.count + 1))
+        }
+        let insertionIndex = insertionIndexForPage(page, sizes: baseSizes)
         items.insert(item, at: insertionIndex)
+        return pageSizesAfterInsertion(
+            baseSizes,
+            insertingIndex: insertionIndex,
+            resultingCount: items.count,
+            targetPageHint: page
+        )
     }
 
     /// Builds the page index for the selected item irrespective of search filters.
     private func pageIndex(for item: LauncherItem) -> Int? {
+        let sizes = activePageSizes(for: orderedItems.count)
         switch item {
         case .app(let app):
             guard let location = locateApp(app) else { return nil }
             switch location {
             case .root(let index):
-                return index / pageCapacity
+                return pageIndex(forLinearIndex: index, sizes: sizes)
             case .folder(let folderIndex, _):
-                return folderIndex / pageCapacity
+                return pageIndex(forLinearIndex: folderIndex, sizes: sizes)
             }
         case .folder(let folder):
             guard let index = orderedItems.firstIndex(where: { entry in
@@ -1344,7 +1597,7 @@ struct LauncherView: View {
                 }
                 return false
             }) else { return nil }
-            return index / pageCapacity
+            return pageIndex(forLinearIndex: index, sizes: sizes)
         }
     }
 
@@ -1368,11 +1621,13 @@ struct LauncherView: View {
     /// Removes an app from either the root list or a folder.
     private func removeAppFromHierarchy(_ app: AppItem) -> RemovedAppContext? {
         guard let location = locateApp(app) else { return nil }
+        let currentSizes = activePageSizes(for: orderedItems.count)
         var items = orderedItems
 
         switch location {
         case .root(let index):
             guard case let .app(existing) = items.remove(at: index) else { return nil }
+            pageSizes = pageSizesAfterRemoval(currentSizes, removingIndex: index, currentCount: orderedItems.count)
             return RemovedAppContext(items: items, app: existing, suggestedIndex: index)
         case .folder(let folderIndex, let appIndex):
             guard case var .folder(folder) = items[folderIndex] else { return nil }
@@ -1387,10 +1642,12 @@ struct LauncherView: View {
                 if activeFolder?.id == folder.id {
                     activeFolder = folder
                 }
+                return RemovedAppContext(items: items, app: removedApp, suggestedIndex: insertionIndex)
             } else if activeFolder?.id == folder.id {
                 activeFolder = nil
             }
 
+            pageSizes = pageSizesAfterRemoval(currentSizes, removingIndex: folderIndex, currentCount: orderedItems.count)
             return RemovedAppContext(items: items, app: removedApp, suggestedIndex: insertionIndex)
         }
     }
@@ -1404,7 +1661,14 @@ struct LauncherView: View {
         items.insert(.folder(newFolder), at: insertionIndex)
         orderedItems = items
         activeFolder = newFolder
-        onItemOrderChange?(items)
+        let baseSizes = activePageSizes(for: removal.items.count)
+        let updatedSizes = pageSizesAfterInsertion(
+            baseSizes,
+            insertingIndex: insertionIndex,
+            resultingCount: items.count
+        )
+        pageSizes = updatedSizes
+        persistOrderChange(using: updatedSizes)
 
         guard promptForName else { return }
         promptRenameFolder(newFolder)
@@ -1414,9 +1678,10 @@ struct LauncherView: View {
     private func createEmptyFolder(onPage pageIndex: Int, promptForName: Bool) {
         var items = orderedItems
         let folder = FolderItem(apps: [])
-        insert(.folder(folder), into: &items, atPage: pageIndex)
+        let updatedSizes = insert(.folder(folder), into: &items, atPage: pageIndex)
         orderedItems = items
-        onItemOrderChange?(items)
+        pageSizes = updatedSizes
+        persistOrderChange(using: updatedSizes)
 
         guard promptForName else { return }
         promptRenameFolder(folder)
@@ -1469,7 +1734,7 @@ struct LauncherView: View {
                 AppItem(id: UUID(), displayName: "Mail", bundleIdentifier: "com.apple.mail", iconImage: nil, bundleURL: nil)
             ]))
         ],
-        backgroundStylePreference: .automatic
+        backgroundStylePreference: .standard
     )
 }
 

@@ -9,9 +9,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private let hotkeyCoordinator = HotkeyManager()
     private let itemOrderStore = ItemArrangementStore()
     private var orderedItems: [LauncherItem] = []
+    private var pageSizes: [Int] = []
     private var currentLauncherMode: LauncherMode?
     private var currentSettings = LauncherSettings.defaults
     private var settingsStreamTask: Task<Void, Never>?
+    private var arrangementResetTask: Task<Void, Never>?
     private var statusBarItem: NSStatusItem?
     private var statusBarMenu: NSMenu?
     private lazy var settingsWindowPresenter = SettingsWindowController()
@@ -32,6 +34,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Releases observers and menu bar items before the process quits.
     func applicationWillTerminate(_ notification: Notification) {
         settingsStreamTask?.cancel()
+        arrangementResetTask?.cancel()
         removeStatusItem()
         hotkeyCoordinator.deactivate()
     }
@@ -83,6 +86,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         updateStatusItemVisibility()
         observeSettingsChanges()
+        observeArrangementResetRequests()
     }
 
     /// Hides unused top-level macOS menu bar items.
@@ -205,17 +209,39 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// Listens for arrangement reset requests dispatched from the settings window.
+    private func observeArrangementResetRequests() {
+        arrangementResetTask?.cancel()
+        arrangementResetTask = Task.detached { [weak self] in
+            let notifications = NotificationCenter.default.notifications(named: .launcherArrangementResetRequested)
+            for await _ in notifications {
+                guard let self else { continue }
+                await self.handleArrangementReset()
+            }
+        }
+    }
+
     /// Handles work that needs to happen after settings mutate elsewhere.
     private func handleSettingsChange() {
         let previousHidden = Set(currentSettings.hiddenBundleIDs)
+        let previousGapSetting = currentSettings.fillsGapsAutomatically
         currentSettings = LauncherSettingsPersistence.loadSettings()
         LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
         let hiddenChanged = previousHidden != Set(currentSettings.hiddenBundleIDs)
-        if hiddenChanged {
+        let gapSettingChanged = previousGapSetting != currentSettings.fillsGapsAutomatically
+        if hiddenChanged || gapSettingChanged {
             refreshLauncherItems()
         }
         applyLauncherMode()
         updateStatusItemVisibility()
+    }
+
+    /// Clears saved arrangement data and reloads apps from disk.
+    @MainActor
+    private func handleArrangementReset() {
+        itemOrderStore.resetArrangement()
+        refreshLauncherItems()
+        applyLauncherMode()
     }
 
     /// Sets up the global hotkey used to toggle the launcher window.
@@ -301,24 +327,31 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Rebuilds the visible items list using the current hidden settings.
     private func refreshLauncherItems() {
         let hiddenBundleIDs = Set(currentSettings.hiddenBundleIDs)
-        orderedItems = itemOrderStore.arrangedItems(
+        let (items, sizes) = itemOrderStore.arrangedItems(
             from: applicationDiscovery
                 .reloadApps(hiddenBundleIDs: hiddenBundleIDs)
                 .map(applicationDiscovery.loadIcon),
-            pageCapacity: LauncherGridConfiguration.pageCapacity
+            pageCapacity: LauncherGridConfiguration.pageCapacity,
+            fillsGapsAutomatically: currentSettings.fillsGapsAutomatically
         )
+        orderedItems = items
+        pageSizes = sizes
     }
 
     /// Assembles the launcher SwiftUI view with the latest settings.
     private func buildLauncherView() -> LauncherView {
         LauncherView(
             itemCatalog: orderedItems,
+            initialPageSizes: pageSizes,
             backgroundStylePreference: currentSettings.backgroundStylePreference,
-            launcherMode: currentSettings.selectedLauncherMode
-        ) { [weak self] reorderedItems in
+            solidBackgroundColor: currentSettings.solidBackgroundColor,
+            launcherMode: currentSettings.selectedLauncherMode,
+            fillsGapsAutomatically: currentSettings.fillsGapsAutomatically
+        ) { [weak self] reorderedItems, newPageSizes in
             guard let self else { return }
             orderedItems = reorderedItems
-            itemOrderStore.saveOrderedItems(reorderedItems)
+            pageSizes = newPageSizes
+            itemOrderStore.saveOrderedItems(reorderedItems, pageSizes: newPageSizes)
         }
     }
 }

@@ -4,6 +4,7 @@ import Foundation
 final class ItemArrangementStore {
     private struct Payload: Codable {
         var items: [PersistedItem]
+        var pageSizes: [Int]?
     }
 
     private struct LegacyPayload: Codable {
@@ -71,6 +72,7 @@ final class ItemArrangementStore {
     private let fileManager: FileManager
     private let arrangementURL: URL
     private var cachedItems: [PersistedItem]
+    private(set) var cachedPageSizes: [Int]
 
     init(fileManager: FileManager = .default) {
         self.fileManager = fileManager
@@ -80,13 +82,20 @@ final class ItemArrangementStore {
         let appDirectory = baseDirectory.appendingPathComponent("Launchy", isDirectory: true)
         arrangementURL = appDirectory.appendingPathComponent("app-arrangement.json")
         cachedItems = []
+        cachedPageSizes = []
 
         bootstrapDirectoryIfNeeded(at: appDirectory)
-        cachedItems = loadPersistedItems()
+        let payload = loadPersistedPayload()
+        cachedItems = payload.items
+        cachedPageSizes = payload.pageSizes ?? []
     }
 
     /// Returns items sorted using the persisted order while inserting any new discoveries.
-    func arrangedItems(from discoveredApps: [AppItem], pageCapacity: Int) -> [LauncherItem] {
+    func arrangedItems(
+        from discoveredApps: [AppItem],
+        pageCapacity: Int,
+        fillsGapsAutomatically: Bool
+    ) -> ([LauncherItem], [Int]) {
         var lookup: [String: AppItem] = Dictionary(
             uniqueKeysWithValues: discoveredApps.map { ($0.bundleIdentifier, $0) }
         )
@@ -114,8 +123,14 @@ final class ItemArrangementStore {
 
         guard lookup.isEmpty == false else {
             cachedItems = orderedItems.map(persistedItem(from:))
+            cachedPageSizes = resolvedPageSizes(
+                storedSizes: cachedPageSizes,
+                itemCount: orderedItems.count,
+                pageCapacity: pageCapacity,
+                fillsGapsAutomatically: fillsGapsAutomatically
+            )
             saveItems()
-            return orderedItems
+            return (orderedItems, cachedPageSizes)
         }
 
         let remainingApps = lookup.values.sorted { lhs, rhs in
@@ -128,13 +143,20 @@ final class ItemArrangementStore {
         }
 
         cachedItems = orderedItems.map(persistedItem(from:))
+        cachedPageSizes = resolvedPageSizes(
+            storedSizes: cachedPageSizes,
+            itemCount: orderedItems.count,
+            pageCapacity: pageCapacity,
+            fillsGapsAutomatically: fillsGapsAutomatically
+        )
         saveItems()
-        return orderedItems
+        return (orderedItems, cachedPageSizes)
     }
 
     /// Saves a new linear order of items including folders and their contents.
-    func saveOrderedItems(_ items: [LauncherItem]) {
+    func saveOrderedItems(_ items: [LauncherItem], pageSizes: [Int]) {
         cachedItems = items.map(persistedItem(from:))
+        cachedPageSizes = normalizePageSizes(pageSizes, itemCount: items.count, pageCapacity: LauncherGridConfiguration.pageCapacity)
         saveItems()
     }
 
@@ -177,22 +199,81 @@ final class ItemArrangementStore {
         try? fileManager.createDirectory(at: url, withIntermediateDirectories: true)
     }
 
-    private func loadPersistedItems() -> [PersistedItem] {
-        guard let data = try? Data(contentsOf: arrangementURL) else { return [] }
+    private func loadPersistedPayload() -> Payload {
+        guard let data = try? Data(contentsOf: arrangementURL) else { return Payload(items: [], pageSizes: nil) }
         if let payload = try? JSONDecoder().decode(Payload.self, from: data) {
-            return payload.items
+            return payload
         }
 
         if let legacy = try? JSONDecoder().decode(LegacyPayload.self, from: data) {
-            return legacy.bundleOrder.map { PersistedItem.app($0, customName: nil) }
+            return Payload(items: legacy.bundleOrder.map { PersistedItem.app($0, customName: nil) }, pageSizes: nil)
         }
 
-        return []
+        return Payload(items: [], pageSizes: nil)
     }
 
     private func saveItems() {
-        let payload = Payload(items: cachedItems)
+        let payload = Payload(items: cachedItems, pageSizes: cachedPageSizes)
         guard let data = try? JSONEncoder().encode(payload) else { return }
         try? data.write(to: arrangementURL, options: .atomic)
+    }
+
+    /// Deletes the persisted arrangement and clears in-memory caches.
+    func resetArrangement() {
+        try? fileManager.removeItem(at: arrangementURL)
+        cachedItems = []
+        cachedPageSizes = []
+    }
+
+    private func resolvedPageSizes(
+        storedSizes: [Int],
+        itemCount: Int,
+        pageCapacity: Int,
+        fillsGapsAutomatically: Bool
+    ) -> [Int] {
+        guard fillsGapsAutomatically == false else {
+            return densePageSizes(for: itemCount, pageCapacity: pageCapacity)
+        }
+
+        let normalized = normalizePageSizes(storedSizes, itemCount: itemCount, pageCapacity: pageCapacity)
+        return normalized.isEmpty ? densePageSizes(for: itemCount, pageCapacity: pageCapacity) : normalized
+    }
+
+    private func densePageSizes(for itemCount: Int, pageCapacity: Int) -> [Int] {
+        guard itemCount > 0, pageCapacity > 0 else { return [] }
+        var remaining = itemCount
+        var sizes: [Int] = []
+        while remaining > 0 {
+            let count = min(pageCapacity, remaining)
+            sizes.append(count)
+            remaining -= count
+        }
+        return sizes
+    }
+
+    private func normalizePageSizes(_ sizes: [Int], itemCount: Int, pageCapacity: Int) -> [Int] {
+        guard itemCount > 0, pageCapacity > 0 else { return [] }
+
+        var remaining = itemCount
+        var normalized: [Int] = []
+
+        for size in sizes where remaining > 0 {
+            var chunk = size
+            while chunk > 0 && remaining > 0 {
+                let portion = min(chunk, pageCapacity, remaining)
+                guard portion > 0 else { break }
+                normalized.append(portion)
+                remaining -= portion
+                chunk -= portion
+            }
+        }
+
+        while remaining > 0 {
+            let portion = min(pageCapacity, remaining)
+            normalized.append(portion)
+            remaining -= portion
+        }
+
+        return normalized
     }
 }

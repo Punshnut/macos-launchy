@@ -27,10 +27,11 @@ struct PageReorderDropDelegate: DropDelegate {
         guard let draggedItem else { return }
         guard pageCapacity > 0 else { return }
 
-        let clampedPage = max(targetPage, 0)
-        let pageStart = clampedPage * pageCapacity
-        let pageEnd = min(pageStart + pageCapacity, items.count)
-        let destinationIndex = min(pageEnd, max(items.count, 0))
+        let destinationIndex = LauncherGridConfiguration.insertionIndex(
+            for: targetPage,
+            itemsCount: items.count,
+            pageCapacity: pageCapacity
+        )
 
         let finalIndex = performReorder(draggedItem, destinationIndex)
         afterReorder(finalIndex)

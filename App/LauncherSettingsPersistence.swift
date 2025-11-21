@@ -101,9 +101,31 @@ enum LauncherSettingsPersistence {
         }
     }
 
+    /// Persists the chosen solid background color.
+    static func setSolidBackgroundColor(
+        _ color: LauncherSettings.SolidBackgroundColor,
+        userDefaults: UserDefaults = .standard
+    ) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.solidBackgroundColor = color
+        }
+    }
+
     /// Reads the stubbed global hotkey string.
     static func globalHotkeyDisplay(userDefaults: UserDefaults = .standard) -> String {
         loadSettings(userDefaults: userDefaults).globalHotkeyDescription
+    }
+
+    /// Reads whether the grid should collapse gaps.
+    static func fillsGapsAutomatically(userDefaults: UserDefaults = .standard) -> Bool {
+        loadSettings(userDefaults: userDefaults).fillsGapsAutomatically
+    }
+
+    /// Persists the gap collapsing preference.
+    static func setFillsGapsAutomatically(_ value: Bool, userDefaults: UserDefaults = .standard) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.fillsGapsAutomatically = value
+        }
     }
 
     /// Persists the stubbed global hotkey string.
@@ -158,4 +180,6 @@ enum LauncherSettingsPersistence {
 extension Notification.Name {
     /// Posted each time any launcher setting is persisted.
     static let launcherSettingsDidChange = Notification.Name("LauncherSettingsDidChange")
+    /// Posted when the user requests a reset of the saved launcher arrangement.
+    static let launcherArrangementResetRequested = Notification.Name("LauncherArrangementResetRequested")
 }

@@ -123,22 +123,74 @@ enum LauncherMode: String, CaseIterable, Hashable, Codable {
 
 /// User-configurable settings for how the launcher behaves.
 struct LauncherSettings: Hashable, Codable {
+    /// Available solid background colors when the solid style is chosen.
+    enum SolidBackgroundColor: String, CaseIterable, Hashable, Codable {
+        case system
+        case graphite
+        case blue
+        case green
+        case orange
+
+        /// User-facing label.
+        var displayName: String {
+            switch self {
+            case .system: return "System"
+            case .graphite: return "Graphite"
+            case .blue: return "Blue"
+            case .green: return "Green"
+            case .orange: return "Orange"
+            }
+        }
+
+        /// Native NSColor that matches the selected swatch.
+        var nsColor: NSColor {
+            switch self {
+            case .system:
+                return .windowBackgroundColor
+            case .graphite:
+                return NSColor(calibratedWhite: 0.16, alpha: 1.0)
+            case .blue:
+                return NSColor(calibratedRed: 0.12, green: 0.26, blue: 0.54, alpha: 1.0)
+            case .green:
+                return NSColor(calibratedRed: 0.13, green: 0.42, blue: 0.24, alpha: 1.0)
+            case .orange:
+                return NSColor(calibratedRed: 0.72, green: 0.39, blue: 0.07, alpha: 1.0)
+            }
+        }
+    }
+
     /// How the window draws its background behind the grid.
     enum PreferredBackgroundStyle: String, CaseIterable, Hashable, Codable {
-        case automatic
+        case standard
+        case light
         case transparent
         case solid
 
         /// Converts internal cases into nicer labels for use in pickers.
         var displayName: String {
             switch self {
-            case .automatic:
-                return "Automatic"
+            case .standard:
+                return "Standard"
+            case .light:
+                return "Light Blur"
             case .transparent:
                 return "Transparent"
             case .solid:
                 return "Solid Color"
             }
+        }
+
+        /// Safely resolves raw values, mapping legacy persisted cases to current ones.
+        static func from(rawValue: String?) -> PreferredBackgroundStyle {
+            guard let rawValue else { return .standard }
+            if let style = PreferredBackgroundStyle(rawValue: rawValue) {
+                return style
+            }
+            // Older builds saved "automatic", which now maps to "standard".
+            if rawValue == "automatic" {
+                return .standard
+            }
+            return .standard
         }
     }
 
@@ -150,6 +202,8 @@ struct LauncherSettings: Hashable, Codable {
     var hiddenBundleIDs: [String]
     /// Selected background styling preference for the launcher UI.
     var backgroundStylePreference: PreferredBackgroundStyle
+    /// Solid color selected when the solid background is active.
+    var solidBackgroundColor: SolidBackgroundColor
     /// Which presentation mode (panel vs fullscreen) is active.
     var selectedLauncherMode: LauncherMode
     /// Toggles the presence of the menu bar shortcut icon.
@@ -158,25 +212,31 @@ struct LauncherSettings: Hashable, Codable {
     var isFloatyDockIconVisible: Bool
     /// Placeholder text describing the user’s preferred hotkey.
     var globalHotkeyDescription: String
+    /// Whether the grid should collapse gaps by pulling items forward.
+    var fillsGapsAutomatically: Bool
 
     init(
         isVisibleOnAllSpaces: Bool,
         launchesAtLogin: Bool,
         hiddenBundleIDs: [String],
         backgroundStylePreference: PreferredBackgroundStyle,
+        solidBackgroundColor: SolidBackgroundColor,
         selectedLauncherMode: LauncherMode,
         isMenuBarIconVisible: Bool,
         isFloatyDockIconVisible: Bool,
-        globalHotkeyDescription: String
+        globalHotkeyDescription: String,
+        fillsGapsAutomatically: Bool
     ) {
         self.isVisibleOnAllSpaces = isVisibleOnAllSpaces
         self.launchesAtLogin = launchesAtLogin
         self.hiddenBundleIDs = hiddenBundleIDs
         self.backgroundStylePreference = backgroundStylePreference
+        self.solidBackgroundColor = solidBackgroundColor
         self.selectedLauncherMode = selectedLauncherMode
         self.isMenuBarIconVisible = isMenuBarIconVisible
         self.isFloatyDockIconVisible = isFloatyDockIconVisible
         self.globalHotkeyDescription = globalHotkeyDescription
+        self.fillsGapsAutomatically = fillsGapsAutomatically
     }
 }
 
@@ -187,11 +247,13 @@ extension LauncherSettings {
             isVisibleOnAllSpaces: false,
             launchesAtLogin: false,
             hiddenBundleIDs: [],
-            backgroundStylePreference: .automatic,
+            backgroundStylePreference: .standard,
+            solidBackgroundColor: .system,
             selectedLauncherMode: .fullscreenOldMac,
             isMenuBarIconVisible: true,
             isFloatyDockIconVisible: true,
-            globalHotkeyDescription: "Cmd+Shift+Space"
+            globalHotkeyDescription: "Cmd+Shift+Space",
+            fillsGapsAutomatically: false
         )
     }
 }
@@ -202,10 +264,12 @@ extension LauncherSettings {
         case launchesAtLogin
         case hiddenBundleIDs
         case backgroundStylePreference
+        case solidBackgroundColor
         case selectedLauncherMode
         case isMenuBarIconVisible
         case isFloatyDockIconVisible = "isDockIconVisible"
         case globalHotkeyDescription
+        case fillsGapsAutomatically
     }
 
     init(from decoder: Decoder) throws {
@@ -214,11 +278,15 @@ extension LauncherSettings {
             isVisibleOnAllSpaces: try container.decodeIfPresent(Bool.self, forKey: .isVisibleOnAllSpaces) ?? false,
             launchesAtLogin: try container.decodeIfPresent(Bool.self, forKey: .launchesAtLogin) ?? false,
             hiddenBundleIDs: try container.decodeIfPresent([String].self, forKey: .hiddenBundleIDs) ?? [],
-            backgroundStylePreference: try container.decodeIfPresent(PreferredBackgroundStyle.self, forKey: .backgroundStylePreference) ?? .automatic,
+            backgroundStylePreference: PreferredBackgroundStyle.from(
+                rawValue: try container.decodeIfPresent(String.self, forKey: .backgroundStylePreference)
+            ),
+            solidBackgroundColor: try container.decodeIfPresent(SolidBackgroundColor.self, forKey: .solidBackgroundColor) ?? .system,
             selectedLauncherMode: try container.decodeIfPresent(LauncherMode.self, forKey: .selectedLauncherMode) ?? .fullscreenOldMac,
             isMenuBarIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isMenuBarIconVisible) ?? true,
             isFloatyDockIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isFloatyDockIconVisible) ?? true,
-            globalHotkeyDescription: try container.decodeIfPresent(String.self, forKey: .globalHotkeyDescription) ?? "Cmd+Shift+Space"
+            globalHotkeyDescription: try container.decodeIfPresent(String.self, forKey: .globalHotkeyDescription) ?? "Cmd+Shift+Space",
+            fillsGapsAutomatically: try container.decodeIfPresent(Bool.self, forKey: .fillsGapsAutomatically) ?? false
         )
     }
 
@@ -228,9 +296,11 @@ extension LauncherSettings {
         try container.encode(launchesAtLogin, forKey: .launchesAtLogin)
         try container.encode(hiddenBundleIDs, forKey: .hiddenBundleIDs)
         try container.encode(backgroundStylePreference, forKey: .backgroundStylePreference)
+        try container.encode(solidBackgroundColor, forKey: .solidBackgroundColor)
         try container.encode(selectedLauncherMode, forKey: .selectedLauncherMode)
         try container.encode(isMenuBarIconVisible, forKey: .isMenuBarIconVisible)
         try container.encode(isFloatyDockIconVisible, forKey: .isFloatyDockIconVisible)
         try container.encode(globalHotkeyDescription, forKey: .globalHotkeyDescription)
+        try container.encode(fillsGapsAutomatically, forKey: .fillsGapsAutomatically)
     }
 }

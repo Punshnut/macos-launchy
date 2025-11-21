@@ -52,6 +52,13 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         LauncherSettingsPersistence.setPreferredBackgroundStyle(style)
     }
 
+    /// Persists the chosen solid background color.
+    func setSolidBackgroundColor(_ color: LauncherSettings.SolidBackgroundColor) {
+        guard settingsSnapshot.solidBackgroundColor != color else { return }
+        settingsSnapshot.solidBackgroundColor = color
+        LauncherSettingsPersistence.setSolidBackgroundColor(color)
+    }
+
     /// Persists the launcher mode selection.
     func setLauncherMode(_ mode: LauncherMode) {
         guard settingsSnapshot.selectedLauncherMode != mode else { return }
@@ -71,6 +78,18 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         guard settingsSnapshot.globalHotkeyDescription != value else { return }
         settingsSnapshot.globalHotkeyDescription = value
         LauncherSettingsPersistence.setGlobalHotkeyDisplay(value)
+    }
+
+    /// Persists whether gaps should be collapsed automatically.
+    func setFillsGapsAutomatically(_ value: Bool) {
+        guard settingsSnapshot.fillsGapsAutomatically != value else { return }
+        settingsSnapshot.fillsGapsAutomatically = value
+        LauncherSettingsPersistence.setFillsGapsAutomatically(value)
+    }
+
+    /// Requests a full reset of the saved launcher arrangement.
+    func requestArrangementReset() {
+        NotificationCenter.default.post(name: .launcherArrangementResetRequested, object: nil)
     }
 
     /// Toggles the bundle identifier in the hidden apps list.
@@ -154,6 +173,28 @@ struct SettingsWindow: View {
                 }
             }
             .pickerStyle(.menu)
+            if settingsStore.settingsSnapshot.backgroundStylePreference == .solid {
+                solidColorPalette
+            }
+
+            Toggle("Icons move up when there's space", isOn: Binding(
+                get: { settingsStore.settingsSnapshot.fillsGapsAutomatically },
+                set: { settingsStore.setFillsGapsAutomatically($0) }
+            ))
+
+            VStack(alignment: .leading, spacing: 8) {
+                Button {
+                    confirmArrangementReset()
+                } label: {
+                    Text("Reset icon arrangement…")
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
+
+                Text("Deletes your saved ordering and folders, then rebuilds pages from scratch. Type RESET to confirm.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text("Global hotkey")
@@ -214,6 +255,32 @@ struct SettingsWindow: View {
                 Text("Dock icon always shows in fullscreen mode, so this toggle is temporarily disabled.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    /// Swatch selector for solid background colors.
+    private var solidColorPalette: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Solid color")
+                .font(.headline)
+            HStack(spacing: 12) {
+                ForEach(LauncherSettings.SolidBackgroundColor.allCases, id: \.self) { colorOption in
+                    let isSelected = settingsStore.settingsSnapshot.solidBackgroundColor == colorOption
+                    Button {
+                        settingsStore.setSolidBackgroundColor(colorOption)
+                    } label: {
+                        Circle()
+                            .fill(Color(nsColor: colorOption.nsColor))
+                            .frame(width: 28, height: 28)
+                            .overlay(
+                                Circle()
+                                    .strokeBorder(isSelected ? Color.accentColor : Color.primary.opacity(0.25), lineWidth: isSelected ? 3 : 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(colorOption.displayName)
+                }
             }
         }
     }
@@ -293,6 +360,28 @@ struct SettingsWindow: View {
         .frame(width: 32, height: 32)
         .cornerRadius(6)
     }
+
+    /// Shows a confirmation dialog before wiping the saved arrangement.
+    private func confirmArrangementReset() {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = "Reset icon arrangement?"
+        alert.informativeText = "This deletes your saved ordering, folders, and page layout. Type RESET to continue."
+
+        let field = NSTextField(string: "")
+        field.placeholderString = "RESET"
+        field.frame = NSRect(x: 0, y: 0, width: 220, height: 24)
+        alert.accessoryView = field
+
+        alert.addButton(withTitle: "Reset")
+        alert.addButton(withTitle: "Cancel")
+
+        let response = alert.runModal()
+        guard response == .alertFirstButtonReturn else { return }
+        let token = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard token == "RESET" else { return }
+        settingsStore.requestArrangementReset()
+    }
 }
 
 /// Wraps the SwiftUI settings content inside a reusable macOS window controller.
@@ -315,7 +404,7 @@ final class SettingsWindowController: NSWindowController {
         window.title = "Launchy Settings"
         window.isReleasedWhenClosed = false
         // Keep the settings window visible above the launcher UI, even in fullscreen.
-        window.level = .statusBar
+        window.level = .screenSaver
         window.collectionBehavior.insert(.fullScreenAuxiliary)
         window.collectionBehavior.insert(.canJoinAllSpaces)
         window.center()

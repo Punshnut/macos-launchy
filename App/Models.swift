@@ -7,12 +7,102 @@ struct AppItem: Identifiable, Hashable {
     let id: UUID
     /// Human-friendly app name shown in the launcher grid.
     let displayName: String
+    /// Optional custom label supplied by the user.
+    var customName: String?
     /// Bundle identifier used both for hiding apps and launching them.
     let bundleIdentifier: String
     /// Lazily-discovered icon cached on disk or nil if missing.
     let iconImage: NSImage?
     /// File URL pointing at the actual `.app` bundle.
     let bundleURL: URL?
+
+    init(
+        id: UUID,
+        displayName: String,
+        customName: String? = nil,
+        bundleIdentifier: String,
+        iconImage: NSImage?,
+        bundleURL: URL?
+    ) {
+        self.id = id
+        self.displayName = displayName
+        self.customName = customName
+        self.bundleIdentifier = bundleIdentifier
+        self.iconImage = iconImage
+        self.bundleURL = bundleURL
+    }
+
+    static func == (lhs: AppItem, rhs: AppItem) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    /// Returns the best display name, preferring the override if present.
+    var resolvedDisplayName: String {
+        let trimmed = customName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return trimmed.isEmpty ? displayName : trimmed
+    }
+}
+
+/// Represents anything the launcher can display such as apps or folders.
+enum LauncherItem: Identifiable, Hashable {
+    case app(AppItem)
+    case folder(FolderItem)
+
+    var id: UUID {
+        switch self {
+        case .app(let app):
+            return app.id
+        case .folder(let folder):
+            return folder.id
+        }
+    }
+
+    /// Title used in the grid and search for both apps and folders.
+    var displayName: String {
+        switch self {
+        case .app(let app):
+            return app.resolvedDisplayName
+        case .folder(let folder):
+            return folder.name
+        }
+    }
+
+    /// Bundle identifiers contained within the item, useful for persistence.
+    var bundleIdentifiers: [String] {
+        switch self {
+        case .app(let app):
+            return [app.bundleIdentifier]
+        case .folder(let folder):
+            return folder.apps.map(\.bundleIdentifier)
+        }
+    }
+
+    static func == (lhs: LauncherItem, rhs: LauncherItem) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
+/// Simple grouping of multiple apps into a single launcher cell.
+struct FolderItem: Identifiable, Hashable {
+    static let defaultName = "unnamed"
+
+    let id: UUID
+    var name: String
+    var apps: [AppItem]
+
+    init(id: UUID = UUID(), name: String = FolderItem.defaultName, apps: [AppItem]) {
+        self.id = id
+        self.name = name
+        self.apps = apps
+    }
 }
 
 /// Determines the overall presentation style of the launcher UI.

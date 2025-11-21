@@ -7,8 +7,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var launcherWindowManager: LauncherWindowController?
     private let applicationDiscovery = AppDiscoveryService()
     private let hotkeyCoordinator = HotkeyManager()
-    private let appOrderStore = AppArrangementStore()
-    private var orderedApplications: [AppItem] = []
+    private let itemOrderStore = ItemArrangementStore()
+    private var orderedItems: [LauncherItem] = []
     private var currentLauncherMode: LauncherMode?
     private var currentSettings = LauncherSettings.defaults
     private var settingsStreamTask: Task<Void, Never>?
@@ -39,7 +39,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Reloads applications via the debug menu, clearing stale icon caches beforehand.
     func reloadAppsFromDebugMenu() {
         applicationDiscovery.clearIconCache()
-        refreshLauncherApps()
+        refreshLauncherItems()
         applyLauncherMode()
     }
 
@@ -71,7 +71,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
 
         // 1 & 6) Load apps and immediately apply hidden/background style choices.
-        refreshLauncherApps()
+        refreshLauncherItems()
 
         // 3) Build the launcher window so the UI is ready for the hotkey.
         applyLauncherMode()
@@ -212,7 +212,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
         let hiddenChanged = previousHidden != Set(currentSettings.hiddenBundleIDs)
         if hiddenChanged {
-            refreshLauncherApps()
+            refreshLauncherItems()
         }
         applyLauncherMode()
         updateStatusItemVisibility()
@@ -298,10 +298,10 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         NSApp.terminate(sender)
     }
 
-    /// Rebuilds the visible apps list using the current hidden settings.
-    private func refreshLauncherApps() {
+    /// Rebuilds the visible items list using the current hidden settings.
+    private func refreshLauncherItems() {
         let hiddenBundleIDs = Set(currentSettings.hiddenBundleIDs)
-        orderedApplications = appOrderStore.arrangedApps(
+        orderedItems = itemOrderStore.arrangedItems(
             from: applicationDiscovery
                 .reloadApps(hiddenBundleIDs: hiddenBundleIDs)
                 .map(applicationDiscovery.loadIcon),
@@ -312,13 +312,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Assembles the launcher SwiftUI view with the latest settings.
     private func buildLauncherView() -> LauncherView {
         LauncherView(
-            appCatalog: orderedApplications,
+            itemCatalog: orderedItems,
             backgroundStylePreference: currentSettings.backgroundStylePreference,
             launcherMode: currentSettings.selectedLauncherMode
-        ) { [weak self] reorderedApps in
+        ) { [weak self] reorderedItems in
             guard let self else { return }
-            orderedApplications = reorderedApps
-            appOrderStore.saveOrderedApps(reorderedApps)
+            orderedItems = reorderedItems
+            itemOrderStore.saveOrderedItems(reorderedItems)
         }
     }
 }

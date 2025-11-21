@@ -247,7 +247,7 @@ struct SettingsWindow: View {
                             HStack(spacing: 12) {
                                 iconView(for: app)
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(app.displayName)
+                                    Text(app.resolvedDisplayName)
                                     Text(app.bundleIdentifier)
                                         .font(.footnote)
                                         .foregroundStyle(.secondary)

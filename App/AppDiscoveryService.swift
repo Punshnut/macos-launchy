@@ -61,6 +61,7 @@ final class AppDiscoveryService {
         return AppItem(
             id: app.id,
             displayName: app.displayName,
+            customName: app.customName,
             bundleIdentifier: app.bundleIdentifier,
             iconImage: resolveIcon(for: app),
             bundleURL: app.bundleURL
@@ -104,6 +105,7 @@ final class AppDiscoveryService {
         return AppItem(
             id: UUID(),
             displayName: displayName,
+            customName: nil,
             bundleIdentifier: bundleIdentifier,
             iconImage: nil,
             bundleURL: bundleURL

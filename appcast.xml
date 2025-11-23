@@ -16,9 +16,10 @@
       url="https://github.com/Punshnut/macos-launchy/releases/latest/download/Launchy.dmg"
       sparkle:shortVersionString="0.0.5"
       sparkle:version="0.0.5"
-      length="3673102"
+      length="3556443"
       type="application/octet-stream"
-      sparkle:edSignature="EZg3/i2FQxQRCt+nuSA2Rhq5op+tZ/T9AjO0Jck+p/AZsT4qmT7SUdheCZpICkGuifXbdK01nkZQ3AIR+hq7Bg==" />
+     sparkle:edSignature="s7qy3lt/NLmcYF+cpytfwueATu/svIH5EbOxF6rNsnaPucSpgdl0/hVwB9Vivj8nGS5Qqq4827Pt6RDoQOaXBw==" />
+      <pubDate>Sun, 23 Nov 2025 17:02:15 +0100</pubDate>
       <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
     </item>
   </channel>

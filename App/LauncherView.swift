@@ -215,7 +215,7 @@ struct LauncherView: View {
                                                     Text(item.displayName)
                                                         .font(.system(size: 13, weight: .medium))
                                                         .multilineTextAlignment(.center)
-                                                        .foregroundColor(.primary)
+                                                        .foregroundColor(iconLabelColor())
                                                         .lineLimit(2)
                                                         .frame(maxWidth: .infinity)
                                                 }
@@ -982,6 +982,7 @@ struct LauncherView: View {
             TextField("", text: $folderNameDraft)
                 .textFieldStyle(.plain)
                 .font(.system(size: 22, weight: .semibold))
+                .foregroundColor(iconLabelColor())
                 .multilineTextAlignment(.center)
                 .focused($isFolderNameFieldFocused)
                 .onSubmit {
@@ -997,6 +998,7 @@ struct LauncherView: View {
         } else {
             Text(folder.name.isEmpty ? FolderItem.defaultName : folder.name)
                 .font(.system(size: 22, weight: .semibold))
+                .foregroundColor(iconLabelColor())
                 .padding(.top, 8)
                 .onTapGesture {
                     beginFolderNameEdit(for: folder)
@@ -1026,7 +1028,7 @@ struct LauncherView: View {
                                 .animation(.easeInOut(duration: 0.18), value: launchingItemID)
                             Text(app.resolvedDisplayName)
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundStyle(.primary)
+                                .foregroundColor(iconLabelColor())
                                 .lineLimit(2)
                                 .multilineTextAlignment(.center)
                         }
@@ -1311,8 +1313,12 @@ struct LauncherView: View {
     private func backgroundView() -> some View {
         switch backgroundStylePreference {
         case .standard:
-            if launcherMode == .floaty && colorScheme == .light {
-                return AnyView(lightBlurBackground())
+            if launcherMode == .floaty {
+                if colorScheme == .dark {
+                    return AnyView(floatyStandardBlurBackground())
+                } else {
+                    return AnyView(lightBlurBackground())
+                }
             } else {
                 return AnyView(darkBlurBackground())
             }
@@ -1325,6 +1331,15 @@ struct LauncherView: View {
         case .transparent:
             return AnyView(Color.clear)
         }
+    }
+
+    /// Darkens the floaty background with the same in-window HUD tint as the search bar.
+    private func floatyStandardBlurBackground() -> VisualEffectBackground {
+        blurBackground(
+            material: .hudWindow,
+            blendingMode: .withinWindow,
+            preferredAppearance: .vibrantDark
+        )
     }
 
     private func darkBlurBackground() -> VisualEffectBackground {
@@ -1442,6 +1457,32 @@ struct LauncherView: View {
     /// Whether the search bar should use the darker tinted style.
     private var usesDarkSearchBarAppearance: Bool {
         backgroundStylePreference == .standard || backgroundStylePreference == .transparent
+    }
+
+    /// Picks an icon label color that keeps adequate contrast against the selected background.
+    private func iconLabelColor() -> Color {
+        shouldUseLightIconText() ? Color.white : Color.black.opacity(0.9)
+    }
+
+    /// Heuristic to detect when light text will contrast better with the backdrop.
+    private func shouldUseLightIconText() -> Bool {
+        if activeFolder != nil {
+            return true
+        }
+
+        switch backgroundStylePreference {
+        case .standard:
+            if launcherMode == .fullscreenOldMac {
+                return true
+            }
+            return colorScheme == .dark
+        case .light:
+            return false
+        case .solid:
+            return solidBackgroundColor.nsColor.launchy_perceivedBrightness < 0.6
+        case .transparent:
+            return colorScheme == .dark
+        }
     }
 
     /// Launches the first matched app when a user submits the search field.
@@ -1975,5 +2016,15 @@ private struct FolderFramePreference: PreferenceKey {
 
     static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
         value = nextValue()
+    }
+}
+
+private extension NSColor {
+    /// Perceived brightness used to decide if a foreground color needs to flip.
+    var launchy_perceivedBrightness: CGFloat {
+        guard let rgb = usingColorSpace(.extendedSRGB) else {
+            return 1.0
+        }
+        return (0.299 * rgb.redComponent) + (0.587 * rgb.greenComponent) + (0.114 * rgb.blueComponent)
     }
 }

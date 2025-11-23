@@ -21,7 +21,7 @@
     <key>CFBundleVersion</key>
     <string>0.1</string>
     <key>SUFeedURL</key>
-    <string>https://raw.githubusercontent.com/Punshnut/macos-launchy/main/appcast.xml</string>
+    <string>https://raw.githubusercontent.com/Punshnut/macos-launchy/dev/appcast.xml</string>
     <key>SUPublicEDKey</key>
     <string>zQDK/otk+PsJEu5zHOF9c1RfOGc3KcH30MttgbsyHhY=</string>
     <key>SUEnableAutomaticChecks</key>

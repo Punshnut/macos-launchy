@@ -20,7 +20,7 @@ Launchy is a featherweight macOS app launcher that feels like part of the system
 
 <div align="center">
   <details>
-    <summary>🇹🇷 · 🇩🇪 · 🇫🇷 · 🇮🇹 · 🇪🇸 - Europe & Asia (11)</summary>
+    <summary>🇹🇷 · 🇩🇪 · 🇫🇷 · 🇮🇹 · 🇪🇸 - Europe & Asia (5)</summary>
     <p>🇹🇷 Türkçe<br>🇩🇪 Deutsch<br>🇫🇷 Français<br>🇮🇹 Italiano<br>🇪🇸 Español (España)</p>
   </details>
   <details>

@@ -76,11 +76,7 @@ final class LauncherWindowController: NSWindowController {
         }
 
         showWindow(nil)
-        if window is FloatyLauncherWindow {
-            window.orderFrontRegardless()
-        } else {
-            window.makeKeyAndOrderFront(nil)
-        }
+        window.makeKeyAndOrderFront(nil)
 
         if shouldAnimateEntrance {
             runEntranceAnimation(window: window, originalFrame: originalFrame)

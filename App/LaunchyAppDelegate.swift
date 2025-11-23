@@ -363,9 +363,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private func activateApplicationForCurrentModeIfNeeded() {
         switch currentSettings.selectedLauncherMode {
         case .floaty:
-            if currentSettings.isFloatyDockIconVisible {
-                NSApp.activate(ignoringOtherApps: true)
-            }
+            NSApp.activate(ignoringOtherApps: true)
         case .fullscreenOldMac:
             NSApp.activate(ignoringOtherApps: true)
         }

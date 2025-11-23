@@ -62,6 +62,7 @@ struct LauncherView: View {
     @State private var pageDirection: PageShiftDirection = .forward
     @State private var folderIconWaveToggle = false
     @FocusState private var isFolderNameFieldFocused: Bool
+    @FocusState private var isSearchFieldFocused: Bool
     @Environment(\.colorScheme) private var colorScheme
 
     init(
@@ -138,6 +139,19 @@ struct LauncherView: View {
                 }) == false {
                 self.activeFolder = nil
             }
+        }
+        .onChange(of: isEditingFolderName) { isEditing in
+            if isEditing == false {
+                focusSearchFieldIfAppropriate()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { notification in
+            guard let window = notification.object as? NSWindow,
+                  isLauncherHostingWindow(window) else { return }
+            focusSearchFieldIfAppropriate()
+        }
+        .onAppear {
+            focusSearchFieldIfAppropriate()
         }
     }
 
@@ -1228,20 +1242,26 @@ struct LauncherView: View {
 
     /// Returns the NSWindow currently hosting the launcher content, if any.
     private func hostingWindow() -> NSWindow? {
-        if let primary = NSApp?.keyWindow ?? NSApp?.mainWindow {
+        if let primary = NSApp?.keyWindow ?? NSApp?.mainWindow,
+           isLauncherHostingWindow(primary) {
             return primary
         }
 
         // Fall back to any window currently hosting this SwiftUI view when the panel is non-activating.
-        if let hosting = NSApp?.windows.first(where: { window in
-            window.contentViewController is NSHostingController<LauncherView>
-        }) {
+        if let hosting = NSApp?.windows.first(where: isLauncherHostingWindow) {
             return hosting
         }
 
-        return NSApp?.windows.first { window in
-            window.contentView is NSHostingView<LauncherView>
+        return nil
+    }
+
+    /// Identifies windows that are rendering the launcher content.
+    private func isLauncherHostingWindow(_ window: NSWindow) -> Bool {
+        if window.contentViewController is NSHostingController<LauncherView> {
+            return true
         }
+
+        return window.contentView is NSHostingView<LauncherView>
     }
 
     /// Moves to the previous page if possible.
@@ -1350,12 +1370,19 @@ struct LauncherView: View {
         return max(0, containerHeight / 12)
     }
 
+    /// Ensures the search field regains focus when the launcher window is foregrounded.
+    private func focusSearchFieldIfAppropriate() {
+        guard isEditingFolderName == false else { return }
+        isSearchFieldFocused = true
+    }
+
     /// Custom search field that mirrors the glassy Launchpad design.
     private func searchBar(layout: LauncherLayoutMetrics) -> some View {
         TextField("Search items", text: $searchText)
             .textFieldStyle(.plain)
             .font(.system(size: layout.searchBarFontSize, weight: .medium))
-            .foregroundColor(.primary)
+            .foregroundColor(searchBarForegroundColor())
+            .focused($isSearchFieldFocused)
             .onSubmit {
                 launchSearchResultIfPossible()
             }
@@ -1363,7 +1390,7 @@ struct LauncherView: View {
             .padding(.trailing, 44)
             .frame(height: layout.searchBarHeight)
             .background(
-                VisualEffectBackground(material: .menu, blendingMode: .withinWindow)
+                searchBarBackgroundMaterial()
                     .clipShape(RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous))
             )
             .overlay(alignment: .trailing) {
@@ -1373,7 +1400,7 @@ struct LauncherView: View {
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.primary.opacity(0.55))
+                            .foregroundColor(searchBarForegroundColor().opacity(0.55))
                     }
                     .buttonStyle(.plain)
                     .padding(.trailing, 14)
@@ -1386,6 +1413,35 @@ struct LauncherView: View {
             .shadow(color: .black.opacity(0.2), radius: 12, y: 4)
             .frame(maxWidth: layout.searchBarWidth)
             .frame(maxWidth: .infinity)
+            .environment(\.colorScheme, searchBarColorSchemeOverride())
+    }
+
+    /// Chooses the right blur material for the search bar based on the selected background style.
+    private func searchBarBackgroundMaterial() -> VisualEffectBackground {
+        if usesDarkSearchBarAppearance {
+            return VisualEffectBackground(
+                material: .hudWindow,
+                blendingMode: .withinWindow,
+                appearance: NSAppearance(named: .vibrantDark)
+            )
+        } else {
+            return VisualEffectBackground(material: .menu, blendingMode: .withinWindow)
+        }
+    }
+
+    /// Adjusts the search bar text/icon color to remain legible on tinted backgrounds.
+    private func searchBarForegroundColor() -> Color {
+        usesDarkSearchBarAppearance ? .white : .primary
+    }
+
+    /// Overrides the color scheme locally so placeholder and accent colors match the background.
+    private func searchBarColorSchemeOverride() -> ColorScheme {
+        usesDarkSearchBarAppearance ? .dark : colorScheme
+    }
+
+    /// Whether the search bar should use the darker tinted style.
+    private var usesDarkSearchBarAppearance: Bool {
+        backgroundStylePreference == .standard || backgroundStylePreference == .transparent
     }
 
     /// Launches the first matched app when a user submits the search field.

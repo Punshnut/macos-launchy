@@ -13,21 +13,21 @@ struct PageReorderDropDelegate: DropDelegate {
     private static let minSwitchInterval: TimeInterval = 1.0
 
     func dropEntered(info: DropInfo) {
-        handleDropUpdate(info)
+        // Intentionally no-op to avoid premature page jumps while hovering.
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
-        handleDropUpdate(info)
         return DropProposal(operation: .move)
     }
 
     func performDrop(info: DropInfo) -> Bool {
+        handleDropUpdate(info, isFinal: true)
         draggedItem = nil
         return true
     }
 
-    private func handleDropUpdate(_ info: DropInfo) {
-        guard let draggedItem else { return }
+    private func handleDropUpdate(_ info: DropInfo, isFinal: Bool) {
+        guard isFinal, let draggedItem else { return }
         guard pageCapacity > 0 else { return }
 
         let now = Date()
@@ -51,8 +51,8 @@ struct PageReorderDropDelegate: DropDelegate {
 struct GridReorderDropDelegate: DropDelegate {
     let layout: LauncherLayoutMetrics
     let gridSize: CGSize
-    let currentPage: Int
-    let pageCapacity: Int
+    let pageStartIndex: Int
+    let pageItemCount: Int
     @Binding var items: [LauncherItem]
     @Binding var draggedItem: LauncherItem?
     var shouldSuppressReorder: () -> Bool
@@ -62,11 +62,11 @@ struct GridReorderDropDelegate: DropDelegate {
     var onFolderHoverExit: () -> Void
 
     func dropEntered(info: DropInfo) {
-        handleDropUpdate(info)
+        handleHover(info)
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
-        handleDropUpdate(info)
+        handleHover(info)
         return DropProposal(operation: .move)
     }
 
@@ -75,44 +75,27 @@ struct GridReorderDropDelegate: DropDelegate {
         guard let draggedItem else { return false }
 
         let targetIndex = targetIndex(for: info.location)
-        let suppressReorder = shouldSuppressReorder()
+        _ = shouldSuppressReorder()
 
         if targetIndex < items.count,
            shouldAttemptFolderDrop(for: info.location, targetIndex: targetIndex) {
             onDropOnItem(draggedItem, items[targetIndex])
-            if suppressReorder {
-                let finalIndex = performReorder(draggedItem, targetIndex, false)
-                afterReorder(finalIndex)
-            }
-        } else if suppressReorder {
-            let finalIndex = performReorder(draggedItem, targetIndex, false)
-            afterReorder(finalIndex)
         }
+
+        let finalIndex = performReorder(draggedItem, targetIndex, false)
+        afterReorder(finalIndex)
 
         return true
     }
 
-    private func handleDropUpdate(_ info: DropInfo) {
-        guard let draggedItem else { return }
-        guard pageCapacity > 0 else { return }
-
-        let targetIndex = targetIndex(for: info.location)
-        let suppressReorder = shouldSuppressReorder()
-        if suppressReorder == false {
-            let preferSwap = shouldSwapToward(targetIndex: targetIndex, dragged: draggedItem)
-            let finalIndex = performReorder(draggedItem, targetIndex, preferSwap)
-            afterReorder(finalIndex)
-        }
-
-        if shouldAttemptFolder(for: info.location, targetIndex: targetIndex) {
-            onDropOnItem(draggedItem, items[min(targetIndex, items.count - 1)])
-        } else {
-            onFolderHoverExit()
-        }
+    private func handleHover(_ info: DropInfo) {
+        // Keep grid stable while hovering; no live reordering or folder auto-creation.
+        onFolderHoverExit()
     }
 
     /// Converts a cursor point into a linear index within the overall arranged apps.
     private func targetIndex(for location: CGPoint) -> Int {
+        let location = adjustedLocation(location)
         let columns = LauncherGridConfiguration.columnsPerPage
         let rows = LauncherGridConfiguration.rowsPerPage
 
@@ -134,8 +117,7 @@ struct GridReorderDropDelegate: DropDelegate {
             rows - 1
         )
 
-        let linearIndex = currentPage * pageCapacity + row * columns + column
-        return min(max(linearIndex, 0), items.count)
+        return clampedIndexWithinPage(pageStartIndex + linearIndexInPage(row: row, column: column))
     }
 
     private func shouldSwapToward(targetIndex: Int, dragged: LauncherItem) -> Bool {
@@ -143,9 +125,14 @@ struct GridReorderDropDelegate: DropDelegate {
         guard targetIndex < items.count else { return false }
 
         let columns = LauncherGridConfiguration.columnsPerPage
-        let originalRow = originalIndex / columns
-        let targetRow = targetIndex / columns
-        return originalRow == targetRow && abs(originalIndex - targetIndex) == 1
+        guard
+            let originalIndexInPage = indexInCurrentPage(forAbsoluteIndex: originalIndex),
+            let targetIndexInPage = indexInCurrentPage(forAbsoluteIndex: targetIndex)
+        else { return false }
+
+        let originalRow = originalIndexInPage / columns
+        let targetRow = targetIndexInPage / columns
+        return originalRow == targetRow && abs(originalIndexInPage - targetIndexInPage) == 1
     }
 
     private func shouldAttemptFolder(for location: CGPoint, targetIndex: Int) -> Bool {
@@ -153,8 +140,9 @@ struct GridReorderDropDelegate: DropDelegate {
         guard let frame = cellFrame(at: targetIndex) else { return false }
 
         let center = CGPoint(x: frame.midX, y: frame.midY)
-        let dx = abs(location.x - center.x)
-        let dy = abs(location.y - center.y)
+        let adjusted = adjustedLocation(location)
+        let dx = abs(adjusted.x - center.x)
+        let dy = abs(adjusted.y - center.y)
         let horizontalTolerance = frame.width * 0.38
 
         let verticalApproach = dy > (frame.height * 0.25) && dx <= horizontalTolerance
@@ -167,12 +155,12 @@ struct GridReorderDropDelegate: DropDelegate {
     private func itemIndex(for location: CGPoint) -> Int? {
         let cellIndex = indexInCurrentPage(for: location)
         guard let cellIndex else { return nil }
-        let linearIndex = currentPage * pageCapacity + cellIndex
-        let maxVisibleIndex = min((currentPage + 1) * pageCapacity, items.count)
-        return linearIndex < maxVisibleIndex ? linearIndex : nil
+        let linearIndex = pageStartIndex + cellIndex
+        return linearIndex <= lastIndexInPage ? linearIndex : nil
     }
 
     private func indexInCurrentPage(for location: CGPoint) -> Int? {
+        let location = adjustedLocation(location)
         let columns = LauncherGridConfiguration.columnsPerPage
         let rows = LauncherGridConfiguration.rowsPerPage
 
@@ -195,17 +183,15 @@ struct GridReorderDropDelegate: DropDelegate {
         )
 
         let linearIndex = row * columns + column
-        let start = currentPage * pageCapacity
-        let remaining = max(items.count - start, 0)
-        let visibleCount = min(remaining, pageCapacity)
-        return linearIndex < visibleCount ? linearIndex : nil
+        return linearIndex < visibleItemCount ? linearIndex : nil
     }
 
     private func shouldAttemptFolderDrop(for location: CGPoint, targetIndex: Int) -> Bool {
         guard let frame = cellFrame(at: targetIndex) else { return false }
         let center = CGPoint(x: frame.midX, y: frame.midY)
-        let dx = location.x - center.x
-        let dy = location.y - center.y
+        let adjusted = adjustedLocation(location)
+        let dx = adjusted.x - center.x
+        let dy = adjusted.y - center.y
         let distance = sqrt(dx * dx + dy * dy)
         let threshold = min(frame.width, frame.height) * 0.32
         return distance <= threshold
@@ -220,7 +206,7 @@ struct GridReorderDropDelegate: DropDelegate {
         let cellWidth = max((gridSize.width - totalSpacingX) / CGFloat(columns), 1)
         let cellHeight = max((gridSize.height - totalSpacingY) / CGFloat(rows), 1)
 
-        let indexInPage = itemIndex - currentPage * pageCapacity
+        let indexInPage = itemIndex - pageStartIndex
         guard indexInPage >= 0 else { return nil }
 
         let row = indexInPage / columns
@@ -230,6 +216,41 @@ struct GridReorderDropDelegate: DropDelegate {
         let y = CGFloat(row) * (cellHeight + layout.iconSpacing)
 
         return CGRect(x: x, y: y, width: cellWidth, height: cellHeight)
+    }
+
+    /// Align drop coordinates with the visually shifted grid.
+    private func adjustedLocation(_ location: CGPoint) -> CGPoint {
+        location
+    }
+
+    private var visibleItemCount: Int {
+        boundedPageItemCount
+    }
+
+    private var boundedPageItemCount: Int {
+        let available = max(items.count - pageStartIndex, 0)
+        return max(min(pageItemCount, available), 0)
+    }
+
+    private func linearIndexInPage(row: Int, column: Int) -> Int {
+        row * LauncherGridConfiguration.columnsPerPage + column
+    }
+
+    private func clampedIndexWithinPage(_ rawIndex: Int) -> Int {
+        let start = max(pageStartIndex, 0)
+        let end = max(lastIndexInPage, start)
+        return min(max(rawIndex, start), end)
+    }
+
+    private func indexInCurrentPage(forAbsoluteIndex index: Int) -> Int? {
+        let local = index - pageStartIndex
+        guard local >= 0, local < boundedPageItemCount else { return nil }
+        return local
+    }
+
+    private var lastIndexInPage: Int {
+        guard boundedPageItemCount > 0 else { return pageStartIndex }
+        return pageStartIndex + boundedPageItemCount - 1
     }
 }
 

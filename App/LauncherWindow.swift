@@ -5,6 +5,9 @@ import SwiftUI
 final class LauncherWindowController: NSWindowController {
     private static let preferredFloatyContentSize = NSSize(width: 960, height: 830)
     private let launcherContentHost: NSHostingController<LauncherView>
+    private let entranceContentOffset: CGFloat = 32
+    private let entranceAnimationDuration: TimeInterval = 0.34
+    private var entranceContentOrigin: NSPoint = .zero
 
     /// Wraps the provided SwiftUI content inside either a panel or fullscreen window.
     init(rootView: LauncherView, launcherMode: LauncherMode) {
@@ -92,26 +95,32 @@ final class LauncherWindowController: NSWindowController {
     /// Prepares the launcher window to animate in from a subtle offset.
     private func prepareForEntranceAnimation(window: NSWindow, originalFrame: NSRect) {
         window.alphaValue = 0
-        if window is FloatyLauncherWindow {
-            let offsetFrame = originalFrame.offsetBy(dx: 0, dy: -FloatyLauncherWindow.entranceSlideOffset)
-            window.setFrame(offsetFrame, display: false)
-        }
+        window.setFrame(originalFrame, display: false)
+        entranceContentOrigin = launcherContentHost.view.frame.origin
+
+        let directionalOffset = launcherContentHost.view.isFlipped ? -entranceContentOffset : entranceContentOffset
+        let startOrigin = NSPoint(
+            x: entranceContentOrigin.x,
+            y: entranceContentOrigin.y + directionalOffset
+        )
+        launcherContentHost.view.setFrameOrigin(startOrigin)
+        launcherContentHost.view.alphaValue = 0
     }
 
     /// Animates the window back into place with a fade/fly-in effect.
     private func runEntranceAnimation(window: NSWindow, originalFrame: NSRect) {
         NSAnimationContext.runAnimationGroup { context in
-            context.duration = 0.28
+            context.duration = entranceAnimationDuration
+            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
             window.animator().alphaValue = 1
-            if window is FloatyLauncherWindow {
-                window.animator().setFrame(originalFrame, display: true)
-            }
-        } completionHandler: {
+            self.launcherContentHost.view.animator().alphaValue = 1
+            self.launcherContentHost.view.animator().setFrameOrigin(entranceContentOrigin)
+        } completionHandler: { [weak self] in
             Task { @MainActor in
+                guard let self else { return }
                 window.alphaValue = 1
-                if window is FloatyLauncherWindow {
-                    window.setFrame(originalFrame, display: false)
-                }
+                self.launcherContentHost.view.setFrameOrigin(self.entranceContentOrigin)
+                self.launcherContentHost.view.alphaValue = 1
             }
         }
     }

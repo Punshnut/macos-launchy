@@ -11,6 +11,11 @@ private enum AppLocation {
     case folder(folderIndex: Int, appIndex: Int)
 }
 
+private enum PageShiftDirection {
+    case forward
+    case backward
+}
+
 private struct RemovedAppContext {
     var items: [LauncherItem]
     var app: AppItem
@@ -34,7 +39,9 @@ struct LauncherView: View {
 
     private var pageCapacity: Int { LauncherGridConfiguration.pageCapacity }
     private let closeAnimationDuration: TimeInterval = 0.25
-    private let closeAnimationSlideOffset: CGFloat = 28
+    private let gridSpringAnimation = Animation.spring(response: 0.42, dampingFraction: 0.86, blendDuration: 0.12)
+    private let pageSwitchAnimation = Animation.interactiveSpring(response: 0.35, dampingFraction: 0.88, blendDuration: 0.14)
+    private let folderOpenAnimation = Animation.spring(response: 0.36, dampingFraction: 0.82, blendDuration: 0.08)
 
     @State private var orderedItems: [LauncherItem]
     @State private var draggedItem: LauncherItem?
@@ -51,6 +58,9 @@ struct LauncherView: View {
     @State private var isEditingFolderName = false
     @State private var folderNameDraft = ""
     @State private var pageSizes: [Int]
+    @State private var launchingItemID: UUID?
+    @State private var pageDirection: PageShiftDirection = .forward
+    @State private var folderIconWaveToggle = false
     @FocusState private var isFolderNameFieldFocused: Bool
     @Environment(\.colorScheme) private var colorScheme
 
@@ -86,6 +96,7 @@ struct LauncherView: View {
                 pageSizes = normalizePageSizes(pageSizes, itemCount: newValue.count)
             }
             currentPage = 0
+            pageDirection = .forward
         }
         .onChange(of: activeFolder) { newValue in
             if newValue == nil {
@@ -96,13 +107,18 @@ struct LauncherView: View {
                 isEditingFolderName = false
                 folderNameDraft = ""
                 isFolderNameFieldFocused = false
+                folderIconWaveToggle = false
+                launchingItemID = nil
             } else if let folder = newValue {
                 folderNameDraft = folder.name
                 isEditingFolderName = false
+                folderIconWaveToggle = true
+                launchingItemID = nil
             }
         }
         .onChange(of: searchText) { _ in
             currentPage = 0
+            pageDirection = .forward
         }
         .onChange(of: orderedItems) { newItems in
             if fillsGapsAutomatically {
@@ -112,6 +128,7 @@ struct LauncherView: View {
             }
             let maxPage = max(pageCount - 1, 0)
             currentPage = min(currentPage, maxPage)
+            pageDirection = .forward
             if let activeFolder,
                newItems.contains(where: { item in
                     if case let .folder(folder) = item {
@@ -157,12 +174,18 @@ struct LauncherView: View {
                                     }
                             } else {
                                 GeometryReader { gridProxy in
+                                    let activeSizes = activePageSizes(for: orderedItems.count)
+                                    let pageStart = pageStartIndex(for: currentPage, sizes: activeSizes)
+                                    let itemCountOnPage = activeSizes.indices.contains(currentPage) ? activeSizes[currentPage] : 0
+
                                     LazyVGrid(
                                         columns: layout.gridColumns,
                                         alignment: .center,
                                         spacing: layout.iconSpacing
                                     ) {
                                         ForEach(Array(itemsForVisiblePage.enumerated()), id: \.element.id) { _, item in
+                                            let isLaunching = launchingItemID == item.id
+                                            let isFolderBeingOpened = activeFolder?.id == item.id
                                             let cell = Button {
                                                 openItem(item)
                                             } label: {
@@ -172,6 +195,9 @@ struct LauncherView: View {
                                                             width: layout.iconDimension,
                                                             height: layout.iconDimension
                                                         )
+                                                        .scaleEffect(isLaunching ? 1.08 : 1.0)
+                                                        .opacity(isLaunching ? 0.4 : 1.0)
+                                                        .animation(.easeInOut(duration: 0.18), value: launchingItemID)
                                                     Text(item.displayName)
                                                         .font(.system(size: 13, weight: .medium))
                                                         .multilineTextAlignment(.center)
@@ -181,6 +207,11 @@ struct LauncherView: View {
                                                 }
                                                 .frame(maxWidth: .infinity)
                                                 .padding(.vertical, 4)
+                                                .scaleEffect(isFolderBeingOpened ? 1.03 : 1.0)
+                                                .animation(
+                                                    .spring(response: 0.35, dampingFraction: 0.82, blendDuration: 0.06),
+                                                    value: activeFolder?.id
+                                                )
                                             }
                                             .buttonStyle(.plain)
                                             .contentShape(Rectangle())
@@ -193,6 +224,8 @@ struct LauncherView: View {
                                                     .onDrag {
                                                         draggedItem = item
                                                         return NSItemProvider(object: NSString(string: item.id.uuidString))
+                                                    } preview: {
+                                                        dragPreview(for: item, layout: layout)
                                                     }
                                             } else {
                                                 cell
@@ -209,8 +242,8 @@ struct LauncherView: View {
                                             delegate: GridReorderDropDelegate(
                                                 layout: layout,
                                                 gridSize: gridProxy.size,
-                                                currentPage: currentPage,
-                                                pageCapacity: pageCapacity,
+                                                pageStartIndex: pageStart,
+                                                pageItemCount: itemCountOnPage,
                                                 items: $orderedItems,
                                                 draggedItem: $draggedItem,
                                                 shouldSuppressReorder: { isDragReorderSuppressed() },
@@ -218,7 +251,8 @@ struct LauncherView: View {
                                                     reorderItem(
                                                         item,
                                                         to: targetIndex,
-                                                        preferSwap: preferSwap
+                                                        preferSwap: preferSwap,
+                                                        targetPageHint: currentPage
                                                     )
                                                 },
                                                 afterReorder: updatePageAfterDrop(at:),
@@ -227,6 +261,10 @@ struct LauncherView: View {
                                             )
                                     )
                                 }
+                                .id(currentPage)
+                                .transition(pageSwitchTransition)
+                                .animation(gridSpringAnimation, value: orderedItems)
+                                .animation(pageSwitchAnimation, value: currentPage)
                                 .frame(height: layout.gridHeight)
                             }
                         }
@@ -337,6 +375,20 @@ struct LauncherView: View {
         return activePageSizes(for: orderedItems.count)
     }
 
+    /// Configures a directional slide/fade transition for page changes.
+    private var pageSwitchTransition: AnyTransition {
+        let insertionEdge: Edge = pageDirection == .forward ? .trailing : .leading
+        let removalEdge: Edge = pageDirection == .forward ? .leading : .trailing
+        let insertion = AnyTransition
+            .move(edge: insertionEdge)
+            .combined(with: .opacity)
+            .combined(with: .scale(scale: 0.98))
+        let removal = AnyTransition
+            .move(edge: removalEdge)
+            .combined(with: .opacity)
+        return .asymmetric(insertion: insertion, removal: removal)
+    }
+
     /// Calculates how many pages are required to show all apps.
     private var pageCount: Int {
         guard filteredItemList.isEmpty == false else { return 1 }
@@ -392,7 +444,9 @@ struct LauncherView: View {
            targetIndex >= 0,
            targetIndex != originalIndex {
             updated.swapAt(originalIndex, targetIndex)
-            orderedItems = updated
+            withAnimation(gridSpringAnimation) {
+                orderedItems = updated
+            }
             persistOrderChange(using: fillsGapsAutomatically ? nil : currentSizes)
             return targetIndex
         } else {
@@ -411,7 +465,9 @@ struct LauncherView: View {
                 resultingCount: updated.count,
                 targetPageHint: targetPageHint
             )
-            orderedItems = updated
+            withAnimation(gridSpringAnimation) {
+                orderedItems = updated
+            }
             persistOrderChange(using: afterInsertSizes)
             return boundedIndex
         }
@@ -464,8 +520,10 @@ struct LauncherView: View {
         let boundedIndex = max(0, min(targetIndex, folder.apps.count))
         folder.apps.insert(removal.app, at: boundedIndex)
         removal.items[folderIndex] = .folder(folder)
-        orderedItems = removal.items
-        activeFolder = folder
+        withAnimation(gridSpringAnimation) {
+            orderedItems = removal.items
+            activeFolder = folder
+        }
         currentPage = folderIndex / max(pageCapacity, 1)
         persistOrderChange()
     }
@@ -481,8 +539,10 @@ struct LauncherView: View {
 
         var updated = orderedItems
         updated[idx] = .folder(folder)
-        orderedItems = updated
-        activeFolder = folder
+        withAnimation(gridSpringAnimation) {
+            orderedItems = updated
+            activeFolder = folder
+        }
         persistOrderChange()
     }
 
@@ -510,8 +570,10 @@ struct LauncherView: View {
         let insertIndex = folder.apps.isEmpty ? folderIndex : folderIndex + 1
         updated.insert(.app(app), at: insertIndex)
 
-        orderedItems = updated
-        activeFolder = nil
+        withAnimation(gridSpringAnimation) {
+            orderedItems = updated
+            activeFolder = nil
+        }
         persistOrderChange()
         folderDragContext = nil
         return .app(app)
@@ -529,7 +591,9 @@ struct LauncherView: View {
     /// Opens a folder overlay mid-drag so the app can be dropped into a specific position.
     private func openFolderForDrag(_ folder: FolderItem, draggedItem: LauncherItem) {
         guard case .app = draggedItem else { return }
-        activeFolder = folder
+        withAnimation(folderOpenAnimation) {
+            activeFolder = folder
+        }
     }
 
     /// Starts a delayed folder merge after hovering over a target item.
@@ -611,7 +675,9 @@ struct LauncherView: View {
         updated.insert(.folder(folder), at: targetIndex)
         workingSizes = pageSizesAfterRemoval(workingSizes, removingIndex: targetIndex, currentCount: orderedItems.count - 1)
         let finalSizes = pageSizesAfterInsertion(workingSizes, insertingIndex: targetIndex, resultingCount: updated.count)
-        orderedItems = updated
+        withAnimation(gridSpringAnimation) {
+            orderedItems = updated
+        }
         persistOrderChange(using: finalSizes)
         updatePageAfterDrop(at: targetIndex)
     }
@@ -622,7 +688,11 @@ struct LauncherView: View {
         let sizes = activePageSizes(for: orderedItems.count)
         guard let targetPage = pageIndex(forLinearIndex: index, sizes: sizes) else { return }
         let maxPage = max(pageCount - 1, 0)
-        currentPage = min(max(targetPage, 0), maxPage)
+        let boundedTarget = min(max(targetPage, 0), maxPage)
+        withAnimation(pageSwitchAnimation) {
+            pageDirection = boundedTarget >= currentPage ? .forward : .backward
+            currentPage = boundedTarget
+        }
     }
 
     /// Generates the friendly page indicator label.
@@ -804,6 +874,16 @@ struct LauncherView: View {
         }
     }
 
+    /// Monochrome drag preview to keep the in-grid placeholder untouched.
+    private func dragPreview(for item: LauncherItem, layout: LauncherLayoutMetrics) -> some View {
+        iconView(for: item, layout: layout)
+            .frame(width: layout.iconDimension, height: layout.iconDimension)
+            .grayscale(1.0)
+            .saturation(0)
+            .opacity(0.72)
+            .shadow(color: .black.opacity(0.18), radius: 10, y: 6)
+    }
+
     /// Composes a 3x3 grid of the first nine app icons to mimic the macOS folder style.
     private func folderIcon(for folder: FolderItem, layout: LauncherLayoutMetrics) -> some View {
         let previews = Array(folder.apps.prefix(9))
@@ -891,13 +971,17 @@ struct LauncherView: View {
 
         GeometryReader { gridProxy in
             LazyVGrid(columns: columns, alignment: .center, spacing: spacing) {
-                ForEach(folder.apps, id: \.id) { app in
+                ForEach(Array(folder.apps.enumerated()), id: \.element.id) { index, app in
+                    let isLaunching = launchingItemID == app.id
                     let cell = Button {
                         openItem(.app(app))
                     } label: {
                         VStack(spacing: 10) {
                             iconView(for: .app(app), layout: layout)
                                 .frame(width: tileSize, height: tileSize)
+                                .scaleEffect(isLaunching ? 1.08 : 1.0)
+                                .opacity(isLaunching ? 0.4 : 1.0)
+                                .animation(.easeInOut(duration: 0.18), value: launchingItemID)
                             Text(app.resolvedDisplayName)
                                 .font(.system(size: 14, weight: .medium))
                                 .foregroundStyle(.primary)
@@ -906,6 +990,12 @@ struct LauncherView: View {
                         }
                         .padding(.vertical, 6)
                         .frame(maxWidth: .infinity)
+                        .scaleEffect(folderIconWaveToggle ? 1 : 0.9)
+                        .opacity(folderIconWaveToggle ? 1 : 0.0)
+                        .animation(
+                            folderOpenAnimation.delay(Double(index) * 0.025),
+                            value: folderIconWaveToggle
+                        )
                     }
                     .buttonStyle(.plain)
                     .contextMenu {
@@ -918,6 +1008,8 @@ struct LauncherView: View {
                             draggedFolderApp = app
                             draggedItem = .app(app)
                             return NSItemProvider(object: NSString(string: app.bundleIdentifier))
+                        } preview: {
+                            dragPreview(for: .app(app), layout: layout)
                         }
                 }
             }
@@ -950,6 +1042,7 @@ struct LauncherView: View {
                 )
             )
         }
+        .animation(gridSpringAnimation, value: folder.apps)
         .frame(maxWidth: .infinity)
     }
 
@@ -989,7 +1082,7 @@ struct LauncherView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                withAnimation(.easeInOut(duration: 0.15)) {
+                withAnimation(folderOpenAnimation) {
                     activeFolder = nil
                 }
             }
@@ -1004,7 +1097,13 @@ struct LauncherView: View {
                     }
                 )
             )
-            .transition(.opacity)
+            .transition(
+                .asymmetric(
+                    insertion: .scale(scale: 0.92).combined(with: .opacity),
+                    removal: .scale(scale: 0.9).combined(with: .opacity)
+                )
+            )
+            .animation(folderOpenAnimation, value: activeFolder?.id)
         }
     }
 
@@ -1032,12 +1131,17 @@ struct LauncherView: View {
 
         switch item {
         case .folder(let folder):
-            activeFolder = folder
+            withAnimation(folderOpenAnimation) {
+                activeFolder = folder
+                folderIconWaveToggle = true
+            }
             return
         case .app(let app):
             activeFolder = nil
             guard let bundleURL = app.bundleURL else { return }
-
+            withAnimation(.easeInOut(duration: 0.18)) {
+                launchingItemID = app.id
+            }
             isClosingLauncher = true
 
             let configuration = NSWorkspace.OpenConfiguration()
@@ -1048,33 +1152,28 @@ struct LauncherView: View {
         }
     }
 
-    /// Fades/slides the launcher window away before hiding it.
+    /// Fades the launcher window away before hiding it.
     private func animateAndDismissLauncher() {
         guard let window = hostingWindow() else {
             isClosingLauncher = false
             return
         }
 
-        let originalFrame = window.frame
-        let shouldSlide = window is FloatyLauncherWindow
-        let targetFrame = shouldSlide
-            ? originalFrame.offsetBy(dx: 0, dy: -closeAnimationSlideOffset)
-            : originalFrame
+        let contentView = window.contentView
 
         NSAnimationContext.runAnimationGroup { context in
             context.duration = closeAnimationDuration
+            context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            context.allowsImplicitAnimation = true
             window.animator().alphaValue = 0
-            if shouldSlide {
-                window.animator().setFrame(targetFrame, display: true)
-            }
+            contentView?.animator().alphaValue = 0
         } completionHandler: {
             Task { @MainActor in
                 window.orderOut(nil)
                 window.alphaValue = 1
-                if shouldSlide {
-                    window.setFrame(originalFrame, display: false)
-                }
+                contentView?.alphaValue = 1
                 isClosingLauncher = false
+                launchingItemID = nil
             }
         }
     }
@@ -1087,13 +1186,19 @@ struct LauncherView: View {
     /// Moves to the previous page if possible.
     private func pageBackward() {
         guard pageCount > 0 else { return }
-        currentPage = max(currentPage - 1, 0)
+        withAnimation(pageSwitchAnimation) {
+            pageDirection = .backward
+            currentPage = max(currentPage - 1, 0)
+        }
     }
 
     /// Moves to the next page if possible.
     private func pageForward() {
         guard pageCount > 0 else { return }
-        currentPage = min(currentPage + 1, pageCount - 1)
+        withAnimation(pageSwitchAnimation) {
+            pageDirection = .forward
+            currentPage = min(currentPage + 1, pageCount - 1)
+        }
     }
 
     /// Hides the fullscreen launcher when the blurred background is clicked.
@@ -1484,7 +1589,9 @@ struct LauncherView: View {
         LauncherSettingsPersistence.setHiddenBundleIdentifiers(Array(identifiers).sorted())
 
         if let removal = removeAppFromHierarchy(app) {
-            orderedItems = removal.items
+            withAnimation(gridSpringAnimation) {
+                orderedItems = removal.items
+            }
             persistOrderChange()
             currentPage = min(currentPage, fullPageCount - 1)
         }
@@ -1506,7 +1613,9 @@ struct LauncherView: View {
         var updated = removal.items
         folder.apps.append(removal.app)
         updated[folderIndex] = .folder(folder)
-        orderedItems = updated
+        withAnimation(gridSpringAnimation) {
+            orderedItems = updated
+        }
         currentPage = folderIndex / pageCapacity
         if activeFolder?.id == folder.id {
             activeFolder = folder
@@ -1550,9 +1659,15 @@ struct LauncherView: View {
             resultingCount: items.count,
             targetPageHint: boundedPage
         )
-        orderedItems = items
+        withAnimation(gridSpringAnimation) {
+            orderedItems = items
+        }
         pageSizes = finalSizes
-        currentPage = min(boundedPage, max(finalSizes.count - 1, 0))
+        let targetPage = min(boundedPage, max(finalSizes.count - 1, 0))
+        withAnimation(pageSwitchAnimation) {
+            pageDirection = targetPage >= currentPage ? .forward : .backward
+            currentPage = targetPage
+        }
         persistOrderChange(using: finalSizes)
     }
 

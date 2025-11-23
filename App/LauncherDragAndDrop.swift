@@ -77,19 +77,27 @@ struct GridReorderDropDelegate: DropDelegate {
         let targetIndex = targetIndex(for: info.location)
         let modifiersActive = shouldSuppressReorder()
         let targetItemIndex = itemIndex(for: info.location)
-        let isDraggingApp: Bool = {
-            if case .app = draggedItem { return true }
-            return false
-        }()
+        let targetItem = targetItemIndex.flatMap { index in
+            items.indices.contains(index) ? items[index] : nil
+        }
 
-        if modifiersActive,
-           isDraggingApp,
-           let targetItemIndex,
-           targetItemIndex < items.count {
-            // With Option/Shift held, treat a drop onto another item as a folder create/append instead of a reorder.
-            onFolderHoverExit()
-            performFolderDrop(draggedItem, items[targetItemIndex])
-            return true
+        if modifiersActive, let targetItem {
+            let shouldMerge: Bool
+            switch (draggedItem, targetItem) {
+            case (.app, _):
+                shouldMerge = true
+            case (.folder, .folder):
+                shouldMerge = true
+            default:
+                shouldMerge = false
+            }
+
+            if shouldMerge {
+                // With Option/Shift held, treat a drop onto another item as a folder create/append instead of a reorder.
+                onFolderHoverExit()
+                performFolderDrop(draggedItem, targetItem)
+                return true
+            }
         }
 
         let finalIndex = performReorder(draggedItem, targetIndex, false)

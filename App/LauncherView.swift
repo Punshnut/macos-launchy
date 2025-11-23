@@ -648,9 +648,8 @@ struct LauncherView: View {
         folderHoverWithSuppressedReorder = false
     }
 
-    /// Combines the dragged app with the target item to form or append to a folder.
+    /// Combines the dragged item with the target item to form or append to a folder.
     private func mergeItemsIfNeeded(dragged: LauncherItem, onto target: LauncherItem) {
-        guard case let .app(appToMove) = dragged else { return }
         guard dragged.id != target.id else { return }
 
         var updated = orderedItems
@@ -660,26 +659,51 @@ struct LauncherView: View {
         var workingSizes = pageSizesAfterRemoval(currentSizes, removingIndex: draggedIndex, currentCount: orderedItems.count)
         guard let targetIndex = updated.firstIndex(of: target) else { return }
 
-        var folder: FolderItem
-        switch target {
-        case .app(let targetApp):
-            folder = FolderItem(name: FolderItem.defaultName, apps: [targetApp, appToMove])
-        case .folder(let existingFolder):
-            var mutableFolder = existingFolder
-            mutableFolder.apps.append(appToMove)
-            folder = mutableFolder
-            if activeFolder?.id == existingFolder.id {
-                activeFolder = mutableFolder
-            }
+        let mergedFolder: FolderItem
+        switch (dragged, target) {
+        case let (.app(appToMove), .app(targetApp)):
+            mergedFolder = FolderItem(name: FolderItem.defaultName, apps: [targetApp, appToMove])
+        case let (.app(appToMove), .folder(existingFolder)):
+            var folder = existingFolder
+            folder.apps.append(appToMove)
+            mergedFolder = folder
+        case let (.folder(droppedFolder), .folder(targetFolder)):
+            var folder = targetFolder
+            folder.apps.append(contentsOf: droppedFolder.apps)
+            mergedFolder = folder
+        default:
+            return
         }
 
         updated.remove(at: targetIndex)
-        updated.insert(.folder(folder), at: targetIndex)
+        updated.insert(.folder(mergedFolder), at: targetIndex)
         workingSizes = pageSizesAfterRemoval(workingSizes, removingIndex: targetIndex, currentCount: orderedItems.count - 1)
         let finalSizes = pageSizesAfterInsertion(workingSizes, insertingIndex: targetIndex, resultingCount: updated.count)
         withAnimation(gridSpringAnimation) {
             orderedItems = updated
         }
+
+        let targetFolderID: UUID? = {
+            if case let .folder(folder) = target {
+                return folder.id
+            }
+            return nil
+        }()
+        let draggedFolderID: UUID? = {
+            if case let .folder(folder) = dragged {
+                return folder.id
+            }
+            return nil
+        }()
+
+        if let active = activeFolder {
+            if let targetFolderID, active.id == targetFolderID {
+                activeFolder = mergedFolder
+            } else if let draggedFolderID, active.id == draggedFolderID {
+                activeFolder = mergedFolder
+            }
+        }
+
         persistOrderChange(using: finalSizes)
         updatePageAfterDrop(at: targetIndex)
     }

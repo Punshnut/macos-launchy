@@ -94,7 +94,8 @@ final class ItemArrangementStore {
     func arrangedItems(
         from discoveredApps: [AppItem],
         pageCapacity: Int,
-        fillsGapsAutomatically: Bool
+        fillsGapsAutomatically: Bool,
+        preferredCustomNames: [String: String] = [:]
     ) -> ([LauncherItem], [Int]) {
         var lookup: [String: AppItem] = Dictionary(
             uniqueKeysWithValues: discoveredApps.map { ($0.bundleIdentifier, $0) }
@@ -105,12 +106,12 @@ final class ItemArrangementStore {
             switch entry {
             case .app(let bundleID, let customName):
                 guard var app = lookup.removeValue(forKey: bundleID) else { continue }
-                app.customName = customName
+                app.customName = preferredCustomNames[bundleID] ?? customName
                 orderedItems.append(.app(app))
             case .folder(let folderRecord):
                 let resolvedApps = folderRecord.bundleIDs.compactMap { bundleID -> AppItem? in
                     guard var app = lookup.removeValue(forKey: bundleID) else { return nil }
-                    if let custom = folderRecord.appCustomNames?[bundleID] {
+                    if let custom = preferredCustomNames[bundleID] ?? folderRecord.appCustomNames?[bundleID] {
                         app.customName = custom
                     }
                     return app
@@ -139,7 +140,11 @@ final class ItemArrangementStore {
 
         for app in remainingApps {
             let insertIndex = firstAvailableInsertionIndex(currentCount: orderedItems.count, pageCapacity: pageCapacity)
-            orderedItems.insert(.app(app), at: insertIndex)
+            var renamed = app
+            if let custom = preferredCustomNames[app.bundleIdentifier] {
+                renamed.customName = custom
+            }
+            orderedItems.insert(.app(renamed), at: insertIndex)
         }
 
         cachedItems = orderedItems.map(persistedItem(from:))
@@ -256,16 +261,16 @@ final class ItemArrangementStore {
 
         var remaining = itemCount
         var normalized: [Int] = []
+        var overflow = 0
 
+        // Carry overflow forward so existing pages absorb extra items before we add a new page.
         for size in sizes where remaining > 0 {
-            var chunk = size
-            while chunk > 0 && remaining > 0 {
-                let portion = min(chunk, pageCapacity, remaining)
-                guard portion > 0 else { break }
-                normalized.append(portion)
-                remaining -= portion
-                chunk -= portion
-            }
+            let desired = size + overflow
+            let portion = min(desired, pageCapacity, remaining)
+            overflow = max(desired - portion, 0)
+            guard portion > 0 else { continue }
+            normalized.append(portion)
+            remaining -= portion
         }
 
         while remaining > 0 {

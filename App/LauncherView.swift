@@ -755,16 +755,16 @@ struct LauncherView: View {
 
         var remaining = itemCount
         var normalized: [Int] = []
+        var overflow = 0
 
+        // Carry overflow forward so existing pages absorb extra items before we add a new page.
         for size in raw where remaining > 0 {
-            var chunk = size
-            while chunk > 0 && remaining > 0 {
-                let portion = min(chunk, pageCapacity, remaining)
-                guard portion > 0 else { break }
-                normalized.append(portion)
-                remaining -= portion
-                chunk -= portion
-            }
+            let desired = size + overflow
+            let portion = min(desired, pageCapacity, remaining)
+            overflow = max(desired - portion, 0)
+            guard portion > 0 else { continue }
+            normalized.append(portion)
+            remaining -= portion
         }
 
         while remaining > 0 {

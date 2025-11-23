@@ -249,8 +249,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Clears saved arrangement data and reloads apps from disk.
     @MainActor
     private func handleArrangementReset() {
+        let preservedNames = customNamesByBundleID(from: orderedItems)
         itemOrderStore.resetArrangement()
-        refreshLauncherItems()
+        refreshLauncherItems(preservingCustomNames: preservedNames)
         applyLauncherMode()
     }
 
@@ -367,17 +368,40 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Rebuilds the visible items list using the current hidden settings.
-    private func refreshLauncherItems() {
+    private func refreshLauncherItems(preservingCustomNames names: [String: String] = [:]) {
         let hiddenBundleIDs = Set(currentSettings.hiddenBundleIDs)
         let (items, sizes) = itemOrderStore.arrangedItems(
             from: applicationDiscovery
                 .reloadApps(hiddenBundleIDs: hiddenBundleIDs)
                 .map(applicationDiscovery.loadIcon),
             pageCapacity: LauncherGridConfiguration.pageCapacity,
-            fillsGapsAutomatically: currentSettings.fillsGapsAutomatically
+            fillsGapsAutomatically: currentSettings.fillsGapsAutomatically,
+            preferredCustomNames: names
         )
         orderedItems = items
         pageSizes = sizes
+    }
+
+    /// Builds a bundle ID keyed map of custom names from both root items and folder contents.
+    private func customNamesByBundleID(from items: [LauncherItem]) -> [String: String] {
+        var names: [String: String] = [:]
+
+        func recordName(for app: AppItem) {
+            guard let custom = app.customName?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  custom.isEmpty == false else { return }
+            names[app.bundleIdentifier] = custom
+        }
+
+        for item in items {
+            switch item {
+            case .app(let app):
+                recordName(for: app)
+            case .folder(let folder):
+                folder.apps.forEach(recordName)
+            }
+        }
+
+        return names
     }
 
     /// Assembles the launcher SwiftUI view with the latest settings.

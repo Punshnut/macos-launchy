@@ -560,7 +560,7 @@ struct SettingsWindow: View {
             .buttonStyle(.borderedProminent)
             .tint(.red)
 
-            Text("Deletes your saved ordering and folders, then rebuilds pages from scratch. Type RESET to confirm.")
+            Text("Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }

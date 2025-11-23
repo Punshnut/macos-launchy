@@ -17,6 +17,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var arrangementResetTask: Task<Void, Never>?
     private var statusBarItem: NSStatusItem?
     private var statusBarMenu: NSMenu?
+    private var lastFocusedApplication: NSRunningApplication?
+    private var pendingLaunchedApplication: NSRunningApplication?
+    private var pendingLaunchBundleIdentifier: String?
     private lazy var settingsWindowPresenter = SettingsWindowController()
     private lazy var introductionPresenter = IntroductionWindowController.shared
 
@@ -179,17 +182,17 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
 
         let menu = NSMenu()
-        let showItem = NSMenuItem(title: "Show Launcher", action: #selector(showLauncherFromStatusItem(_:)), keyEquivalent: "")
+        let showItem = NSMenuItem(title: String(localized: "Show Launcher"), action: #selector(showLauncherFromStatusItem(_:)), keyEquivalent: "")
         showItem.target = self
         menu.addItem(showItem)
 
-        let settingsItem = NSMenuItem(title: "Settings...", action: #selector(openSettingsFromStatusItem(_:)), keyEquivalent: ",")
+        let settingsItem = NSMenuItem(title: String(localized: "Settings..."), action: #selector(openSettingsFromStatusItem(_:)), keyEquivalent: ",")
         settingsItem.target = self
         menu.addItem(settingsItem)
 
         menu.addItem(.separator())
 
-        let quitItem = NSMenuItem(title: "Quit Launchy", action: #selector(quitFromStatusItem(_:)), keyEquivalent: "q")
+        let quitItem = NSMenuItem(title: String(localized: "Quit Launchy"), action: #selector(quitFromStatusItem(_:)), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
 
@@ -275,6 +278,63 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         layoutHotkeyManager.activate()
     }
 
+    /// Remembers which app was active before the launcher appeared so we can restore focus after hiding.
+    private func recordFrontmostApplicationForRestoration() {
+        guard let frontmost = NSWorkspace.shared.frontmostApplication,
+              frontmost.isTerminated == false else { return }
+
+        if let bundleID = Bundle.main.bundleIdentifier, frontmost.bundleIdentifier == bundleID {
+            return
+        }
+
+        lastFocusedApplication = frontmost
+    }
+
+    /// Tracks the app the user asked to launch so we can bring it forward after the launcher hides.
+    func recordLaunchedApplication(bundleIdentifier: String, application: NSRunningApplication?) {
+        pendingLaunchBundleIdentifier = bundleIdentifier
+        if let application {
+            pendingLaunchedApplication = application
+        }
+
+        if launcherWindowManager?.window?.isVisible == false {
+            focusPreferredApplicationAfterLauncherHides()
+        }
+    }
+
+    /// Restores focus to either the app being launched or the one that was active before opening Launchy.
+    func focusPreferredApplicationAfterLauncherHides() {
+        if activatePendingLaunchIfPossible() {
+            return
+        }
+        activateLastFocusedApplicationIfAvailable()
+    }
+
+    /// Attempts to foreground the last launched app, returning true on success.
+    private func activatePendingLaunchIfPossible() -> Bool {
+        guard let application = pendingLaunchedApplication ?? runningApplicationForPendingBundleID() else {
+            return false
+        }
+
+        application.activate(options: [.activateAllWindows, .activateIgnoringOtherApps])
+        pendingLaunchedApplication = nil
+        pendingLaunchBundleIdentifier = nil
+        return true
+    }
+
+    /// Looks up a running instance for the pending bundle identifier, if any.
+    private func runningApplicationForPendingBundleID() -> NSRunningApplication? {
+        guard let bundleID = pendingLaunchBundleIdentifier else { return nil }
+        return NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+            .first { $0.isTerminated == false }
+    }
+
+    /// Brings back the previously focused app when no launch target is waiting.
+    private func activateLastFocusedApplicationIfAvailable() {
+        guard let app = lastFocusedApplication, app.isTerminated == false else { return }
+        app.activate(options: [.activateAllWindows, .activateIgnoringOtherApps])
+    }
+
     /// Shows or hides the launcher window whenever the hotkey fires.
     private func toggleLauncherVisibility() {
         if launcherWindowManager == nil {
@@ -284,13 +344,16 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         guard let launcherWindowManager else { return }
 
         guard let window = launcherWindowManager.window else {
+            recordFrontmostApplicationForRestoration()
             launcherWindowManager.presentWindow()
             return
         }
 
         if window.isVisible {
             window.orderOut(nil)
+            focusPreferredApplicationAfterLauncherHides()
         } else {
+            recordFrontmostApplicationForRestoration()
             activateApplicationForCurrentModeIfNeeded()
             launcherWindowManager.presentWindow()
         }
@@ -336,6 +399,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Shows or rebuilds the launcher when the user clicks the menu bar item.
     @objc private func showLauncherFromStatusItem(_ sender: Any?) {
+        if launcherWindowManager?.window?.isVisible != true {
+            recordFrontmostApplicationForRestoration()
+        }
         applyLauncherMode()
         activateApplicationForCurrentModeIfNeeded()
         launcherWindowManager?.presentWindow()

@@ -92,7 +92,9 @@ enum LauncherItem: Identifiable, Hashable {
 
 /// Simple grouping of multiple apps into a single launcher cell.
 struct FolderItem: Identifiable, Hashable {
-    static let defaultName = "unnamed"
+    static var defaultName: String {
+        String(localized: "unnamed")
+    }
 
     let id: UUID
     var name: String
@@ -114,9 +116,9 @@ enum LauncherMode: String, CaseIterable, Hashable, Codable {
     var displayName: String {
         switch self {
         case .fullscreenOldMac:
-            return "Fullscreen"
+            return String(localized: "Fullscreen")
         case .floaty:
-            return "Floaty Panel"
+            return String(localized: "Floaty Panel")
         }
     }
 }
@@ -134,11 +136,11 @@ struct LauncherSettings: Hashable, Codable {
         /// User-facing label.
         var displayName: String {
             switch self {
-            case .system: return "System"
-            case .graphite: return "Graphite"
-            case .blue: return "Blue"
-            case .green: return "Green"
-            case .orange: return "Orange"
+            case .system: return String(localized: "System")
+            case .graphite: return String(localized: "Graphite")
+            case .blue: return String(localized: "Blue")
+            case .green: return String(localized: "Green")
+            case .orange: return String(localized: "Orange")
             }
         }
 
@@ -170,13 +172,13 @@ struct LauncherSettings: Hashable, Codable {
         var displayName: String {
             switch self {
             case .standard:
-                return "Standard"
+                return String(localized: "Standard")
             case .light:
-                return "Light Blur"
+                return String(localized: "Light Blur")
             case .transparent:
-                return "Transparent"
+                return String(localized: "Transparent")
             case .solid:
-                return "Solid Color"
+                return String(localized: "Solid Color")
             }
         }
 

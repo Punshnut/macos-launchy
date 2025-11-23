@@ -724,9 +724,11 @@ struct LauncherView: View {
     /// Generates the friendly page indicator label.
     private var pageIndicatorTitle: String {
         if filteredItemList.isEmpty {
-            return orderedItems.isEmpty ? "No items found" : "No matching items"
+            return orderedItems.isEmpty
+            ? String(localized: "No items found")
+            : String(localized: "No matching items")
         }
-        return "Page \(currentPage + 1) of \(pageCount)"
+        return String(localized: "Page \(currentPage + 1) of \(pageCount)")
     }
 
     private func activePageSizes(for itemCount: Int) -> [Int] {
@@ -1139,13 +1141,13 @@ struct LauncherView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 32, weight: .light))
                 .foregroundColor(.secondary)
-            Text(orderedItems.isEmpty ? "No items found" : "No matching items")
+            Text(orderedItems.isEmpty ? String(localized: "No items found") : String(localized: "No matching items"))
                 .font(.title3)
             if orderedItems.isEmpty == false && searchText.isEmpty == false {
-                Text("Try a different search term.")
+                Text(String(localized: "Try a different search term."))
                     .foregroundStyle(.secondary)
             } else if orderedItems.isEmpty {
-                Text("Launchy has not indexed any applications yet.")
+                Text(String(localized: "Launchy has not indexed any applications yet."))
                     .foregroundStyle(.secondary)
             }
         }
@@ -1170,9 +1172,15 @@ struct LauncherView: View {
             }
             isClosingLauncher = true
 
+            recordLaunchedApplication(app, runningApplication: nil)
+
             let configuration = NSWorkspace.OpenConfiguration()
             configuration.activates = true
-            NSWorkspace.shared.openApplication(at: bundleURL, configuration: configuration, completionHandler: nil)
+            NSWorkspace.shared.openApplication(at: bundleURL, configuration: configuration) { runningApp, _ in
+                Task { @MainActor in
+                    recordLaunchedApplication(app, runningApplication: runningApp)
+                }
+            }
 
             animateAndDismissLauncher()
         }
@@ -1182,6 +1190,7 @@ struct LauncherView: View {
     private func animateAndDismissLauncher() {
         guard let window = hostingWindow() else {
             isClosingLauncher = false
+            focusAfterLauncherDismisses()
             return
         }
 
@@ -1200,13 +1209,39 @@ struct LauncherView: View {
                 contentView?.alphaValue = 1
                 isClosingLauncher = false
                 launchingItemID = nil
+                focusAfterLauncherDismisses()
             }
         }
     }
 
+    /// Informs the app delegate about the chosen launch target so it can restore focus appropriately.
+    private func recordLaunchedApplication(_ app: AppItem, runningApplication: NSRunningApplication?) {
+        guard let delegate = NSApp?.delegate as? LaunchyAppDelegate else { return }
+        delegate.recordLaunchedApplication(bundleIdentifier: app.bundleIdentifier, application: runningApplication)
+    }
+
+    /// Asks the app delegate to foreground the right window after the launcher hides.
+    private func focusAfterLauncherDismisses() {
+        guard let delegate = NSApp?.delegate as? LaunchyAppDelegate else { return }
+        delegate.focusPreferredApplicationAfterLauncherHides()
+    }
+
     /// Returns the NSWindow currently hosting the launcher content, if any.
     private func hostingWindow() -> NSWindow? {
-        NSApp?.keyWindow ?? NSApp?.mainWindow
+        if let primary = NSApp?.keyWindow ?? NSApp?.mainWindow {
+            return primary
+        }
+
+        // Fall back to any window currently hosting this SwiftUI view when the panel is non-activating.
+        if let hosting = NSApp?.windows.first(where: { window in
+            window.contentViewController is NSHostingController<LauncherView>
+        }) {
+            return hosting
+        }
+
+        return NSApp?.windows.first { window in
+            window.contentView is NSHostingView<LauncherView>
+        }
     }
 
     /// Moves to the previous page if possible.
@@ -1477,17 +1512,17 @@ struct LauncherView: View {
         alert.messageText = app.resolvedDisplayName
 
         var lines: [String] = [
-            "Bundle ID: \(app.bundleIdentifier)"
+            String(localized: "Bundle ID: \(app.bundleIdentifier)")
         ]
         if let url = app.bundleURL {
-            lines.append("Location: \(url.path)")
+            lines.append(String(localized: "Location: \(url.path)"))
         }
         if let custom = sanitizedCustomName(app.customName ?? ""), custom.isEmpty == false {
-            lines.append("Custom Name: \(custom)")
+            lines.append(String(localized: "Custom Name: \(custom)"))
         }
 
         alert.informativeText = lines.joined(separator: "\n")
-        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: String(localized: "OK"))
         alert.runModal()
     }
 
@@ -1497,8 +1532,8 @@ struct LauncherView: View {
         alert.alertStyle = .informational
         alert.messageText = folder.name.isEmpty ? FolderItem.defaultName : folder.name
         let appList = folder.apps.map { "- \($0.resolvedDisplayName)" }.joined(separator: "\n")
-        alert.informativeText = appList.isEmpty ? "Folder is empty." : "Apps:\n\(appList)"
-        alert.addButton(withTitle: "OK")
+        alert.informativeText = appList.isEmpty ? String(localized: "Folder is empty.") : String(localized: "Apps:\n\(appList)")
+        alert.addButton(withTitle: String(localized: "OK"))
         alert.runModal()
     }
 
@@ -1506,8 +1541,8 @@ struct LauncherView: View {
     private func promptRenameApp(_ app: AppItem) {
         let initial = sanitizedCustomName(app.customName ?? app.displayName)
         requestNameInput(
-            title: "Rename App",
-            message: "Enter a custom name for this app. Leave empty to reset.",
+            title: String(localized: "Rename App"),
+            message: String(localized: "Enter a custom name for this app. Leave empty to reset."),
             initialValue: initial ?? ""
         ) { newName in
             guard let newName else { return }
@@ -1518,8 +1553,8 @@ struct LauncherView: View {
     /// Prompts the user for a new folder name and saves it.
     private func promptRenameFolder(_ folder: FolderItem) {
         requestNameInput(
-            title: "Rename Folder",
-            message: "Enter a name for this folder.",
+            title: String(localized: "Rename Folder"),
+            message: String(localized: "Enter a name for this folder."),
             initialValue: folder.name
         ) { newName in
             guard let newName else { return }
@@ -1854,8 +1889,8 @@ struct LauncherView: View {
         field.frame = NSRect(x: 0, y: 0, width: 240, height: 24)
         alert.accessoryView = field
 
-        alert.addButton(withTitle: "Save")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: String(localized: "Save"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
         let response = alert.runModal()
         guard response == .alertFirstButtonReturn else {
             onCompletion(nil)

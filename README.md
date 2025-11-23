@@ -2,6 +2,36 @@
 
 Launchy is a featherweight macOS app launcher that feels like part of the system: fullscreen-first, ultra-fast, and absolutely minimal. It silently scans your apps, keeps an edge-to-edge HUD ready on any Space, and opens things in one tap.
 
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-macOS-blue" alt="Platform macOS">
+  <img src="https://img.shields.io/badge/Swift-6.2-orange" alt="Swift 6.2">
+  <img src="https://img.shields.io/badge/Stage-Alpha-yellow" alt="Stage Alpha">
+  <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
+</p>
+
+<p align="center">
+  <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
+    <img src="https://img.shields.io/badge/Download-Alpha%200.1-blueviolet?style=for-the-badge" alt="Download Alpha 0.1">
+  </a>
+  <a href="https://github.com/Punshnut/macos-launchy/issues/new/choose">
+    <img src="https://img.shields.io/badge/Share%20feedback-Issue%20tracker-ff7f50?style=for-the-badge" alt="Share feedback">
+  </a>
+</p>
+
+<div align="center">
+  <details>
+    <summary>🇹🇷 · 🇩🇪 · 🇫🇷 · 🇮🇹 · 🇪🇸 - Europe & Asia (11)</summary>
+    <p>🇹🇷 Türkçe<br>🇩🇪 Deutsch<br>🇫🇷 Français<br>🇮🇹 Italiano<br>🇪🇸 Español (España)</p>
+  </details>
+  <details>
+    <summary>🇧🇷 · 🇲🇽 · 🇵🇹 · 🇺🇸 - Americas (4)</summary>
+    <p>🇧🇷 Português (Brasil)<br>🇲🇽 Español (LatAm)<br>🇵🇹 Português (Portugal)<br>🇺🇸 English</p>
+  </details>
+</div>
+<p align="center">
+  <sub>Spanish ships in both 🇲🇽 LatAm and 🇪🇸 Spain variants - the Americas card highlights LatAm while Europe & Asia lists the Iberian pack.</sub>
+</p>
+
 ## What you get (at a glance)
 
 - **Ready in a blink** - Launchy indexes your apps instantly and keeps icons cached so the grid is full the moment it appears.

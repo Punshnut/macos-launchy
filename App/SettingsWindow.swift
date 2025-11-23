@@ -162,9 +162,9 @@ private enum SettingsTab: Int, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .applauncher:
-            return "Applauncher"
+            return String(localized: "Applauncher")
         case .about:
-            return "About"
+            return String(localized: "About")
         }
     }
 }
@@ -372,8 +372,8 @@ struct SettingsWindow: View {
         VStack(spacing: 16) {
             settingsPanel(
                 icon: "rocket.launch.fill",
-                title: "Launcher",
-                subtitle: "Launch at login, layouts, and background styling.",
+                title: String(localized: "Launcher"),
+                subtitle: String(localized: "Launch at login, layouts, and background styling."),
                 customIcon: {
                     AnyView(
                         Image(nsImage: NSApp.applicationIconImage)
@@ -400,8 +400,8 @@ struct SettingsWindow: View {
 
             settingsPanel(
                 icon: "keyboard.fill",
-                title: "Keyboard",
-                subtitle: "Global shortcuts and quick reset tools."
+                title: String(localized: "Keyboard"),
+                subtitle: String(localized: "Global shortcuts and quick reset tools.")
             ) {
                 VStack(alignment: .leading, spacing: 14) {
                     hotkeySection
@@ -412,8 +412,8 @@ struct SettingsWindow: View {
 
             settingsPanel(
                 icon: "eye.slash.fill",
-                title: "Hidden Apps",
-                subtitle: "Choose which applications stay out of the launcher grid."
+                title: String(localized: "Hidden Apps"),
+                subtitle: String(localized: "Choose which applications stay out of the launcher grid.")
             ) {
                 hiddenAppsList
             }
@@ -531,19 +531,19 @@ struct SettingsWindow: View {
     private var hotkeySection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HotkeyRecorderRow(
-                title: "Toggle Launchy",
-                message: "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space.",
+                title: String(localized: "Toggle Launchy"),
+                message: String(localized: "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space."),
                 hotkey: settingsStore.settingsSnapshot.launcherHotkey,
-                placeholder: "Click to record",
+                placeholder: String(localized: "Click to record"),
                 onChange: { settingsStore.setLauncherHotkey($0) },
                 onReset: { settingsStore.resetLauncherHotkeyToDefault() }
             )
 
             HotkeyRecorderRow(
-                title: "Switch fullscreen <-> floaty",
-                message: "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable.",
+                title: String(localized: "Switch fullscreen <-> floaty"),
+                message: String(localized: "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable."),
                 hotkey: settingsStore.settingsSnapshot.layoutToggleHotkey,
-                placeholder: "Add shortcut",
+                placeholder: String(localized: "Add shortcut"),
                 onChange: { settingsStore.setLayoutToggleHotkey($0) },
                 showResetButton: false
             )
@@ -677,8 +677,8 @@ struct SettingsWindow: View {
     private var aboutTab: some View {
         settingsPanel(
             icon: "info.circle.fill",
-            title: "About Launchy",
-            subtitle: "Version details, credits, and useful links."
+            title: String(localized: "About Launchy"),
+            subtitle: String(localized: "Version details, credits, and useful links.")
         ) {
             VStack(spacing: 22) {
                 aboutHeader
@@ -720,19 +720,19 @@ struct SettingsWindow: View {
         VStack(alignment: .leading, spacing: 12) {
             aboutLinkRow(
                 icon: "link",
-                title: "Project Website",
+                title: String(localized: "Project Website"),
                 urlString: "https://github.com/Punshnut/macos-launchy"
             )
 
             aboutLinkRow(
                 icon: "sparkle.magnifyingglass",
-                title: "Report an Issue",
+                title: String(localized: "Report an Issue"),
                 urlString: "https://github.com/Punshnut/macos-launchy/issues"
             )
 
             aboutLinkRow(
                 icon: "envelope",
-                title: "Support Email",
+                title: String(localized: "Support Email"),
                 urlString: "https://github.com/Punshnut/macos-launchy"
             )
         }
@@ -887,16 +887,16 @@ struct SettingsWindow: View {
     private func confirmArrangementReset() {
         let alert = NSAlert()
         alert.alertStyle = .warning
-        alert.messageText = "Reset icon arrangement?"
-        alert.informativeText = "This deletes your saved ordering, folders, and page layout. Type RESET to continue."
+        alert.messageText = String(localized: "Reset icon arrangement?")
+        alert.informativeText = String(localized: "This deletes your saved ordering, folders, and page layout. Type RESET to continue.")
 
         let field = NSTextField(string: "")
-        field.placeholderString = "RESET"
+        field.placeholderString = String(localized: "RESET")
         field.frame = NSRect(x: 0, y: 0, width: 220, height: 24)
         alert.accessoryView = field
 
-        alert.addButton(withTitle: "Reset")
-        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: String(localized: "Reset"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
 
         let response = alert.runModal()
         guard response == .alertFirstButtonReturn else { return }
@@ -949,14 +949,14 @@ struct SettingsWindow: View {
 
     private func versionSummary() -> String {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "--"
-        return "Version \(version)"
+        return String(localized: "Version \(version)")
     }
 
     private func developerSummary() -> String {
         if let copyright = Bundle.main.object(forInfoDictionaryKey: "NSHumanReadableCopyright") as? String {
             return copyright
         }
-        return "Built by the Launchy team"
+        return String(localized: "Built by the Launchy team")
     }
 }
 
@@ -1020,7 +1020,7 @@ private final class HotkeyRecorderTextField: NSTextField {
         didSet { updateDisplay() }
     }
 
-    var placeholderText: String = "Click to record" {
+    var placeholderText: String = String(localized: "Click to record") {
         didSet { updateDisplay() }
     }
 
@@ -1110,7 +1110,7 @@ private final class HotkeyRecorderTextField: NSTextField {
     private func updateDisplay() {
         if isRecording {
             stringValue = ""
-            placeholderString = "Press shortcut..."
+            placeholderString = String(localized: "Press shortcut...")
             return
         }
 
@@ -1143,7 +1143,7 @@ final class SettingsWindowController: NSWindowController {
             backing: .buffered,
             defer: false
         )
-        window.title = "Launchy Settings"
+        window.title = String(localized: "Launchy Settings")
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
         window.isMovableByWindowBackground = true

@@ -256,7 +256,9 @@ struct LauncherView: View {
                                                     )
                                                 },
                                                 afterReorder: updatePageAfterDrop(at:),
-                                                onDropOnItem: handleFolderHover(dragged:onto:),
+                                                performFolderDrop: { dragged, target in
+                                                    mergeItemsIfNeeded(dragged: dragged, onto: target)
+                                                },
                                                 onFolderHoverExit: cancelFolderHover
                                             )
                                     )

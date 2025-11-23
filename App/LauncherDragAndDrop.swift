@@ -58,7 +58,7 @@ struct GridReorderDropDelegate: DropDelegate {
     var shouldSuppressReorder: () -> Bool
     var performReorder: (LauncherItem, Int, Bool) -> Int?
     var afterReorder: (Int?) -> Void
-    var onDropOnItem: (LauncherItem, LauncherItem) -> Void
+    var performFolderDrop: (LauncherItem, LauncherItem) -> Void
     var onFolderHoverExit: () -> Void
 
     func dropEntered(info: DropInfo) {
@@ -75,11 +75,21 @@ struct GridReorderDropDelegate: DropDelegate {
         guard let draggedItem else { return false }
 
         let targetIndex = targetIndex(for: info.location)
-        _ = shouldSuppressReorder()
+        let modifiersActive = shouldSuppressReorder()
+        let isDraggingApp: Bool
+        if case .app = draggedItem {
+            isDraggingApp = true
+        } else {
+            isDraggingApp = false
+        }
+        let isTargetItem = targetIndex < items.count
+        let isFolderDropZone = isTargetItem && shouldAttemptFolderDrop(for: info.location, targetIndex: targetIndex)
 
-        if targetIndex < items.count,
-           shouldAttemptFolderDrop(for: info.location, targetIndex: targetIndex) {
-            onDropOnItem(draggedItem, items[targetIndex])
+        if modifiersActive && isFolderDropZone && isDraggingApp {
+            // With Option/Shift held, treat a drop onto another item as a folder create/append.
+            onFolderHoverExit()
+            performFolderDrop(draggedItem, items[targetIndex])
+            return true
         }
 
         let finalIndex = performReorder(draggedItem, targetIndex, false)

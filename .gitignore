@@ -5,6 +5,17 @@
 /.build
 /.swiftpm
 Packages/
+/.derived/
+/.tmp/
+/.module-cache/
+/.derived/Build/Products/Release/
+/\.derived/Build/Products/Release/generate_keys
+/\.derived/Build/Products/Release/libed25519.a
+/\.derived/Build/Products/Release/ArgumentParser.o
+/\.derived/Build/Products/Release/generate_keys.dSYM/
+/\.derived/Build/Products/Release/generate_keys.swiftmodule/
+/sparkle_signature.txt
+/Package.resolved
 
 # Local development tooling metadata
 .vscode/

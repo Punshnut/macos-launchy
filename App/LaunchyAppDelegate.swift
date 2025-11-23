@@ -22,6 +22,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var pendingLaunchBundleIdentifier: String?
     private lazy var settingsWindowPresenter = SettingsWindowController()
     private lazy var introductionPresenter = IntroductionWindowController.shared
+    private let updaterController = UpdaterController()
 
     /// Finishes bootstrapping the app by loading settings, refreshing apps, and preparing the window.
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -42,6 +43,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         removeStatusItem()
         launcherHotkeyManager.deactivate()
         layoutHotkeyManager.deactivate()
+    }
+
+    /// Allows menu items to kick off a manual Sparkle check.
+    func checkForUpdatesFromMenu() {
+        updaterController.checkForUpdates(nil)
     }
 
     /// Reloads applications via the debug menu, clearing stale icon caches beforehand.
@@ -189,6 +195,12 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let settingsItem = NSMenuItem(title: String(localized: "Settings..."), action: #selector(openSettingsFromStatusItem(_:)), keyEquivalent: ",")
         settingsItem.target = self
         menu.addItem(settingsItem)
+
+        menu.addItem(.separator())
+
+        let updateItem = NSMenuItem(title: String(localized: "Check for Updates..."), action: #selector(checkForUpdatesFromStatusItem(_:)), keyEquivalent: "")
+        updateItem.target = self
+        menu.addItem(updateItem)
 
         menu.addItem(.separator())
 
@@ -419,6 +431,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Presents the Launchy introduction flow.
     func showIntroduction(startingAt step: Int = 0, markCompletionOnFinish: Bool = true) {
         introductionPresenter.present(startingAt: step, markCompletionOnFinish: markCompletionOnFinish)
+    }
+
+    /// Triggers a manual Sparkle update check from the status menu.
+    @objc private func checkForUpdatesFromStatusItem(_ sender: Any?) {
+        updaterController.checkForUpdates(sender)
     }
 
     /// Opens the settings window from the status item click.

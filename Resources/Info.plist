@@ -20,6 +20,14 @@
     <string>0.1</string>
     <key>CFBundleVersion</key>
     <string>0.1</string>
+    <key>SUFeedURL</key>
+    <string>https://punshnut.github.io/macos-launchy/appcast.xml</string>
+    <key>SUPublicEDKey</key>
+    <string>zQDK/otk+PsJEu5zHOF9c1RfOGc3KcH30MttgbsyHhY=</string>
+    <key>SUEnableAutomaticChecks</key>
+    <true/>
+    <key>SUAutomaticallyUpdate</key>
+    <true/>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>NSHumanReadableCopyright</key>

@@ -19,6 +19,12 @@ struct LaunchyApp: App {
                 .keyboardShortcut(",", modifiers: [.command])
             }
 
+            CommandGroup(after: .appInfo) {
+                Button("Check for Updates...") {
+                    appDelegate.checkForUpdatesFromMenu()
+                }
+            }
+
             CommandGroup(after: .appSettings) {
                 Button("Toggle Launcher Layout") {
                     appDelegate.toggleLauncherModeShortcut()

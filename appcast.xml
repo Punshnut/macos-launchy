@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"
+     xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Launchy Updates</title>
+    <link>https://github.com/Punshnut/macos-launchy</link>
+    <description>Release notes for Launchy</description>
+    <language>en</language>
+
+    <item>
+      <title>Launchy VERSION_PLACEHOLDER</title>
+      <sparkle:releaseNotesLink>https://github.com/Punshnut/macos-launchy/releases/latest</sparkle:releaseNotesLink>
+      <pubDate>REPLACE_WITH_PUBDATE</pubDate>
+      <enclosure
+        url="https://github.com/Punshnut/macos-launchy/releases/latest/download/Launchy.dmg"
+        sparkle:shortVersionString="REPLACE_SHORT_VERSION"
+        sparkle:version="REPLACE_BUILD_NUMBER"
+        length="REPLACE_LENGTH_BYTES"
+        type="application/octet-stream"
+        sparkle:edSignature="REPLACE_EDDSA_SIGNATURE" />
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+    </item>
+  </channel>
+</rss>

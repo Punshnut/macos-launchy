@@ -17,6 +17,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var arrangementResetTask: Task<Void, Never>?
     private var statusBarItem: NSStatusItem?
     private var statusBarMenu: NSMenu?
+    private let menuIconSize = NSSize(width: 18, height: 18)
+    private lazy var folderMenuIcon: NSImage? = {
+        let image = NSImage(named: NSImage.folderName) ?? NSImage(systemSymbolName: "folder.fill", accessibilityDescription: nil)
+        image?.size = menuIconSize
+        image?.isTemplate = false
+        return image
+    }()
     private var lastFocusedApplication: NSRunningApplication?
     private var pendingLaunchedApplication: NSRunningApplication?
     private var pendingLaunchBundleIdentifier: String?
@@ -194,28 +201,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
         }
 
-        let menu = NSMenu()
-        let showItem = NSMenuItem(title: String(localized: "Show Launcher"), action: #selector(showLauncherFromStatusItem(_:)), keyEquivalent: "")
-        showItem.target = self
-        menu.addItem(showItem)
-
-        let settingsItem = NSMenuItem(title: String(localized: "Settings..."), action: #selector(openSettingsFromStatusItem(_:)), keyEquivalent: ",")
-        settingsItem.target = self
-        menu.addItem(settingsItem)
-
-        menu.addItem(.separator())
-
-        let updateItem = NSMenuItem(title: String(localized: "Check for Updates..."), action: #selector(checkForUpdatesFromStatusItem(_:)), keyEquivalent: "")
-        updateItem.target = self
-        menu.addItem(updateItem)
-
-        menu.addItem(.separator())
-
-        let quitItem = NSMenuItem(title: String(localized: "Quit Launchy"), action: #selector(quitFromStatusItem(_:)), keyEquivalent: "q")
-        quitItem.target = self
-        menu.addItem(quitItem)
-
-        statusBarMenu = menu
+        statusBarMenu = buildStatusBarMenu()
         statusBarItem = item
     }
 
@@ -405,7 +391,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Presents the status item's menu anchored to the button.
     private func showStatusItemMenu(with event: NSEvent, from button: NSStatusBarButton) {
-        guard let menu = statusBarMenu else { return }
+        let menu = buildStatusBarMenu()
+        statusBarMenu = menu
         NSMenu.popUpContextMenu(menu, with: event, for: button)
     }
 
@@ -422,6 +409,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         applyLauncherMode()
         activateApplicationForCurrentModeIfNeeded()
         launcherWindowManager?.presentWindow()
+    }
+
+    /// Supplies the Dock's context menu with the arranged launcher items.
+    func applicationDockMenu(_ sender: NSApplication) -> NSMenu? {
+        buildDockMenu()
     }
 
     /// Cycles between floaty and fullscreen layouts when triggered from a menu/shortcut.
@@ -516,5 +508,156 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private func showIntroductionIfNeeded() {
         guard currentSettings.hasCompletedIntroduction == false else { return }
         showIntroduction()
+    }
+
+    /// Builds the menu shown from the status bar icon, mixing launcher content and app controls.
+    private func buildStatusBarMenu() -> NSMenu {
+        let menu = NSMenu()
+        let hasLauncherEntries = appendLauncherItemsMenu(to: menu)
+        if hasLauncherEntries {
+            menu.addItem(.separator())
+        }
+
+        let showItem = NSMenuItem(title: String(localized: "Show Launcher"), action: #selector(showLauncherFromStatusItem(_:)), keyEquivalent: "")
+        showItem.target = self
+        menu.addItem(showItem)
+
+        let settingsItem = NSMenuItem(title: String(localized: "Settings..."), action: #selector(openSettingsFromStatusItem(_:)), keyEquivalent: ",")
+        settingsItem.target = self
+        menu.addItem(settingsItem)
+
+        menu.addItem(.separator())
+
+        let updateItem = NSMenuItem(title: String(localized: "Check for Updates..."), action: #selector(checkForUpdatesFromStatusItem(_:)), keyEquivalent: "")
+        updateItem.target = self
+        menu.addItem(updateItem)
+
+        menu.addItem(.separator())
+
+        let quitItem = NSMenuItem(title: String(localized: "Quit Launchy"), action: #selector(quitFromStatusItem(_:)), keyEquivalent: "q")
+        quitItem.target = self
+        menu.addItem(quitItem)
+
+        return menu
+    }
+
+    /// Builds the Dock context menu listing launcher items above the system options.
+    private func buildDockMenu() -> NSMenu {
+        let menu = NSMenu()
+        let hasLauncherEntries = appendLauncherItemsMenu(to: menu)
+        if hasLauncherEntries {
+            menu.addItem(.separator())
+        }
+        return menu
+    }
+
+    /// Adds the arranged apps and folders to the provided menu in alphabetical order.
+    @discardableResult
+    private func appendLauncherItemsMenu(to menu: NSMenu) -> Bool {
+        let sortedItems = orderedItems.sorted { lhs, rhs in
+            menuSortKey(for: lhs).localizedCaseInsensitiveCompare(menuSortKey(for: rhs)) == .orderedAscending
+        }
+
+        guard sortedItems.isEmpty == false else {
+            let placeholder = NSMenuItem(title: String(localized: "No applications available"), action: nil, keyEquivalent: "")
+            placeholder.isEnabled = false
+            menu.addItem(placeholder)
+            return false
+        }
+
+        for item in sortedItems {
+            switch item {
+            case .app(let app):
+                menu.addItem(menuItem(for: app))
+            case .folder(let folder):
+                menu.addItem(menuItem(for: folder))
+            }
+        }
+
+        return true
+    }
+
+    /// Builds a menu item representing an app launch target.
+    private func menuItem(for app: AppItem) -> NSMenuItem {
+        let title = menuDisplayTitle(for: app)
+        let item = NSMenuItem(title: title, action: #selector(launchAppFromMenu(_:)), keyEquivalent: "")
+        item.target = self
+        item.representedObject = app
+        item.image = menuIcon(for: app)
+        item.isEnabled = app.bundleURL != nil
+        return item
+    }
+
+    /// Builds a submenu-backed menu item representing a folder of apps.
+    private func menuItem(for folder: FolderItem) -> NSMenuItem {
+        let item = NSMenuItem(title: folder.name, action: nil, keyEquivalent: "")
+        item.image = folderMenuIcon
+
+        let submenu = NSMenu()
+        let sortedApps = folder.apps.sorted { lhs, rhs in
+            menuSortKey(for: lhs).localizedCaseInsensitiveCompare(menuSortKey(for: rhs)) == .orderedAscending
+        }
+
+        if sortedApps.isEmpty {
+            let placeholder = NSMenuItem(title: String(localized: "No applications available"), action: nil, keyEquivalent: "")
+            placeholder.isEnabled = false
+            submenu.addItem(placeholder)
+        } else {
+            for app in sortedApps {
+                submenu.addItem(menuItem(for: app))
+            }
+        }
+
+        item.submenu = submenu
+        return item
+    }
+
+    /// Returns a stable string for sorting and displaying app items.
+    private func menuDisplayTitle(for app: AppItem) -> String {
+        if let bundleName = app.bundleURL?.lastPathComponent {
+            return bundleName
+        }
+        return app.resolvedDisplayName
+    }
+
+    /// Produces a consistent sort key for menu entries.
+    private func menuSortKey(for item: LauncherItem) -> String {
+        switch item {
+        case .app(let app):
+            return menuSortKey(for: app)
+        case .folder(let folder):
+            return folder.name
+        }
+    }
+
+    /// Produces a consistent sort key for app menu entries.
+    private func menuSortKey(for app: AppItem) -> String {
+        menuDisplayTitle(for: app)
+    }
+
+    /// Scales the provided app icon down for menu usage, falling back to the system default.
+    private func menuIcon(for app: AppItem) -> NSImage? {
+        let baseIcon = app.iconImage ?? applicationDiscovery.resolveIcon(for: app)
+        guard let baseIcon else { return nil }
+        let icon = baseIcon.copy() as? NSImage ?? baseIcon
+        icon.size = menuIconSize
+        icon.isTemplate = false
+        return icon
+    }
+
+    /// Launches an app when chosen from a menu list.
+    @objc private func launchAppFromMenu(_ sender: NSMenuItem) {
+        guard let app = sender.representedObject as? AppItem,
+              let bundleURL = app.bundleURL else { return }
+
+        recordLaunchedApplication(bundleIdentifier: app.bundleIdentifier, application: nil)
+
+        let configuration = NSWorkspace.OpenConfiguration()
+        configuration.activates = true
+        NSWorkspace.shared.openApplication(at: bundleURL, configuration: configuration) { [weak self] runningApp, _ in
+            Task { @MainActor in
+                self?.recordLaunchedApplication(bundleIdentifier: app.bundleIdentifier, application: runningApp)
+            }
+        }
     }
 }

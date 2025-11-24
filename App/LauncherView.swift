@@ -1074,13 +1074,11 @@ struct LauncherView: View {
         return orderedItems.filter { item in
             switch item {
             case .app(let app):
-                return app.resolvedDisplayName.localizedCaseInsensitiveContains(trimmedQuery) ||
-                app.bundleIdentifier.localizedCaseInsensitiveContains(trimmedQuery)
+                return app.matches(query: trimmedQuery)
             case .folder(let folder):
                 let nameMatches = folder.name.localizedCaseInsensitiveContains(trimmedQuery)
                 let contentsMatch = folder.apps.contains { app in
-                    app.resolvedDisplayName.localizedCaseInsensitiveContains(trimmedQuery) ||
-                    app.bundleIdentifier.localizedCaseInsensitiveContains(trimmedQuery)
+                    app.matches(query: trimmedQuery)
                 }
                 return nameMatches || contentsMatch
             }
@@ -2263,7 +2261,7 @@ struct LauncherView: View {
 
     /// Prefills the app rename field with either the custom name or the bundle's display name.
     private func appRenameDraft(for app: AppItem) -> String {
-        sanitizedCustomName(app.customName ?? app.displayName) ?? app.displayName
+        sanitizedCustomName(app.customName ?? app.resolvedDisplayName) ?? app.resolvedDisplayName
     }
 
     /// Begins inline app renaming on the targeted item.

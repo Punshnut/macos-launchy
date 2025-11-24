@@ -135,7 +135,7 @@ final class ItemArrangementStore {
         }
 
         let remainingApps = lookup.values.sorted { lhs, rhs in
-            lhs.displayName.localizedCaseInsensitiveCompare(rhs.displayName) == .orderedAscending
+            lhs.sortingName.localizedCaseInsensitiveCompare(rhs.sortingName) == .orderedAscending
         }
 
         for app in remainingApps {

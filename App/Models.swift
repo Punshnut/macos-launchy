@@ -7,6 +7,8 @@ struct AppItem: Identifiable, Hashable {
     let id: UUID
     /// Human-friendly app name shown in the launcher grid.
     let displayName: String
+    /// Localized app name resolved using the system language, if available.
+    let localizedDisplayName: String?
     /// Optional custom label supplied by the user.
     var customName: String?
     /// Bundle identifier used both for hiding apps and launching them.
@@ -19,6 +21,7 @@ struct AppItem: Identifiable, Hashable {
     init(
         id: UUID,
         displayName: String,
+        localizedDisplayName: String? = nil,
         customName: String? = nil,
         bundleIdentifier: String,
         iconImage: NSImage?,
@@ -26,6 +29,7 @@ struct AppItem: Identifiable, Hashable {
     ) {
         self.id = id
         self.displayName = displayName
+        self.localizedDisplayName = localizedDisplayName
         self.customName = customName
         self.bundleIdentifier = bundleIdentifier
         self.iconImage = iconImage
@@ -42,7 +46,62 @@ struct AppItem: Identifiable, Hashable {
 
     /// Returns the best display name, preferring the override if present.
     var resolvedDisplayName: String {
+        if let trimmedCustom = normalizedCustomName {
+            return trimmedCustom
+        }
+
+        if let localized = normalizedLocalizedDisplayName {
+            return localized
+        }
+
+        return normalizedDisplayName
+    }
+
+    /// All candidate names used for search and filtering without duplicates.
+    var searchableNames: [String] {
+        let candidates = [
+            normalizedCustomName,
+            normalizedLocalizedDisplayName,
+            normalizedDisplayName
+        ]
+
+        return candidates
+            .compactMap { $0 }
+            .reduce(into: [String]()) { unique, name in
+                let alreadyAdded = unique.contains { existing in
+                    existing.compare(name, options: .caseInsensitive) == .orderedSame
+                }
+                if alreadyAdded == false {
+                    unique.append(name)
+                }
+            }
+    }
+
+    /// Primary name used when sorting lists for display.
+    var sortingName: String {
+        normalizedLocalizedDisplayName ?? normalizedDisplayName
+    }
+
+    /// Checks if the item matches the provided search query across names and bundle ID.
+    func matches(query: String) -> Bool {
+        guard query.isEmpty == false else { return true }
+        return searchableNames.contains { $0.localizedCaseInsensitiveContains(query) }
+            || bundleIdentifier.localizedCaseInsensitiveContains(query)
+    }
+
+    private var normalizedCustomName: String? {
         let trimmed = customName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return trimmed.isEmpty ? nil : trimmed
+    }
+
+    private var normalizedLocalizedDisplayName: String? {
+        guard let localizedDisplayName else { return nil }
+        let trimmed = localizedDisplayName.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+
+    private var normalizedDisplayName: String {
+        let trimmed = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? displayName : trimmed
     }
 }

@@ -4,11 +4,26 @@ import AppKit
 /// Invisible AppKit host that captures scroll wheel events so users can page through the launcher with gestures.
 struct ScrollWheelPagerOverlay: NSViewRepresentable {
     var isEnabled: Bool
+    var onScrollProgress: (ScrollEvent) -> Void
+    var onScrollEnd: () -> Void
     var onPreviousPage: () -> Void
     var onNextPage: () -> Void
 
+    struct ScrollEvent {
+        let deltaX: CGFloat
+        let deltaY: CGFloat
+        let phase: NSEvent.Phase
+        let momentumPhase: NSEvent.Phase
+        let isPrecise: Bool
+    }
+
     func makeCoordinator() -> Coordinator {
-        Coordinator(onPreviousPage: onPreviousPage, onNextPage: onNextPage)
+        Coordinator(
+            onScrollProgress: onScrollProgress,
+            onScrollEnd: onScrollEnd,
+            onPreviousPage: onPreviousPage,
+            onNextPage: onNextPage
+        )
     }
 
     func makeNSView(context: Context) -> PagerPassthroughView {
@@ -33,20 +48,28 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         var isEnabled: Bool = true {
             didSet {
                 if isEnabled == false {
-                    resetAccumulators()
+                    resetState()
                 }
             }
         }
 
         weak var hostView: NSView?
 
+        private let onScrollProgress: (ScrollEvent) -> Void
+        private let onScrollEnd: () -> Void
         private let onPreviousPage: () -> Void
         private let onNextPage: () -> Void
         private var scrollMonitorToken: Any?
-        private var horizontalDeltaAccumulator: CGFloat = 0
-        private let precisionThreshold: CGFloat = 60
+        private var hasActiveHorizontalScroll = false
 
-        init(onPreviousPage: @escaping () -> Void, onNextPage: @escaping () -> Void) {
+        init(
+            onScrollProgress: @escaping (ScrollEvent) -> Void,
+            onScrollEnd: @escaping () -> Void,
+            onPreviousPage: @escaping () -> Void,
+            onNextPage: @escaping () -> Void
+        ) {
+            self.onScrollProgress = onScrollProgress
+            self.onScrollEnd = onScrollEnd
             self.onPreviousPage = onPreviousPage
             self.onNextPage = onNextPage
         }
@@ -64,7 +87,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
                 NSEvent.removeMonitor(scrollMonitorToken)
             }
             scrollMonitorToken = nil
-            resetAccumulators()
+            resetState()
         }
 
         private func handleScrollEvent(_ event: NSEvent) {
@@ -82,15 +105,17 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
                 return
             }
 
-            if event.phase.contains(.began) {
-                horizontalDeltaAccumulator = 0
-            }
-
-            if processHorizontalScroll(delta: event.scrollingDeltaX, isPrecise: event.hasPreciseScrollingDeltas) {
-                if event.phase.contains(.ended) || event.momentumPhase.contains(.ended) {
-                    horizontalDeltaAccumulator = 0
-                }
-                return
+            if abs(event.scrollingDeltaX) > 0.01 {
+                hasActiveHorizontalScroll = true
+                onScrollProgress(
+                    ScrollEvent(
+                        deltaX: event.scrollingDeltaX,
+                        deltaY: event.scrollingDeltaY,
+                        phase: event.phase,
+                        momentumPhase: event.momentumPhase,
+                        isPrecise: event.hasPreciseScrollingDeltas
+                    )
+                )
             }
 
             if event.hasPreciseScrollingDeltas == false {
@@ -98,28 +123,11 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             }
 
             if event.phase.contains(.ended) || event.momentumPhase.contains(.ended) {
-                horizontalDeltaAccumulator = 0
+                if hasActiveHorizontalScroll {
+                    onScrollEnd()
+                }
+                hasActiveHorizontalScroll = false
             }
-        }
-
-        @discardableResult
-        private func processHorizontalScroll(delta: CGFloat, isPrecise: Bool) -> Bool {
-            guard abs(delta) > 0.01 else { return false }
-
-            let threshold = isPrecise ? precisionThreshold : 3
-            horizontalDeltaAccumulator += delta
-
-            if horizontalDeltaAccumulator <= -threshold {
-                trigger(.next)
-                horizontalDeltaAccumulator = 0
-                return true
-            } else if horizontalDeltaAccumulator >= threshold {
-                trigger(.previous)
-                horizontalDeltaAccumulator = 0
-                return true
-            }
-
-            return false
         }
 
         private func processDiscreteVerticalScroll(delta: CGFloat) {
@@ -140,8 +148,8 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             }
         }
 
-        private func resetAccumulators() {
-            horizontalDeltaAccumulator = 0
+        private func resetState() {
+            hasActiveHorizontalScroll = false
         }
 
         private enum PageDirection {

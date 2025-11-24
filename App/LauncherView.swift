@@ -86,6 +86,8 @@ struct LauncherView: View {
     @State private var launchingItemID: UUID?
     @State private var pageDirection: PageShiftDirection = .forward
     @State private var folderIconWaveToggle = false
+    @State private var pagerDragOffset: CGFloat = 0
+    @State private var pagerViewportWidth: CGFloat = 1
     @FocusState private var isFolderNameFieldFocused: Bool
     @FocusState private var isAppNameFieldFocused: Bool
     @FocusState private var isSearchFieldFocused: Bool
@@ -127,6 +129,7 @@ struct LauncherView: View {
             }
             currentPage = 0
             pageDirection = .forward
+            pagerDragOffset = 0
         }
         .onChange(of: initialPageSizes) { newValue in
             if fillsGapsAutomatically {
@@ -136,6 +139,7 @@ struct LauncherView: View {
             }
             currentPage = 0
             pageDirection = .forward
+            pagerDragOffset = 0
         }
         .onChange(of: activeFolder) { newValue in
             if newValue == nil {
@@ -160,6 +164,7 @@ struct LauncherView: View {
         .onChange(of: searchText) { _ in
             currentPage = 0
             pageDirection = .forward
+            pagerDragOffset = 0
         }
         .onChange(of: orderedItems) { newItems in
             if fillsGapsAutomatically {
@@ -170,6 +175,7 @@ struct LauncherView: View {
             let maxPage = max(pageCount - 1, 0)
             currentPage = min(currentPage, maxPage)
             pageDirection = .forward
+            pagerDragOffset = 0
             if let activeFolder,
                newItems.contains(where: { item in
                     if case let .folder(folder) = item {
@@ -228,113 +234,149 @@ struct LauncherView: View {
                                     }
                             } else {
                                 GeometryReader { gridProxy in
-                                    let activeSizes = activePageSizes(for: orderedItems.count)
-                                    let pageStart = pageStartIndex(for: currentPage, sizes: activeSizes)
-                                    let itemCountOnPage = activeSizes.indices.contains(currentPage) ? activeSizes[currentPage] : 0
+                                    let pageWidth = max(gridProxy.size.width, 1)
+                                    let sizes = displayPageSizes
+                                    let totalPages = max(pageCount, 1)
+                                    let pageIndices = Array(0..<totalPages)
 
-                                    LazyVGrid(
-                                        columns: layout.gridColumns,
-                                        alignment: .center,
-                                        spacing: layout.iconSpacing
-                                    ) {
-                                        ForEach(Array(itemsForVisiblePage.enumerated()), id: \.element.id) { _, item in
-                                            let isLaunching = launchingItemID == item.id
-                                            let isFolderBeingOpened = activeFolder?.id == item.id
-                                            let isRenamingApp = renamingAppID == item.id
+                                    let dragGesture = DragGesture(minimumDistance: 2)
+                                        .onChanged { value in
+                                            guard isGesturePagingEnabled else { return }
+                                            beginPagerInteraction(pageWidth: pageWidth)
+                                            pagerDragOffset = clampPagerOffset(
+                                                value.translation.width,
+                                                pageWidth: pageWidth
+                                            )
+                                        }
+                                        .onEnded { value in
+                                            guard isGesturePagingEnabled else { return }
+                                            finishPagerInteraction(
+                                                translation: value.translation.width,
+                                                predictedEndTranslation: value.predictedEndTranslation.width,
+                                                pageWidth: pageWidth
+                                            )
+                                        }
 
-                                            let cell: AnyView = {
-                                                if isRenamingApp, case let .app(app) = item {
-                                                    return AnyView(
-                                                        editableAppCell(app: app, layout: layout)
-                                                    )
-                                                }
+                                    HStack(spacing: 0) {
+                                        ForEach(pageIndices, id: \.self) { pageIndex in
+                                            let pageItems = itemsForPage(pageIndex, sizes: sizes)
+                                            let pageStart = pageStartIndex(for: pageIndex, sizes: sizes)
+                                            let itemCountOnPage = sizes.indices.contains(pageIndex) ? sizes[pageIndex] : 0
 
-                                                return AnyView(
-                                                    Button {
-                                                        openItem(item)
-                                                    } label: {
-                                                        VStack(spacing: 10) {
-                                                            iconView(for: item, layout: layout)
-                                                                .frame(
-                                                                    width: layout.iconDimension,
-                                                                    height: layout.iconDimension
-                                                                )
-                                                                .scaleEffect(isLaunching ? 1.08 : 1.0)
-                                                                .opacity(isLaunching ? 0.4 : 1.0)
-                                                                .animation(.easeInOut(duration: 0.18), value: launchingItemID)
-                                                            appOrFolderTitleView(for: item)
-                                                                .font(.system(size: 13, weight: .medium))
-                                                                .multilineTextAlignment(.center)
-                                                                .foregroundColor(iconLabelColor())
-                                                                .lineLimit(2)
-                                                                .frame(maxWidth: .infinity)
+                                            LazyVGrid(
+                                                columns: layout.gridColumns,
+                                                alignment: .center,
+                                                spacing: layout.iconSpacing
+                                            ) {
+                                                ForEach(Array(pageItems.enumerated()), id: \.element.id) { _, item in
+                                                    let isLaunching = launchingItemID == item.id
+                                                    let isFolderBeingOpened = activeFolder?.id == item.id
+                                                    let isRenamingApp = renamingAppID == item.id
+
+                                                    let cell: AnyView = {
+                                                        if isRenamingApp, case let .app(app) = item {
+                                                            return AnyView(
+                                                                editableAppCell(app: app, layout: layout)
+                                                            )
                                                         }
-                                                        .frame(maxWidth: .infinity)
-                                                        .padding(.vertical, 4)
-                                                        .scaleEffect(isFolderBeingOpened ? 1.03 : 1.0)
-                                                        .animation(
-                                                            .spring(response: 0.35, dampingFraction: 0.82, blendDuration: 0.06),
-                                                            value: activeFolder?.id
+
+                                                        return AnyView(
+                                                            Button {
+                                                                openItem(item)
+                                                            } label: {
+                                                                VStack(spacing: 10) {
+                                                                    iconView(for: item, layout: layout)
+                                                                        .frame(
+                                                                            width: layout.iconDimension,
+                                                                            height: layout.iconDimension
+                                                                        )
+                                                                        .scaleEffect(isLaunching ? 1.08 : 1.0)
+                                                                        .opacity(isLaunching ? 0.4 : 1.0)
+                                                                        .animation(.easeInOut(duration: 0.18), value: launchingItemID)
+                                                                    appOrFolderTitleView(for: item)
+                                                                        .font(.system(size: 13, weight: .medium))
+                                                                        .multilineTextAlignment(.center)
+                                                                        .foregroundColor(iconLabelColor())
+                                                                        .lineLimit(2)
+                                                                        .frame(maxWidth: .infinity)
+                                                                }
+                                                                .frame(maxWidth: .infinity)
+                                                                .padding(.vertical, 4)
+                                                                .scaleEffect(isFolderBeingOpened ? 1.03 : 1.0)
+                                                                .animation(
+                                                                    .spring(response: 0.35, dampingFraction: 0.82, blendDuration: 0.06),
+                                                                    value: activeFolder?.id
+                                                                )
+                                                            }
+                                                            .buttonStyle(.plain)
                                                         )
-                                                    }
-                                                    .buttonStyle(.plain)
-                                                )
-                                            }()
+                                                    }()
 
-                                            let decoratedCell = cell
-                                                .contentShape(Rectangle())
-                                                .contextMenu {
-                                                    itemContextMenu(for: item)
+                                                    let decoratedCell = cell
+                                                        .contentShape(Rectangle())
+                                                        .contextMenu {
+                                                            itemContextMenu(for: item)
+                                                        }
+
+                                                    if canReorder && isRenamingApp == false {
+                                                        decoratedCell
+                                                            .onDrag {
+                                                                draggedItem = item
+                                                                return NSItemProvider(object: NSString(string: item.id.uuidString))
+                                                            } preview: {
+                                                                dragPreview(for: item, layout: layout)
+                                                            }
+                                                    } else {
+                                                        decoratedCell
+                                                    }
                                                 }
-
-                                            if canReorder && isRenamingApp == false {
-                                                decoratedCell
-                                                    .onDrag {
-                                                        draggedItem = item
-                                                        return NSItemProvider(object: NSString(string: item.id.uuidString))
-                                                    } preview: {
-                                                        dragPreview(for: item, layout: layout)
-                                                    }
-                                            } else {
-                                                decoratedCell
                                             }
+                                            .frame(width: pageWidth, height: layout.gridHeight, alignment: .top)
+                                            .contentShape(Rectangle())
+                                            .contextMenu {
+                                                backgroundContextMenu()
+                                            }
+                                            .onDrop(
+                                                of: [.text],
+                                                    delegate: GridReorderDropDelegate(
+                                                        layout: layout,
+                                                        gridSize: gridProxy.size,
+                                                        pageStartIndex: pageStart,
+                                                        pageItemCount: itemCountOnPage,
+                                                        items: $orderedItems,
+                                                        draggedItem: $draggedItem,
+                                                        shouldSuppressReorder: { isDragReorderSuppressed() },
+                                                        performReorder: { item, targetIndex, preferSwap in
+                                                            reorderItem(
+                                                                item,
+                                                                to: targetIndex,
+                                                                preferSwap: preferSwap,
+                                                                targetPageHint: pageIndex
+                                                            )
+                                                        },
+                                                        afterReorder: updatePageAfterDrop(at:),
+                                                        performFolderDrop: { dragged, target in
+                                                            mergeItemsIfNeeded(dragged: dragged, onto: target)
+                                                        },
+                                                        onFolderHoverExit: cancelFolderHover
+                                                    )
+                                            )
+                                            .opacity(pageOpacity(for: pageIndex, pageWidth: pageWidth))
                                         }
                                     }
-                                    .frame(maxWidth: .infinity, minHeight: layout.gridHeight, alignment: .top)
-                                    .contentShape(Rectangle())
-                                    .contextMenu {
-                                        backgroundContextMenu()
+                                    .frame(width: pageWidth * CGFloat(pageIndices.count), alignment: .leading)
+                                    .offset(x: pagerOffset(for: pageWidth))
+                                    .clipped()
+                                    .gesture(dragGesture)
+                                    .animation(gridSpringAnimation, value: orderedItems)
+                                    .animation(pageSwitchAnimation, value: currentPage)
+                                    .onAppear {
+                                        pagerViewportWidth = pageWidth
                                     }
-                                    .onDrop(
-                                        of: [.text],
-                                            delegate: GridReorderDropDelegate(
-                                                layout: layout,
-                                                gridSize: gridProxy.size,
-                                                pageStartIndex: pageStart,
-                                                pageItemCount: itemCountOnPage,
-                                                items: $orderedItems,
-                                                draggedItem: $draggedItem,
-                                                shouldSuppressReorder: { isDragReorderSuppressed() },
-                                                performReorder: { item, targetIndex, preferSwap in
-                                                    reorderItem(
-                                                        item,
-                                                        to: targetIndex,
-                                                        preferSwap: preferSwap,
-                                                        targetPageHint: currentPage
-                                                    )
-                                                },
-                                                afterReorder: updatePageAfterDrop(at:),
-                                                performFolderDrop: { dragged, target in
-                                                    mergeItemsIfNeeded(dragged: dragged, onto: target)
-                                                },
-                                                onFolderHoverExit: cancelFolderHover
-                                            )
-                                    )
+                                    .onChange(of: gridProxy.size.width) { newWidth in
+                                        pagerViewportWidth = max(newWidth, 1)
+                                    }
                                 }
-                                .id(currentPage)
-                                .transition(pageSwitchTransition)
-                                .animation(gridSpringAnimation, value: orderedItems)
-                                .animation(pageSwitchAnimation, value: currentPage)
                                 .frame(height: layout.gridHeight)
                             }
                         }
@@ -342,6 +384,17 @@ struct LauncherView: View {
 
                         ScrollWheelPagerOverlay(
                             isEnabled: isGesturePagingEnabled,
+                            onScrollProgress: { event in
+                                handleScrollProgress(
+                                    deltaX: event.deltaX,
+                                    phase: event.phase,
+                                    momentumPhase: event.momentumPhase,
+                                    isPrecise: event.isPrecise
+                                )
+                            },
+                            onScrollEnd: {
+                                settlePagerOffset(pageWidth: pagerViewportWidth)
+                            },
                             onPreviousPage: { pageBackward() },
                             onNextPage: { pageForward() }
                         )
@@ -392,20 +445,6 @@ struct LauncherView: View {
         return activePageSizes(for: orderedItems.count)
     }
 
-    /// Configures a directional slide/fade transition for page changes.
-    private var pageSwitchTransition: AnyTransition {
-        let insertionEdge: Edge = pageDirection == .forward ? .trailing : .leading
-        let removalEdge: Edge = pageDirection == .forward ? .leading : .trailing
-        let insertion = AnyTransition
-            .move(edge: insertionEdge)
-            .combined(with: .opacity)
-            .combined(with: .scale(scale: 0.98))
-        let removal = AnyTransition
-            .move(edge: removalEdge)
-            .combined(with: .opacity)
-        return .asymmetric(insertion: insertion, removal: removal)
-    }
-
     /// Calculates how many pages are required to show all apps.
     private var pageCount: Int {
         guard filteredItemList.isEmpty == false else { return 1 }
@@ -423,20 +462,117 @@ struct LauncherView: View {
         pageCount > 1 && isClosingLauncher == false
     }
 
+    /// Returns the slice of apps that should be visible for a specific page index.
+    private func itemsForPage(_ page: Int, sizes: [Int]) -> [LauncherItem] {
+        guard filteredItemList.isEmpty == false else { return [] }
+        guard sizes.indices.contains(page) else { return [] }
+        let startIndex = pageStartIndex(for: page, sizes: sizes)
+        let endIndex = min(startIndex + sizes[page], filteredItemList.count)
+        guard endIndex > startIndex else { return [] }
+        return Array(filteredItemList[startIndex..<endIndex])
+    }
+
+    /// Calculates the current horizontal offset for the paged grid stack.
+    private func pagerOffset(for pageWidth: CGFloat) -> CGFloat {
+        -CGFloat(clampPageIndex(currentPage)) * pageWidth + pagerDragOffset
+    }
+
+    /// Records the active viewport width so scroll-based gestures map 1:1 with page width.
+    private func beginPagerInteraction(pageWidth: CGFloat) {
+        pagerViewportWidth = max(pageWidth, 1)
+    }
+
+    /// Finalizes a drag-based page interaction using the predicted end state to capture velocity.
+    private func finishPagerInteraction(translation: CGFloat, predictedEndTranslation: CGFloat, pageWidth: CGFloat) {
+        let projection = predictedEndTranslation - translation
+        settlePagerOffset(pageWidth: pageWidth, projectedDelta: projection)
+    }
+
+    /// Applies live scroll deltas from the trackpad so paging feels directly connected to the gesture.
+    private func handleScrollProgress(deltaX: CGFloat, phase: NSEvent.Phase, momentumPhase: NSEvent.Phase, isPrecise: Bool) {
+        guard isGesturePagingEnabled else { return }
+        let width = pagerViewportWidth
+        guard width > 0 else { return }
+        beginPagerInteraction(pageWidth: width)
+
+        let scale: CGFloat = isPrecise ? 1.0 : 12.0
+        pagerDragOffset = clampPagerOffset(pagerDragOffset + deltaX * scale, pageWidth: width)
+
+        if phase.isEmpty && momentumPhase.isEmpty && isPrecise == false {
+            settlePagerOffset(pageWidth: width)
+            return
+        }
+
+        if phase.contains(.ended) || momentumPhase.contains(.ended) {
+            settlePagerOffset(pageWidth: width)
+        }
+    }
+
+    /// Settles the pager to the nearest target page and animates the slide.
+    private func settlePagerOffset(pageWidth: CGFloat, projectedDelta: CGFloat = 0) {
+        guard pageCount > 0 else {
+            pagerDragOffset = 0
+            return
+        }
+
+        let normalizedWidth = max(pageWidth, 1)
+        let totalOffset = pagerDragOffset + projectedDelta
+        let progress = totalOffset / normalizedWidth
+        let snapThreshold: CGFloat = 0.16
+        let fastThreshold: CGFloat = 0.45
+
+        var delta = 0
+        if abs(progress) > fastThreshold {
+            delta = Int(progress.rounded())
+        } else if abs(progress) > snapThreshold {
+            delta = progress > 0 ? 1 : -1
+        }
+
+        let targetPage = clampPageIndex(currentPage - delta)
+        withAnimation(pageSwitchAnimation) {
+            pageDirection = targetPage >= currentPage ? .forward : .backward
+            currentPage = targetPage
+            pagerDragOffset = 0
+        }
+    }
+
+    /// Constrains live offsets so we keep neighbors in memory but avoid excessive empty space.
+    private func clampPagerOffset(_ offset: CGFloat, pageWidth: CGFloat) -> CGFloat {
+        let limit = pageWidth * 1.1
+        let bounded = max(min(offset, limit), -limit)
+
+        if currentPage == 0 && bounded > 0 {
+            return min(bounded, pageWidth * 0.35)
+        }
+        if currentPage >= pageCount - 1 && bounded < 0 {
+            return max(bounded, -pageWidth * 0.35)
+        }
+
+        return bounded
+    }
+
+    /// Safely clamps a page index into the available range.
+    private func clampPageIndex(_ index: Int) -> Int {
+        guard pageCount > 0 else { return 0 }
+        return min(max(index, 0), pageCount - 1)
+    }
+
+    /// Computes how visible a page should be based on its proximity to the active page and drag offset.
+    private func pageOpacity(for page: Int, pageWidth: CGFloat) -> Double {
+        if page == currentPage {
+            return 1
+        }
+        let width = max(pageWidth, 1)
+        let dragProgress = pagerDragOffset / width
+        let distance = abs(CGFloat(page - currentPage) + dragProgress)
+        let visibility = max(0, 1 - distance)
+        return Double(min(1, visibility))
+    }
+
     /// Detects modifier keys that disable live reordering during a drag.
     private func isDragReorderSuppressed() -> Bool {
         let flags = NSApp?.currentEvent?.modifierFlags.intersection(.deviceIndependentFlagsMask) ?? []
         return flags.contains(.shift) || flags.contains(.option)
-    }
-
-    /// Returns the slice of apps that should be visible for the current page index.
-    private var itemsForVisiblePage: [LauncherItem] {
-        guard filteredItemList.isEmpty == false else { return [] }
-        let sizes = displayPageSizes
-        guard sizes.indices.contains(currentPage) else { return [] }
-        let startIndex = pageStartIndex(for: currentPage, sizes: sizes)
-        let endIndex = min(startIndex + sizes[currentPage], filteredItemList.count)
-        return Array(filteredItemList[startIndex..<endIndex])
     }
 
     /// Convenience accessor for the currently dragged app, if any.
@@ -542,6 +678,7 @@ struct LauncherView: View {
             activeFolder = folder
         }
         currentPage = folderIndex / max(pageCapacity, 1)
+        pagerDragOffset = 0
         persistOrderChange()
     }
 
@@ -733,6 +870,7 @@ struct LauncherView: View {
         withAnimation(pageSwitchAnimation) {
             pageDirection = boundedTarget >= currentPage ? .forward : .backward
             currentPage = boundedTarget
+            pagerDragOffset = 0
         }
     }
 
@@ -1639,6 +1777,7 @@ struct LauncherView: View {
         withAnimation(pageSwitchAnimation) {
             pageDirection = .backward
             currentPage = max(currentPage - 1, 0)
+            pagerDragOffset = 0
         }
     }
 
@@ -1650,6 +1789,7 @@ struct LauncherView: View {
         withAnimation(pageSwitchAnimation) {
             pageDirection = bounded >= currentPage ? .forward : .backward
             currentPage = bounded
+            pagerDragOffset = 0
         }
     }
 
@@ -1659,6 +1799,7 @@ struct LauncherView: View {
         withAnimation(pageSwitchAnimation) {
             pageDirection = .forward
             currentPage = min(currentPage + 1, pageCount - 1)
+            pagerDragOffset = 0
         }
     }
 
@@ -2144,6 +2285,7 @@ struct LauncherView: View {
             }
             persistOrderChange()
             currentPage = min(currentPage, fullPageCount - 1)
+            pagerDragOffset = 0
         }
     }
 
@@ -2167,6 +2309,7 @@ struct LauncherView: View {
             orderedItems = updated
         }
         currentPage = folderIndex / pageCapacity
+        pagerDragOffset = 0
         if activeFolder?.id == folder.id {
             activeFolder = folder
         }
@@ -2217,6 +2360,7 @@ struct LauncherView: View {
         withAnimation(pageSwitchAnimation) {
             pageDirection = targetPage >= currentPage ? .forward : .backward
             currentPage = targetPage
+            pagerDragOffset = 0
         }
         persistOrderChange(using: finalSizes)
     }

@@ -169,12 +169,33 @@ private enum SettingsTab: Int, CaseIterable, Identifiable {
     }
 }
 
+private enum SettingsWindowMetrics {
+    static let defaultContentWidth: CGFloat = 720
+    static let applauncherHeight: CGFloat = 640
+    static let aboutHeight: CGFloat = 720
+    static let minimumContentSize = NSSize(width: 640, height: 560)
+
+    static var defaultContentSize: NSSize {
+        NSSize(width: defaultContentWidth, height: applauncherHeight)
+    }
+
+    static func preferredContentHeight(for tab: SettingsTab) -> CGFloat {
+        switch tab {
+        case .applauncher:
+            return applauncherHeight
+        case .about:
+            return aboutHeight
+        }
+    }
+}
+
 /// SwiftUI-based macOS settings window content that drives `LauncherSettings`.
 struct SettingsWindow: View {
     /// Backing store powering the macOS settings UI.
     @StateObject private var settingsStore: SettingsWindowStore
     @State private var activeTab: SettingsTab = .applauncher
     @State private var hostingWindow: NSWindow?
+    @State private var hasAppliedInitialWindowSizing = false
     @Namespace private var tabSelectionNamespace
     @Environment(\.colorScheme) private var colorScheme
 
@@ -215,7 +236,9 @@ struct SettingsWindow: View {
             .overlay(
                 HostingWindowFinder { window in
                     hostingWindow = window
-                    updateWindowChrome(for: window)
+                    if let window {
+                        applyWindowConfiguration(for: window)
+                    }
                 }
                 .allowsHitTesting(false)
             )
@@ -228,6 +251,13 @@ struct SettingsWindow: View {
                     .padding(.leading, 22)
                     .padding(.trailing, 22)
             }
+        }
+        .onChange(of: activeTab) { newValue in
+            resizeWindow(for: newValue, animated: true)
+        }
+        .onChange(of: hostingWindow) { window in
+            guard let window else { return }
+            applyWindowConfiguration(for: window)
         }
     }
 
@@ -905,6 +935,46 @@ struct SettingsWindow: View {
         settingsStore.requestArrangementReset()
     }
 
+    // MARK: - Window Configuration
+
+    private func applyWindowConfiguration(for window: NSWindow) {
+        updateWindowChrome(for: window)
+
+        guard hasAppliedInitialWindowSizing == false else { return }
+        hasAppliedInitialWindowSizing = true
+        resizeWindow(for: activeTab, in: window, animated: false)
+    }
+
+    private func resizeWindow(for tab: SettingsTab, animated: Bool) {
+        guard let window = hostingWindow else { return }
+        resizeWindow(for: tab, in: window, animated: animated)
+    }
+
+    private func resizeWindow(for tab: SettingsTab, in window: NSWindow, animated: Bool) {
+        let currentFrame = window.frame
+        let currentContentRect = window.contentRect(forFrameRect: currentFrame)
+        let targetContentHeight = SettingsWindowMetrics.preferredContentHeight(for: tab)
+
+        guard abs(currentContentRect.height - targetContentHeight) > 0.5 else { return }
+
+        let targetContentSize = NSSize(
+            width: currentContentRect.width,
+            height: targetContentHeight
+        )
+        let targetFrameSize = window.frameRect(
+            forContentRect: NSRect(origin: .zero, size: targetContentSize)
+        ).size
+
+        // Pin resizing to the top-center so the custom chrome stays put.
+        let anchorPoint = NSPoint(x: currentFrame.midX, y: currentFrame.maxY)
+        let newOrigin = NSPoint(
+            x: anchorPoint.x - targetFrameSize.width / 2,
+            y: anchorPoint.y - targetFrameSize.height
+        )
+        let newFrame = NSRect(origin: newOrigin, size: targetFrameSize)
+        window.setFrame(newFrame, display: true, animate: animated)
+    }
+
     private var borderStrokeColor: Color {
         Color.white.opacity(0.12)
     }
@@ -1131,8 +1201,9 @@ final class SettingsWindowController: NSWindowController {
     init() {
         let view = SettingsWindow()
         hostingController = NSHostingController(rootView: view)
+        let defaultContentSize = SettingsWindowMetrics.defaultContentSize
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 720, height: 620),
+            contentRect: NSRect(x: 0, y: 0, width: defaultContentSize.width, height: defaultContentSize.height),
             styleMask: [
                 .titled,
                 .closable,
@@ -1157,7 +1228,7 @@ final class SettingsWindowController: NSWindowController {
         window.standardWindowButton(.closeButton)?.isHidden = true
         window.standardWindowButton(.miniaturizeButton)?.isHidden = true
         window.standardWindowButton(.zoomButton)?.isHidden = true
-        window.contentMinSize = NSSize(width: 620, height: 520)
+        window.contentMinSize = SettingsWindowMetrics.minimumContentSize
         window.center()
         window.contentViewController = hostingController
         super.init(window: window)

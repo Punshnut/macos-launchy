@@ -510,7 +510,10 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             backgroundStylePreference: currentSettings.backgroundStylePreference,
             solidBackgroundColor: currentSettings.solidBackgroundColor,
             launcherMode: currentSettings.selectedLauncherMode,
-            fillsGapsAutomatically: currentSettings.fillsGapsAutomatically
+            fillsGapsAutomatically: currentSettings.fillsGapsAutomatically,
+            onSettingsRequested: { [weak self] in
+                self?.showSettingsWindow()
+            }
         ) { [weak self] reorderedItems, newPageSizes in
             guard let self else { return }
             orderedItems = reorderedItems

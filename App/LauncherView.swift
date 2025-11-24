@@ -36,6 +36,8 @@ struct LauncherView: View {
     var launcherMode: LauncherMode = .floaty
     /// Whether items should collapse upward to fill earlier gaps.
     var fillsGapsAutomatically: Bool = true
+    /// Callback fired when the user requests to open settings from a context menu.
+    var onSettingsRequested: (() -> Void)?
     /// Callback fired whenever the user changes the arrangement.
     var onItemOrderChange: (([LauncherItem], [Int]) -> Void)?
 
@@ -74,6 +76,7 @@ struct LauncherView: View {
         solidBackgroundColor: LauncherSettings.SolidBackgroundColor = .system,
         launcherMode: LauncherMode = .floaty,
         fillsGapsAutomatically: Bool = true,
+        onSettingsRequested: (() -> Void)? = nil,
         onItemOrderChange: (([LauncherItem], [Int]) -> Void)? = nil
     ) {
         self.itemCatalog = itemCatalog
@@ -82,6 +85,7 @@ struct LauncherView: View {
         self.solidBackgroundColor = solidBackgroundColor
         self.launcherMode = launcherMode
         self.fillsGapsAutomatically = fillsGapsAutomatically
+        self.onSettingsRequested = onSettingsRequested
         self.onItemOrderChange = onItemOrderChange
         _orderedItems = State(initialValue: itemCatalog)
         _pageSizes = State(initialValue: initialPageSizes)
@@ -1601,6 +1605,12 @@ struct LauncherView: View {
     private func backgroundContextMenu() -> some View {
         Button("Create Folder") {
             createEmptyFolder(onPage: currentPage, promptForName: true)
+        }
+
+        Button("Settings...") {
+            Task { @MainActor in
+                onSettingsRequested?()
+            }
         }
     }
 

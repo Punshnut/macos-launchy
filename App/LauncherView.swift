@@ -59,7 +59,8 @@ struct LauncherView: View {
     private var pageCapacity: Int { LauncherGridConfiguration.pageCapacity }
     private let closeAnimationDuration: TimeInterval = 0.25
     private let gridSpringAnimation = Animation.spring(response: 0.42, dampingFraction: 0.86, blendDuration: 0.12)
-    private let pageSwitchAnimation = Animation.interactiveSpring(response: 0.35, dampingFraction: 0.88, blendDuration: 0.14)
+    private let pageSwitchAnimation = Animation.interactiveSpring(response: 0.24, dampingFraction: 0.9, blendDuration: 0.08)
+    private let gestureSettleAnimation = Animation.interactiveSpring(response: 0.22, dampingFraction: 0.88, blendDuration: 0.06)
     private let folderOpenAnimation = Animation.spring(response: 0.36, dampingFraction: 0.82, blendDuration: 0.08)
     private let pagerButtonHitPadding: CGFloat = 12
     private let pagerButtonHitSize: CGFloat = 44
@@ -88,6 +89,7 @@ struct LauncherView: View {
     @State private var folderIconWaveToggle = false
     @State private var pagerDragOffset: CGFloat = 0
     @State private var pagerViewportWidth: CGFloat = 1
+    @State private var lastPagerDragDate: Date?
     @FocusState private var isFolderNameFieldFocused: Bool
     @FocusState private var isAppNameFieldFocused: Bool
     @FocusState private var isSearchFieldFocused: Bool
@@ -237,12 +239,13 @@ struct LauncherView: View {
                                     let pageWidth = max(gridProxy.size.width, 1)
                                     let sizes = displayPageSizes
                                     let totalPages = max(pageCount, 1)
-                                    let pageIndices = Array(0..<totalPages)
+                                    let pageIndices = visiblePageIndices(total: totalPages)
 
                                     let dragGesture = DragGesture(minimumDistance: 2)
                                         .onChanged { value in
                                             guard isGesturePagingEnabled else { return }
                                             beginPagerInteraction(pageWidth: pageWidth)
+                                            lastPagerDragDate = Date()
                                             pagerDragOffset = clampPagerOffset(
                                                 value.translation.width,
                                                 pageWidth: pageWidth
@@ -257,7 +260,7 @@ struct LauncherView: View {
                                             )
                                         }
 
-                                    HStack(spacing: 0) {
+                                    ZStack(alignment: .leading) {
                                         ForEach(pageIndices, id: \.self) { pageIndex in
                                             let pageItems = itemsForPage(pageIndex, sizes: sizes)
                                             let pageStart = pageStartIndex(for: pageIndex, sizes: sizes)
@@ -362,10 +365,10 @@ struct LauncherView: View {
                                                     )
                                             )
                                             .opacity(pageOpacity(for: pageIndex, pageWidth: pageWidth))
+                                            .offset(x: pageOffset(for: pageIndex, pageWidth: pageWidth))
                                         }
                                     }
-                                    .frame(width: pageWidth * CGFloat(pageIndices.count), alignment: .leading)
-                                    .offset(x: pagerOffset(for: pageWidth))
+                                    .frame(width: pageWidth, height: layout.gridHeight, alignment: .leading)
                                     .clipped()
                                     .gesture(dragGesture)
                                     .animation(gridSpringAnimation, value: orderedItems)
@@ -473,8 +476,9 @@ struct LauncherView: View {
     }
 
     /// Calculates the current horizontal offset for the paged grid stack.
-    private func pagerOffset(for pageWidth: CGFloat) -> CGFloat {
-        -CGFloat(clampPageIndex(currentPage)) * pageWidth + pagerDragOffset
+    private func pageOffset(for page: Int, pageWidth: CGFloat) -> CGFloat {
+        let current = clampPageIndex(currentPage)
+        return CGFloat(page - current) * pageWidth + pagerDragOffset
     }
 
     /// Records the active viewport width so scroll-based gestures map 1:1 with page width.
@@ -497,7 +501,7 @@ struct LauncherView: View {
 
         let scale: CGFloat = isPrecise ? 1.0 : 12.0
         pagerDragOffset = clampPagerOffset(pagerDragOffset + deltaX * scale, pageWidth: width)
-
+        lastPagerDragDate = Date()
         if phase.isEmpty && momentumPhase.isEmpty && isPrecise == false {
             settlePagerOffset(pageWidth: width)
             return
@@ -518,22 +522,39 @@ struct LauncherView: View {
         let normalizedWidth = max(pageWidth, 1)
         let totalOffset = pagerDragOffset + projectedDelta
         let progress = totalOffset / normalizedWidth
-        let snapThreshold: CGFloat = 0.16
-        let fastThreshold: CGFloat = 0.45
+        let snapThreshold: CGFloat = 0.09
+        let fastThreshold: CGFloat = 0.26
+        let doubleProgressThreshold: CGFloat = 1.45
+        let highVelocityThreshold: CGFloat = 0.95
+        let velocity = projectedDelta / normalizedWidth
+        let absVelocity = abs(velocity)
+        let absProgress = abs(progress)
+        let recentDrag = (lastPagerDragDate.map { Date().timeIntervalSince($0) < 0.12 }) ?? false
+        let directionSign: Int = {
+            if absVelocity > 0.15 {
+                return velocity > 0 ? 1 : -1
+            }
+            return progress > 0 ? 1 : -1
+        }()
 
         var delta = 0
-        if abs(progress) > fastThreshold {
-            delta = Int(progress.rounded())
-        } else if abs(progress) > snapThreshold {
-            delta = progress > 0 ? 1 : -1
+        let allowDouble = (absVelocity > highVelocityThreshold && absProgress > 0.6) || absProgress > doubleProgressThreshold
+
+        if allowDouble {
+            delta = 2 * directionSign
+        } else if absProgress > fastThreshold {
+            delta = 1 * directionSign
+        } else if absProgress > snapThreshold || (recentDrag && absProgress > 0.06) {
+            delta = 1 * directionSign
         }
 
         let targetPage = clampPageIndex(currentPage - delta)
-        withAnimation(pageSwitchAnimation) {
+        withAnimation(gestureSettleAnimation) {
             pageDirection = targetPage >= currentPage ? .forward : .backward
             currentPage = targetPage
             pagerDragOffset = 0
         }
+        lastPagerDragDate = nil
     }
 
     /// Constrains live offsets so we keep neighbors in memory but avoid excessive empty space.
@@ -567,6 +588,13 @@ struct LauncherView: View {
         let distance = abs(CGFloat(page - currentPage) + dragProgress)
         let visibility = max(0, 1 - distance)
         return Double(min(1, visibility))
+    }
+
+    /// Returns only the currently focused page and its immediate neighbors to keep gesture FPS high.
+    private func visiblePageIndices(total: Int) -> [Int] {
+        guard total > 0 else { return [] }
+        let current = clampPageIndex(currentPage)
+        return [current - 1, current, current + 1].filter { $0 >= 0 && $0 < total }
     }
 
     /// Detects modifier keys that disable live reordering during a drag.

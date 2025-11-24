@@ -3,11 +3,11 @@ import Sparkle
 
 /// Owns Sparkle's updater and exposes a menu-friendly action to trigger manual checks.
 @MainActor
-final class UpdaterController: NSObject, SPUStandardUserDriverDelegate {
+final class UpdaterController: NSObject, SPUStandardUserDriverDelegate, SPUUpdaterDelegate {
     private lazy var updaterController: SPUStandardUpdaterController = {
         SPUStandardUpdaterController(
             startingUpdater: true,
-            updaterDelegate: nil,
+            updaterDelegate: self,
             userDriverDelegate: self
         )
     }()
@@ -28,6 +28,12 @@ final class UpdaterController: NSObject, SPUStandardUserDriverDelegate {
     nonisolated func standardUserDriverWillShowModalAlert() {
         Task { @MainActor [weak self] in
             self?.bringUpdateUIToFront()
+        }
+    }
+
+    nonisolated func updater(_ updater: SPUUpdater, didAbortWithError error: Error) {
+        Task { @MainActor [weak self] in
+            self?.presentFallbackDownloadHintIfNeeded(for: error)
         }
     }
 
@@ -55,5 +61,29 @@ final class UpdaterController: NSObject, SPUStandardUserDriverDelegate {
     private func isSparkleWindow(_ window: NSWindow) -> Bool {
         let className = NSStringFromClass(type(of: window))
         return className.hasPrefix("SPU") || className.hasPrefix("SU")
+    }
+
+    private func presentFallbackDownloadHintIfNeeded(for error: Error) {
+        let nsError = error as NSError
+        guard nsError.domain == SUSparkleErrorDomain,
+              let sparkleError = SUError(rawValue: OSStatus(nsError.code)),
+              sparkleError == .signatureError || sparkleError == .validationError
+        else {
+            return
+        }
+
+        Task { @MainActor in
+            let alert = NSAlert()
+            alert.messageText = "Update could not be verified"
+            alert.informativeText = "Launchy couldn't verify the downloaded update. Please download the latest release directly from GitHub instead."
+            alert.addButton(withTitle: "Open GitHub")
+            alert.addButton(withTitle: "Cancel")
+
+            let response = alert.runModal()
+            if response == .alertFirstButtonReturn,
+               let url = URL(string: "https://github.com/Punshnut/macos-launchy/releases/latest") {
+                NSWorkspace.shared.open(url)
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@ struct LauncherLayoutMetrics {
         switch launcherMode {
         case .floaty:
             return 32
-        case .fullscreenOldMac:
+        case .fullscreen:
             return max(60, containerSize.width * 0.08)
         }
     }
@@ -22,7 +22,7 @@ struct LauncherLayoutMetrics {
         switch launcherMode {
         case .floaty:
             return 28
-        case .fullscreenOldMac:
+        case .fullscreen:
             return 56
         }
     }
@@ -31,7 +31,7 @@ struct LauncherLayoutMetrics {
         switch launcherMode {
         case .floaty:
             return 14
-        case .fullscreenOldMac:
+        case .fullscreen:
             let base = min(containerSize.width, containerSize.height) / 40
             return max(20, min(base, 60))
         }
@@ -41,7 +41,7 @@ struct LauncherLayoutMetrics {
         switch launcherMode {
         case .floaty:
             return 20
-        case .fullscreenOldMac:
+        case .fullscreen:
             return 20
         }
     }
@@ -50,7 +50,7 @@ struct LauncherLayoutMetrics {
         switch launcherMode {
         case .floaty:
             return 20
-        case .fullscreenOldMac:
+        case .fullscreen:
             return 28
         }
     }
@@ -59,7 +59,7 @@ struct LauncherLayoutMetrics {
         switch launcherMode {
         case .floaty:
             return -6
-        case .fullscreenOldMac:
+        case .fullscreen:
             return -24
         }
     }

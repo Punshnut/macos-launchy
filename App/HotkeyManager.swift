@@ -284,6 +284,11 @@ final class CarbonHotkeyRegistrar: HotkeyRegistering {
 
     private var keyboardEventHandler: EventHandlerRef?
     private var registeredHotKey: EventHotKeyRef?
+    private var isHotKeyRegistered = false
+    private lazy var hotKeyID: EventHotKeyID = {
+        let rawID = UInt32(truncatingIfNeeded: ObjectIdentifier(self).hashValue)
+        return EventHotKeyID(signature: Self.hotKeySignature, id: rawID | 1)
+    }()
     private var registeredHandler: (() -> Void)?
 
     deinit {
@@ -302,7 +307,6 @@ final class CarbonHotkeyRegistrar: HotkeyRegistering {
             return false
         }
 
-        let hotKeyID = EventHotKeyID(signature: Self.hotKeySignature, id: 1)
         var localHotKeyRef: EventHotKeyRef?
         let status = RegisterEventHotKey(
             descriptor.keyCode,
@@ -319,6 +323,7 @@ final class CarbonHotkeyRegistrar: HotkeyRegistering {
         }
 
         registeredHotKey = localHotKeyRef
+        isHotKeyRegistered = true
         return true
     }
 
@@ -327,6 +332,7 @@ final class CarbonHotkeyRegistrar: HotkeyRegistering {
             UnregisterEventHotKey(registeredHotKey)
             self.registeredHotKey = nil
         }
+        isHotKeyRegistered = false
         registeredHandler = nil
     }
 
@@ -340,8 +346,7 @@ final class CarbonHotkeyRegistrar: HotkeyRegistering {
             { _, event, userData in
                 guard let userData else { return noErr }
                 let registrar = Unmanaged<CarbonHotkeyRegistrar>.fromOpaque(userData).takeUnretainedValue()
-                registrar.handleHotKeyEvent(event)
-                return noErr
+                return registrar.handleHotKeyEvent(event)
             },
             1,
             &eventSpec,
@@ -358,8 +363,8 @@ final class CarbonHotkeyRegistrar: HotkeyRegistering {
     }
 
     /// Invokes the stored handler when the registered hotkey ID is fired.
-    private func handleHotKeyEvent(_ event: EventRef?) {
-        guard let event else { return }
+    private func handleHotKeyEvent(_ event: EventRef?) -> OSStatus {
+        guard let event, isHotKeyRegistered else { return OSStatus(eventNotHandledErr) }
         var hotKeyID = EventHotKeyID()
         let status = GetEventParameter(
             event,
@@ -371,10 +376,13 @@ final class CarbonHotkeyRegistrar: HotkeyRegistering {
             &hotKeyID
         )
 
-        guard status == noErr, hotKeyID.signature == Self.hotKeySignature else {
-            return
+        guard status == noErr,
+              hotKeyID.signature == self.hotKeyID.signature,
+              hotKeyID.id == self.hotKeyID.id else {
+            return OSStatus(eventNotHandledErr)
         }
 
         registeredHandler?()
+        return noErr
     }
 }

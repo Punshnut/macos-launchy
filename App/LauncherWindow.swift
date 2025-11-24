@@ -5,6 +5,7 @@ import SwiftUI
 final class LauncherWindowController: NSWindowController {
     private static let preferredFloatyContentSize = NSSize(width: 960, height: 830)
     private let launcherContentHost: NSHostingController<LauncherView>
+    private let launcherMode: LauncherMode
     private let entranceContentOffset: CGFloat = 32
     private let entranceAnimationDuration: TimeInterval = 0.34
     private var entranceContentOrigin: NSPoint = .zero
@@ -12,19 +13,21 @@ final class LauncherWindowController: NSWindowController {
     /// Wraps the provided SwiftUI content inside either a panel or fullscreen window.
     init(rootView: LauncherView, launcherMode: LauncherMode) {
         launcherContentHost = NSHostingController(rootView: rootView)
+        self.launcherMode = launcherMode
         let window: NSWindow
+        let presentationScreen = Self.preferredScreenForPresentation()
 
         switch launcherMode {
         case .floaty:
-            let frame = Self.initialFloatyFrame(for: Self.preferredFloatyContentSize)
+            let frame = Self.floatyFrame(for: Self.preferredFloatyContentSize, on: presentationScreen)
             launcherContentHost.preferredContentSize = frame.size
             let floatyPanel = FloatyLauncherWindow(contentRect: frame)
             floatyPanel.contentViewController = launcherContentHost
             floatyPanel.setFrame(frame, display: false)
             floatyPanel.center()
             window = floatyPanel
-        case .fullscreenOldMac:
-            let frame = Self.fullscreenFrame()
+        case .fullscreen:
+            let frame = Self.fullscreenFrame(on: presentationScreen)
             launcherContentHost.preferredContentSize = frame.size
             let fullscreen = FullscreenLauncherWindow(contentRect: frame)
             fullscreen.contentViewController = launcherContentHost
@@ -41,8 +44,8 @@ final class LauncherWindowController: NSWindowController {
     }
 
     /// Centers the floaty panel window and constrains it to the visible screen area.
-    private static func initialFloatyFrame(for size: NSSize) -> NSRect {
-        guard let screen = NSScreen.main else {
+    private static func floatyFrame(for size: NSSize, on screen: NSScreen?) -> NSRect {
+        guard let screen = screen ?? NSScreen.main else {
             return NSRect(origin: .zero, size: size)
         }
 
@@ -57,17 +60,27 @@ final class LauncherWindowController: NSWindowController {
     }
 
     /// Determines the fullscreen frame, falling back to a 16:10 layout without a main screen.
-    private static func fullscreenFrame() -> NSRect {
-        if let screen = NSScreen.main {
+    private static func fullscreenFrame(on screen: NSScreen?) -> NSRect {
+        if let screen = screen ?? NSScreen.main {
             return screen.frame
         } else {
             return NSRect(x: 0, y: 0, width: 1440, height: 900)
         }
     }
 
+    /// Picks the screen under the cursor if available, otherwise defaults to the main display.
+    private static func preferredScreenForPresentation() -> NSScreen? {
+        let mouseLocation = NSEvent.mouseLocation
+        if let cursorScreen = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) {
+            return cursorScreen
+        }
+        return NSScreen.main
+    }
+
     /// Presents the window using the right ordering semantics for panels vs regular windows.
     func presentWindow() {
         guard let window else { return }
+        updateFrameForPreferredScreenIfNeeded()
         let originalFrame = window.frame
         let shouldAnimateEntrance = window.isVisible == false
 
@@ -86,6 +99,26 @@ final class LauncherWindowController: NSWindowController {
     /// Replaces the hosted SwiftUI content while keeping the same window instance alive.
     func update(rootView: LauncherView) {
         launcherContentHost.rootView = rootView
+    }
+
+    /// Keeps the window anchored to the screen under the cursor before presenting it.
+    private func updateFrameForPreferredScreenIfNeeded() {
+        guard let window else { return }
+        let targetScreen = Self.preferredScreenForPresentation()
+
+        switch launcherMode {
+        case .floaty:
+            let targetFrame = Self.floatyFrame(for: Self.preferredFloatyContentSize, on: targetScreen)
+            if window.frame != targetFrame {
+                launcherContentHost.preferredContentSize = targetFrame.size
+                window.setFrame(targetFrame, display: false)
+            }
+        case .fullscreen:
+            let targetFrame = Self.fullscreenFrame(on: targetScreen)
+            if window.frame != targetFrame {
+                window.setFrame(targetFrame, display: true)
+            }
+        }
     }
 
     /// Prepares the launcher window to animate in from a subtle offset.
@@ -193,7 +226,7 @@ final class FloatyLauncherWindow: NSPanel {
     }
 }
 
-/// Borderless fullscreen window backing the "old Mac" presentation.
+/// Borderless fullscreen window backing the immersive launcher presentation.
 final class FullscreenLauncherWindow: NSWindow {
     /// Initializes the window with the minimal chrome needed for fullscreen content.
     init(contentRect: NSRect) {

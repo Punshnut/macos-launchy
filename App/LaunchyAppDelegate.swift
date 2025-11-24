@@ -27,7 +27,12 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Finishes bootstrapping the app by loading settings, refreshing apps, and preparing the window.
     func applicationDidFinishLaunching(_ notification: Notification) {
         bootstrapApplication()
-        removeDefaultMainMenuItems()
+        enforceMinimalMainMenu()
+    }
+
+    /// Reapplies menu pruning after the app is foregrounded.
+    func applicationDidBecomeActive(_ notification: Notification) {
+        enforceMinimalMainMenu()
     }
 
     /// Reopens the launcher when the Dock icon is clicked while the app is already running.
@@ -101,6 +106,16 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         showIntroductionIfNeeded()
     }
 
+    /// Double-checks that unused menu bar items are stripped even if AppKit rebuilds the menu.
+    private func enforceMinimalMainMenu() {
+        removeDefaultMainMenuItems()
+
+        Task { @MainActor [weak self] in
+            await Task.yield()
+            self?.removeDefaultMainMenuItems()
+        }
+    }
+
     /// Hides unused top-level macOS menu bar items.
     private func removeDefaultMainMenuItems() {
         guard let mainMenu = NSApp.mainMenu else { return }
@@ -154,12 +169,14 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                 NSApp.setActivationPolicy(.accessory)
                 NSApp.dockTile.display()
             }
-        case .fullscreenOldMac:
+        case .fullscreen:
             NSApp.setActivationPolicy(.regular)
             if shouldActivate {
                 NSApp.activate(ignoringOtherApps: true)
             }
         }
+
+        enforceMinimalMainMenu()
     }
 
     /// Ensures the menu bar status item matches the persisted setting.
@@ -376,7 +393,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         switch currentSettings.selectedLauncherMode {
         case .floaty:
             NSApp.activate(ignoringOtherApps: true)
-        case .fullscreenOldMac:
+        case .fullscreen:
             NSApp.activate(ignoringOtherApps: true)
         }
     }
@@ -419,7 +436,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Cycles between floaty and fullscreen layouts when triggered from a menu/shortcut.
     func toggleLauncherModeShortcut() {
-        let nextMode: LauncherMode = currentSettings.selectedLauncherMode == .floaty ? .fullscreenOldMac : .floaty
+        let nextMode: LauncherMode = currentSettings.selectedLauncherMode == .floaty ? .fullscreen : .floaty
         LauncherSettingsPersistence.setLauncherMode(nextMode)
     }
 

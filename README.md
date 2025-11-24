@@ -64,6 +64,8 @@ Launchy is a featherweight macOS app launcher that feels like part of the system
 ## License & support
 
 - **License:** MIT. Use it anywhere, just keep the notice.
-- **Support Launchy:** Optional upgrades or donations are a nice signal boost but never gate existing features.
+- **Support Launchy:** Optional upgrades or donations are a nice signal boost but I will never gate existing features.
+
+[Ko-Fi](https://ko-fi.com/janfeuerbacher)
 
 Made with ❤️

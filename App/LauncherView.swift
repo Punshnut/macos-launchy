@@ -26,6 +26,8 @@ private struct RemovedAppContext {
 struct LauncherView: View {
     /// Data source backing the grid.
     let itemCatalog: [LauncherItem]
+    /// Persisted pagination layout coming from storage.
+    let initialPageSizes: [Int]
     /// Selected background presentation.
     var backgroundStylePreference: LauncherSettings.PreferredBackgroundStyle = .standard
     /// Selected solid color when the solid background is active.
@@ -75,6 +77,7 @@ struct LauncherView: View {
         onItemOrderChange: (([LauncherItem], [Int]) -> Void)? = nil
     ) {
         self.itemCatalog = itemCatalog
+        self.initialPageSizes = initialPageSizes
         self.backgroundStylePreference = backgroundStylePreference
         self.solidBackgroundColor = solidBackgroundColor
         self.launcherMode = launcherMode
@@ -94,7 +97,16 @@ struct LauncherView: View {
             if fillsGapsAutomatically {
                 pageSizes = densePageSizes(for: newValue.count)
             } else {
-                pageSizes = normalizePageSizes(pageSizes, itemCount: newValue.count)
+                pageSizes = normalizePageSizes(initialPageSizes, itemCount: newValue.count)
+            }
+            currentPage = 0
+            pageDirection = .forward
+        }
+        .onChange(of: initialPageSizes) { newValue in
+            if fillsGapsAutomatically {
+                pageSizes = densePageSizes(for: itemCatalog.count)
+            } else {
+                pageSizes = normalizePageSizes(newValue, itemCount: itemCatalog.count)
             }
             currentPage = 0
             pageDirection = .forward
@@ -373,7 +385,7 @@ struct LauncherView: View {
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onEnded { _ in
-                    dismissFullscreenViaBackgroundTap()
+                    dismissLauncherViaBackgroundTap()
                 },
             including: .gesture
         )
@@ -1284,9 +1296,9 @@ struct LauncherView: View {
         }
     }
 
-    /// Hides the fullscreen launcher when the blurred background is clicked.
-    private func dismissFullscreenViaBackgroundTap() {
-        guard launcherMode == .fullscreenOldMac else { return }
+    /// Hides the launcher when the blurred background is clicked.
+    private func dismissLauncherViaBackgroundTap() {
+        guard launcherMode == .fullscreen || launcherMode == .floaty else { return }
         guard isClosingLauncher == false else { return }
         guard didTapInteractiveView() == false else { return }
         isClosingLauncher = true
@@ -1380,7 +1392,7 @@ struct LauncherView: View {
 
     /// Calculates how far the content should sit from the top edge in fullscreen mode.
     private func fullscreenTopInset(for containerHeight: CGFloat) -> CGFloat {
-        guard launcherMode == .fullscreenOldMac else { return 0 }
+        guard launcherMode == .fullscreen else { return 0 }
         guard containerHeight.isFinite else { return 0 }
         return max(0, containerHeight / 12)
     }
@@ -1472,7 +1484,7 @@ struct LauncherView: View {
 
         switch backgroundStylePreference {
         case .standard:
-            if launcherMode == .fullscreenOldMac {
+            if launcherMode == .fullscreen {
                 return true
             }
             return colorScheme == .dark

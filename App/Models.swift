@@ -109,17 +109,42 @@ struct FolderItem: Identifiable, Hashable {
 
 /// Determines the overall presentation style of the launcher UI.
 enum LauncherMode: String, CaseIterable, Hashable, Codable {
-    case fullscreenOldMac
+    case fullscreen
     case floaty
+
+    private static let legacyFullscreenRawValue = "fullscreenOldMac"
 
     /// User-facing description shown in pickers.
     var displayName: String {
         switch self {
-        case .fullscreenOldMac:
+        case .fullscreen:
             return String(localized: "Fullscreen")
         case .floaty:
             return String(localized: "Floaty Panel")
         }
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try? container.decode(String.self)
+        self = LauncherMode.map(from: rawValue)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
+
+    private static func map(from rawValue: String?) -> LauncherMode {
+        if rawValue == legacyFullscreenRawValue {
+            return .fullscreen
+        }
+
+        if let rawValue, let mode = LauncherMode(rawValue: rawValue) {
+            return mode
+        }
+
+        return .fullscreen
     }
 }
 
@@ -259,7 +284,7 @@ extension LauncherSettings {
             hiddenBundleIDs: [],
             backgroundStylePreference: .standard,
             solidBackgroundColor: .system,
-            selectedLauncherMode: .fullscreenOldMac,
+            selectedLauncherMode: .fullscreen,
             isMenuBarIconVisible: true,
             isFloatyDockIconVisible: true,
             launcherHotkey: .toggleLauncher,
@@ -288,6 +313,13 @@ extension LauncherSettings {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        let decodedLauncherHotkey: HotkeyDescriptor?
+        if container.contains(.launcherHotkey) {
+            decodedLauncherHotkey = try container.decodeIfPresent(HotkeyDescriptor.self, forKey: .launcherHotkey)
+        } else {
+            decodedLauncherHotkey = .toggleLauncher
+        }
+
         self.init(
             isVisibleOnAllSpaces: try container.decodeIfPresent(Bool.self, forKey: .isVisibleOnAllSpaces) ?? false,
             launchesAtLogin: try container.decodeIfPresent(Bool.self, forKey: .launchesAtLogin) ?? false,
@@ -296,10 +328,10 @@ extension LauncherSettings {
                 rawValue: try container.decodeIfPresent(String.self, forKey: .backgroundStylePreference)
             ),
             solidBackgroundColor: try container.decodeIfPresent(SolidBackgroundColor.self, forKey: .solidBackgroundColor) ?? .system,
-            selectedLauncherMode: try container.decodeIfPresent(LauncherMode.self, forKey: .selectedLauncherMode) ?? .fullscreenOldMac,
+            selectedLauncherMode: try container.decodeIfPresent(LauncherMode.self, forKey: .selectedLauncherMode) ?? .fullscreen,
             isMenuBarIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isMenuBarIconVisible) ?? true,
             isFloatyDockIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isFloatyDockIconVisible) ?? true,
-            launcherHotkey: try container.decodeIfPresent(HotkeyDescriptor.self, forKey: .launcherHotkey) ?? .toggleLauncher,
+            launcherHotkey: decodedLauncherHotkey,
             layoutToggleHotkey: try container.decodeIfPresent(HotkeyDescriptor.self, forKey: .layoutToggleHotkey),
             fillsGapsAutomatically: try container.decodeIfPresent(Bool.self, forKey: .fillsGapsAutomatically) ?? false,
             hasCompletedIntroduction: try container.decodeIfPresent(Bool.self, forKey: .hasCompletedIntroduction) ?? false

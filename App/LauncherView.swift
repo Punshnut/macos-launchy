@@ -59,7 +59,7 @@ struct LauncherView: View {
     private var pageCapacity: Int { LauncherGridConfiguration.pageCapacity }
     private let closeAnimationDuration: TimeInterval = 0.25
     private let gridSpringAnimation = Animation.spring(response: 0.42, dampingFraction: 0.86, blendDuration: 0.12)
-    private let pageSwitchAnimation = Animation.interactiveSpring(response: 0.24, dampingFraction: 0.9, blendDuration: 0.08)
+    private let pageSwitchAnimation = Animation.interactiveSpring(response: 0.2, dampingFraction: 0.9, blendDuration: 0.06)
     private let gestureSettleAnimation = Animation.interactiveSpring(response: 0.22, dampingFraction: 0.88, blendDuration: 0.06)
     private let folderOpenAnimation = Animation.spring(response: 0.36, dampingFraction: 0.82, blendDuration: 0.08)
     private let pagerButtonHitPadding: CGFloat = 12
@@ -369,10 +369,8 @@ struct LauncherView: View {
                                         }
                                     }
                                     .frame(width: pageWidth, height: layout.gridHeight, alignment: .leading)
-                                    .clipped()
                                     .gesture(dragGesture)
                                     .animation(gridSpringAnimation, value: orderedItems)
-                                    .animation(pageSwitchAnimation, value: currentPage)
                                     .onAppear {
                                         pagerViewportWidth = pageWidth
                                     }

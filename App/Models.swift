@@ -245,7 +245,6 @@ struct LauncherSettings: Hashable, Codable {
     var fillsGapsAutomatically: Bool
     /// Whether the user has already gone through the Launchy introduction.
     var hasCompletedIntroduction: Bool
-
     init(
         isVisibleOnAllSpaces: Bool,
         launchesAtLogin: Bool,

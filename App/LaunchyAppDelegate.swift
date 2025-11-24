@@ -17,13 +17,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var arrangementResetTask: Task<Void, Never>?
     private var statusBarItem: NSStatusItem?
     private var statusBarMenu: NSMenu?
-    private let menuIconSize = NSSize(width: 18, height: 18)
-    private lazy var folderMenuIcon: NSImage? = {
-        let image = NSImage(named: NSImage.folderName) ?? NSImage(systemSymbolName: "folder.fill", accessibilityDescription: nil)
-        image?.size = menuIconSize
-        image?.isTemplate = false
-        return image
-    }()
     private var lastFocusedApplication: NSRunningApplication?
     private var pendingLaunchedApplication: NSRunningApplication?
     private var pendingLaunchBundleIdentifier: String?
@@ -513,11 +506,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Builds the menu shown from the status bar icon, mixing launcher content and app controls.
     private func buildStatusBarMenu() -> NSMenu {
         let menu = NSMenu()
-        let hasLauncherEntries = appendLauncherItemsMenu(to: menu)
-        if hasLauncherEntries {
-            menu.addItem(.separator())
-        }
-
         let showItem = NSMenuItem(title: String(localized: "Show Launcher"), action: #selector(showLauncherFromStatusItem(_:)), keyEquivalent: "")
         showItem.target = self
         menu.addItem(showItem)
@@ -583,7 +571,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let item = NSMenuItem(title: title, action: #selector(launchAppFromMenu(_:)), keyEquivalent: "")
         item.target = self
         item.representedObject = app
-        item.image = menuIcon(for: app)
+        item.image = nil
+        item.attributedTitle = nil
         item.isEnabled = app.bundleURL != nil
         return item
     }
@@ -591,7 +580,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Builds a submenu-backed menu item representing a folder of apps.
     private func menuItem(for folder: FolderItem) -> NSMenuItem {
         let item = NSMenuItem(title: folder.name, action: nil, keyEquivalent: "")
-        item.image = folderMenuIcon
+        item.image = nil
+        item.attributedTitle = nil
 
         let submenu = NSMenu()
         let sortedApps = folder.apps.sorted { lhs, rhs in
@@ -633,16 +623,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Produces a consistent sort key for app menu entries.
     private func menuSortKey(for app: AppItem) -> String {
         menuDisplayTitle(for: app)
-    }
-
-    /// Scales the provided app icon down for menu usage, falling back to the system default.
-    private func menuIcon(for app: AppItem) -> NSImage? {
-        let baseIcon = app.iconImage ?? applicationDiscovery.resolveIcon(for: app)
-        guard let baseIcon else { return nil }
-        let icon = baseIcon.copy() as? NSImage ?? baseIcon
-        icon.size = menuIconSize
-        icon.isTemplate = false
-        return icon
     }
 
     /// Launches an app when chosen from a menu list.

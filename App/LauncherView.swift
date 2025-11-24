@@ -61,6 +61,9 @@ struct LauncherView: View {
     private let gridSpringAnimation = Animation.spring(response: 0.42, dampingFraction: 0.86, blendDuration: 0.12)
     private let pageSwitchAnimation = Animation.interactiveSpring(response: 0.35, dampingFraction: 0.88, blendDuration: 0.14)
     private let folderOpenAnimation = Animation.spring(response: 0.36, dampingFraction: 0.82, blendDuration: 0.08)
+    private let pagerButtonHitPadding: CGFloat = 12
+    private let pagerButtonHitSize: CGFloat = 44
+    private let pagerButtonHitExpansion: CGFloat = 12
 
     @State private var orderedItems: [LauncherItem]
     @State private var draggedItem: LauncherItem?
@@ -1181,6 +1184,10 @@ struct LauncherView: View {
                     .foregroundColor(.primary.opacity(currentPage == 0 ? 0.35 : 0.8))
                     .frame(width: 28, height: 28)
             }
+            .padding(.horizontal, pagerButtonHitPadding)
+            .padding(.vertical, pagerButtonHitPadding)
+            .frame(minWidth: pagerButtonHitSize, minHeight: pagerButtonHitSize)
+            .contentShape(Rectangle().inset(by: -pagerButtonHitExpansion))
             .buttonStyle(.plain)
             .disabled(currentPage == 0)
 
@@ -1201,6 +1208,10 @@ struct LauncherView: View {
                     .foregroundColor(.primary.opacity(currentPage >= totalPages - 1 ? 0.35 : 0.8))
                     .frame(width: 28, height: 28)
             }
+            .padding(.horizontal, pagerButtonHitPadding)
+            .padding(.vertical, pagerButtonHitPadding)
+            .frame(minWidth: pagerButtonHitSize, minHeight: pagerButtonHitSize)
+            .contentShape(Rectangle().inset(by: -pagerButtonHitExpansion))
             .buttonStyle(.plain)
             .disabled(currentPage >= totalPages - 1)
         }
@@ -1276,6 +1287,10 @@ struct LauncherView: View {
                 .foregroundColor(.primary.opacity(disabled ? 0.35 : 0.8))
                 .frame(width: 28, height: 28)
         }
+        .padding(.horizontal, pagerButtonHitPadding)
+        .padding(.vertical, pagerButtonHitPadding)
+        .frame(minWidth: pagerButtonHitSize, minHeight: pagerButtonHitSize)
+        .contentShape(Rectangle().inset(by: -pagerButtonHitExpansion))
         .buttonStyle(.plain)
         .disabled(disabled)
 

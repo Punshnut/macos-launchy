@@ -1,6 +1,6 @@
 # Launchy
 
-Launchy is a featherweight macOS app launcher that feels like part of the system: fullscreen-first, ultra-fast, and absolutely minimal. It silently scans your apps, keeps an edge-to-edge HUD ready on any Space, and opens things in one tap.
+Launchy is a featherweight macOS app launcher that feels built in: fullscreen when you want focus, floaty when you want a HUD. It quietly scans your apps, caches icons, and keeps a wall-to-wall grid ready on any Space.
 
 <p align="center">
   <img src="https://img.shields.io/badge/platform-macOS-blue" alt="Platform macOS">
@@ -32,34 +32,37 @@ Launchy is a featherweight macOS app launcher that feels like part of the system
   <sub>Spanish ships in both 🇲🇽 LatAm and 🇪🇸 Spain variants - the Americas card highlights LatAm while Europe & Asia lists the Iberian pack.</sub>
 </p>
 
-## What you get (at a glance)
+## Highlights
 
-- **Ready in a blink** - Launchy indexes your apps instantly and keeps icons cached so the grid is full the moment it appears.
-- **Fullscreen focus** - Opens as a clean, edge-to-edge canvas; toggle to a floating palette when you want something lighter.
-- **Comfortable paging** - Scroll, swipe, or wheel anywhere over the HUD to move between pages without hunting buttons.
-- **Simple choices** - Pick glass/transparent/solid backdrops, keep it on every Space or just one, and choose which apps show up.
-- **Quiet companion** - Optional Dock/menu bar presence and login toggle so Launchy is always where you want it, never where you don't.
+- **Fullscreen or floaty** - Pick an edge-to-edge canvas or a non-activating HUD; flip layouts with an optional shortcut.
+- **Instant grid** - Scans /Applications, /System/Applications, and your user apps, caches icons, and fills 7x5 pages immediately.
+- **Type, find, fire** - Search names, folders, and bundle IDs; press Return to launch the first match.
+- **Organize effortlessly** - Drag to reorder across pages, drop apps together to build folders, and rename apps or folders in place.
+- **Curate what shows** - Hide apps you never want to see, reset your layout without losing custom names, and choose whether icons auto-fill gaps.
+- **Feels native** - Optional Dock and menu bar icons with quick menus, glass-to-solid backgrounds (with color swatches), and Sparkle updates built in.
 
 ## Gestures (touchpad or mouse)
 
 - **Swipe left/right** anywhere on the HUD to change pages.
 - **Scroll wheel** up/down for the same paging behavior (works on classic mouse wheels and Magic Mouse).
 - **Smooth scrolling** accumulates movement; small flicks will still flip pages once they cross a threshold.
+- **Tap the background** to close Launchy quickly.
 
 ## Keyboard shortcuts
 
 - **Toggle fullscreen ⇄ floaty palette:** configurable in Settings (no default)
 - **Show / hide Launchy:** configurable in Settings (defaults to `Cmd` + `Shift` + `Space`)
+- **Launch search result:** `Return` fires the first match without leaving the search field
+- **Page with arrows:** left/right arrows flip between pages
 - **Open settings:** `Cmd` + `,`
-- **Reload / reset tools:** See the Command Menu inside the app (menu bar icon).
 
 ## Quick tips
 
-- Assign Launchy to a global hotkey or gesture via your favorite automation utility so it is always one move away.
-- Floaty palette stays visible across Spaces; fullscreen keeps focus when you want a clean, wall-to-wall launcher.
-- The search bar filters by app name or bundle ID so even odd tools are a few keystrokes away.
-- Hide apps you never want to see from the settings list; Launchy remembers your choices.
-- Set global shortcuts for showing Launchy and flipping layouts in Settings; tap Delete in the recorder to clear them.
+- Right-click any icon to rename it, hide it, show it in Finder, or move it to a page or folder.
+- Drag apps together to build folders or create an empty one from the background menu; custom names stick around.
+- Hold Option or Shift while dragging to force a folder drop—add apps into folders, create new ones on an icon, or merge two folders without the grid shuffling.
+- The Dock and menu bar icons mirror your arrangement for fast launches plus quick access to updates, settings, and quit.
+- Reset the grid from Settings to start fresh without losing hidden apps or custom labels; toggle auto gap fill to taste.
 
 ## License & support
 

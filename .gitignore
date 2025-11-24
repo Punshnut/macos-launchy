@@ -8,6 +8,7 @@ Packages/
 /.derived/
 /.tmp/
 /.module-cache/
+/.modulecache/
 /.derived/Build/Products/Release/
 /\.derived/Build/Products/Release/generate_keys
 /\.derived/Build/Products/Release/libed25519.a

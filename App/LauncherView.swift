@@ -22,6 +22,19 @@ private struct RemovedAppContext {
     var suggestedIndex: Int
 }
 
+private struct FolderOverlayLayout {
+    let cardWidth: CGFloat
+    let cardHeight: CGFloat
+    let columns: Int
+    let spacing: CGFloat
+    let gridContentHeight: CGFloat
+    let contentInsets: EdgeInsets
+    let gridInsets: EdgeInsets
+    let titleToGridSpacing: CGFloat
+
+    var gridHeight: CGFloat { gridContentHeight + gridInsets.top + gridInsets.bottom }
+}
+
 /// Displays the grid of discovered items (apps and folders) and handles pagination/launch events.
 struct LauncherView: View {
     /// Data source backing the grid.
@@ -1079,15 +1092,119 @@ struct LauncherView: View {
         }
     }
 
+    private func folderOverlayLayout(for folder: FolderItem, containerSize: CGSize, layout: LauncherLayoutMetrics) -> FolderOverlayLayout {
+        let spacing: CGFloat = launcherMode == .floaty ? 18 : 20
+        let titleToGridSpacing: CGFloat = launcherMode == .floaty ? 14 : 16
+        let targetAspect: CGFloat = 16.0 / 9.0
+        let contentInsets = folderContentInsets()
+        let gridInsets = folderGridInsets()
+
+        let widthCap: CGFloat = launcherMode == .floaty ? 860 : 1120
+        let widthFloor: CGFloat = launcherMode == .floaty ? 520 : 720
+        let widthFactor: CGFloat = launcherMode == .floaty ? 0.9 : 0.94
+        let usableWidth = containerSize.width * widthFactor
+        let clampedWidth = min(usableWidth, widthCap)
+        let cardWidth = max(clampedWidth, min(widthFloor, usableWidth))
+
+        let aspectHeight = cardWidth / targetAspect
+        let maxHeightByMode = containerSize.height * (launcherMode == .floaty ? 0.78 : 0.86)
+        let maxCardHeight = min(maxHeightByMode, aspectHeight)
+        let titleHeight = folderTitleHeight()
+        let chromeHeight = contentInsets.top + contentInsets.bottom + titleHeight + titleToGridSpacing + gridInsets.top + gridInsets.bottom
+        let allowedGridHeight = max(maxCardHeight - chromeHeight, 0)
+
+        let availableGridWidth = max(cardWidth - contentInsets.leading - contentInsets.trailing - gridInsets.leading - gridInsets.trailing, 0)
+        let minColumnWidth = folderMinCellWidth(for: layout)
+        let maxColumnsByWidth = max(3, Int(floor((availableGridWidth + spacing) / (minColumnWidth + spacing))))
+        let preferredCap = launcherMode == .fullscreen ? 8 : 6
+        let softMaxColumns = max(3, min(maxColumnsByWidth, preferredCap))
+
+        func gridContentHeight(for columns: Int) -> CGFloat {
+            folderGridHeight(for: folder.apps.count, columns: max(columns, 1), spacing: spacing, layout: layout)
+        }
+
+        var columns = softMaxColumns
+        var gridContentHeightValue = gridContentHeight(for: columns)
+
+        if gridContentHeightValue > allowedGridHeight && maxColumnsByWidth > columns {
+            for candidate in (columns + 1)...maxColumnsByWidth {
+                let candidateHeight = gridContentHeight(for: candidate)
+                columns = candidate
+                gridContentHeightValue = candidateHeight
+                if candidateHeight <= allowedGridHeight {
+                    break
+                }
+            }
+        }
+
+        let estimatedCardHeight = gridContentHeightValue + chromeHeight
+        let cardHeight = estimatedCardHeight
+
+        return FolderOverlayLayout(
+            cardWidth: cardWidth,
+            cardHeight: cardHeight,
+            columns: columns,
+            spacing: spacing,
+            gridContentHeight: gridContentHeightValue,
+            contentInsets: contentInsets,
+            gridInsets: gridInsets,
+            titleToGridSpacing: titleToGridSpacing
+        )
+    }
+
+    private func folderGridHeight(for appCount: Int, columns: Int, spacing: CGFloat, layout: LauncherLayoutMetrics) -> CGFloat {
+        guard columns > 0 else { return 0 }
+        let rows = max(1, Int(ceil(Double(max(appCount, 1)) / Double(columns))))
+        let cellHeight = layout.iconDimension + folderCellChromeHeight()
+        let spacingTotal = spacing * CGFloat(max(rows - 1, 0))
+        return CGFloat(rows) * cellHeight + spacingTotal
+    }
+
+    private func folderCellChromeHeight() -> CGFloat {
+        let labelHeight = folderLabelLineHeight()
+        let padding: CGFloat = 12 // .padding(.vertical, 6)
+        let spacing: CGFloat = 10 // VStack spacing between icon and label
+        return labelHeight * 2 + padding + spacing
+    }
+
+    private func folderLabelLineHeight() -> CGFloat {
+        let font = NSFont.systemFont(ofSize: 14, weight: .medium)
+        return font.ascender - font.descender + font.leading
+    }
+
+    private func folderTitleHeight() -> CGFloat {
+        let font = NSFont.systemFont(ofSize: 22, weight: .semibold)
+        let lineHeight = font.ascender - font.descender + font.leading
+        return lineHeight + 10 // accounts for the extra .padding(.top, 8)
+    }
+
+    private func folderContentInsets() -> EdgeInsets {
+        switch launcherMode {
+        case .floaty:
+            return EdgeInsets(top: 20, leading: 26, bottom: 20, trailing: 26)
+        case .fullscreen:
+            return EdgeInsets(top: 26, leading: 32, bottom: 26, trailing: 32)
+        }
+    }
+
+    private func folderGridInsets() -> EdgeInsets {
+        EdgeInsets(top: 6, leading: 10, bottom: 8, trailing: 10)
+    }
+
+    private func folderMinCellWidth(for layout: LauncherLayoutMetrics) -> CGFloat {
+        max(layout.iconDimension + 28, 110)
+    }
+
     /// Lays out the folder contents with a Launchpad-inspired grid that supports reordering.
     @ViewBuilder
-    private func folderGrid(for folder: FolderItem, layout: LauncherLayoutMetrics) -> some View {
-        let columns = Array(repeating: GridItem(.flexible(), spacing: 22, alignment: .center), count: max(3, min(4, LauncherGridConfiguration.columnsPerPage - 2)))
-        let spacing: CGFloat = 22
+    private func folderGrid(for folder: FolderItem, layout: LauncherLayoutMetrics, overlayLayout: FolderOverlayLayout) -> some View {
+        let columnCount = max(1, overlayLayout.columns)
+        let columns = Array(repeating: GridItem(.flexible(), spacing: overlayLayout.spacing, alignment: .center), count: columnCount)
         let tileSize = layout.iconDimension
+        let gridInsets = overlayLayout.gridInsets
 
         GeometryReader { gridProxy in
-            LazyVGrid(columns: columns, alignment: .center, spacing: spacing) {
+            LazyVGrid(columns: columns, alignment: .center, spacing: overlayLayout.spacing) {
                 ForEach(Array(folder.apps.enumerated()), id: \.element.id) { index, app in
                     let isLaunching = launchingItemID == app.id
                     let isRenaming = renamingAppID == app.id
@@ -1147,13 +1264,15 @@ struct LauncherView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(.horizontal, 6)
-            .padding(.bottom, 4)
+            .padding(.leading, gridInsets.leading)
+            .padding(.trailing, gridInsets.trailing)
+            .padding(.top, gridInsets.top)
+            .padding(.bottom, gridInsets.bottom)
             .onDrop(
                 of: [.text],
                 delegate: FolderReorderDropDelegate(
                     columns: columns.count,
-                    spacing: spacing,
+                    spacing: overlayLayout.spacing,
                     gridSize: gridProxy.size,
                     appCount: folder.apps.count,
                     draggedApp: $draggedFolderApp,
@@ -1177,26 +1296,30 @@ struct LauncherView: View {
         }
         .animation(gridSpringAnimation, value: folder.apps)
         .frame(maxWidth: .infinity)
+        .frame(height: overlayLayout.gridHeight)
     }
 
     /// Displays a blurred overlay showing a folder's contents with Launchpad-inspired styling.
     @ViewBuilder
     private func folderOverlay(for folder: FolderItem, layout: LauncherLayoutMetrics) -> some View {
         GeometryReader { proxy in
+            let overlayLayout = folderOverlayLayout(for: folder, containerSize: proxy.size, layout: layout)
             ZStack {
                 VisualEffectBackground(material: .hudWindow, blendingMode: .behindWindow)
                     .ignoresSafeArea()
                 Color.black.opacity(0.35)
                     .ignoresSafeArea()
 
-                VStack(spacing: 20) {
+                VStack(spacing: overlayLayout.titleToGridSpacing) {
                     folderTitleView(for: folder)
 
-                    folderGrid(for: folder, layout: layout)
+                    folderGrid(for: folder, layout: layout, overlayLayout: overlayLayout)
                 }
-                .padding(.horizontal, 32)
-                .padding(.vertical, 26)
-                .frame(maxWidth: min(proxy.size.width * 0.82, 640))
+                .padding(.top, overlayLayout.contentInsets.top)
+                .padding(.bottom, overlayLayout.contentInsets.bottom)
+                .padding(.leading, overlayLayout.contentInsets.leading)
+                .padding(.trailing, overlayLayout.contentInsets.trailing)
+                .frame(maxWidth: overlayLayout.cardWidth)
                 .background(
                     VisualEffectBackground(material: .menu, blendingMode: .withinWindow)
                         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))

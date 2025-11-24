@@ -67,9 +67,9 @@
 "Launch at login" = "Launch at login";
 "Launcher layout" = "Launcher layout";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Add a layout toggle shortcut below to flip modes instantly from anywhere.";
-"Show Dock icon (Floaty mode only)" = "Show Dock icon (Floaty mode only)";
-"Hide the Dock icon to keep Launchy out of the way when using the floaty panel." = "Hide the Dock icon to keep Launchy out of the way when using the floaty panel.";
-"Dock icon always shows in fullscreen mode, so this toggle is temporarily disabled." = "Dock icon always shows in fullscreen mode, so this toggle is temporarily disabled.";
+"Hide Dock icon" = "Hide Dock icon";
+"Hide menu bar icon" = "Hide menu bar icon";
+"If both icons are hidden, Launchy keeps the toggle shortcut enabled so you can still open it." = "If both icons are hidden, Launchy keeps the toggle shortcut enabled so you can still open it.";
 "Background style" = "Background style";
 "Solid color" = "Solid color";
 "Icons move up when there's space" = "Icons move up when there's space";

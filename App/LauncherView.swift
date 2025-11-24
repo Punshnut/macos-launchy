@@ -60,12 +60,15 @@ struct LauncherView: View {
     @State private var folderHoverTargetID: UUID?
     @State private var folderHoverWithSuppressedReorder = false
     @State private var isEditingFolderName = false
+    @State private var renamingAppID: UUID?
+    @State private var appNameDraft = ""
     @State private var folderNameDraft = ""
     @State private var pageSizes: [Int]
     @State private var launchingItemID: UUID?
     @State private var pageDirection: PageShiftDirection = .forward
     @State private var folderIconWaveToggle = false
     @FocusState private var isFolderNameFieldFocused: Bool
+    @FocusState private var isAppNameFieldFocused: Bool
     @FocusState private var isSearchFieldFocused: Bool
     @Environment(\.colorScheme) private var colorScheme
 
@@ -216,41 +219,55 @@ struct LauncherView: View {
                                         ForEach(Array(itemsForVisiblePage.enumerated()), id: \.element.id) { _, item in
                                             let isLaunching = launchingItemID == item.id
                                             let isFolderBeingOpened = activeFolder?.id == item.id
-                                            let cell = Button {
-                                                openItem(item)
-                                            } label: {
-                                                VStack(spacing: 10) {
-                                                    iconView(for: item, layout: layout)
-                                                        .frame(
-                                                            width: layout.iconDimension,
-                                                            height: layout.iconDimension
-                                                        )
-                                                        .scaleEffect(isLaunching ? 1.08 : 1.0)
-                                                        .opacity(isLaunching ? 0.4 : 1.0)
-                                                        .animation(.easeInOut(duration: 0.18), value: launchingItemID)
-                                                    Text(item.displayName)
-                                                        .font(.system(size: 13, weight: .medium))
-                                                        .multilineTextAlignment(.center)
-                                                        .foregroundColor(iconLabelColor())
-                                                        .lineLimit(2)
-                                                        .frame(maxWidth: .infinity)
-                                                }
-                                                .frame(maxWidth: .infinity)
-                                                .padding(.vertical, 4)
-                                                .scaleEffect(isFolderBeingOpened ? 1.03 : 1.0)
-                                                .animation(
-                                                    .spring(response: 0.35, dampingFraction: 0.82, blendDuration: 0.06),
-                                                    value: activeFolder?.id
-                                                )
-                                            }
-                                            .buttonStyle(.plain)
-                                            .contentShape(Rectangle())
-                                            .contextMenu {
-                                                itemContextMenu(for: item)
-                                            }
+                                            let isRenamingApp = renamingAppID == item.id
 
-                                            if canReorder {
-                                                cell
+                                            let cell: AnyView = {
+                                                if isRenamingApp, case let .app(app) = item {
+                                                    return AnyView(
+                                                        editableAppCell(app: app, layout: layout)
+                                                    )
+                                                }
+
+                                                return AnyView(
+                                                    Button {
+                                                        openItem(item)
+                                                    } label: {
+                                                        VStack(spacing: 10) {
+                                                            iconView(for: item, layout: layout)
+                                                                .frame(
+                                                                    width: layout.iconDimension,
+                                                                    height: layout.iconDimension
+                                                                )
+                                                                .scaleEffect(isLaunching ? 1.08 : 1.0)
+                                                                .opacity(isLaunching ? 0.4 : 1.0)
+                                                                .animation(.easeInOut(duration: 0.18), value: launchingItemID)
+                                                            appOrFolderTitleView(for: item)
+                                                                .font(.system(size: 13, weight: .medium))
+                                                                .multilineTextAlignment(.center)
+                                                                .foregroundColor(iconLabelColor())
+                                                                .lineLimit(2)
+                                                                .frame(maxWidth: .infinity)
+                                                        }
+                                                        .frame(maxWidth: .infinity)
+                                                        .padding(.vertical, 4)
+                                                        .scaleEffect(isFolderBeingOpened ? 1.03 : 1.0)
+                                                        .animation(
+                                                            .spring(response: 0.35, dampingFraction: 0.82, blendDuration: 0.06),
+                                                            value: activeFolder?.id
+                                                        )
+                                                    }
+                                                    .buttonStyle(.plain)
+                                                )
+                                            }()
+
+                                            let decoratedCell = cell
+                                                .contentShape(Rectangle())
+                                                .contextMenu {
+                                                    itemContextMenu(for: item)
+                                                }
+
+                                            if canReorder && isRenamingApp == false {
+                                                decoratedCell
                                                     .onDrag {
                                                         draggedItem = item
                                                         return NSItemProvider(object: NSString(string: item.id.uuidString))
@@ -258,7 +275,7 @@ struct LauncherView: View {
                                                         dragPreview(for: item, layout: layout)
                                                     }
                                             } else {
-                                                cell
+                                                decoratedCell
                                             }
                                         }
                                     }
@@ -991,6 +1008,46 @@ struct LauncherView: View {
         }
     }
 
+    /// Renders a standard title for either an app or folder.
+    @ViewBuilder
+    private func appOrFolderTitleView(for item: LauncherItem) -> some View {
+        Text(item.displayName)
+    }
+
+    /// Inline app renaming field embedded in the grid.
+    private func editableAppCell(app: AppItem, layout: LauncherLayoutMetrics, fontSize: CGFloat = 13) -> some View {
+        VStack(spacing: 10) {
+            iconView(for: .app(app), layout: layout)
+                .frame(
+                    width: layout.iconDimension,
+                    height: layout.iconDimension
+                )
+            TextField("", text: $appNameDraft)
+                .textFieldStyle(.plain)
+                .font(.system(size: fontSize, weight: .medium))
+                .multilineTextAlignment(.center)
+                .focused($isAppNameFieldFocused)
+                .onSubmit {
+                    commitAppRename(app)
+                }
+                .onChange(of: isAppNameFieldFocused) { focused in
+                    if focused == false && renamingAppID == app.id {
+                        commitAppRename(app)
+                    }
+                }
+                .onAppear {
+                    if renamingAppID == app.id {
+                        DispatchQueue.main.async {
+                            isAppNameFieldFocused = true
+                        }
+                    }
+                }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 6)
+        .scaleEffect(renamingAppID == app.id ? 1.0 : 0.98)
+    }
+
     /// Renders the folder title and allows inline editing when tapped.
     @ViewBuilder
     private func folderTitleView(for folder: FolderItem) -> some View {
@@ -1033,44 +1090,60 @@ struct LauncherView: View {
             LazyVGrid(columns: columns, alignment: .center, spacing: spacing) {
                 ForEach(Array(folder.apps.enumerated()), id: \.element.id) { index, app in
                     let isLaunching = launchingItemID == app.id
-                    let cell = Button {
-                        openItem(.app(app))
-                    } label: {
-                        VStack(spacing: 10) {
-                            iconView(for: .app(app), layout: layout)
-                                .frame(width: tileSize, height: tileSize)
-                                .scaleEffect(isLaunching ? 1.08 : 1.0)
-                                .opacity(isLaunching ? 0.4 : 1.0)
-                                .animation(.easeInOut(duration: 0.18), value: launchingItemID)
-                            Text(app.resolvedDisplayName)
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(iconLabelColor())
-                                .lineLimit(2)
-                                .multilineTextAlignment(.center)
+                    let isRenaming = renamingAppID == app.id
+                    let cell: AnyView = {
+                        if isRenaming {
+                            return AnyView(
+                                editableAppCell(app: app, layout: layout, fontSize: 14)
+                            )
                         }
-                        .padding(.vertical, 6)
-                        .frame(maxWidth: .infinity)
-                        .scaleEffect(folderIconWaveToggle ? 1 : 0.9)
-                        .opacity(folderIconWaveToggle ? 1 : 0.0)
-                        .animation(
-                            folderOpenAnimation.delay(Double(index) * 0.025),
-                            value: folderIconWaveToggle
+                        return AnyView(
+                            Button {
+                                openItem(.app(app))
+                            } label: {
+                                VStack(spacing: 10) {
+                                    iconView(for: .app(app), layout: layout)
+                                        .frame(width: tileSize, height: tileSize)
+                                        .scaleEffect(isLaunching ? 1.08 : 1.0)
+                                        .opacity(isLaunching ? 0.4 : 1.0)
+                                        .animation(.easeInOut(duration: 0.18), value: launchingItemID)
+                                    Text(app.resolvedDisplayName)
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(iconLabelColor())
+                                        .lineLimit(2)
+                                        .multilineTextAlignment(.center)
+                                }
+                                .padding(.vertical, 6)
+                                .frame(maxWidth: .infinity)
+                                .scaleEffect(folderIconWaveToggle ? 1 : 0.9)
+                                .opacity(folderIconWaveToggle ? 1 : 0.0)
+                                .animation(
+                                    folderOpenAnimation.delay(Double(index) * 0.025),
+                                    value: folderIconWaveToggle
+                                )
+                            }
+                            .buttonStyle(.plain)
                         )
-                    }
-                    .buttonStyle(.plain)
-                    .contextMenu {
-                        itemContextMenu(for: .app(app))
-                    }
+                    }()
 
-                    cell
-                        .onDrag {
-                            folderDragContext = FolderDragContext(folderID: folder.id, app: app)
-                            draggedFolderApp = app
-                            draggedItem = .app(app)
-                            return NSItemProvider(object: NSString(string: app.bundleIdentifier))
-                        } preview: {
-                            dragPreview(for: .app(app), layout: layout)
+                    let decoratedCell = cell
+                        .contextMenu {
+                            itemContextMenu(for: .app(app))
                         }
+
+                    if isRenaming == false {
+                        decoratedCell
+                            .onDrag {
+                                folderDragContext = FolderDragContext(folderID: folder.id, app: app)
+                                draggedFolderApp = app
+                                draggedItem = .app(app)
+                                return NSItemProvider(object: NSString(string: app.bundleIdentifier))
+                            } preview: {
+                                dragPreview(for: .app(app), layout: layout)
+                            }
+                    } else {
+                        decoratedCell
+                    }
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -1526,7 +1599,7 @@ struct LauncherView: View {
             }
 
             Button("Rename App") {
-                promptRenameApp(app)
+                beginAppRename(app)
             }
 
             Button("Show in Finder") {
@@ -1555,7 +1628,7 @@ struct LauncherView: View {
             }
 
             Button("Rename Folder") {
-                promptRenameFolder(folder)
+                beginFolderRename(folder)
             }
 
             Menu("Move to Page") {
@@ -1642,7 +1715,7 @@ struct LauncherView: View {
 
         alert.informativeText = lines.joined(separator: "\n")
         alert.addButton(withTitle: String(localized: "OK"))
-        alert.runModal()
+        presentModalAlert(alert)
     }
 
     /// Displays folder information and contained apps.
@@ -1653,36 +1726,31 @@ struct LauncherView: View {
         let appList = folder.apps.map { "- \($0.resolvedDisplayName)" }.joined(separator: "\n")
         alert.informativeText = appList.isEmpty ? String(localized: "Folder is empty.") : String(localized: "Apps:\n\(appList)")
         alert.addButton(withTitle: String(localized: "OK"))
-        alert.runModal()
+        presentModalAlert(alert)
     }
 
-    /// Prompts the user for a new app name and saves it.
-    private func promptRenameApp(_ app: AppItem) {
-        let initial = sanitizedCustomName(app.customName ?? app.displayName)
-        requestNameInput(
-            title: String(localized: "Rename App"),
-            message: String(localized: "Enter a custom name for this app. Leave empty to reset."),
-            initialValue: initial ?? ""
-        ) { newName in
-            guard let newName else { return }
-            applyAppRename(app, newName: newName)
+    /// Begins inline app renaming on the targeted item.
+    private func beginAppRename(_ app: AppItem) {
+        renamingAppID = app.id
+        appNameDraft = sanitizedCustomName(app.customName ?? app.displayName) ?? app.displayName
+        isEditingFolderName = false
+        DispatchQueue.main.async {
+            isAppNameFieldFocused = true
         }
     }
 
-    /// Prompts the user for a new folder name and saves it.
-    private func promptRenameFolder(_ folder: FolderItem) {
-        requestNameInput(
-            title: String(localized: "Rename Folder"),
-            message: String(localized: "Enter a name for this folder."),
-            initialValue: folder.name
-        ) { newName in
-            guard let newName else { return }
-            applyFolderRename(folder, newName: newName)
+    /// Starts inline folder renaming by opening and focusing the overlay title.
+    private func beginFolderRename(_ folder: FolderItem) {
+        withAnimation(folderOpenAnimation) {
+            activeFolder = folder
+            folderIconWaveToggle = true
         }
+        beginFolderNameEdit(for: folder)
     }
 
     /// Starts inline editing for the folder title displayed in the overlay.
     private func beginFolderNameEdit(for folder: FolderItem) {
+        renamingAppID = nil
         folderNameDraft = folder.name.isEmpty ? FolderItem.defaultName : folder.name
         isEditingFolderName = true
         DispatchQueue.main.async {
@@ -1699,6 +1767,19 @@ struct LauncherView: View {
         if resolved != folder.name {
             applyFolderRename(folder, newName: resolved)
         }
+    }
+
+    /// Applies the pending app name draft and clears edit state.
+    private func commitAppRename(_ app: AppItem) {
+        let draft = appNameDraft
+        resetAppRenameState()
+        applyAppRename(app, newName: draft)
+    }
+
+    private func resetAppRenameState() {
+        renamingAppID = nil
+        isAppNameFieldFocused = false
+        appNameDraft = ""
     }
 
     /// Saves a new custom app name into the arrangement.
@@ -1966,7 +2047,7 @@ struct LauncherView: View {
         persistOrderChange(using: updatedSizes)
 
         guard promptForName else { return }
-        promptRenameFolder(newFolder)
+        beginFolderRename(newFolder)
     }
 
     /// Creates an empty folder at the start of the current page.
@@ -1979,7 +2060,7 @@ struct LauncherView: View {
         persistOrderChange(using: updatedSizes)
 
         guard promptForName else { return }
-        promptRenameFolder(folder)
+        beginFolderRename(folder)
     }
 
     /// Returns true when an app already lives inside the specified folder.
@@ -1992,30 +2073,20 @@ struct LauncherView: View {
         return false
     }
 
-    /// Simple helper for text entry alerts.
-    private func requestNameInput(
-        title: String,
-        message: String,
-        initialValue: String,
-        onCompletion: (String?) -> Void
-    ) {
-        let alert = NSAlert()
-        alert.alertStyle = .informational
-        alert.messageText = title
-        alert.informativeText = message
+    @discardableResult
+    private func presentModalAlert(_ alert: NSAlert) -> NSApplication.ModalResponse {
+        NSApp.activate(ignoringOtherApps: true)
+        let alertWindow = alert.window
+        alertWindow.level = .statusBar
+        alertWindow.collectionBehavior.insert([.moveToActiveSpace, .fullScreenAuxiliary, .canJoinAllSpaces])
+        alertWindow.makeKeyAndOrderFront(nil)
+        alertWindow.orderFrontRegardless()
 
-        let field = NSTextField(string: initialValue)
-        field.frame = NSRect(x: 0, y: 0, width: 240, height: 24)
-        alert.accessoryView = field
-
-        alert.addButton(withTitle: String(localized: "Save"))
-        alert.addButton(withTitle: String(localized: "Cancel"))
         let response = alert.runModal()
-        guard response == .alertFirstButtonReturn else {
-            onCompletion(nil)
-            return
-        }
-        onCompletion(field.stringValue)
+
+        hostingWindow()?.makeKeyAndOrderFront(nil)
+
+        return response
     }
 }
 

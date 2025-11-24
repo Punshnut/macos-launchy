@@ -235,8 +235,8 @@ struct LauncherSettings: Hashable, Codable {
     var selectedLauncherMode: LauncherMode
     /// Toggles the presence of the menu bar shortcut icon.
     var isMenuBarIconVisible: Bool
-    /// Determines whether Launchy should keep a Dock icon around while in floaty mode.
-    var isFloatyDockIconVisible: Bool
+    /// Determines whether Launchy should keep a Dock icon around while the app is running.
+    var isDockIconVisible: Bool
     /// Global hotkey used to show or hide Launchy.
     var launcherHotkey: HotkeyDescriptor?
     /// Optional shortcut for toggling between floaty and fullscreen layouts.
@@ -254,7 +254,7 @@ struct LauncherSettings: Hashable, Codable {
         solidBackgroundColor: SolidBackgroundColor,
         selectedLauncherMode: LauncherMode,
         isMenuBarIconVisible: Bool,
-        isFloatyDockIconVisible: Bool,
+        isDockIconVisible: Bool,
         launcherHotkey: HotkeyDescriptor?,
         layoutToggleHotkey: HotkeyDescriptor?,
         fillsGapsAutomatically: Bool,
@@ -267,7 +267,7 @@ struct LauncherSettings: Hashable, Codable {
         self.solidBackgroundColor = solidBackgroundColor
         self.selectedLauncherMode = selectedLauncherMode
         self.isMenuBarIconVisible = isMenuBarIconVisible
-        self.isFloatyDockIconVisible = isFloatyDockIconVisible
+        self.isDockIconVisible = isDockIconVisible
         self.launcherHotkey = launcherHotkey
         self.layoutToggleHotkey = layoutToggleHotkey
         self.fillsGapsAutomatically = fillsGapsAutomatically
@@ -286,7 +286,7 @@ extension LauncherSettings {
             solidBackgroundColor: .system,
             selectedLauncherMode: .fullscreen,
             isMenuBarIconVisible: true,
-            isFloatyDockIconVisible: true,
+            isDockIconVisible: true,
             launcherHotkey: .toggleLauncher,
             layoutToggleHotkey: nil,
             fillsGapsAutomatically: false,
@@ -304,7 +304,7 @@ extension LauncherSettings {
         case solidBackgroundColor
         case selectedLauncherMode
         case isMenuBarIconVisible
-        case isFloatyDockIconVisible = "isDockIconVisible"
+        case isDockIconVisible
         case launcherHotkey
         case layoutToggleHotkey
         case fillsGapsAutomatically
@@ -330,7 +330,7 @@ extension LauncherSettings {
             solidBackgroundColor: try container.decodeIfPresent(SolidBackgroundColor.self, forKey: .solidBackgroundColor) ?? .system,
             selectedLauncherMode: try container.decodeIfPresent(LauncherMode.self, forKey: .selectedLauncherMode) ?? .fullscreen,
             isMenuBarIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isMenuBarIconVisible) ?? true,
-            isFloatyDockIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isFloatyDockIconVisible) ?? true,
+            isDockIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isDockIconVisible) ?? true,
             launcherHotkey: decodedLauncherHotkey,
             layoutToggleHotkey: try container.decodeIfPresent(HotkeyDescriptor.self, forKey: .layoutToggleHotkey),
             fillsGapsAutomatically: try container.decodeIfPresent(Bool.self, forKey: .fillsGapsAutomatically) ?? false,
@@ -347,10 +347,23 @@ extension LauncherSettings {
         try container.encode(solidBackgroundColor, forKey: .solidBackgroundColor)
         try container.encode(selectedLauncherMode, forKey: .selectedLauncherMode)
         try container.encode(isMenuBarIconVisible, forKey: .isMenuBarIconVisible)
-        try container.encode(isFloatyDockIconVisible, forKey: .isFloatyDockIconVisible)
+        try container.encode(isDockIconVisible, forKey: .isDockIconVisible)
         try container.encode(launcherHotkey, forKey: .launcherHotkey)
         try container.encode(layoutToggleHotkey, forKey: .layoutToggleHotkey)
         try container.encode(fillsGapsAutomatically, forKey: .fillsGapsAutomatically)
         try container.encode(hasCompletedIntroduction, forKey: .hasCompletedIntroduction)
+    }
+}
+
+extension LauncherSettings {
+    /// Convenience helpers that invert the stored visibility flags.
+    var isDockIconHidden: Bool {
+        get { isDockIconVisible == false }
+        set { isDockIconVisible = !newValue }
+    }
+
+    var isMenuBarIconHidden: Bool {
+        get { isMenuBarIconVisible == false }
+        set { isMenuBarIconVisible = !newValue }
     }
 }

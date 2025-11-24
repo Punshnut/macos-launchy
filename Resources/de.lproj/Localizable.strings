@@ -67,9 +67,9 @@
 "Launch at login" = "Beim Anmelden starten";
 "Launcher layout" = "Launcher-Layout";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Füge unten ein Kürzel hinzu, um überall sofort den Modus zu wechseln.";
-"Show Dock icon (Floaty mode only)" = "Dock-Symbol anzeigen (nur Schwebemodus)";
-"Hide the Dock icon to keep Launchy out of the way when using the floaty panel." = "Blende das Dock-Symbol aus, um Launchy im Schwebepanel aus dem Weg zu räumen.";
-"Dock icon always shows in fullscreen mode, so this toggle is temporarily disabled." = "Im Vollbild wird das Dock-Symbol immer angezeigt, daher ist diese Option vorübergehend deaktiviert.";
+"Hide Dock icon" = "Dock-Symbol ausblenden";
+"Hide menu bar icon" = "Menüleisten-Symbol ausblenden";
+"If both icons are hidden, Launchy keeps the toggle shortcut enabled so you can still open it." = "Wenn beide Symbole ausgeblendet sind, bleibt die Umschalt-Tastenkombination aktiv, damit du Launchy weiterhin öffnen kannst.";
 "Background style" = "Hintergrundstil";
 "Solid color" = "Einfarbig";
 "Icons move up when there's space" = "Symbole rücken nach, wenn Platz ist";

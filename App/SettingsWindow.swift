@@ -67,18 +67,42 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         LauncherSettingsPersistence.setLauncherMode(mode)
     }
 
-    /// Persists whether the Dock icon should remain visible in floaty mode.
-    func setFloatyDockIconVisible(_ isVisible: Bool) {
-        guard settingsSnapshot.isFloatyDockIconVisible != isVisible else { return }
-        settingsSnapshot.isFloatyDockIconVisible = isVisible
-        LauncherSettingsPersistence.setShowFloatyDockIcon(isVisible)
+    /// Persists whether the Dock icon should be hidden in any mode.
+    func setDockIconHidden(_ isHidden: Bool) {
+        guard settingsSnapshot.isDockIconHidden != isHidden else { return }
+        let resolvedHotkey = resolvedLauncherHotkey(
+            forDockHidden: isHidden,
+            menuHidden: settingsSnapshot.isMenuBarIconHidden,
+            requestedHotkey: settingsSnapshot.launcherHotkey
+        )
+        settingsSnapshot.isDockIconHidden = isHidden
+        if settingsSnapshot.launcherHotkey != resolvedHotkey {
+            settingsSnapshot.launcherHotkey = resolvedHotkey
+        }
+        LauncherSettingsPersistence.setDockIconHidden(isHidden)
+    }
+
+    /// Persists whether the menu bar status item should be hidden.
+    func setMenuBarIconHidden(_ isHidden: Bool) {
+        guard settingsSnapshot.isMenuBarIconHidden != isHidden else { return }
+        let resolvedHotkey = resolvedLauncherHotkey(
+            forDockHidden: settingsSnapshot.isDockIconHidden,
+            menuHidden: isHidden,
+            requestedHotkey: settingsSnapshot.launcherHotkey
+        )
+        settingsSnapshot.isMenuBarIconHidden = isHidden
+        if settingsSnapshot.launcherHotkey != resolvedHotkey {
+            settingsSnapshot.launcherHotkey = resolvedHotkey
+        }
+        LauncherSettingsPersistence.setMenuBarIconHidden(isHidden)
     }
 
     /// Persists the selected global hotkey used to toggle Launchy.
     func setLauncherHotkey(_ descriptor: HotkeyDescriptor?) {
-        guard settingsSnapshot.launcherHotkey != descriptor else { return }
-        settingsSnapshot.launcherHotkey = descriptor
-        LauncherSettingsPersistence.setLauncherHotkey(descriptor)
+        let resolvedHotkey = resolvedLauncherHotkey(requestedHotkey: descriptor)
+        guard settingsSnapshot.launcherHotkey != resolvedHotkey else { return }
+        settingsSnapshot.launcherHotkey = resolvedHotkey
+        LauncherSettingsPersistence.setLauncherHotkey(resolvedHotkey)
     }
 
     /// Persists the shortcut used to flip between floaty and fullscreen layouts.
@@ -139,6 +163,19 @@ final class SettingsWindowStore: NSObject, ObservableObject {
     /// Reloads the latest settings payload from persistence.
     private func reloadSettingsFromDisk() {
         settingsSnapshot = LauncherSettingsPersistence.loadSettings()
+    }
+
+    private func resolvedLauncherHotkey(
+        forDockHidden dockHidden: Bool? = nil,
+        menuHidden: Bool? = nil,
+        requestedHotkey: HotkeyDescriptor?
+    ) -> HotkeyDescriptor? {
+        let dockHiddenValue = dockHidden ?? settingsSnapshot.isDockIconHidden
+        let menuHiddenValue = menuHidden ?? settingsSnapshot.isMenuBarIconHidden
+        if dockHiddenValue && menuHiddenValue && requestedHotkey == nil {
+            return .toggleLauncher
+        }
+        return requestedHotkey
     }
 }
 
@@ -420,7 +457,7 @@ struct SettingsWindow: View {
                     panelDivider
                     launcherLayoutPicker
                     panelDivider
-                    dockIconSection
+                    iconVisibilitySection
                     panelDivider
                     backgroundStyleSection
                     panelDivider
@@ -481,23 +518,21 @@ struct SettingsWindow: View {
         }
     }
 
-    private var dockIconSection: some View {
+    private var iconVisibilitySection: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Toggle("Show Dock icon (Floaty mode only)", isOn: Binding(
-                get: { settingsStore.settingsSnapshot.isFloatyDockIconVisible },
-                set: { settingsStore.setFloatyDockIconVisible($0) }
+            Toggle("Hide Dock icon", isOn: Binding(
+                get: { settingsStore.settingsSnapshot.isDockIconHidden },
+                set: { settingsStore.setDockIconHidden($0) }
             ))
-            .disabled(settingsStore.settingsSnapshot.selectedLauncherMode != .floaty)
 
-            if settingsStore.settingsSnapshot.selectedLauncherMode == .floaty {
-                Text("Hide the Dock icon to keep Launchy out of the way when using the floaty panel.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            } else {
-                Text("Dock icon always shows in fullscreen mode, so this toggle is temporarily disabled.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
+            Toggle("Hide menu bar icon", isOn: Binding(
+                get: { settingsStore.settingsSnapshot.isMenuBarIconHidden },
+                set: { settingsStore.setMenuBarIconHidden($0) }
+            ))
+
+            Text("If both icons are hidden, Launchy keeps the toggle shortcut enabled so you can still open it.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 
@@ -918,21 +953,29 @@ struct SettingsWindow: View {
         let alert = NSAlert()
         alert.alertStyle = .warning
         alert.messageText = String(localized: "Reset icon arrangement?")
-        alert.informativeText = String(localized: "This deletes your saved ordering, folders, and page layout. Type RESET to continue.")
-
-        let field = NSTextField(string: "")
-        field.placeholderString = String(localized: "RESET")
-        field.frame = NSRect(x: 0, y: 0, width: 220, height: 24)
-        alert.accessoryView = field
+        alert.informativeText = String(localized: "This deletes your saved ordering, folders, and page layout.")
 
         alert.addButton(withTitle: String(localized: "Reset"))
         alert.addButton(withTitle: String(localized: "Cancel"))
 
-        let response = alert.runModal()
+        let response = presentModalAlert(alert)
         guard response == .alertFirstButtonReturn else { return }
-        let token = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-        guard token == "RESET" else { return }
         settingsStore.requestArrangementReset()
+    }
+
+    private func presentModalAlert(_ alert: NSAlert) -> NSApplication.ModalResponse {
+        NSApp.activate(ignoringOtherApps: true)
+        let alertWindow = alert.window
+        alertWindow.level = .statusBar
+        alertWindow.collectionBehavior.insert([.moveToActiveSpace, .fullScreenAuxiliary, .canJoinAllSpaces])
+        alertWindow.makeKeyAndOrderFront(nil)
+        alertWindow.orderFrontRegardless()
+
+        let response = alert.runModal()
+
+        hostingWindow?.makeKeyAndOrderFront(nil)
+
+        return response
     }
 
     // MARK: - Window Configuration
@@ -1221,8 +1264,8 @@ final class SettingsWindowController: NSWindowController {
         window.isOpaque = false
         window.toolbarStyle = .unifiedCompact
         window.isReleasedWhenClosed = false
-        // Keep the settings window visible above the launcher UI, even in fullscreen.
-        window.level = .screenSaver
+        // Keep the settings window visible above the launcher UI, even in fullscreen, while leaving room for alerts.
+        window.level = .statusBar
         window.collectionBehavior.insert(.fullScreenAuxiliary)
         window.collectionBehavior.insert(.canJoinAllSpaces)
         window.standardWindowButton(.closeButton)?.isHidden = true

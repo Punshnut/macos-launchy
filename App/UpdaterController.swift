@@ -3,20 +3,57 @@ import Sparkle
 
 /// Owns Sparkle's updater and exposes a menu-friendly action to trigger manual checks.
 @MainActor
-final class UpdaterController: NSObject {
-    private let updaterController: SPUStandardUpdaterController
-
-    override init() {
-        updaterController = SPUStandardUpdaterController(
+final class UpdaterController: NSObject, SPUStandardUserDriverDelegate {
+    private lazy var updaterController: SPUStandardUpdaterController = {
+        SPUStandardUpdaterController(
             startingUpdater: true,
             updaterDelegate: nil,
-            userDriverDelegate: nil
+            userDriverDelegate: self
         )
+    }()
+
+    override init() {
         super.init()
+        _ = updaterController
     }
 
     /// Invoked from menu items or the status bar to present Sparkle's update UI.
     @IBAction func checkForUpdates(_ sender: Any?) {
+        bringUpdateUIToFront()
         updaterController.checkForUpdates(sender)
+    }
+
+    // MARK: - SPUStandardUserDriverDelegate
+
+    nonisolated func standardUserDriverWillShowModalAlert() {
+        Task { @MainActor [weak self] in
+            self?.bringUpdateUIToFront()
+        }
+    }
+
+    // MARK: - Private
+
+    private func bringUpdateUIToFront() {
+        NSApp.activate(ignoringOtherApps: true)
+        elevateSparkleWindowsIfNeeded()
+        DispatchQueue.main.async { [weak self] in
+            self?.elevateSparkleWindowsIfNeeded()
+        }
+    }
+
+    private func elevateSparkleWindowsIfNeeded() {
+        let targetLevel = NSWindow.Level.statusBar
+        let behaviors: NSWindow.CollectionBehavior = [.moveToActiveSpace, .fullScreenAuxiliary]
+
+        for window in NSApp.windows where isSparkleWindow(window) {
+            window.level = targetLevel
+            window.collectionBehavior.insert(behaviors)
+            window.makeKeyAndOrderFront(nil)
+        }
+    }
+
+    private func isSparkleWindow(_ window: NSWindow) -> Bool {
+        let className = NSStringFromClass(type(of: window))
+        return className.hasPrefix("SPU") || className.hasPrefix("SU")
     }
 }

@@ -67,9 +67,9 @@
 "Launch at login" = "Iniciar al iniciar sesión";
 "Launcher layout" = "Diseño del launcher";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Añade abajo un atajo para alternar modos al instante desde cualquier lugar.";
-"Show Dock icon (Floaty mode only)" = "Mostrar icono en el Dock (solo modo flotante)";
-"Hide the Dock icon to keep Launchy out of the way when using the floaty panel." = "Oculta el icono del Dock para mantener Launchy apartado cuando uses el panel flotante.";
-"Dock icon always shows in fullscreen mode, so this toggle is temporarily disabled." = "El icono del Dock siempre se muestra en modo pantalla completa, así que este ajuste está deshabilitado temporalmente.";
+"Hide Dock icon" = "Ocultar icono del Dock";
+"Hide menu bar icon" = "Ocultar icono de la barra de menús";
+"If both icons are hidden, Launchy keeps the toggle shortcut enabled so you can still open it." = "Si ocultas ambos iconos, Launchy mantiene activo el atajo de alternancia para que puedas seguir abriéndolo.";
 "Background style" = "Estilo de fondo";
 "Solid color" = "Color sólido";
 "Icons move up when there's space" = "Los iconos suben cuando hay hueco";

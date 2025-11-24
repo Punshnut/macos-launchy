@@ -67,9 +67,9 @@
 "Launch at login" = "Girişte başlat";
 "Launcher layout" = "Launcher düzeni";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Aşağıya, her yerden modları anında değiştirmek için bir kısayol ekle.";
-"Show Dock icon (Floaty mode only)" = "Dock simgesini göster (sadece kayan mod)";
-"Hide the Dock icon to keep Launchy out of the way when using the floaty panel." = "Kayan panelde Launchy’yi görünmez kılmak için Dock simgesini gizle.";
-"Dock icon always shows in fullscreen mode, so this toggle is temporarily disabled." = "Tam ekranda Dock simgesi her zaman görünür, bu seçenek bu yüzden geçici olarak kapalı.";
+"Hide Dock icon" = "Dock simgesini gizle";
+"Hide menu bar icon" = "Menü çubuğu simgesini gizle";
+"If both icons are hidden, Launchy keeps the toggle shortcut enabled so you can still open it." = "İki simge de gizliyse Launchy kısayolu açık kalır, böylece yine de açabilirsin.";
 "Background style" = "Arka plan stili";
 "Solid color" = "Düz renk";
 "Icons move up when there's space" = "Yer açıldığında simgeler yukarı çıkar";

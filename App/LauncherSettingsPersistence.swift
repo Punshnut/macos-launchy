@@ -45,16 +45,26 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Reads a persisted boolean indicating whether the Dock icon should remain visible in floaty mode.
-    static func showFloatyDockIcon(userDefaults: UserDefaults = .standard) -> Bool {
-        loadSettings(userDefaults: userDefaults).isFloatyDockIconVisible
+    /// Persists whether the menu bar icon should be hidden.
+    static func setMenuBarIconHidden(_ isHidden: Bool, userDefaults: UserDefaults = .standard) {
+        setShowMenuBarIcon(!isHidden, userDefaults: userDefaults)
     }
 
-    /// Persists the Dock icon visibility preference for floaty mode.
-    static func setShowFloatyDockIcon(_ isVisible: Bool, userDefaults: UserDefaults = .standard) {
+    /// Reads a persisted boolean indicating whether the Dock icon should remain visible.
+    static func showDockIcon(userDefaults: UserDefaults = .standard) -> Bool {
+        loadSettings(userDefaults: userDefaults).isDockIconVisible
+    }
+
+    /// Persists the Dock icon visibility preference.
+    static func setDockIconVisible(_ isVisible: Bool, userDefaults: UserDefaults = .standard) {
         updateSettings(userDefaults: userDefaults) { settings in
-            settings.isFloatyDockIconVisible = isVisible
+            settings.isDockIconVisible = isVisible
         }
+    }
+
+    /// Persists whether the Dock icon should be hidden.
+    static func setDockIconHidden(_ isHidden: Bool, userDefaults: UserDefaults = .standard) {
+        setDockIconVisible(!isHidden, userDefaults: userDefaults)
     }
 
     /// Reads whether the launcher should be added to login items.
@@ -169,7 +179,9 @@ enum LauncherSettingsPersistence {
         }
 
         do {
-            return try JSONDecoder().decode(LauncherSettings.self, from: data)
+            var settings = try JSONDecoder().decode(LauncherSettings.self, from: data)
+            enforceLauncherReachability(&settings)
+            return settings
         } catch {
             return LauncherSettings.defaults
         }
@@ -200,7 +212,16 @@ enum LauncherSettingsPersistence {
     ) {
         var mutableSettings = loadSettings(userDefaults: userDefaults)
         mutate(&mutableSettings)
+        enforceLauncherReachability(&mutableSettings)
         saveSettings(mutableSettings, userDefaults: userDefaults)
+    }
+
+    /// Ensures the launcher remains openable when all affordances are hidden.
+    private static func enforceLauncherReachability(_ settings: inout LauncherSettings) {
+        guard settings.isDockIconHidden && settings.isMenuBarIconHidden else { return }
+        if settings.launcherHotkey == nil {
+            settings.launcherHotkey = .toggleLauncher
+        }
     }
 }
 

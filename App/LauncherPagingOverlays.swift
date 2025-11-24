@@ -70,7 +70,9 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         private func handleScrollEvent(_ event: NSEvent) {
             guard isEnabled,
                   let view = hostView,
-                  view.window != nil else {
+                  let hostWindow = view.window,
+                  // Ignore scrolls coming from other windows (e.g. settings) so we don't page the launcher.
+                  event.window === hostWindow else {
                 return
             }
 

@@ -129,18 +129,16 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Applies the current launcher mode, rebuilding the window when the persisted value changes.
     func applyLauncherMode(shouldPresentWindow: Bool = true) {
         let mode = currentSettings.selectedLauncherMode
-        if currentLauncherMode == mode {
-            if let controller = launcherWindowManager {
-                controller.update(rootView: buildLauncherView())
-            } else {
-                rebuildWindow(for: mode, shouldPresentWindow: shouldPresentWindow)
-            }
-            return
-        }
-
+        let modeChanged = currentLauncherMode != mode
         currentLauncherMode = mode
-        updateActivationPolicy(for: mode, shouldActivate: shouldPresentWindow)
-        rebuildWindow(for: mode, shouldPresentWindow: shouldPresentWindow)
+        let shouldActivateApp = shouldPresentWindow && (modeChanged || launcherWindowManager?.window?.isVisible == true)
+        updateActivationPolicy(for: mode, shouldActivate: shouldActivateApp)
+
+        if modeChanged == false, let controller = launcherWindowManager {
+            controller.update(rootView: buildLauncherView())
+        } else {
+            rebuildWindow(for: mode, shouldPresentWindow: shouldPresentWindow)
+        }
     }
 
     /// Creates a fresh `LauncherWindowController` using the provided mode.
@@ -157,23 +155,15 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Adjusts the app's activation policy so the Dock and Spaces behave appropriately for each mode.
-    private func updateActivationPolicy(for mode: LauncherMode, shouldActivate: Bool) {
-        switch mode {
-        case .floaty:
-            if currentSettings.isFloatyDockIconVisible {
-                NSApp.setActivationPolicy(.regular)
-                if shouldActivate {
-                    NSApp.activate(ignoringOtherApps: true)
-                }
-            } else {
-                NSApp.setActivationPolicy(.accessory)
-                NSApp.dockTile.display()
-            }
-        case .fullscreen:
+    private func updateActivationPolicy(for _: LauncherMode, shouldActivate: Bool) {
+        if currentSettings.isDockIconVisible {
             NSApp.setActivationPolicy(.regular)
             if shouldActivate {
                 NSApp.activate(ignoringOtherApps: true)
             }
+        } else {
+            NSApp.setActivationPolicy(.accessory)
+            NSApp.dockTile.display()
         }
 
         enforceMinimalMainMenu()

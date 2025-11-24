@@ -42,7 +42,8 @@
 "Start using Launchy" = "Launchy’yi kullanmaya başla";
 "Next" = "İleri";
 
-"Applauncher" = "Uygulama başlatıcı";
+"Visuals" = "Görünüm";
+"Shortcuts" = "Kısayollar";
 "About" = "Hakkında";
 
 "Fullscreen" = "Tam ekran";
@@ -118,7 +119,6 @@
 "Launchy has not indexed any applications yet." = "Launchy henüz uygulama indekslemedi.";
 "Search items" = "Öğeleri ara";
 "Open" = "Aç";
-"App Details" = "Uygulama ayrıntıları";
 "Rename App" = "Uygulamayı yeniden adlandır";
 "Enter a custom name for this app. Leave empty to reset." = "Bu uygulama için özel bir ad gir. Sıfırlamak için boş bırak.";
 "Show in Finder" = "Finder’da göster";

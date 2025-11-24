@@ -11,7 +11,7 @@ Launchy is a featherweight macOS app launcher that feels like part of the system
 
 <p align="center">
   <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
-    <img src="https://img.shields.io/badge/Download-Beta%200.0.6-blueviolet?style=for-the-badge" alt="Download Beta 0.0.6">
+    <img src="https://img.shields.io/badge/Download-Beta%200.0.7-blueviolet?style=for-the-badge" alt="Download Beta 0.0.7">
   </a>
   <a href="https://github.com/Punshnut/macos-launchy/issues/new/choose">
     <img src="https://img.shields.io/badge/Share%20feedback-Issue%20tracker-ff7f50?style=for-the-badge" alt="Share feedback">

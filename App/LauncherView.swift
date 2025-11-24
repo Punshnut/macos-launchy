@@ -59,8 +59,8 @@ struct LauncherView: View {
     private var pageCapacity: Int { LauncherGridConfiguration.pageCapacity }
     private let closeAnimationDuration: TimeInterval = 0.25
     private let gridSpringAnimation = Animation.spring(response: 0.42, dampingFraction: 0.86, blendDuration: 0.12)
-    private let pageSwitchAnimation = Animation.interactiveSpring(response: 0.2, dampingFraction: 0.9, blendDuration: 0.06)
-    private let gestureSettleAnimation = Animation.interactiveSpring(response: 0.22, dampingFraction: 0.88, blendDuration: 0.06)
+    private let pageSwitchAnimation = Animation.interactiveSpring(response: 0.16, dampingFraction: 0.9, blendDuration: 0.05)
+    private let gestureSettleAnimation = Animation.interactiveSpring(response: 0.18, dampingFraction: 0.88, blendDuration: 0.05)
     private let folderOpenAnimation = Animation.spring(response: 0.36, dampingFraction: 0.82, blendDuration: 0.08)
     private let pagerButtonHitPadding: CGFloat = 12
     private let pagerButtonHitSize: CGFloat = 44
@@ -83,6 +83,7 @@ struct LauncherView: View {
     @State private var appNameDraft = ""
     @State private var folderNameDraft = ""
     @State private var activeFolderPage = 0
+    @State private var activeFolderPageCount = 0
     @State private var pageSizes: [Int]
     @State private var launchingItemID: UUID?
     @State private var pageDirection: PageShiftDirection = .forward
@@ -155,12 +156,14 @@ struct LauncherView: View {
                 folderIconWaveToggle = false
                 launchingItemID = nil
                 activeFolderPage = 0
+                activeFolderPageCount = 0
             } else if let folder = newValue {
                 folderNameDraft = folder.name
                 isEditingFolderName = false
                 folderIconWaveToggle = true
                 launchingItemID = nil
                 activeFolderPage = 0
+                activeFolderPageCount = 1
             }
         }
         .onChange(of: searchText) { _ in
@@ -403,9 +406,12 @@ struct LauncherView: View {
                         .allowsHitTesting(false)
 
                         KeyPressPagerOverlay(
-                            isEnabled: isGesturePagingEnabled,
-                            onPreviousPage: { pageBackward() },
-                            onNextPage: { pageForward() }
+                            isEnabled: isKeyboardPagingEnabled || isRenamingItem,
+                            shouldCaptureArrowKeys: { shouldCaptureArrowKeys },
+                            shouldHandleEscape: { isRenamingItem },
+                            onPreviousPage: { handleKeyboardPager(.backward) },
+                            onNextPage: { handleKeyboardPager(.forward) },
+                            onEscape: { cancelActiveRename() }
                         )
                         .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
                         .allowsHitTesting(false)
@@ -461,6 +467,25 @@ struct LauncherView: View {
     /// Determines when gesture-driven paging should be active.
     private var isGesturePagingEnabled: Bool {
         pageCount > 1 && isClosingLauncher == false
+    }
+
+    private var isKeyboardPagingEnabled: Bool {
+        guard isClosingLauncher == false else { return false }
+        if activeFolder != nil {
+            return true
+        }
+        return pageCount > 1
+    }
+
+    private var isRenamingItem: Bool {
+        isEditingFolderName || renamingAppID != nil
+    }
+
+    private var shouldCaptureArrowKeys: Bool {
+        if isRenamingItem {
+            return false
+        }
+        return true
     }
 
     /// Returns the slice of apps that should be visible for a specific page index.
@@ -522,8 +547,8 @@ struct LauncherView: View {
         let progress = totalOffset / normalizedWidth
         let snapThreshold: CGFloat = 0.09
         let fastThreshold: CGFloat = 0.26
-        let doubleProgressThreshold: CGFloat = 1.45
-        let highVelocityThreshold: CGFloat = 0.95
+        let doubleProgressThreshold: CGFloat = 1.65
+        let highVelocityThreshold: CGFloat = 1.15
         let velocity = projectedDelta / normalizedWidth
         let absVelocity = abs(velocity)
         let absProgress = abs(progress)
@@ -536,7 +561,7 @@ struct LauncherView: View {
         }()
 
         var delta = 0
-        let allowDouble = (absVelocity > highVelocityThreshold && absProgress > 0.6) || absProgress > doubleProgressThreshold
+        let allowDouble = (absVelocity > highVelocityThreshold && absProgress > 0.8) || absProgress > doubleProgressThreshold
 
         if allowDouble {
             delta = 2 * directionSign
@@ -1335,6 +1360,17 @@ struct LauncherView: View {
         max(layout.iconDimension + 28, 110)
     }
 
+    private func updateActiveFolderPageCount(_ count: Int) {
+        let bounded = max(count, 1)
+        if activeFolderPageCount != bounded {
+            activeFolderPageCount = bounded
+        }
+        let clampedPage = min(activeFolderPage, max(bounded - 1, 0))
+        if activeFolderPage != clampedPage {
+            activeFolderPage = clampedPage
+        }
+    }
+
     @ViewBuilder
     private func folderPager(currentPage: Int, totalPages: Int) -> some View {
         HStack(spacing: 12) {
@@ -1679,6 +1715,15 @@ struct LauncherView: View {
                 )
             )
             .animation(folderOpenAnimation, value: activeFolder?.id)
+            .onAppear {
+                updateActiveFolderPageCount(pageCount)
+            }
+            .onChange(of: pageCount) { newCount in
+                updateActiveFolderPageCount(newCount)
+            }
+            .onDisappear {
+                activeFolderPageCount = 0
+            }
         }
     }
 
@@ -1795,6 +1840,41 @@ struct LauncherView: View {
         }
 
         return window.contentView is NSHostingView<LauncherView>
+    }
+
+    private func handleKeyboardPager(_ direction: PageShiftDirection) {
+        if activeFolder != nil {
+            changeFolderPage(direction)
+            return
+        }
+
+        switch direction {
+        case .backward:
+            pageBackward()
+        case .forward:
+            pageForward()
+        }
+    }
+
+    private func changeFolderPage(_ direction: PageShiftDirection) {
+        guard activeFolder != nil else { return }
+        let totalPages = max(activeFolderPageCount, 1)
+        guard totalPages > 1 else { return }
+
+        switch direction {
+        case .backward:
+            let target = max(activeFolderPage - 1, 0)
+            guard target != activeFolderPage else { return }
+            withAnimation(folderOpenAnimation) {
+                activeFolderPage = target
+            }
+        case .forward:
+            let target = min(activeFolderPage + 1, totalPages - 1)
+            guard target != activeFolderPage else { return }
+            withAnimation(folderOpenAnimation) {
+                activeFolderPage = target
+            }
+        }
     }
 
     /// Moves to the previous page if possible.
@@ -2050,10 +2130,6 @@ struct LauncherView: View {
 
         switch item {
         case .app(let app):
-            Button("App Details") {
-                showItemDetails(item)
-            }
-
             Button("Rename App") {
                 beginAppRename(app)
             }
@@ -2185,10 +2261,15 @@ struct LauncherView: View {
         presentModalAlert(alert)
     }
 
+    /// Prefills the app rename field with either the custom name or the bundle's display name.
+    private func appRenameDraft(for app: AppItem) -> String {
+        sanitizedCustomName(app.customName ?? app.displayName) ?? app.displayName
+    }
+
     /// Begins inline app renaming on the targeted item.
     private func beginAppRename(_ app: AppItem) {
         renamingAppID = app.id
-        appNameDraft = sanitizedCustomName(app.customName ?? app.displayName) ?? app.displayName
+        appNameDraft = appRenameDraft(for: app)
         isEditingFolderName = false
         DispatchQueue.main.async {
             isAppNameFieldFocused = true
@@ -2230,6 +2311,39 @@ struct LauncherView: View {
         let draft = appNameDraft
         resetAppRenameState()
         applyAppRename(app, newName: draft)
+    }
+
+    /// Cancels any in-progress rename without persisting the edits.
+    private func cancelActiveRename() {
+        if isEditingFolderName {
+            cancelFolderNameEdit()
+        }
+
+        if let renamingID = renamingAppID {
+            cancelAppRename(appID: renamingID)
+        }
+    }
+
+    /// Resets the folder title editor back to the current folder name.
+    private func cancelFolderNameEdit() {
+        isEditingFolderName = false
+        isFolderNameFieldFocused = false
+        if let folder = activeFolder {
+            folderNameDraft = folder.name.isEmpty ? FolderItem.defaultName : folder.name
+        } else {
+            folderNameDraft = ""
+        }
+    }
+
+    /// Restores the app rename draft to the existing name and exits edit mode.
+    private func cancelAppRename(appID: UUID) {
+        renamingAppID = nil
+        isAppNameFieldFocused = false
+        if let app = appWithID(appID) {
+            appNameDraft = appRenameDraft(for: app)
+        } else {
+            appNameDraft = ""
+        }
     }
 
     private func resetAppRenameState() {
@@ -2295,7 +2409,9 @@ struct LauncherView: View {
     /// Opens the selected bundle in Finder.
     private func showInFinder(_ app: AppItem) {
         guard let url = app.bundleURL else { return }
-        NSWorkspace.shared.activateFileViewerSelecting([url])
+        let directoryURL = url.deletingLastPathComponent()
+        // Open the containing folder directly to avoid triggering file-access prompts when revealing bundles.
+        NSWorkspace.shared.open(directoryURL)
     }
 
     /// Adds or updates a hidden app entry and removes it from the current grid.
@@ -2434,6 +2550,23 @@ struct LauncherView: View {
             }) else { return nil }
             return pageIndex(forLinearIndex: index, sizes: sizes)
         }
+    }
+
+    /// Looks up an app by UUID across both root items and folders.
+    private func appWithID(_ id: UUID) -> AppItem? {
+        for item in orderedItems {
+            switch item {
+            case .app(let app) where app.id == id:
+                return app
+            case .folder(let folder):
+                if let match = folder.apps.first(where: { $0.id == id }) {
+                    return match
+                }
+            default:
+                continue
+            }
+        }
+        return nil
     }
 
     /// Returns the location of an app in the overall arrangement.

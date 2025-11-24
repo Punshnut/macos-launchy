@@ -42,7 +42,8 @@
 "Start using Launchy" = "Commencer avec Launchy";
 "Next" = "Suivant";
 
-"Applauncher" = "Lanceur d’apps";
+"Visuals" = "Apparence";
+"Shortcuts" = "Raccourcis";
 "About" = "À propos";
 
 "Fullscreen" = "Plein écran";
@@ -119,7 +120,6 @@
 "Launchy has not indexed any applications yet." = "Launchy n’a pas encore indexé d’applications.";
 "Search items" = "Rechercher des éléments";
 "Open" = "Ouvrir";
-"App Details" = "Détails de l’app";
 "Rename App" = "Renommer l’app";
 "Enter a custom name for this app. Leave empty to reset." = "Saisissez un nom personnalisé pour cette app. Laissez vide pour réinitialiser.";
 "Show in Finder" = "Afficher dans le Finder";

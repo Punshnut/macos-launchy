@@ -182,15 +182,21 @@ final class SettingsWindowStore: NSObject, ObservableObject {
 // MARK: - Settings Window UI
 
 private enum SettingsTab: Int, CaseIterable, Identifiable {
-    case applauncher
+    case visuals
+    case shortcuts
+    case hiddenApps
     case about
 
     var id: Int { rawValue }
 
     var iconName: String {
         switch self {
-        case .applauncher:
-            return "rocket.launch"
+        case .visuals:
+            return "paintpalette.fill"
+        case .shortcuts:
+            return "keyboard.fill"
+        case .hiddenApps:
+            return "eye.slash.fill"
         case .about:
             return "info.circle"
         }
@@ -198,8 +204,12 @@ private enum SettingsTab: Int, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .applauncher:
-            return String(localized: "Applauncher")
+        case .visuals:
+            return String(localized: "Visuals")
+        case .shortcuts:
+            return String(localized: "Shortcuts")
+        case .hiddenApps:
+            return String(localized: "Hidden Apps")
         case .about:
             return String(localized: "About")
         }
@@ -208,18 +218,24 @@ private enum SettingsTab: Int, CaseIterable, Identifiable {
 
 private enum SettingsWindowMetrics {
     static let defaultContentWidth: CGFloat = 720
-    static let applauncherHeight: CGFloat = 640
+    static let visualsHeight: CGFloat = 560
+    static let shortcutsHeight: CGFloat = 520
+    static let hiddenAppsHeight: CGFloat = 640
     static let aboutHeight: CGFloat = 720
-    static let minimumContentSize = NSSize(width: 640, height: 560)
+    static let minimumContentSize = NSSize(width: 640, height: shortcutsHeight)
 
     static var defaultContentSize: NSSize {
-        NSSize(width: defaultContentWidth, height: applauncherHeight)
+        NSSize(width: defaultContentWidth, height: visualsHeight)
     }
 
     static func preferredContentHeight(for tab: SettingsTab) -> CGFloat {
         switch tab {
-        case .applauncher:
-            return applauncherHeight
+        case .visuals:
+            return visualsHeight
+        case .shortcuts:
+            return shortcutsHeight
+        case .hiddenApps:
+            return hiddenAppsHeight
         case .about:
             return aboutHeight
         }
@@ -230,7 +246,7 @@ private enum SettingsWindowMetrics {
 struct SettingsWindow: View {
     /// Backing store powering the macOS settings UI.
     @StateObject private var settingsStore: SettingsWindowStore
-    @State private var activeTab: SettingsTab = .applauncher
+    @State private var activeTab: SettingsTab = .visuals
     @State private var hostingWindow: NSWindow?
     @State private var hasAppliedInitialWindowSizing = false
     @Namespace private var tabSelectionNamespace
@@ -426,64 +442,74 @@ struct SettingsWindow: View {
     @ViewBuilder
     private var tabContent: some View {
         switch activeTab {
-        case .applauncher:
-            applauncherTab
+        case .visuals:
+            visualsTab
+        case .shortcuts:
+            shortcutsTab
+        case .hiddenApps:
+            hiddenAppsTab
         case .about:
             aboutTab
         }
     }
 
-    // MARK: - Applauncher Content
+    // MARK: - Visuals Content
 
-    private var applauncherTab: some View {
-        VStack(spacing: 16) {
-            settingsPanel(
-                icon: "rocket.launch.fill",
-                title: String(localized: "Launcher"),
-                subtitle: String(localized: "Launch at login, layouts, and background styling."),
-                customIcon: {
-                    AnyView(
-                        Image(nsImage: NSApp.applicationIconImage)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 28, height: 28)
-                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-                            .shadow(color: Color.black.opacity(0.25), radius: 4, y: 2)
-                    )
-                }
-            ) {
-                VStack(spacing: 18) {
-                    launchAtLoginToggle
-                    panelDivider
-                    launcherLayoutPicker
-                    panelDivider
-                    iconVisibilitySection
-                    panelDivider
-                    backgroundStyleSection
-                    panelDivider
-                    autoGapToggle
-                }
+    private var visualsTab: some View {
+        settingsPanel(
+            icon: "rocket.launch.fill",
+            title: String(localized: "Launcher"),
+            subtitle: String(localized: "Launch at login, layouts, and background styling."),
+            customIcon: {
+                AnyView(
+                    Image(nsImage: NSApp.applicationIconImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 28, height: 28)
+                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        .shadow(color: Color.black.opacity(0.25), radius: 4, y: 2)
+                )
             }
+        ) {
+            VStack(spacing: 18) {
+                launchAtLoginToggle
+                panelDivider
+                launcherLayoutPicker
+                panelDivider
+                iconVisibilitySection
+                panelDivider
+                backgroundStyleSection
+                panelDivider
+                autoGapToggle
+            }
+        }
+    }
 
-            settingsPanel(
-                icon: "keyboard.fill",
-                title: String(localized: "Keyboard"),
-                subtitle: String(localized: "Global shortcuts and quick reset tools.")
-            ) {
-                VStack(alignment: .leading, spacing: 14) {
-                    hotkeySection
-                    panelDivider
-                    resetSection
-                }
-            }
+    // MARK: - Shortcuts Content
 
-            settingsPanel(
-                icon: "eye.slash.fill",
-                title: String(localized: "Hidden Apps"),
-                subtitle: String(localized: "Choose which applications stay out of the launcher grid.")
-            ) {
-                hiddenAppsList
+    private var shortcutsTab: some View {
+        settingsPanel(
+            icon: "keyboard.fill",
+            title: String(localized: "Keyboard"),
+            subtitle: String(localized: "Global shortcuts and quick reset tools.")
+        ) {
+            VStack(alignment: .leading, spacing: 14) {
+                hotkeySection
+                panelDivider
+                resetSection
             }
+        }
+    }
+
+    // MARK: - Hidden Apps Content
+
+    private var hiddenAppsTab: some View {
+        settingsPanel(
+            icon: "eye.slash.fill",
+            title: String(localized: "Hidden Apps"),
+            subtitle: String(localized: "Choose which applications stay out of the launcher grid.")
+        ) {
+            hiddenAppsList
         }
     }
 

@@ -189,14 +189,23 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
     }
 }
 
-/// Captures left/right arrow key presses (when not typing) to trigger page changes.
+/// Captures left/right arrow key presses (when not typing) to trigger page changes and optionally swallows Escape.
 struct KeyPressPagerOverlay: NSViewRepresentable {
     var isEnabled: Bool
+    var shouldCaptureArrowKeys: () -> Bool = { true }
+    var shouldHandleEscape: () -> Bool = { false }
     var onPreviousPage: () -> Void
     var onNextPage: () -> Void
+    var onEscape: () -> Void = {}
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(onPreviousPage: onPreviousPage, onNextPage: onNextPage)
+        Coordinator(
+            shouldCaptureArrowKeys: shouldCaptureArrowKeys,
+            shouldHandleEscape: shouldHandleEscape,
+            onPreviousPage: onPreviousPage,
+            onNextPage: onNextPage,
+            onEscape: onEscape
+        )
     }
 
     func makeNSView(context: Context) -> KeyCaptureView {
@@ -220,6 +229,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
         var isEnabled: Bool = true {
             didSet {
                 if isEnabled == false {
+                    stopRepeating()
                     stopMonitoring()
                 } else {
                     startMonitoringIfNeeded()
@@ -229,48 +239,153 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
 
         weak var hostView: NSView?
 
+        private static let escapeKeyCode: UInt16 = 53
         private let onPreviousPage: () -> Void
         private let onNextPage: () -> Void
-        private var keyMonitorToken: Any?
+        private let shouldCaptureArrowKeys: () -> Bool
+        private let shouldHandleEscape: () -> Bool
+        private let onEscape: () -> Void
+        private let repeatInterval: TimeInterval = 0.5 // Hold-to-repeat cadence.
+        private var keyDownMonitorToken: Any?
+        private var keyUpMonitorToken: Any?
+        private var repeatTimer: Timer?
+        private var repeatingDirection: ArrowDirection?
 
-        init(onPreviousPage: @escaping () -> Void, onNextPage: @escaping () -> Void) {
+        init(
+            shouldCaptureArrowKeys: @escaping () -> Bool,
+            shouldHandleEscape: @escaping () -> Bool,
+            onPreviousPage: @escaping () -> Void,
+            onNextPage: @escaping () -> Void,
+            onEscape: @escaping () -> Void
+        ) {
+            self.shouldCaptureArrowKeys = shouldCaptureArrowKeys
+            self.shouldHandleEscape = shouldHandleEscape
             self.onPreviousPage = onPreviousPage
             self.onNextPage = onNextPage
+            self.onEscape = onEscape
         }
 
         func startMonitoringIfNeeded() {
-            guard keyMonitorToken == nil else { return }
-            keyMonitorToken = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-                self?.handleKeyEvent(event)
-                return event
+            if keyDownMonitorToken == nil {
+                keyDownMonitorToken = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+                    self?.handleKeyDown(event) ?? event
+                }
+            }
+            if keyUpMonitorToken == nil {
+                keyUpMonitorToken = NSEvent.addLocalMonitorForEvents(matching: .keyUp) { [weak self] event in
+                    self?.handleKeyUp(event) ?? event
+                }
             }
         }
 
         func stopMonitoring() {
-            if let keyMonitorToken {
-                NSEvent.removeMonitor(keyMonitorToken)
+            if let keyDownMonitorToken {
+                NSEvent.removeMonitor(keyDownMonitorToken)
             }
-            keyMonitorToken = nil
+            if let keyUpMonitorToken {
+                NSEvent.removeMonitor(keyUpMonitorToken)
+            }
+            keyDownMonitorToken = nil
+            keyUpMonitorToken = nil
+            stopRepeating()
         }
 
-        private func handleKeyEvent(_ event: NSEvent) {
-            guard isEnabled else { return }
-            guard let view = hostView, view.window != nil else { return }
+        private func handleKeyDown(_ event: NSEvent) -> NSEvent? {
+            guard isEnabled else { return event }
+            guard let view = hostView, view.window != nil else { return event }
 
-            if let responder = event.window?.firstResponder, responder is NSTextView {
-                return
+            let modifiers = event.modifierFlags
+                .intersection(.deviceIndependentFlagsMask)
+                .subtracting([.numericPad, .function])
+            guard modifiers.isEmpty else { return event }
+
+            if event.keyCode == Self.escapeKeyCode {
+                guard shouldHandleEscape() else { return event }
+                stopRepeating()
+                onEscape()
+                return nil
             }
 
-            let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-            guard modifiers.isEmpty else { return }
+            guard let direction = ArrowDirection(keyCode: event.keyCode) else { return event }
+            guard shouldCaptureArrowKeys() else { return event }
 
-            switch event.keyCode {
-            case 123: // left arrow
+            if event.isARepeat {
+                return nil
+            }
+
+            beginRepeating(direction)
+            return nil
+        }
+
+        private func handleKeyUp(_ event: NSEvent) -> NSEvent? {
+            if event.keyCode == Self.escapeKeyCode {
+                guard shouldHandleEscape() else { return event }
+                stopRepeating()
+                return nil
+            }
+
+            guard let direction = ArrowDirection(keyCode: event.keyCode) else { return event }
+            guard shouldCaptureArrowKeys() else { return event }
+            stopRepeating(for: direction)
+            return nil
+        }
+
+        private func beginRepeating(_ direction: ArrowDirection) {
+            stopRepeating()
+            trigger(direction)
+            repeatingDirection = direction
+            startTimer()
+        }
+
+        private func trigger(_ direction: ArrowDirection) {
+            switch direction {
+            case .previous:
                 onPreviousPage()
-            case 124: // right arrow
+            case .next:
                 onNextPage()
-            default:
-                break
+            }
+        }
+
+        private func startTimer() {
+            let timer = Timer(timeInterval: repeatInterval, repeats: true) { [weak self] _ in
+                Task { @MainActor [weak self] in
+                    self?.fireRepeat()
+                }
+            }
+            repeatTimer = timer
+            RunLoop.main.add(timer, forMode: .common)
+        }
+
+        private func fireRepeat() {
+            guard isEnabled, let direction = repeatingDirection else {
+                stopRepeating()
+                return
+            }
+            trigger(direction)
+        }
+
+        private func stopRepeating(for direction: ArrowDirection? = nil) {
+            if let direction, repeatingDirection != direction {
+                return
+            }
+            repeatTimer?.invalidate()
+            repeatTimer = nil
+            repeatingDirection = nil
+        }
+
+        private enum ArrowDirection {
+            case previous
+            case next
+
+            init?(keyCode: UInt16) {
+                switch keyCode {
+                case 123:
+                    self = .previous
+                case 124:
+                    self = .next
+                default:
+                    return nil
+                }
             }
         }
     }

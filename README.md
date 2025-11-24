@@ -13,9 +13,10 @@ Launchy is a featherweight macOS app launcher that feels built in: fullscreen wh
   <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
     <img src="https://img.shields.io/badge/Download-Beta%200.0.7-blueviolet?style=for-the-badge" alt="Download Beta 0.0.7">
   </a>
-  <a href="https://github.com/Punshnut/macos-launchy/issues/new/choose">
-    <img src="https://img.shields.io/badge/Share%20feedback-Issue%20tracker-ff7f50?style=for-the-badge" alt="Share feedback">
-  </a>
+</p>
+
+<p align="center">
+  <img src="Media/Launchy_Logo.png" alt="Focusly logo" width="260">
 </p>
 
 <div align="center">

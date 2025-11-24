@@ -16,6 +16,7 @@ Packages/
 /\.derived/Build/Products/Release/generate_keys.swiftmodule/
 /sparkle_signature.txt
 /Package.resolved
+/.sparkle-keys
 
 # Local development tooling metadata
 .vscode/

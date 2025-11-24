@@ -26,6 +26,7 @@ private struct FolderOverlayLayout {
     let cardWidth: CGFloat
     let cardHeight: CGFloat
     let columns: Int
+    let maxRows: Int
     let spacing: CGFloat
     let gridContentHeight: CGFloat
     let contentInsets: EdgeInsets
@@ -33,6 +34,7 @@ private struct FolderOverlayLayout {
     let titleToGridSpacing: CGFloat
 
     var gridHeight: CGFloat { gridContentHeight + gridInsets.top + gridInsets.bottom }
+    var pageCapacity: Int { max(columns, 1) * max(maxRows, 1) }
 }
 
 /// Displays the grid of discovered items (apps and folders) and handles pagination/launch events.
@@ -76,6 +78,7 @@ struct LauncherView: View {
     @State private var renamingAppID: UUID?
     @State private var appNameDraft = ""
     @State private var folderNameDraft = ""
+    @State private var activeFolderPage = 0
     @State private var pageSizes: [Int]
     @State private var launchingItemID: UUID?
     @State private var pageDirection: PageShiftDirection = .forward
@@ -142,11 +145,13 @@ struct LauncherView: View {
                 isFolderNameFieldFocused = false
                 folderIconWaveToggle = false
                 launchingItemID = nil
+                activeFolderPage = 0
             } else if let folder = newValue {
                 folderNameDraft = folder.name
                 isEditingFolderName = false
                 folderIconWaveToggle = true
                 launchingItemID = nil
+                activeFolderPage = 0
             }
         }
         .onChange(of: searchText) { _ in
@@ -350,60 +355,7 @@ struct LauncherView: View {
                     }
                     .padding(.top, layout.gridVerticalOffset)
 
-                    HStack(spacing: 16) {
-                        let previousButton = Button("<") {
-                            pageBackward()
-                        }
-                        .disabled(currentPage == 0 || orderedItems.isEmpty)
-
-                        if canReorder {
-                            previousButton.onDrop(
-                                of: [.text],
-                                delegate: PageReorderDropDelegate(
-                                    targetPage: currentPage - 1,
-                                    pageCapacity: pageCapacity,
-                                    items: $orderedItems,
-                                    draggedItem: $draggedItem,
-                                    performReorder: { item, _ in
-                                        let index = pageDropInsertionIndex(for: currentPage - 1)
-                                        return reorderItem(item, to: index, targetPageHint: currentPage - 1)
-                                    },
-                                    afterReorder: updatePageAfterDrop(at:)
-                                )
-                            )
-                        } else {
-                            previousButton
-                        }
-
-                        Text(pageIndicatorTitle)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-
-                        let nextButton = Button(">") {
-                            pageForward()
-                        }
-                        .disabled(orderedItems.isEmpty || currentPage >= pageCount - 1)
-
-                        if canReorder {
-                            nextButton.onDrop(
-                                of: [.text],
-                                delegate: PageReorderDropDelegate(
-                                    targetPage: currentPage + 1,
-                                    pageCapacity: pageCapacity,
-                                    items: $orderedItems,
-                                    draggedItem: $draggedItem,
-                                    performReorder: { item, _ in
-                                        let index = pageDropInsertionIndex(for: currentPage + 1)
-                                        return reorderItem(item, to: index, targetPageHint: currentPage + 1)
-                                    },
-                                    afterReorder: updatePageAfterDrop(at:)
-                                )
-                            )
-                        } else {
-                            nextButton
-                        }
-                    }
-                    .padding(.top, layout.gridToPagerSpacing)
+                    gridPager(canReorder: canReorder, layout: layout)
                 }
                 .padding(.horizontal, layout.horizontalPadding)
                 .padding(.bottom, layout.bottomPadding)
@@ -1098,6 +1050,7 @@ struct LauncherView: View {
         let targetAspect: CGFloat = 16.0 / 9.0
         let contentInsets = folderContentInsets()
         let gridInsets = folderGridInsets()
+        let maxRows = 4
 
         let widthCap: CGFloat = launcherMode == .floaty ? 860 : 1120
         let widthFloor: CGFloat = launcherMode == .floaty ? 520 : 720
@@ -1120,7 +1073,8 @@ struct LauncherView: View {
         let softMaxColumns = max(3, min(maxColumnsByWidth, preferredCap))
 
         func gridContentHeight(for columns: Int) -> CGFloat {
-            folderGridHeight(for: folder.apps.count, columns: max(columns, 1), spacing: spacing, layout: layout)
+            let perPageCount = min(folder.apps.count, max(columns, 1) * maxRows)
+            return folderGridHeight(for: perPageCount, columns: max(columns, 1), spacing: spacing, layout: layout, maxRows: maxRows)
         }
 
         var columns = softMaxColumns
@@ -1144,6 +1098,7 @@ struct LauncherView: View {
             cardWidth: cardWidth,
             cardHeight: cardHeight,
             columns: columns,
+            maxRows: maxRows,
             spacing: spacing,
             gridContentHeight: gridContentHeightValue,
             contentInsets: contentInsets,
@@ -1152,12 +1107,30 @@ struct LauncherView: View {
         )
     }
 
-    private func folderGridHeight(for appCount: Int, columns: Int, spacing: CGFloat, layout: LauncherLayoutMetrics) -> CGFloat {
+    private func folderGridHeight(for appCount: Int, columns: Int, spacing: CGFloat, layout: LauncherLayoutMetrics, maxRows: Int) -> CGFloat {
         guard columns > 0 else { return 0 }
-        let rows = max(1, Int(ceil(Double(max(appCount, 1)) / Double(columns))))
+        let rowsNeeded = Int(ceil(Double(max(appCount, 1)) / Double(columns)))
+        let rows = max(1, min(maxRows, rowsNeeded))
         let cellHeight = layout.iconDimension + folderCellChromeHeight()
         let spacingTotal = spacing * CGFloat(max(rows - 1, 0))
         return CGFloat(rows) * cellHeight + spacingTotal
+    }
+
+    private func folderPages(for folder: FolderItem, overlayLayout: FolderOverlayLayout) -> [[AppItem]] {
+        let capacity = max(overlayLayout.pageCapacity, 1)
+        guard capacity > 0 else { return [folder.apps] }
+
+        var pages: [[AppItem]] = []
+        var index = 0
+        let apps = folder.apps
+
+        while index < apps.count {
+            let end = min(index + capacity, apps.count)
+            pages.append(Array(apps[index..<end]))
+            index += capacity
+        }
+
+        return pages.isEmpty ? [apps] : pages
     }
 
     private func folderCellChromeHeight() -> CGFloat {
@@ -1195,9 +1168,146 @@ struct LauncherView: View {
         max(layout.iconDimension + 28, 110)
     }
 
+    @ViewBuilder
+    private func folderPager(currentPage: Int, totalPages: Int) -> some View {
+        HStack(spacing: 12) {
+            Button {
+                withAnimation(folderOpenAnimation) {
+                    activeFolderPage = max(currentPage - 1, 0)
+                }
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.primary.opacity(currentPage == 0 ? 0.35 : 0.8))
+                    .frame(width: 28, height: 28)
+            }
+            .buttonStyle(.plain)
+            .disabled(currentPage == 0)
+
+            pagerDots(currentPage: currentPage, totalPages: totalPages) { index in
+                guard index < totalPages else { return }
+                withAnimation(folderOpenAnimation) {
+                    activeFolderPage = index
+                }
+            }
+
+            Button {
+                withAnimation(folderOpenAnimation) {
+                    activeFolderPage = min(currentPage + 1, totalPages - 1)
+                }
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.primary.opacity(currentPage >= totalPages - 1 ? 0.35 : 0.8))
+                    .frame(width: 28, height: 28)
+            }
+            .buttonStyle(.plain)
+            .disabled(currentPage >= totalPages - 1)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 4)
+    }
+
+    @ViewBuilder
+    private func pagerDots(currentPage: Int, totalPages: Int, onSelect: ((Int) -> Void)? = nil) -> some View {
+        HStack(spacing: 6) {
+            let pageCount = max(totalPages, 1)
+            ForEach(0..<pageCount, id: \.self) { index in
+                let isDisabled = onSelect == nil || index >= totalPages
+                Button {
+                    onSelect?(index)
+                } label: {
+                    Circle()
+                        .fill(index == currentPage ? Color.primary.opacity(0.9) : Color.primary.opacity(0.35))
+                        .frame(width: 8, height: 8)
+                        .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .disabled(isDisabled)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func gridPager(canReorder: Bool, layout: LauncherLayoutMetrics) -> some View {
+        let totalPages = pageCount
+        let dotsTotal = max(totalPages, 1)
+        let previousDisabled = currentPage == 0 || orderedItems.isEmpty
+        let nextDisabled = orderedItems.isEmpty || currentPage >= totalPages - 1
+
+        HStack(spacing: 12) {
+            pagerChevronButton(
+                systemName: "chevron.left",
+                disabled: previousDisabled,
+                canReorder: canReorder,
+                targetPage: currentPage - 1,
+                action: pageBackward
+            )
+
+            pagerDots(currentPage: min(currentPage, dotsTotal - 1), totalPages: dotsTotal) { index in
+                jumpToPage(index)
+            }
+
+            pagerChevronButton(
+                systemName: "chevron.right",
+                disabled: nextDisabled,
+                canReorder: canReorder,
+                targetPage: currentPage + 1,
+                action: pageForward
+            )
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, layout.gridToPagerSpacing)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(pageIndicatorTitle)
+    }
+
+    @ViewBuilder
+    private func pagerChevronButton(
+        systemName: String,
+        disabled: Bool,
+        canReorder: Bool,
+        targetPage: Int,
+        action: @escaping () -> Void
+    ) -> some View {
+        let button = Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(.primary.opacity(disabled ? 0.35 : 0.8))
+                .frame(width: 28, height: 28)
+        }
+        .buttonStyle(.plain)
+        .disabled(disabled)
+
+        if canReorder {
+            button.onDrop(
+                of: [.text],
+                delegate: PageReorderDropDelegate(
+                    targetPage: targetPage,
+                    pageCapacity: pageCapacity,
+                    items: $orderedItems,
+                    draggedItem: $draggedItem,
+                    performReorder: { item, _ in
+                        let index = pageDropInsertionIndex(for: targetPage)
+                        return reorderItem(item, to: index, targetPageHint: targetPage)
+                    },
+                    afterReorder: updatePageAfterDrop(at:)
+                )
+            )
+        } else {
+            button
+        }
+    }
+
     /// Lays out the folder contents with a Launchpad-inspired grid that supports reordering.
     @ViewBuilder
-    private func folderGrid(for folder: FolderItem, layout: LauncherLayoutMetrics, overlayLayout: FolderOverlayLayout) -> some View {
+    private func folderGrid(
+        for folder: FolderItem,
+        layout: LauncherLayoutMetrics,
+        overlayLayout: FolderOverlayLayout,
+        pageStartIndex: Int,
+        pageApps: [AppItem]
+    ) -> some View {
         let columnCount = max(1, overlayLayout.columns)
         let columns = Array(repeating: GridItem(.flexible(), spacing: overlayLayout.spacing, alignment: .center), count: columnCount)
         let tileSize = layout.iconDimension
@@ -1205,7 +1315,8 @@ struct LauncherView: View {
 
         GeometryReader { gridProxy in
             LazyVGrid(columns: columns, alignment: .center, spacing: overlayLayout.spacing) {
-                ForEach(Array(folder.apps.enumerated()), id: \.element.id) { index, app in
+                ForEach(Array(pageApps.enumerated()), id: \.element.id) { offset, app in
+                    let index = pageStartIndex + offset
                     let isLaunching = launchingItemID == app.id
                     let isRenaming = renamingAppID == app.id
                     let cell: AnyView = {
@@ -1274,7 +1385,8 @@ struct LauncherView: View {
                     columns: columns.count,
                     spacing: overlayLayout.spacing,
                     gridSize: gridProxy.size,
-                    appCount: folder.apps.count,
+                    pageStartIndex: pageStartIndex,
+                    pageItemCount: pageApps.count,
                     draggedApp: $draggedFolderApp,
                     resolveDraggedApp: { currentDraggedApp() },
                     isAppInFolder: { app in
@@ -1310,10 +1422,38 @@ struct LauncherView: View {
                 Color.black.opacity(0.35)
                     .ignoresSafeArea()
 
+                let pages = folderPages(for: folder, overlayLayout: overlayLayout)
+                let pageCount = max(pages.count, 1)
+                let pageCapacity = max(overlayLayout.pageCapacity, 1)
+                let currentPage = min(activeFolderPage, max(pageCount - 1, 0))
+                let showPager = pageCount > 1
+
                 VStack(spacing: overlayLayout.titleToGridSpacing) {
                     folderTitleView(for: folder)
 
-                    folderGrid(for: folder, layout: layout, overlayLayout: overlayLayout)
+                    ZStack {
+                        if pages.isEmpty {
+                            Color.clear.frame(height: overlayLayout.gridHeight)
+                        } else {
+                            ForEach(Array(pages.enumerated()), id: \.offset) { pageIndex, apps in
+                                if pageIndex == currentPage {
+                                    folderGrid(
+                                        for: folder,
+                                        layout: layout,
+                                        overlayLayout: overlayLayout,
+                                        pageStartIndex: pageIndex * pageCapacity,
+                                        pageApps: apps
+                                    )
+                                    .transition(.opacity)
+                                }
+                            }
+                        }
+                    }
+                    .frame(height: overlayLayout.gridHeight)
+
+                    if showPager {
+                        folderPager(currentPage: currentPage, totalPages: pageCount)
+                    }
                 }
                 .padding(.top, overlayLayout.contentInsets.top)
                 .padding(.bottom, overlayLayout.contentInsets.bottom)
@@ -1484,6 +1624,17 @@ struct LauncherView: View {
         withAnimation(pageSwitchAnimation) {
             pageDirection = .backward
             currentPage = max(currentPage - 1, 0)
+        }
+    }
+
+    /// Jumps directly to a target page and animates directionally.
+    private func jumpToPage(_ targetPage: Int) {
+        guard pageCount > 0 else { return }
+        let bounded = min(max(targetPage, 0), pageCount - 1)
+        guard bounded != currentPage else { return }
+        withAnimation(pageSwitchAnimation) {
+            pageDirection = bounded >= currentPage ? .forward : .backward
+            currentPage = bounded
         }
     }
 

@@ -949,20 +949,44 @@ struct SettingsWindow: View {
         IntroductionWindowController.shared.present(startingAt: 0, markCompletionOnFinish: false)
     }
 
+    @MainActor
     private func confirmArrangementReset() {
         let alert = NSAlert()
         alert.alertStyle = .warning
         alert.messageText = String(localized: "Reset icon arrangement?")
-        alert.informativeText = String(localized: "This deletes your saved ordering, folders, and page layout.")
+        alert.informativeText = String(localized: "This deletes your saved ordering, folders, and page layout. Type RESET to continue.")
+
+        let confirmationField = NSTextField(string: "")
+        confirmationField.placeholderString = String(localized: "RESET")
+        confirmationField.frame = NSRect(x: 0, y: 0, width: 220, height: 22)
+        alert.accessoryView = confirmationField
 
         alert.addButton(withTitle: String(localized: "Reset"))
         alert.addButton(withTitle: String(localized: "Cancel"))
 
-        let response = presentModalAlert(alert)
-        guard response == .alertFirstButtonReturn else { return }
+        if let window = hostingWindow {
+            NSApp.activate(ignoringOtherApps: true)
+            alert.beginSheetModal(for: window) { response in
+                handleArrangementResetResponse(response, typedValue: confirmationField.stringValue)
+            }
+            DispatchQueue.main.async {
+                window.makeFirstResponder(confirmationField)
+            }
+        } else {
+            let response = presentModalAlert(alert)
+            handleArrangementResetResponse(response, typedValue: confirmationField.stringValue)
+        }
+    }
+
+    @MainActor
+    private func handleArrangementResetResponse(_ response: NSApplication.ModalResponse, typedValue: String) {
+        let normalized = typedValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard response == .alertFirstButtonReturn,
+              normalized.caseInsensitiveCompare(String(localized: "RESET")) == .orderedSame else { return }
         settingsStore.requestArrangementReset()
     }
 
+    @MainActor
     private func presentModalAlert(_ alert: NSAlert) -> NSApplication.ModalResponse {
         NSApp.activate(ignoringOtherApps: true)
         let alertWindow = alert.window

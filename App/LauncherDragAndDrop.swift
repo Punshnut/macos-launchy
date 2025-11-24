@@ -214,7 +214,8 @@ struct FolderReorderDropDelegate: DropDelegate {
     let columns: Int
     let spacing: CGFloat
     let gridSize: CGSize
-    let appCount: Int
+    let pageStartIndex: Int
+    let pageItemCount: Int
     @Binding var draggedApp: AppItem?
     var resolveDraggedApp: () -> AppItem?
     var isAppInFolder: (AppItem) -> Bool
@@ -256,7 +257,7 @@ struct FolderReorderDropDelegate: DropDelegate {
     }
 
     private func targetIndex(for location: CGPoint) -> Int {
-        let rows = max(1, Int(ceil(Double(appCount) / Double(columns))))
+        let rows = max(1, Int(ceil(Double(max(pageItemCount, 1)) / Double(columns))))
 
         let totalSpacingX = spacing * CGFloat(columns - 1)
         let totalSpacingY = spacing * CGFloat(rows - 1)
@@ -271,7 +272,8 @@ struct FolderReorderDropDelegate: DropDelegate {
         let row = max(Int((clampedY / (cellHeight + spacing)).rounded(.down)), 0)
 
         let linearIndex = row * columns + column
-        return max(linearIndex, 0)
+        let bounded = min(max(linearIndex, 0), max(pageItemCount, 0))
+        return pageStartIndex + bounded
     }
 }
 

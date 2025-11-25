@@ -24,7 +24,6 @@ final class LauncherWindowController: NSWindowController {
             let floatyPanel = FloatyLauncherWindow(contentRect: frame)
             floatyPanel.contentViewController = launcherContentHost
             floatyPanel.setFrame(frame, display: false)
-            floatyPanel.center()
             window = floatyPanel
         case .fullscreen:
             let frame = Self.fullscreenFrame(on: presentationScreen)
@@ -44,6 +43,8 @@ final class LauncherWindowController: NSWindowController {
     }
 
     /// Centers the floaty panel window and constrains it to the visible screen area.
+    private static let floatyTopExtension: CGFloat = 82
+
     private static func floatyFrame(for size: NSSize, on screen: NSScreen?) -> NSRect {
         guard let screen = screen ?? NSScreen.main else {
             return NSRect(origin: .zero, size: size)
@@ -53,9 +54,16 @@ final class LauncherWindowController: NSWindowController {
         let width = min(size.width, visible.width * 0.9)
         // Give floaty mode a bit more breathing room by borrowing ~10% of the screen height.
         let expandedHeight = size.height + visible.height * 0.1
-        let height = min(expandedHeight, visible.height * 0.9)
+        let baseHeight = min(expandedHeight, visible.height * 0.9)
+        let height = min(baseHeight + floatyTopExtension, visible.height * 0.94)
         let x = visible.midX - width / 2
-        let y = visible.midY - height / 2
+        var y = visible.midY - baseHeight / 2
+        if y + height > visible.maxY {
+            y = visible.maxY - height
+        }
+        if y < visible.minY {
+            y = visible.minY
+        }
         return NSRect(x: x, y: y, width: width, height: height)
     }
 
@@ -166,7 +174,7 @@ final class FloatyLauncherWindow: NSPanel {
             styleMask: [
                 .nonactivatingPanel,
                 .fullSizeContentView,
-                .titled
+                .borderless
             ],
             backing: .buffered,
             defer: false
@@ -212,6 +220,7 @@ final class FloatyLauncherWindow: NSPanel {
         standardWindowButton(.closeButton)?.isHidden = true
         standardWindowButton(.miniaturizeButton)?.isHidden = true
         standardWindowButton(.zoomButton)?.isHidden = true
+        titlebarSeparatorStyle = .none
         becomesKeyOnlyIfNeeded = true
     }
 

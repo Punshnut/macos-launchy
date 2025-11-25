@@ -40,9 +40,9 @@ struct LauncherLayoutMetrics {
     var searchToGridSpacing: CGFloat {
         switch launcherMode {
         case .floaty:
-            return 20
+            return 32
         case .fullscreen:
-            return 20
+            return 32
         }
     }
 
@@ -80,6 +80,14 @@ struct LauncherLayoutMetrics {
 
     var searchBarFontSize: CGFloat {
         launcherMode == .floaty ? 17 : 18
+    }
+
+    var floatyCornerRadius: CGFloat {
+        launcherMode == .floaty ? 32 : 0
+    }
+
+    var floatySearchBarTopPadding: CGFloat {
+        launcherMode == .floaty ? 20 : 0
     }
 
     var gridColumns: [GridItem] {

@@ -207,6 +207,7 @@ struct LauncherView: View {
     }
 
     /// Builds the full-screen filling layers for either floaty or fullscreen modes.
+    @ViewBuilder
     private func buildLauncherContent(for containerSize: CGSize) -> some View {
         let topInset = fullscreenTopInset(for: containerSize.height)
         let layout = LauncherLayoutMetrics(
@@ -218,15 +219,30 @@ struct LauncherView: View {
         )
         let canReorder = searchText.isEmpty
 
-        return ZStack {
+        let content = ZStack {
             backgroundView()
                 .ignoresSafeArea()
+
+            if launcherMode == .floaty {
+                LinearGradient(
+                    colors: [
+                        Color.white.opacity(0.45),
+                        Color(red: 0.56, green: 0.78, blue: 0.97).opacity(0.35),
+                        Color(red: 0.45, green: 0.66, blue: 0.93).opacity(0.35)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .blendMode(.screen)
+                .ignoresSafeArea()
+            }
 
             VStack(spacing: 0) {
                 fullscreenSpacer(height: topInset)
 
                 VStack(spacing: 0) {
                     searchBar(layout: layout)
+                        .padding(.top, layout.floatySearchBarTopPadding)
                         .padding(.bottom, layout.searchToGridSpacing)
 
                     ZStack {
@@ -438,6 +454,18 @@ struct LauncherView: View {
                 },
             including: .gesture
         )
+
+        if launcherMode == .floaty {
+            content
+                .clipShape(RoundedRectangle(cornerRadius: layout.floatyCornerRadius, style: .continuous))
+                .shadow(color: Color.black.opacity(0.25), radius: 40, y: 18)
+                .overlay(
+                    RoundedRectangle(cornerRadius: layout.floatyCornerRadius, style: .continuous)
+                        .stroke(Color.white.opacity(0.4), lineWidth: 1.2)
+                )
+        } else {
+            content
+        }
     }
 
     private var usesGappedLayout: Bool {
@@ -2080,8 +2108,18 @@ struct LauncherView: View {
         isSearchFieldFocused = true
     }
 
-    /// Custom search field that mirrors the glassy Launchpad design.
+    /// Chooses the right search bar variant based on the launcher mode.
+    @ViewBuilder
     private func searchBar(layout: LauncherLayoutMetrics) -> some View {
+        if launcherMode == .floaty {
+            floatySearchBar(layout: layout)
+        } else {
+            fullscreenSearchBar(layout: layout)
+        }
+    }
+
+    /// Glassy search bar used when the launcher is fullscreen.
+    private func fullscreenSearchBar(layout: LauncherLayoutMetrics) -> some View {
         TextField("Search items", text: $searchText)
             .textFieldStyle(.plain)
             .font(.system(size: layout.searchBarFontSize, weight: .medium))
@@ -2098,17 +2136,7 @@ struct LauncherView: View {
                     .clipShape(RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous))
             )
             .overlay(alignment: .trailing) {
-                if searchText.isEmpty == false {
-                    Button {
-                        searchText = ""
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(searchBarForegroundColor().opacity(0.55))
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.trailing, 14)
-                }
+                searchBarTrailingButton()
             }
             .overlay(
                 RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous)
@@ -2118,6 +2146,75 @@ struct LauncherView: View {
             .frame(maxWidth: layout.searchBarWidth)
             .frame(maxWidth: .infinity)
             .environment(\.colorScheme, searchBarColorSchemeOverride())
+    }
+
+    /// Search bar modeled after the floaty panel screenshot (rounded, pill-like, with a settings control).
+    private func floatySearchBar(layout: LauncherLayoutMetrics) -> some View {
+        HStack(alignment: .center, spacing: 12) {
+            TextField(String(localized: "Search"), text: $searchText)
+                .textFieldStyle(.plain)
+                .font(.system(size: layout.searchBarFontSize, weight: .medium))
+                .foregroundColor(searchBarForegroundColor())
+                .focused($isSearchFieldFocused)
+                .onSubmit {
+                    launchSearchResultIfPossible()
+                }
+                .padding(.leading, 18)
+                .padding(.trailing, 44)
+                .frame(height: layout.searchBarHeight)
+                .background(
+                    ZStack {
+                        searchBarBackgroundMaterial()
+                        Color.white.opacity(colorScheme == .dark ? 0.12 : 0.78)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous))
+                )
+            .overlay(alignment: .trailing) {
+                searchBarTrailingButton()
+            }
+                .overlay(
+                    RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous)
+                        .strokeBorder(Color.white.opacity(0.4))
+                )
+                .shadow(color: .black.opacity(0.18), radius: 18, y: 6)
+                .frame(maxWidth: .infinity)
+                .environment(\.colorScheme, searchBarColorSchemeOverride())
+        }
+        .frame(maxWidth: layout.searchBarWidth)
+        .frame(maxWidth: .infinity)
+    }
+
+    private var searchBarIconTransition: Animation {
+        .easeInOut(duration: 0.5)
+    }
+
+    private func searchBarTrailingButton() -> some View {
+        Button {
+            if searchText.isEmpty {
+                Task { @MainActor in
+                    onSettingsRequested?()
+                }
+            } else {
+                searchText = ""
+            }
+        } label: {
+            let isEmpty = searchText.isEmpty
+            ZStack {
+                Image(systemName: "ellipsis.circle")
+                    .scaleEffect(isEmpty ? 1 : 0.03)
+                    .opacity(isEmpty ? 1 : 0)
+                Image(systemName: "xmark.circle.fill")
+                    .scaleEffect(isEmpty ? 0.03 : 1)
+                    .opacity(isEmpty ? 0 : 1)
+            }
+            .font(.system(size: 16, weight: .semibold))
+            .foregroundColor(searchBarForegroundColor().opacity(0.55))
+            .animation(searchBarIconTransition, value: isEmpty)
+        }
+        .buttonStyle(.plain)
+        .padding(.trailing, 14)
+        .contentShape(Rectangle())
+        .help(searchText.isEmpty ? String(localized: "Settings") : String(localized: "Clear search text"))
     }
 
     /// Chooses the right blur material for the search bar based on the selected background style.

@@ -20,7 +20,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var lastFocusedApplication: NSRunningApplication?
     private var pendingLaunchedApplication: NSRunningApplication?
     private var pendingLaunchBundleIdentifier: String?
-    private lazy var settingsWindowPresenter = SettingsWindowController()
+    private lazy var settingsWindowPresenter: SettingsWindowController = {
+        let controller = SettingsWindowController()
+        controller.onClose = { [weak self] in
+            self?.refocusLauncherWindowIfVisible()
+        }
+        return controller
+    }()
     private lazy var introductionPresenter = IntroductionWindowController.shared
     private let updaterController = UpdaterController()
 
@@ -306,6 +312,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         activateLastFocusedApplicationIfAvailable()
+    }
+
+    private func refocusLauncherWindowIfVisible() {
+        guard let window = launcherWindowManager?.window, window.isVisible else { return }
+        window.makeKeyAndOrderFront(nil)
     }
 
     /// Attempts to foreground the last launched app, returning true on success.

@@ -1288,8 +1288,10 @@ private final class HotkeyRecorderTextField: NSTextField {
 }
 
 /// Wraps the SwiftUI settings content inside a reusable macOS window controller.
-final class SettingsWindowController: NSWindowController {
+final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     private let hostingController: NSHostingController<SettingsWindow>
+    @MainActor
+    var onClose: (() -> Void)?
 
     init() {
         let view = SettingsWindow()
@@ -1325,6 +1327,7 @@ final class SettingsWindowController: NSWindowController {
         window.center()
         window.contentViewController = hostingController
         super.init(window: window)
+        window.delegate = self
     }
 
     @available(*, unavailable)
@@ -1338,6 +1341,12 @@ final class SettingsWindowController: NSWindowController {
         showWindow(nil)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        Task { @MainActor in
+            onClose?()
+        }
     }
 }
 

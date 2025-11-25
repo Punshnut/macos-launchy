@@ -11,7 +11,7 @@ Launchy is the open-source launchpad alternative macOS users have been waiting f
 
 <p align="center">
   <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
-    <img src="https://img.shields.io/badge/Download-Beta%200.1.0-blueviolet?style=for-the-badge" alt="Download Beta 0.1.0">
+    <img src="https://img.shields.io/badge/Download-Beta%200.0.7-blueviolet?style=for-the-badge" alt="Download Beta 0.0.7">
   </a>
 </p>
 
@@ -22,7 +22,7 @@ Launchy is the open-source launchpad alternative macOS users have been waiting f
 <div align="center">
   <details>
     <summary>🇹🇷 · 🇩🇪 · 🇫🇷 · 🇮🇹 · 🇪🇸 - Europe & Asia (5)</summary>
-    <p>🇹🇷 Türkçe<br>🇩🇪 Deutsch<br>🇫🇷 Français<br>🇮🇹 Italiano<br>🇪🇸 Español (España)</p>
+    <p>🇪🇸 Español (España)<br>🇮🇹 Italiano<br>🇹🇷 Türkçe<br>🇩🇪 Deutsch<br>🇫🇷 Français</p>
   </details>
   <details>
     <summary>🇧🇷 · 🇲🇽 · 🇵🇹 · 🇺🇸 - Americas (4)</summary>
@@ -59,7 +59,7 @@ Launchy is the open-source launchpad alternative macOS users have been waiting f
 
 ## Quick tips
 
-- Right-click any icon (even in the Dock menu) for rename, moving, hiding, Finder reveal, or folder shortcuts—apps and folders behave identically.
+- Right-click any icon (even in the Dock menu) for rename, moving, hiding, Finder reveal, or folder shortcuts - apps and folders behave identically.
 - Drag apps together to build folders or drop onto the background menu to create new ones; Option/Shift modifiers force folder drops or merges while keeping layouts steady.
 - Floaty mode mirrors the quick palette feel and now includes fast toggles so switching between fullscreen and HUD is instant.
 - Dock and menu bar icons fully integrate with your layout for repeat launches plus quick access to the auto updater, settings, and Quit.
@@ -74,6 +74,6 @@ Launchy is the open-source launchpad alternative macOS users have been waiting f
 
 ## Get Launchy
 
-- Don't miss it out—download the free, open source launchpad alternative now and keep your launcher in sync with auto-updates.
+- Don't miss it out - download the free, open source launchpad alternative now and keep your launcher in sync with auto-updates.
 
 Made with ❤️

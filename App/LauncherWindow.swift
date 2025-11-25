@@ -224,6 +224,11 @@ final class FloatyLauncherWindow: NSPanel {
     override var canBecomeMain: Bool {
         false
     }
+
+    /// Prevent the default beep that occurs when ESC is pressed without being handled.
+    override func cancelOperation(_ sender: Any?) {
+        // Intentionally blank to swallow the cancel operation request.
+    }
 }
 
 /// Borderless fullscreen window backing the immersive launcher presentation.
@@ -251,6 +256,11 @@ final class FullscreenLauncherWindow: NSWindow {
     /// The fullscreen window should not be considered the app's main window.
     override var canBecomeMain: Bool {
         false
+    }
+
+    /// Swallow ESC cancel requests so we don't hear the default system beep.
+    override func cancelOperation(_ sender: Any?) {
+        // No-op; escape handling is performed elsewhere.
     }
 
     /// Sets up window appearance so the SwiftUI view takes over the full display.

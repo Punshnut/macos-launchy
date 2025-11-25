@@ -406,12 +406,12 @@ struct LauncherView: View {
                         .allowsHitTesting(false)
 
                         KeyPressPagerOverlay(
-                            isEnabled: isKeyboardPagingEnabled || isRenamingItem,
+                            isEnabled: isKeyboardPagingEnabled || isRenamingItem || shouldHandleEscapeKeys,
                             shouldCaptureArrowKeys: { shouldCaptureArrowKeys },
-                            shouldHandleEscape: { isRenamingItem },
+                            shouldHandleEscape: { shouldHandleEscapeKeys },
                             onPreviousPage: { handleKeyboardPager(.backward) },
                             onNextPage: { handleKeyboardPager(.forward) },
-                            onEscape: { cancelActiveRename() }
+                            onEscape: { handleEscapeKeyPress() }
                         )
                         .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
                         .allowsHitTesting(false)
@@ -486,6 +486,20 @@ struct LauncherView: View {
             return false
         }
         return true
+    }
+
+    private var shouldHandleEscapeKeys: Bool {
+        guard isClosingLauncher == false else { return false }
+        if isRenamingItem {
+            return true
+        }
+        if activeFolder != nil {
+            return true
+        }
+        if hasActiveSearchQuery {
+            return true
+        }
+        return launcherMode == .floaty || launcherMode == .fullscreen
     }
 
     /// Returns the slice of apps that should be visible for a specific page index.
@@ -1069,6 +1083,10 @@ struct LauncherView: View {
 
     private var normalizedSearchText: String {
         searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var hasActiveSearchQuery: Bool {
+        normalizedSearchText.isEmpty == false
     }
 
     /// Filters the full list of apps based on the current search query.
@@ -1894,6 +1912,28 @@ struct LauncherView: View {
         }
     }
 
+    private func handleEscapeKeyPress() {
+        if isRenamingItem {
+            cancelActiveRename()
+            return
+        }
+
+        if activeFolder != nil {
+            withAnimation(folderOpenAnimation) {
+                activeFolder = nil
+            }
+            return
+        }
+
+        if hasActiveSearchQuery {
+            searchText = ""
+            isSearchFieldFocused = false
+            return
+        }
+
+        hideLauncher()
+    }
+
     /// Moves to the previous page if possible.
     private func pageBackward() {
         guard pageCount > 0 else { return }
@@ -1931,6 +1971,13 @@ struct LauncherView: View {
         guard launcherMode == .fullscreen || launcherMode == .floaty else { return }
         guard isClosingLauncher == false else { return }
         guard didTapInteractiveView() == false else { return }
+        isClosingLauncher = true
+        animateAndDismissLauncher()
+    }
+
+    private func hideLauncher() {
+        guard launcherMode == .fullscreen || launcherMode == .floaty else { return }
+        guard isClosingLauncher == false else { return }
         isClosingLauncher = true
         animateAndDismissLauncher()
     }

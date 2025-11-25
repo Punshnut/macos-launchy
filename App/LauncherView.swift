@@ -1067,22 +1067,41 @@ struct LauncherView: View {
         onItemOrderChange?(orderedItems, normalized)
     }
 
+    private var normalizedSearchText: String {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     /// Filters the full list of apps based on the current search query.
     private var filteredItemList: [LauncherItem] {
-        let trimmedQuery = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedQuery = normalizedSearchText
         guard trimmedQuery.isEmpty == false else { return orderedItems }
-        return orderedItems.filter { item in
-            switch item {
-            case .app(let app):
-                return app.matches(query: trimmedQuery)
-            case .folder(let folder):
-                let nameMatches = folder.name.localizedCaseInsensitiveContains(trimmedQuery)
-                let contentsMatch = folder.apps.contains { app in
-                    app.matches(query: trimmedQuery)
-                }
-                return nameMatches || contentsMatch
+
+        var results: [LauncherItem] = []
+        var seenAppIDs = Set<UUID>()
+
+        let appendAppIfNeeded: (AppItem) -> Void = { app in
+            if seenAppIDs.insert(app.id).inserted {
+                results.append(.app(app))
             }
         }
+
+        for item in orderedItems {
+            switch item {
+            case .app(let app):
+                if app.matches(query: trimmedQuery) {
+                    appendAppIfNeeded(app)
+                }
+            case .folder(let folder):
+                let folderNameMatches = folder.name.localizedCaseInsensitiveContains(trimmedQuery)
+                for app in folder.apps {
+                    if folderNameMatches || app.matches(query: trimmedQuery) {
+                        appendAppIfNeeded(app)
+                    }
+                }
+            }
+        }
+
+        return results
     }
 
     /// Picks either the discovered icon or the fallback system glyph.
@@ -2110,12 +2129,9 @@ struct LauncherView: View {
 
     /// Launches the first matched app when a user submits the search field.
     private func launchSearchResultIfPossible() {
-        let trimmedQuery = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedQuery = normalizedSearchText
         guard trimmedQuery.isEmpty == false else { return }
-        guard let firstMatch = filteredItemList.first(where: { item in
-            if case .app = item { return true }
-            return false
-        }) else { return }
+        guard let firstMatch = filteredItemList.first else { return }
         openItem(firstMatch)
     }
 

@@ -21,7 +21,7 @@ Launchy is the open-source launchpad alternative macOS users have been waiting f
 
 <div align="center">
   <details>
-    <summary>🇹🇷 · 🇩🇪 · 🇫🇷 · 🇮🇹 · 🇪🇸 - Europe & Asia (5)</summary>
+    <summary>🇪🇸 · 🇮🇹 · 🇹🇷 · 🇩🇪 · 🇫🇷 - Europe & Asia (5)</summary>
     <p>🇪🇸 Español (España)<br>🇮🇹 Italiano<br>🇹🇷 Türkçe<br>🇩🇪 Deutsch<br>🇫🇷 Français</p>
   </details>
   <details>

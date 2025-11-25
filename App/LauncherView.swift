@@ -1459,7 +1459,7 @@ struct LauncherView: View {
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(.primary.opacity(currentPage == 0 ? 0.35 : 0.8))
+                    .foregroundColor(pagerControlForegroundColor.opacity(currentPage == 0 ? 0.35 : 0.8))
                     .frame(width: 28, height: 28)
             }
             .padding(.horizontal, pagerButtonHitPadding)
@@ -1483,7 +1483,7 @@ struct LauncherView: View {
             } label: {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(.primary.opacity(currentPage >= totalPages - 1 ? 0.35 : 0.8))
+                    .foregroundColor(pagerControlForegroundColor.opacity(currentPage >= totalPages - 1 ? 0.35 : 0.8))
                     .frame(width: 28, height: 28)
             }
             .padding(.horizontal, pagerButtonHitPadding)
@@ -1507,7 +1507,7 @@ struct LauncherView: View {
                     onSelect?(index)
                 } label: {
                     Circle()
-                        .fill(index == currentPage ? Color.primary.opacity(0.9) : Color.primary.opacity(0.35))
+                        .fill(pagerControlForegroundColor.opacity(index == currentPage ? 0.9 : 0.35))
                         .frame(width: 8, height: 8)
                         .contentShape(Circle())
                 }
@@ -1562,7 +1562,7 @@ struct LauncherView: View {
         let button = Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundColor(.primary.opacity(disabled ? 0.35 : 0.8))
+                .foregroundColor(pagerControlForegroundColor.opacity(disabled ? 0.35 : 0.8))
                 .frame(width: 28, height: 28)
         }
         .padding(.horizontal, pagerButtonHitPadding)
@@ -2283,6 +2283,22 @@ struct LauncherView: View {
             return solidBackgroundColor.nsColor.launchy_perceivedBrightness < 0.6
         case .transparent:
             return colorScheme == .dark
+        }
+    }
+
+    /// Pager controls stay white unless the solid background is nearly pure white.
+    private var pagerControlForegroundColor: Color {
+        shouldUseLightPagerControls ? Color.white : Color.black.opacity(0.9)
+    }
+
+    /// Determines whether pager buttons/dots should invert to a darker tint.
+    private var shouldUseLightPagerControls: Bool {
+        switch backgroundStylePreference {
+        case .solid:
+            let brightness = solidBackgroundColor.nsColor.launchy_perceivedBrightness
+            return brightness < 0.95
+        default:
+            return true
         }
     }
 

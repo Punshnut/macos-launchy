@@ -1,6 +1,6 @@
 # Launchy
 
-Launchy is a featherweight macOS app launcher that feels built in: fullscreen when you want focus, floaty when you want a HUD. It quietly scans your apps, caches icons, and keeps a wall-to-wall grid ready on any Space.
+Launchy is the open-source launchpad alternative macOS users have been waiting for: fullscreen mode mirrors the classic Launchpad flow while giving you richer controls, and floaty mode doubles as a HUD with fast toggles that nail the look and feel of the new macOS design without breaking the behavior you already rely on. It scans your apps, caches icons, and keeps a responsive grid ready on every Space, all completely free.
 
 <p align="center">
   <img src="https://img.shields.io/badge/platform-macOS-blue" alt="Platform macOS">
@@ -35,12 +35,12 @@ Launchy is a featherweight macOS app launcher that feels built in: fullscreen wh
 
 ## Highlights
 
-- **Fullscreen or floaty** - Pick an edge-to-edge canvas or a non-activating HUD; flip layouts with an optional shortcut.
-- **Instant grid** - Scans /Applications, /System/Applications, and your user apps, caches icons, and fills 7x5 pages immediately.
-- **Type, find, fire** - Search names, folders, and bundle IDs; press Return to launch the first match.
-- **Organize effortlessly** - Drag to reorder across pages, drop apps together to build folders, and rename apps or folders in place.
-- **Curate what shows** - Hide apps you never want to see, reset your layout without losing custom names, and choose whether icons auto-fill gaps.
-- **Feels native** - Optional Dock and menu bar icons with quick menus, glass-to-solid backgrounds (with color swatches), and Sparkle updates built in.
+- **Launchpad-level fullscreen** - A fluid, edge-to-edge canvas that behaves just like the stock Launchpad you miss, plus right-click menus for faster sorting, folder creation, and precise arrangement.
+- **Fully featured grid** - Scans /Applications, /System/Applications, and user apps, caches icons, and fills 7x5 pages instantly while respecting your custom labels and hidden items.
+- **Context-aware controls** - Right click on any app, folder, or Dock/menu bar icon to rename, hide, move, add to folders, show in Finder, reset gaps, or create new folders without switching views.
+- **Floaty mode & fast toggles** - Switch between fullscreen and HUD styles instantly; floaty keeps a new macOS feel while preserving Launchpad behavior.
+- **Open source, free forever** - Launchy remains MIT-licensed, unbundled from paid tiers, and the #1 launchpad alternative you can trust.
+- **Auto-updating comfort** - Sparkle-powered updates keep you on the latest fixes and features automatically, so you just keep launching.
 
 ## Gestures (touchpad or mouse)
 
@@ -59,11 +59,11 @@ Launchy is a featherweight macOS app launcher that feels built in: fullscreen wh
 
 ## Quick tips
 
-- Right-click any icon to rename it, hide it, show it in Finder, or move it to a page or folder.
-- Drag apps together to build folders or create an empty one from the background menu; custom names stick around.
-- Hold Option or Shift while dragging to force a folder drop—add apps into folders, create new ones on an icon, or merge two folders without the grid shuffling.
-- The Dock and menu bar icons mirror your arrangement for fast launches plus quick access to updates, settings, and quit.
-- Reset the grid from Settings to start fresh without losing hidden apps or custom labels; toggle auto gap fill to taste.
+- Right-click any icon (even in the Dock menu) for rename, moving, hiding, Finder reveal, or folder shortcuts—apps and folders behave identically.
+- Drag apps together to build folders or drop onto the background menu to create new ones; Option/Shift modifiers force folder drops or merges while keeping layouts steady.
+- Floaty mode mirrors the quick palette feel and now includes fast toggles so switching between fullscreen and HUD is instant.
+- Dock and menu bar icons fully integrate with your layout for repeat launches plus quick access to the auto updater, settings, and Quit.
+- Reset the grid from Settings any time, keep hidden apps safe, and choose whether icons auto-fill gaps for a polished layout.
 
 ## License & support
 
@@ -71,5 +71,9 @@ Launchy is a featherweight macOS app launcher that feels built in: fullscreen wh
 - **Support Launchy:** Optional upgrades or donations are a nice signal boost but I will never gate existing features.
 
 [Ko-Fi](https://ko-fi.com/janfeuerbacher)
+
+## Get Launchy
+
+- Don't miss it out—download the free, open source launchpad alternative now and keep your launcher in sync with auto-updates.
 
 Made with ❤️

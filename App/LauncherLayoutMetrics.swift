@@ -42,7 +42,7 @@ struct LauncherLayoutMetrics {
         case .floaty:
             return 32
         case .fullscreen:
-            return 32
+            return 44
         }
     }
 
@@ -51,7 +51,7 @@ struct LauncherLayoutMetrics {
         case .floaty:
             return 20
         case .fullscreen:
-            return 28
+            return 16
         }
     }
 
@@ -60,7 +60,7 @@ struct LauncherLayoutMetrics {
         case .floaty:
             return -6
         case .fullscreen:
-            return -24
+            return -8
         }
     }
 

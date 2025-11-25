@@ -262,6 +262,14 @@ final class FloatyLauncherWindow: NSPanel {
     override func cancelOperation(_ sender: Any?) {
         // Intentionally blank to swallow the cancel operation request.
     }
+
+    /// Arrow keys trigger paging; swallow them here so macOS does not emit the error tone.
+    override func keyDown(with event: NSEvent) {
+        guard event.keyCode == 123 || event.keyCode == 124 else {
+            super.keyDown(with: event)
+            return
+        }
+    }
 }
 
 /// Borderless fullscreen window backing the immersive launcher presentation.
@@ -294,6 +302,14 @@ final class FullscreenLauncherWindow: NSWindow {
     /// Swallow ESC cancel requests so we don't hear the default system beep.
     override func cancelOperation(_ sender: Any?) {
         // No-op; escape handling is performed elsewhere.
+    }
+
+    /// Prevent the arrow key beep the same way as in floaty mode.
+    override func keyDown(with event: NSEvent) {
+        guard event.keyCode == 123 || event.keyCode == 124 else {
+            super.keyDown(with: event)
+            return
+        }
     }
 
     /// Sets up window appearance so the SwiftUI view takes over the full display.

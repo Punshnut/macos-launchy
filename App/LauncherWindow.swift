@@ -15,7 +15,7 @@ final class LauncherWindowController: NSWindowController {
         launcherContentHost = NSHostingController(rootView: rootView)
         self.launcherMode = launcherMode
         let window: NSWindow
-        let presentationScreen = Self.preferredScreenForPresentation()
+        let presentationScreen = ScreenProvider.screenUnderMouseOrMain()
 
         switch launcherMode {
         case .floaty:
@@ -51,9 +51,10 @@ final class LauncherWindowController: NSWindowController {
         }
 
         let visible = screen.visibleFrame
-        let width = min(size.width, visible.width * 0.9)
+        let contentSize = Self.scaledFloatyContentSize(for: size, on: screen)
+        let width = min(contentSize.width, visible.width * 0.9)
         // Give floaty mode a bit more breathing room by borrowing ~10% of the screen height.
-        let expandedHeight = size.height + visible.height * 0.1
+        let expandedHeight = contentSize.height + visible.height * 0.1
         let baseHeight = min(expandedHeight, visible.height * 0.9)
         let height = min(baseHeight + floatyTopExtension, visible.height * 0.94)
         let x = visible.midX - width / 2
@@ -67,6 +68,37 @@ final class LauncherWindowController: NSWindowController {
         return NSRect(x: x, y: y, width: width, height: height)
     }
 
+    /// Adjusts the preferred floaty content size based on the currently targeted screen.
+    private static func scaledFloatyContentSize(for baseSize: NSSize, on screen: NSScreen?) -> NSSize {
+        guard let target = screen ?? NSScreen.main else {
+            return baseSize
+        }
+
+        guard let primary = NSScreen.main, target !== primary else {
+            return baseSize
+        }
+
+        let primaryVisible = primary.visibleFrame.size
+        let targetVisible = target.visibleFrame.size
+
+        guard primaryVisible.width > 0,
+              primaryVisible.height > 0,
+              targetVisible.width > 0,
+              targetVisible.height > 0 else {
+            return baseSize
+        }
+
+        let widthRatio = targetVisible.width / primaryVisible.width
+        let heightRatio = targetVisible.height / primaryVisible.height
+        let scale = min(widthRatio, heightRatio)
+        let clampedScale = min(max(scale, 0.7), 1.25)
+
+        return NSSize(
+            width: baseSize.width * clampedScale,
+            height: baseSize.height * clampedScale
+        )
+    }
+
     /// Determines the fullscreen frame, falling back to a 16:10 layout without a main screen.
     private static func fullscreenFrame(on screen: NSScreen?) -> NSRect {
         if let screen = screen ?? NSScreen.main {
@@ -74,15 +106,6 @@ final class LauncherWindowController: NSWindowController {
         } else {
             return NSRect(x: 0, y: 0, width: 1440, height: 900)
         }
-    }
-
-    /// Picks the screen under the cursor if available, otherwise defaults to the main display.
-    private static func preferredScreenForPresentation() -> NSScreen? {
-        let mouseLocation = NSEvent.mouseLocation
-        if let cursorScreen = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) {
-            return cursorScreen
-        }
-        return NSScreen.main
     }
 
     /// Presents the window using the right ordering semantics for panels vs regular windows.
@@ -112,7 +135,7 @@ final class LauncherWindowController: NSWindowController {
     /// Keeps the window anchored to the screen under the cursor before presenting it.
     private func updateFrameForPreferredScreenIfNeeded() {
         guard let window else { return }
-        let targetScreen = Self.preferredScreenForPresentation()
+        let targetScreen = ScreenProvider.screenUnderMouseOrMain()
 
         switch launcherMode {
         case .floaty:
@@ -123,6 +146,7 @@ final class LauncherWindowController: NSWindowController {
             }
         case .fullscreen:
             let targetFrame = Self.fullscreenFrame(on: targetScreen)
+            launcherContentHost.preferredContentSize = targetFrame.size
             if window.frame != targetFrame {
                 window.setFrame(targetFrame, display: true)
             }

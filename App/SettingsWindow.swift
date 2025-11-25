@@ -1338,9 +1338,31 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     /// Brings the settings window to the front and activates the app if needed.
     func showWindowAndActivate() {
         guard let window else { return }
+        centerWindowOnPreferredScreen()
         showWindow(nil)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    private func centerWindowOnPreferredScreen() {
+        guard let window else { return }
+        guard let screen = ScreenProvider.screenUnderMouseOrMain() else { return }
+
+        let contentSize = window.frame.size
+        let visible = screen.visibleFrame
+        let targetX = visible.midX - contentSize.width / 2
+        let targetY = visible.midY - contentSize.height / 2
+
+        let clampedX = min(
+            max(targetX, visible.minX),
+            max(visible.maxX - contentSize.width, visible.minX)
+        )
+        let clampedY = min(
+            max(targetY, visible.minY),
+            max(visible.maxY - contentSize.height, visible.minY)
+        )
+
+        window.setFrameOrigin(NSPoint(x: clampedX, y: clampedY))
     }
 
     func windowWillClose(_ notification: Notification) {

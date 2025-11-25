@@ -967,6 +967,21 @@ struct LauncherView: View {
         }
     }
 
+    /// Keeps the visible page index inside the bounds of the current arrangement.
+    private func ensureCurrentPageWithinBounds() {
+        let maxPage = max(fullPageCount - 1, 0)
+        let boundedPage = min(currentPage, maxPage)
+        if boundedPage != currentPage {
+            withAnimation(pageSwitchAnimation) {
+                pageDirection = boundedPage >= currentPage ? .forward : .backward
+                currentPage = boundedPage
+                pagerDragOffset = 0
+            }
+        } else {
+            pagerDragOffset = 0
+        }
+    }
+
     /// Generates the friendly page indicator label.
     private var pageIndicatorTitle: String {
         if filteredItemList.isEmpty {
@@ -2608,11 +2623,10 @@ struct LauncherView: View {
         withAnimation(gridSpringAnimation) {
             orderedItems = updated
         }
-        currentPage = folderIndex / pageCapacity
-        pagerDragOffset = 0
         if activeFolder?.id == folder.id {
             activeFolder = folder
         }
+        ensureCurrentPageWithinBounds()
         persistOrderChange()
     }
 
@@ -2656,12 +2670,7 @@ struct LauncherView: View {
             orderedItems = items
         }
         pageSizes = finalSizes
-        let targetPage = min(boundedPage, max(finalSizes.count - 1, 0))
-        withAnimation(pageSwitchAnimation) {
-            pageDirection = targetPage >= currentPage ? .forward : .backward
-            currentPage = targetPage
-            pagerDragOffset = 0
-        }
+        ensureCurrentPageWithinBounds()
         persistOrderChange(using: finalSizes)
     }
 

@@ -261,16 +261,22 @@ final class ItemArrangementStore {
 
         var remaining = itemCount
         var normalized: [Int] = []
-        var overflow = 0
 
-        // Carry overflow forward so existing pages absorb extra items before we add a new page.
-        for size in sizes where remaining > 0 {
-            let desired = size + overflow
-            let portion = min(desired, pageCapacity, remaining)
-            overflow = max(desired - portion, 0)
-            guard portion > 0 else { continue }
-            normalized.append(portion)
-            remaining -= portion
+        for rawSize in sizes where remaining > 0 {
+            let clampedSize = min(max(rawSize, 0), pageCapacity)
+            let preserved = min(clampedSize, remaining)
+            remaining -= preserved
+            var pageCount = preserved
+
+            if pageCount < pageCapacity, remaining > 0 {
+                let fill = min(pageCapacity - pageCount, remaining)
+                pageCount += fill
+                remaining -= fill
+            }
+
+            if pageCount > 0 {
+                normalized.append(pageCount)
+            }
         }
 
         while remaining > 0 {

@@ -10,27 +10,35 @@ Launchy is the open-source launchpad alternative macOS users have been waiting f
 </p>
 
 <p align="center">
-  <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
-    <img src="https://img.shields.io/badge/Download-Beta%200.0.7-blueviolet?style=for-the-badge" alt="Download Beta 0.0.7">
+    <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
+    <img src="https://img.shields.io/badge/Download-Beta%200.1.1-blueviolet?style=for-the-badge" alt="Download Beta 0.1.1">
   </a>
 </p>
 
 <p align="center">
-  <img src="Media/Launchy_Logo.png" alt="Focusly logo" width="260">
+  <img src="Media/Launchy_Logo.png" alt="Launchy logo" width="260">
 </p>
 
 <div align="center">
   <details>
-    <summary>🇪🇸 · 🇮🇹 · 🇹🇷 · 🇩🇪 · 🇫🇷 - Europe & Asia (5)</summary>
-    <p>🇪🇸 Español (España)<br>🇮🇹 Italiano<br>🇹🇷 Türkçe<br>🇩🇪 Deutsch<br>🇫🇷 Français</p>
+    <summary>🌍 Europe (7)</summary>
+    <p>🇪🇸 Español (España)<br>🇮🇹 Italiano<br>🇩🇪 Deutsch<br>🇫🇷 Français<br>🇵🇹 Português (Portugal)<br>🇺🇦 Українська<br>🇷🇺 Русский</p>
   </details>
   <details>
-    <summary>🇧🇷 · 🇲🇽 · 🇵🇹 · 🇺🇸 - Americas (4)</summary>
-    <p>🇧🇷 Português (Brasil)<br>🇲🇽 Español (LatAm)<br>🇵🇹 Português (Portugal)<br>🇺🇸 English</p>
+    <summary>🌏 Asia (5)</summary>
+    <p>🇹🇷 Türkçe<br>🇨🇳 中文（简体）<br>🇯🇵 日本語<br>🇰🇷 한국어 (대한민국)<br>🇹🇭 ภาษาไทย</p>
+  </details>
+  <details>
+    <summary>🌎 Americas (3)</summary>
+    <p>🇧🇷 Português (Brasil)<br>🇲🇽 Español (LatAm)<br>🇺🇸 English</p>
+  </details>
+  <details>
+    <summary>🌍 Middle East & Africa (3)</summary>
+    <p>🇦🇪 العربية (الفصحى الحديثة)<br>🇹🇿 Kiswahili<br>🇳🇬 Hausa</p>
   </details>
 </div>
 <p align="center">
-  <sub>Spanish ships in both 🇲🇽 LatAm and 🇪🇸 Spain variants - the Americas card highlights LatAm while Europe & Asia lists the Iberian pack.</sub>
+  <sub>Spanish ships in both 🇲🇽 LatAm and 🇪🇸 Spain variants - the Americas card highlights LatAm while Europe lists the Iberian pack.</sub>
 </p>
 
 ## Highlights

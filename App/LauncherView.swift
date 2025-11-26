@@ -91,6 +91,7 @@ struct LauncherView: View {
     @State private var pagerDragOffset: CGFloat = 0
     @State private var pagerViewportWidth: CGFloat = 1
     @State private var lastPagerDragDate: Date?
+    @State private var pendingDropPage: Int?
     @FocusState private var isFolderNameFieldFocused: Bool
     @FocusState private var isAppNameFieldFocused: Bool
     @FocusState private var isSearchFieldFocused: Bool
@@ -369,7 +370,8 @@ struct LauncherView: View {
                                                         draggedItem: $draggedItem,
                                                         shouldSuppressReorder: { isDragReorderSuppressed() },
                                                         performReorder: { item, targetIndex, preferSwap in
-                                                            reorderItem(
+                                                            pendingDropPage = pageIndex
+                                                            return reorderItem(
                                                                 item,
                                                                 to: targetIndex,
                                                                 preferSwap: preferSwap,
@@ -955,11 +957,14 @@ struct LauncherView: View {
 
     /// Keeps the visible page pinned to where the moved app now lives.
     private func updatePageAfterDrop(at index: Int?) {
-        guard let index else { return }
         let sizes = activePageSizes(for: orderedItems.count)
-        guard let targetPage = pageIndex(forLinearIndex: index, sizes: sizes) else { return }
+        let hintedPage = pendingDropPage
+        pendingDropPage = nil
+        let computedPage = index.flatMap { pageIndex(forLinearIndex: $0, sizes: sizes) }
+        let targetPage = hintedPage ?? computedPage
+        guard let page = targetPage else { return }
         let maxPage = max(pageCount - 1, 0)
-        let boundedTarget = min(max(targetPage, 0), maxPage)
+        let boundedTarget = min(max(page, 0), maxPage)
         withAnimation(pageSwitchAnimation) {
             pageDirection = boundedTarget >= currentPage ? .forward : .backward
             currentPage = boundedTarget
@@ -1018,16 +1023,22 @@ struct LauncherView: View {
 
         var remaining = itemCount
         var normalized: [Int] = []
-        var overflow = 0
 
-        // Carry overflow forward so existing pages absorb extra items before we add a new page.
         for size in raw where remaining > 0 {
-            let desired = size + overflow
-            let portion = min(desired, pageCapacity, remaining)
-            overflow = max(desired - portion, 0)
-            guard portion > 0 else { continue }
-            normalized.append(portion)
-            remaining -= portion
+            let clampedSize = min(max(size, 0), pageCapacity)
+            let preserved = min(clampedSize, remaining)
+            remaining -= preserved
+            var pageCount = preserved
+
+            if pageCount < pageCapacity, remaining > 0 {
+                let fill = min(pageCapacity - pageCount, remaining)
+                pageCount += fill
+                remaining -= fill
+            }
+
+            if pageCount > 0 {
+                normalized.append(pageCount)
+            }
         }
 
         while remaining > 0 {
@@ -1068,12 +1079,11 @@ struct LauncherView: View {
     }
 
     private func pageDropInsertionIndex(for page: Int) -> Int {
-        var sizes = activePageSizes(for: orderedItems.count)
-        let boundedPage = max(page, 0)
-        if boundedPage >= sizes.count {
-            sizes.append(contentsOf: Array(repeating: 0, count: boundedPage - sizes.count + 1))
-        }
-        return insertionIndexForPage(boundedPage, sizes: sizes)
+        LauncherGridConfiguration.insertionIndex(
+            for: page,
+            itemsCount: orderedItems.count,
+            pageCapacity: pageCapacity
+        )
     }
 
     private func pageSizesAfterRemoval(_ sizes: [Int], removingIndex: Int, currentCount: Int) -> [Int] {
@@ -1581,6 +1591,7 @@ struct LauncherView: View {
                     items: $orderedItems,
                     draggedItem: $draggedItem,
                     performReorder: { item, _ in
+                        pendingDropPage = targetPage
                         let index = pageDropInsertionIndex(for: targetPage)
                         return reorderItem(item, to: index, targetPageHint: targetPage)
                     },

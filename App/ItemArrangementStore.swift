@@ -259,30 +259,30 @@ final class ItemArrangementStore {
     private func normalizePageSizes(_ sizes: [Int], itemCount: Int, pageCapacity: Int) -> [Int] {
         guard itemCount > 0, pageCapacity > 0 else { return [] }
 
-        var remaining = itemCount
-        var normalized: [Int] = []
-
-        for rawSize in sizes where remaining > 0 {
-            let clampedSize = min(max(rawSize, 0), pageCapacity)
-            let preserved = min(clampedSize, remaining)
-            remaining -= preserved
-            var pageCount = preserved
-
-            if pageCount < pageCapacity, remaining > 0 {
-                let fill = min(pageCapacity - pageCount, remaining)
-                pageCount += fill
-                remaining -= fill
-            }
-
-            if pageCount > 0 {
-                normalized.append(pageCount)
-            }
+        var normalized = sizes.map { min(max($0, 0), pageCapacity) }
+        if normalized.isEmpty {
+            normalized.append(min(itemCount, pageCapacity))
         }
 
-        while remaining > 0 {
-            let portion = min(pageCapacity, remaining)
-            normalized.append(portion)
-            remaining -= portion
+        let total = normalized.reduce(0, +)
+        if total < itemCount {
+            var remaining = itemCount - total
+            while remaining > 0 {
+                let portion = min(pageCapacity, remaining)
+                normalized.append(portion)
+                remaining -= portion
+            }
+        } else if total > itemCount {
+            var surplus = total - itemCount
+            for index in stride(from: normalized.count - 1, through: 0, by: -1) where surplus > 0 {
+                let reduction = min(normalized[index], surplus)
+                normalized[index] -= reduction
+                surplus -= reduction
+            }
+
+            while let last = normalized.last, last == 0 {
+                normalized.removeLast()
+            }
         }
 
         return normalized

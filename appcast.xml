@@ -10,7 +10,6 @@
 
     <item>
       <title>Launchy 0.1.1</title>
-      <sparkle:releaseNotesLink>https://github.com/Punshnut/macos-launchy/releases/latest</sparkle:releaseNotesLink>
       <pubDate>Wed, 26 Nov 2025 10:12:34 +0100</pubDate>
       <enclosure
     url="https://github.com/Punshnut/macos-launchy/releases/latest/download/Launchy.dmg"

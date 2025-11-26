@@ -11,7 +11,7 @@ Launchy is the open-source launchpad alternative macOS users have been waiting f
 
 <p align="center">
     <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
-    <img src="https://img.shields.io/badge/Download-Beta%200.1.1-blueviolet?style=for-the-badge" alt="Download Beta 0.1.1">
+    <img src="https://img.shields.io/badge/Download-Beta%200.1.2-blueviolet?style=for-the-badge" alt="Download Beta 0.1.2">
   </a>
 </p>
 
@@ -21,19 +21,19 @@ Launchy is the open-source launchpad alternative macOS users have been waiting f
 
 <div align="center">
   <details>
-    <summary>🌍 Europe (7)</summary>
+    <summary>🇪🇸 🇮🇹 🇩🇪 🇫🇷 🇵🇹 🇺🇦 🇷🇺 Europe (7)</summary>
     <p>🇪🇸 Español (España)<br>🇮🇹 Italiano<br>🇩🇪 Deutsch<br>🇫🇷 Français<br>🇵🇹 Português (Portugal)<br>🇺🇦 Українська<br>🇷🇺 Русский</p>
   </details>
   <details>
-    <summary>🌏 Asia (5)</summary>
+    <summary>🇹🇷 🇨🇳 🇯🇵 🇰🇷 🇹🇭 Asia (5)</summary>
     <p>🇹🇷 Türkçe<br>🇨🇳 中文（简体）<br>🇯🇵 日本語<br>🇰🇷 한국어 (대한민국)<br>🇹🇭 ภาษาไทย</p>
   </details>
   <details>
-    <summary>🌎 Americas (3)</summary>
+    <summary>🇧🇷 🇲🇽 🇺🇸 Americas (3)</summary>
     <p>🇧🇷 Português (Brasil)<br>🇲🇽 Español (LatAm)<br>🇺🇸 English</p>
   </details>
   <details>
-    <summary>🌍 Middle East & Africa (3)</summary>
+    <summary>🇦🇪 🇹🇿 🇳🇬 Middle East & Africa (3)</summary>
     <p>🇦🇪 العربية (الفصحى الحديثة)<br>🇹🇿 Kiswahili<br>🇳🇬 Hausa</p>
   </details>
 </div>

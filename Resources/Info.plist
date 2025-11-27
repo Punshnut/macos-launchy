@@ -38,6 +38,8 @@
 	<string>13.0</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>NSInputMonitoringUsageDescription</key>
+	<string>Allows Launchy to detect the configured hot corner so it can show/hide the launcher.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2025 Jan Feuerbacher</string>
 	<key>NSPrincipalClass</key>

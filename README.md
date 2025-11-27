@@ -49,6 +49,7 @@ Launchy is the open-source launchpad alternative macOS users have been waiting f
 - **Floaty mode & fast toggles** - Switch between fullscreen and HUD styles instantly; floaty keeps a new macOS feel while preserving Launchpad behavior.
 - **Open source, free forever** - Launchy remains MIT-licensed, unbundled from paid tiers, and the #1 launchpad alternative you can trust.
 - **Auto-updating comfort** - Sparkle-powered updates keep you on the latest fixes and features automatically, so you just keep launching.
+- **Hot corner activation** - Assign Launchy to a corner and moving your cursor there will open or close the launcher without touching the keyboard (macOS may ask for Input Monitoring permission; if it doesn’t, add Launchy under System Settings → Privacy & Security → Input Monitoring).
 
 ## Gestures (touchpad or mouse)
 

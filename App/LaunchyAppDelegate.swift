@@ -29,6 +29,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return controller
     }()
     private lazy var introductionPresenter = IntroductionWindowController.shared
+    private lazy var hotCornerMonitor = HotCornerMonitor { [weak self] in
+        self?.toggleLauncherVisibility()
+    }
     private let updaterController = UpdaterController()
 
     /// Finishes bootstrapping the app by loading settings, refreshing apps, and preparing the window.
@@ -55,6 +58,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         removeStatusItem()
         launcherHotkeyManager.deactivate()
         layoutHotkeyManager.deactivate()
+        hotCornerMonitor.stopMonitoring()
     }
 
     /// Allows menu items to kick off a manual Sparkle check.
@@ -108,6 +112,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         configureHotkeyManagers()
 
         updateStatusItemVisibility()
+        updateHotCornerMonitoring()
         observeSettingsChanges()
         observeArrangementResetRequests()
         showIntroductionIfNeeded()
@@ -254,6 +259,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         applyLauncherMode()
         updateStatusItemVisibility()
         refreshHotkeyRegistrations()
+        updateHotCornerMonitoring()
     }
 
     /// Clears saved arrangement data and reloads apps from disk.
@@ -283,6 +289,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         layoutHotkeyManager.update(descriptor: currentSettings.layoutToggleHotkey)
         layoutHotkeyManager.activate()
+    }
+
+    private func updateHotCornerMonitoring() {
+        hotCornerMonitor.update(
+            enabled: currentSettings.hotCornerEnabled,
+            corner: currentSettings.hotCornerPosition
+        )
     }
 
     /// Remembers which app was active before the launcher appeared so we can restore focus after hiding.

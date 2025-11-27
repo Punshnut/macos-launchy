@@ -162,6 +162,33 @@ enum LauncherSettingsPersistence {
         }
     }
 
+    /// Reads whether the hot corner trigger is enabled.
+    static func hotCornerEnabled(userDefaults: UserDefaults = .standard) -> Bool {
+        loadSettings(userDefaults: userDefaults).hotCornerEnabled
+    }
+
+    /// Persists whether the launcher should respond to a hot corner.
+    static func setHotCornerEnabled(_ value: Bool, userDefaults: UserDefaults = .standard) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.hotCornerEnabled = value
+        }
+    }
+
+    /// Reads which hot corner position is configured.
+    static func hotCornerPosition(userDefaults: UserDefaults = .standard) -> HotCornerPosition {
+        loadSettings(userDefaults: userDefaults).hotCornerPosition
+    }
+
+    /// Persists the selected hot corner position.
+    static func setHotCornerPosition(
+        _ position: HotCornerPosition,
+        userDefaults: UserDefaults = .standard
+    ) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.hotCornerPosition = position
+        }
+    }
+
     /// Reads whether the grid should collapse gaps.
     static func fillsGapsAutomatically(userDefaults: UserDefaults = .standard) -> Bool {
         loadSettings(userDefaults: userDefaults).fillsGapsAutomatically

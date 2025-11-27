@@ -211,6 +211,27 @@ enum LauncherMode: String, CaseIterable, Hashable, Codable {
     }
 }
 
+/// Identifies which hot corner should trigger Launchy when enabled.
+enum HotCornerPosition: String, CaseIterable, Hashable, Codable {
+    case topLeft
+    case topRight
+    case bottomLeft
+    case bottomRight
+
+    var displayName: String {
+        switch self {
+        case .topLeft:
+            return String(localized: "Top Left")
+        case .topRight:
+            return String(localized: "Top Right")
+        case .bottomLeft:
+            return String(localized: "Bottom Left")
+        case .bottomRight:
+            return String(localized: "Bottom Right")
+        }
+    }
+}
+
 /// User-configurable settings for how the launcher behaves.
 struct LauncherSettings: Hashable, Codable {
     /// Available solid background colors when the solid style is chosen.
@@ -304,6 +325,10 @@ struct LauncherSettings: Hashable, Codable {
     var launcherHotkey: HotkeyDescriptor?
     /// Optional shortcut for toggling between floaty and fullscreen layouts.
     var layoutToggleHotkey: HotkeyDescriptor?
+    /// Whether a hot corner is configured to toggle Launchy.
+    var hotCornerEnabled: Bool
+    /// Corner that toggles Launchy when hot corner support is enabled.
+    var hotCornerPosition: HotCornerPosition
     /// Whether the grid should collapse gaps by pulling items forward.
     var fillsGapsAutomatically: Bool
     /// Whether the user has already gone through the Launchy introduction.
@@ -321,6 +346,8 @@ struct LauncherSettings: Hashable, Codable {
         isDockIconVisible: Bool,
         launcherHotkey: HotkeyDescriptor?,
         layoutToggleHotkey: HotkeyDescriptor?,
+        hotCornerEnabled: Bool,
+        hotCornerPosition: HotCornerPosition,
         fillsGapsAutomatically: Bool,
         hasCompletedIntroduction: Bool,
         shouldScanUserApplicationsFolder: Bool
@@ -335,6 +362,8 @@ struct LauncherSettings: Hashable, Codable {
         self.isDockIconVisible = isDockIconVisible
         self.launcherHotkey = launcherHotkey
         self.layoutToggleHotkey = layoutToggleHotkey
+        self.hotCornerEnabled = hotCornerEnabled
+        self.hotCornerPosition = hotCornerPosition
         self.fillsGapsAutomatically = fillsGapsAutomatically
         self.hasCompletedIntroduction = hasCompletedIntroduction
         self.shouldScanUserApplicationsFolder = shouldScanUserApplicationsFolder
@@ -355,6 +384,8 @@ extension LauncherSettings {
             isDockIconVisible: true,
             launcherHotkey: .toggleLauncher,
             layoutToggleHotkey: nil,
+            hotCornerEnabled: false,
+            hotCornerPosition: .bottomRight,
             fillsGapsAutomatically: false,
             hasCompletedIntroduction: false,
             shouldScanUserApplicationsFolder: true
@@ -374,6 +405,8 @@ extension LauncherSettings {
         case isDockIconVisible
         case launcherHotkey
         case layoutToggleHotkey
+        case hotCornerEnabled
+        case hotCornerPosition
         case fillsGapsAutomatically
         case hasCompletedIntroduction
         case shouldScanUserApplicationsFolder
@@ -401,6 +434,8 @@ extension LauncherSettings {
             isDockIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isDockIconVisible) ?? true,
             launcherHotkey: decodedLauncherHotkey,
             layoutToggleHotkey: try container.decodeIfPresent(HotkeyDescriptor.self, forKey: .layoutToggleHotkey),
+            hotCornerEnabled: try container.decodeIfPresent(Bool.self, forKey: .hotCornerEnabled) ?? false,
+            hotCornerPosition: try container.decodeIfPresent(HotCornerPosition.self, forKey: .hotCornerPosition) ?? .bottomRight,
             fillsGapsAutomatically: try container.decodeIfPresent(Bool.self, forKey: .fillsGapsAutomatically) ?? false,
             hasCompletedIntroduction: try container.decodeIfPresent(Bool.self, forKey: .hasCompletedIntroduction) ?? false,
             shouldScanUserApplicationsFolder: try container.decodeIfPresent(Bool.self, forKey: .shouldScanUserApplicationsFolder) ?? true
@@ -419,6 +454,8 @@ extension LauncherSettings {
         try container.encode(isDockIconVisible, forKey: .isDockIconVisible)
         try container.encode(launcherHotkey, forKey: .launcherHotkey)
         try container.encode(layoutToggleHotkey, forKey: .layoutToggleHotkey)
+        try container.encode(hotCornerEnabled, forKey: .hotCornerEnabled)
+        try container.encode(hotCornerPosition, forKey: .hotCornerPosition)
         try container.encode(fillsGapsAutomatically, forKey: .fillsGapsAutomatically)
         try container.encode(hasCompletedIntroduction, forKey: .hasCompletedIntroduction)
         try container.encode(shouldScanUserApplicationsFolder, forKey: .shouldScanUserApplicationsFolder)

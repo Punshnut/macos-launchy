@@ -116,6 +116,20 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         LauncherSettingsPersistence.setLayoutToggleHotkey(descriptor)
     }
 
+    /// Enables or disables the hot corner trigger.
+    func setHotCornerEnabled(_ value: Bool) {
+        guard settingsSnapshot.hotCornerEnabled != value else { return }
+        settingsSnapshot.hotCornerEnabled = value
+        LauncherSettingsPersistence.setHotCornerEnabled(value)
+    }
+
+    /// Persists the hot corner selection.
+    func setHotCornerPosition(_ position: HotCornerPosition) {
+        guard settingsSnapshot.hotCornerPosition != position else { return }
+        settingsSnapshot.hotCornerPosition = position
+        LauncherSettingsPersistence.setHotCornerPosition(position)
+    }
+
     /// Restores the launcher hotkey back to its default value.
     func resetLauncherHotkeyToDefault() {
         setLauncherHotkey(.toggleLauncher)
@@ -512,6 +526,7 @@ struct SettingsWindow: View {
         ) {
             VStack(alignment: .leading, spacing: 14) {
                 hotkeySection
+                hotCornerSection
                 panelDivider
                 resetSection
             }
@@ -677,6 +692,43 @@ struct SettingsWindow: View {
                 onChange: { settingsStore.setLayoutToggleHotkey($0) },
                 showResetButton: false
             )
+        }
+    }
+
+    private var hotCornerSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Toggle("Enable hot corner toggle", isOn: Binding(
+                get: { settingsStore.settingsSnapshot.hotCornerEnabled },
+                set: { settingsStore.setHotCornerEnabled($0) }
+            ))
+            .toggleStyle(.switch)
+
+            Text("Move the cursor into the selected corner to show or hide Launchy.")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            if settingsStore.settingsSnapshot.hotCornerEnabled {
+                HStack {
+                    Text("Corner")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                    Spacer()
+                    Picker("", selection: Binding(
+                        get: { settingsStore.settingsSnapshot.hotCornerPosition },
+                        set: { settingsStore.setHotCornerPosition($0) }
+                    )) {
+                        ForEach(HotCornerPosition.allCases, id: \.self) { position in
+                            Text(position.displayName).tag(position)
+                        }
+                    }
+                    .labelsHidden()
+                    .pickerStyle(.menu)
+                }
+
+                Text("macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
         }
     }
 

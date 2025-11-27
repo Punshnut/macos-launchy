@@ -1202,8 +1202,10 @@ struct SettingsWindow: View {
     }
 
     private func versionSummary() -> String {
-        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "--"
-        return String(localized: "Version \(version)")
+        let rawVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+            ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+            ?? "--"
+        return String(format: String(localized: "Version %@"), rawVersion)
     }
 
     private func developerSummary() -> String {

@@ -249,10 +249,10 @@ private enum SettingsTab: Int, CaseIterable, Identifiable {
 
 private enum SettingsWindowMetrics {
     static let defaultContentWidth: CGFloat = 720
-    static let visualsHeight: CGFloat = 560
+    static let visualsHeight: CGFloat = 650
     static let shortcutsHeight: CGFloat = 520
-    static let hiddenAppsHeight: CGFloat = 640
-    static let aboutHeight: CGFloat = 720
+    static let hiddenAppsHeight: CGFloat = 700
+    static let aboutHeight: CGFloat = 700
     static let minimumContentSize = NSSize(width: 640, height: shortcutsHeight)
 
     static var defaultContentSize: NSSize {

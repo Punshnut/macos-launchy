@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "Atalhos globais e ferramentas rápidas de restauração.";
 "Hidden Apps" = "Apps ocultos";
 "Choose which applications stay out of the launcher grid." = "Escolha quais aplicativos ficam fora da grade do launcher.";
+"Include user Applications folder" = "Incluir a pasta Aplicativos do usuário";
+"Launchy searches %@ for apps when enabled." = "Launchy procura aplicativos em %@ quando ativado.";
 "Launch at login" = "Iniciar ao fazer login";
 "Launcher layout" = "Layout do launcher";
+"Top Left" = "Canto superior esquerdo";
+"Top Right" = "Canto superior direito";
+"Bottom Left" = "Canto inferior esquerdo";
+"Bottom Right" = "Canto inferior direito";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Adicione abaixo um atalho para alternar modos instantaneamente de qualquer lugar.";
 "Hide Dock icon" = "Ocultar ícone do Dock";
 "Hide menu bar icon" = "Ocultar ícone da barra de menus";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "Criado pela equipe Launchy";
 "Launchy Settings" = "Ajustes do Launchy";
 
+"Settings" = "Configurações";
 "Settings..." = "Ajustes...";
 "Check for Updates..." = "Procurar atualizações...";
 "Toggle Launcher Layout" = "Alternar layout do launcher";
@@ -115,10 +122,13 @@
 
 "No items found" = "Nenhum item encontrado";
 "No matching items" = "Nenhum item correspondente";
+"No applications available" = "Nenhum aplicativo disponível";
 "Page %lld of %lld" = "Página %lld de %lld";
 "Try a different search term." = "Tente outra busca.";
 "Launchy has not indexed any applications yet." = "O Launchy ainda não indexou aplicativos.";
 "Search items" = "Buscar itens";
+"Search" = "Pesquisar";
+"Clear search text" = "Limpar texto da pesquisa";
 "Open" = "Abrir";
 "Rename App" = "Renomear app";
 "Enter a custom name for this app. Leave empty to reset." = "Digite um nome personalizado para este app. Deixe vazio para restaurar.";
@@ -140,3 +150,4 @@
 "Folder is empty." = "A pasta está vazia.";
 "Apps:\n%@" = "Apps:\n%@";
 "Save" = "Salvar";
+

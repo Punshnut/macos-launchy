@@ -11,7 +11,7 @@ Launchy is the open-source launchpad alternative macOS users have been waiting f
 
 <p align="center">
     <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
-    <img src="https://img.shields.io/badge/Download-Beta%200.1.2-blueviolet?style=for-the-badge" alt="Download Beta 0.1.2">
+    <img src="https://img.shields.io/badge/Download-Beta%200.2.0-blueviolet?style=for-the-badge" alt="Download Beta 0.2.0">
   </a>
 </p>
 

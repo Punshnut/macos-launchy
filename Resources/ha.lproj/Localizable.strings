@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "Gajerun hanyoyin duniya da kayan sake saiti cikin sauri.";
 "Hidden Apps" = "Apps da aka ɓoye";
 "Choose which applications stay out of the launcher grid." = "Zaɓi waɗanne apps za su kasance a waje da grid ɗin masu ƙaddamarwa.";
+"Include user Applications folder" = "Haɗa babban fayil ɗin aikace-aikacen mai amfani";
+"Launchy searches %@ for apps when enabled." = "Launchy yana bincika %@ domin aikace-aikace lokacin da aka kunna shi.";
 "Launch at login" = "Fara lokacin shiga";
 "Launcher layout" = "Tsarin mai ƙaddamarwa";
+"Top Left" = "Sama hagu";
+"Top Right" = "Sama dama";
+"Bottom Left" = "Kasa hagu";
+"Bottom Right" = "Kasa dama";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Ƙara hanya don canza tsarin a ƙasa don sauya yanayi nan take daga ko'ina.";
 "Hide Dock icon" = "Boye alamar Dock";
 "Hide menu bar icon" = "Boye alamar sandar menu";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "An gina shi da tawagar Launchy";
 "Launchy Settings" = "Saitunan Launchy";
 
+"Settings" = "Saituna";
 "Settings..." = "Saituna...";
 "Check for Updates..." = "Duba sabuntawa...";
 "Toggle Launcher Layout" = "Canza tsarin mai ƙaddamarwa";
@@ -115,10 +122,13 @@
 
 "No items found" = "Babu abubuwa da aka samu";
 "No matching items" = "Babu abubuwa masu dacewa";
+"No applications available" = "Babu aikace-aikace masu samuwa";
 "Page %lld of %lld" = "Shafi %lld na %lld";
 "Try a different search term." = "Gwada kalmar bincike daban.";
 "Launchy has not indexed any applications yet." = "Launchy bai lissafa kowanne manhaja ba tukuna.";
 "Search items" = "Nemo abubuwa";
+"Search" = "Bincike";
+"Clear search text" = "Goge rubutun bincike";
 "Open" = "Buɗe";
 "Rename App" = "Sake suna manhaja";
 "Enter a custom name for this app. Leave empty to reset." = "Shigar da suna na musamman don wannan manhaja. Bar shi babu komai don sake saitawa.";
@@ -140,3 +150,4 @@
 "Folder is empty." = "Fayil ɗin babu komai.";
 "Apps:\n%@" = "Manhajoji:\n%@";
 "Save" = "Ajiye";
+

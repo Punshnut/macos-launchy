@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "グローバルショートカットとクイックリセットツール。";
 "Hidden Apps" = "非表示のアプリ";
 "Choose which applications stay out of the launcher grid." = "ランチャーのグリッドから除外するアプリを選んでください。";
+"Include user Applications folder" = "ユーザーのアプリケーションフォルダを含める";
+"Launchy searches %@ for apps when enabled." = "Launchy は有効にすると %@ でアプリを検索します。";
 "Launch at login" = "ログイン時起動";
 "Launcher layout" = "ランチャーのレイアウト";
+"Top Left" = "左上";
+"Top Right" = "右上";
+"Bottom Left" = "左下";
+"Bottom Right" = "右下";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "下にレイアウト切り替えのショートカットを追加すれば、どこからでも即座にモードを切り替えられます。";
 "Hide Dock icon" = "Dock アイコンを隠す";
 "Hide menu bar icon" = "メニューバーのアイコンを隠す";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "Launchy チームによって制作";
 "Launchy Settings" = "Launchy 設定";
 
+"Settings" = "設定";
 "Settings..." = "設定...";
 "Check for Updates..." = "アップデートを確認...";
 "Toggle Launcher Layout" = "ランチャーレイアウトを切り替え";
@@ -115,10 +122,13 @@
 
 "No items found" = "項目が見つかりません";
 "No matching items" = "一致する項目がありません";
+"No applications available" = "利用できるアプリはありません";
 "Page %lld of %lld" = "%lld / %lld ページ";
 "Try a different search term." = "別の検索語を試してください。";
 "Launchy has not indexed any applications yet." = "Launchy はまだアプリのインデックスを作成していません。";
 "Search items" = "項目を検索";
+"Search" = "検索";
+"Clear search text" = "検索文字列をクリア";
 "Open" = "開く";
 "Rename App" = "アプリ名を変更";
 "Enter a custom name for this app. Leave empty to reset." = "このアプリにカスタム名を入力してください。空欄にするとリセットされます。";
@@ -140,3 +150,4 @@
 "Folder is empty." = "フォルダは空です。";
 "Apps:\n%@" = "アプリ：\n%@";
 "Save" = "保存";
+

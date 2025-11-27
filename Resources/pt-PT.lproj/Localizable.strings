@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "Atalhos globais e ferramentas rápidas de reposição.";
 "Hidden Apps" = "Apps ocultas";
 "Choose which applications stay out of the launcher grid." = "Escolhe quais as aplicações que ficam fora da grelha do launcher.";
+"Include user Applications folder" = "Incluir a pasta Aplicações do utilizador";
+"Launchy searches %@ for apps when enabled." = "Launchy pesquisa aplicações em %@ quando ativado.";
 "Launch at login" = "Iniciar sessão com o sistema";
 "Launcher layout" = "Disposição do launcher";
+"Top Left" = "Canto superior esquerdo";
+"Top Right" = "Canto superior direito";
+"Bottom Left" = "Canto inferior esquerdo";
+"Bottom Right" = "Canto inferior direito";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Adiciona abaixo um atalho para alternar modos instantaneamente, a partir de qualquer lugar.";
 "Hide Dock icon" = "Ocultar ícone do Dock";
 "Hide menu bar icon" = "Ocultar ícone da barra de menus";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "Criado pela equipa Launchy";
 "Launchy Settings" = "Definições do Launchy";
 
+"Settings" = "Definições";
 "Settings..." = "Definições...";
 "Check for Updates..." = "Procurar atualizações...";
 "Toggle Launcher Layout" = "Alternar disposição do launcher";
@@ -115,10 +122,13 @@
 
 "No items found" = "Nenhum elemento encontrado";
 "No matching items" = "Nenhum elemento correspondente";
+"No applications available" = "Nenhuma aplicação disponível";
 "Page %lld of %lld" = "Página %lld de %lld";
 "Try a different search term." = "Tenta outra pesquisa.";
 "Launchy has not indexed any applications yet." = "O Launchy ainda não indexou aplicações.";
 "Search items" = "Pesquisar elementos";
+"Search" = "Pesquisar";
+"Clear search text" = "Limpar texto de pesquisa";
 "Open" = "Abrir";
 "Rename App" = "Renomear app";
 "Enter a custom name for this app. Leave empty to reset." = "Introduz um nome personalizado para esta app. Deixa vazio para repor.";
@@ -140,3 +150,4 @@
 "Folder is empty." = "A pasta está vazia.";
 "Apps:\n%@" = "Apps:\n%@";
 "Save" = "Guardar";
+

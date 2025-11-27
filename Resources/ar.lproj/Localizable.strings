@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "اختصارات عامة وأدوات إعادة الضبط السريعة.";
 "Hidden Apps" = "التطبيقات المخفية";
 "Choose which applications stay out of the launcher grid." = "اختر التطبيقات التي تبقى خارج شبكة المشغل.";
+"Include user Applications folder" = "تضمين مجلد تطبيقات المستخدم";
+"Launchy searches %@ for apps when enabled." = "يبحث Launchy في %@ عن التطبيقات عند التمكين.";
 "Launch at login" = "البدء عند تسجيل الدخول";
 "Launcher layout" = "تخطيط المشغل";
+"Top Left" = "أعلى اليسار";
+"Top Right" = "أعلى اليمين";
+"Bottom Left" = "أسفل اليسار";
+"Bottom Right" = "أسفل اليمين";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "أضف اختصار تبديل التخطيط أدناه لتغيير الوضعيات فورًا من أي مكان.";
 "Hide Dock icon" = "إخفاء أيقونة Dock";
 "Hide menu bar icon" = "إخفاء أيقونة شريط القائمة";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "صنعه فريق Launchy";
 "Launchy Settings" = "إعدادات Launchy";
 
+"Settings" = "الإعدادات";
 "Settings..." = "الإعدادات...";
 "Check for Updates..." = "بحث عن تحديثات...";
 "Toggle Launcher Layout" = "تبديل تخطيط المشغل";
@@ -115,10 +122,13 @@
 
 "No items found" = "لم يتم العثور على عناصر";
 "No matching items" = "لا توجد عناصر مطابقة";
+"No applications available" = "لا توجد تطبيقات متاحة";
 "Page %lld of %lld" = "الصفحة %lld من %lld";
 "Try a different search term." = "جرّب مصطلح بحث مختلف.";
 "Launchy has not indexed any applications yet." = "لم يقم Launchy بفهرسة أي تطبيقات بعد.";
 "Search items" = "ابحث في العناصر";
+"Search" = "بحث";
+"Clear search text" = "مسح نص البحث";
 "Open" = "فتح";
 "Rename App" = "إعادة تسمية التطبيق";
 "Enter a custom name for this app. Leave empty to reset." = "أدخل اسمًا مخصصًا لهذا التطبيق. اتركه فارغًا لإعادة التعيين.";
@@ -140,3 +150,4 @@
 "Folder is empty." = "المجلد فارغ.";
 "Apps:\n%@" = "التطبيقات:\n%@";
 "Save" = "حفظ";
+

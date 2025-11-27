@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "전역 단축키 및 빠른 재설정 도구.";
 "Hidden Apps" = "숨김 앱";
 "Choose which applications stay out of the launcher grid." = "런처 그리드에서 제외할 앱을 선택하세요.";
+"Include user Applications folder" = "사용자 응용 프로그램 폴더 포함";
+"Launchy searches %@ for apps when enabled." = "Launchy는 활성화되면 %@에서 앱을 검색합니다.";
 "Launch at login" = "로그인 시 실행";
 "Launcher layout" = "런처 레이아웃";
+"Top Left" = "왼쪽 상단";
+"Top Right" = "오른쪽 상단";
+"Bottom Left" = "왼쪽 하단";
+"Bottom Right" = "오른쪽 하단";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "아래에 레이아웃 전환 단축키를 추가하면 어디에서든 모드를 즉시 전환할 수 있습니다.";
 "Hide Dock icon" = "Dock 아이콘 숨기기";
 "Hide menu bar icon" = "메뉴 막대 아이콘 숨기기";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "Launchy 팀에서 제작";
 "Launchy Settings" = "Launchy 설정";
 
+"Settings" = "설정";
 "Settings..." = "설정...";
 "Check for Updates..." = "업데이트 확인...";
 "Toggle Launcher Layout" = "런처 레이아웃 전환";
@@ -115,10 +122,13 @@
 
 "No items found" = "항목을 찾을 수 없습니다";
 "No matching items" = "일치하는 항목 없음";
+"No applications available" = "사용 가능한 앱이 없습니다";
 "Page %lld of %lld" = "%lld / %lld 페이지";
 "Try a different search term." = "다른 검색어를 시도하세요.";
 "Launchy has not indexed any applications yet." = "Launchy는 아직 애플리케이션을 인덱싱하지 않았습니다.";
 "Search items" = "항목 검색";
+"Search" = "검색";
+"Clear search text" = "검색어 지우기";
 "Open" = "열기";
 "Rename App" = "앱 이름 바꾸기";
 "Enter a custom name for this app. Leave empty to reset." = "이 앱의 사용자 지정 이름을 입력하세요. 비워두면 재설정됩니다.";
@@ -140,3 +150,4 @@
 "Folder is empty." = "폴더가 비어 있습니다.";
 "Apps:\n%@" = "앱:\n%@";
 "Save" = "저장";
+

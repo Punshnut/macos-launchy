@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "Global shortcuts and quick reset tools.";
 "Hidden Apps" = "Hidden Apps";
 "Choose which applications stay out of the launcher grid." = "Choose which applications stay out of the launcher grid.";
+"Include user Applications folder" = "Include user Applications folder";
+"Launchy searches %@ for apps when enabled." = "Launchy searches %@ for apps when enabled.";
 "Launch at login" = "Launch at login";
 "Launcher layout" = "Launcher layout";
+"Top Left" = "Top Left";
+"Top Right" = "Top Right";
+"Bottom Left" = "Bottom Left";
+"Bottom Right" = "Bottom Right";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Add a layout toggle shortcut below to flip modes instantly from anywhere.";
 "Hide Dock icon" = "Hide Dock icon";
 "Hide menu bar icon" = "Hide menu bar icon";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "Built by the Launchy team";
 "Launchy Settings" = "Launchy Settings";
 
+"Settings" = "Settings";
 "Settings..." = "Settings...";
 "Check for Updates..." = "Check for Updates...";
 "Toggle Launcher Layout" = "Toggle Launcher Layout";
@@ -115,10 +122,13 @@
 
 "No items found" = "No items found";
 "No matching items" = "No matching items";
+"No applications available" = "No applications available";
 "Page %lld of %lld" = "Page %lld of %lld";
 "Try a different search term." = "Try a different search term.";
 "Launchy has not indexed any applications yet." = "Launchy has not indexed any applications yet.";
 "Search items" = "Search items";
+"Search" = "Search";
+"Clear search text" = "Clear search text";
 "Open" = "Open";
 "Rename App" = "Rename App";
 "Enter a custom name for this app. Leave empty to reset." = "Enter a custom name for this app. Leave empty to reset.";

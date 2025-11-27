@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "ทางลัดทั่วทั้งระบบและเครื่องมือรีเซ็ตด่วน";
 "Hidden Apps" = "แอปที่ซ่อนอยู่";
 "Choose which applications stay out of the launcher grid." = "เลือกแอปที่จะไม่อยู่ในกริดของ Launcher";
+"Include user Applications folder" = "รวมโฟลเดอร์แอปของผู้ใช้";
+"Launchy searches %@ for apps when enabled." = "Launchy ค้นหา %@ เพื่อหาแอปเมื่อเปิดใช้งาน.";
 "Launch at login" = "เปิดพร้อมล็อกอิน";
 "Launcher layout" = "เลย์เอาต์ของ Launcher";
+"Top Left" = "บนซ้าย";
+"Top Right" = "บนขวา";
+"Bottom Left" = "ล่างซ้าย";
+"Bottom Right" = "ล่างขวา";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "เพิ่มทางลัดเปลี่ยนเลย์เอาต์ด้านล่างเพื่อสลับโหมดทันทีจากทุกที่";
 "Hide Dock icon" = "ซ่อนไอคอน Dock";
 "Hide menu bar icon" = "ซ่อนไอคอนแถบเมนู";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "สร้างโดยทีม Launchy";
 "Launchy Settings" = "การตั้งค่า Launchy";
 
+"Settings" = "การตั้งค่า";
 "Settings..." = "การตั้งค่า...";
 "Check for Updates..." = "ตรวจสอบการอัปเดต...";
 "Toggle Launcher Layout" = "สลับเลย์เอาต์ของ Launcher";
@@ -115,10 +122,13 @@
 
 "No items found" = "ไม่พบรายการ";
 "No matching items" = "ไม่มีรายการตรงกัน";
+"No applications available" = "ไม่พบแอปที่ใช้งานได้";
 "Page %lld of %lld" = "หน้า %lld จาก %lld";
 "Try a different search term." = "ลองคำค้นหาอื่น";
 "Launchy has not indexed any applications yet." = "Launchy ยังไม่ได้จัดทำดัชนีแอปใด ๆ";
 "Search items" = "ค้นหารายการ";
+"Search" = "ค้นหา";
+"Clear search text" = "ล้างข้อความค้นหา";
 "Open" = "เปิด";
 "Rename App" = "เปลี่ยนชื่อแอป";
 "Enter a custom name for this app. Leave empty to reset." = "ใส่ชื่อเฉพาะสำหรับแอปนี้ ปล่อยว่างเพื่อรีเซ็ต";
@@ -140,3 +150,4 @@
 "Folder is empty." = "โฟลเดอร์ว่างเปล่า";
 "Apps:\n%@" = "แอป:\n%@";
 "Save" = "บันทึก";
+

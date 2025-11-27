@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "Raccourcis globaux et outils de remise à zéro rapides.";
 "Hidden Apps" = "Apps masquées";
 "Choose which applications stay out of the launcher grid." = "Choisissez quelles apps restent hors de la grille du lanceur.";
+"Include user Applications folder" = "Inclure le dossier Applications de l'utilisateur";
+"Launchy searches %@ for apps when enabled." = "Launchy recherche des apps dans %@ lorsque cette option est activée.";
 "Launch at login" = "Lancer à l’ouverture de session";
 "Launcher layout" = "Présentation du lanceur";
+"Top Left" = "Haut gauche";
+"Top Right" = "Haut droit";
+"Bottom Left" = "Bas gauche";
+"Bottom Right" = "Bas droit";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Ajoutez ci-dessous un raccourci pour changer de mode instantanément, où que vous soyez.";
 "Hide Dock icon" = "Masquer l’icône du Dock";
 "Hide menu bar icon" = "Masquer l’icône de la barre de menus";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "Réalisé par l’équipe Launchy";
 "Launchy Settings" = "Réglages Launchy";
 
+"Settings" = "Réglages";
 "Settings..." = "Réglages...";
 "Check for Updates..." = "Rechercher des mises à jour...";
 "Toggle Launcher Layout" = "Changer la présentation du lanceur";
@@ -115,10 +122,13 @@
 
 "No items found" = "Aucun élément trouvé";
 "No matching items" = "Aucun élément correspondant";
+"No applications available" = "Aucune application disponible";
 "Page %lld of %lld" = "Page %lld sur %lld";
 "Try a different search term." = "Essayez une autre recherche.";
 "Launchy has not indexed any applications yet." = "Launchy n’a pas encore indexé d’applications.";
 "Search items" = "Rechercher des éléments";
+"Search" = "Rechercher";
+"Clear search text" = "Effacer le texte de recherche";
 "Open" = "Ouvrir";
 "Rename App" = "Renommer l’app";
 "Enter a custom name for this app. Leave empty to reset." = "Saisissez un nom personnalisé pour cette app. Laissez vide pour réinitialiser.";
@@ -140,3 +150,4 @@
 "Folder is empty." = "Le dossier est vide.";
 "Apps:\n%@" = "Apps :\n%@";
 "Save" = "Enregistrer";
+

@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "Globale Kurzbefehle und schnelle Reset-Werkzeuge.";
 "Hidden Apps" = "Verborgene Apps";
 "Choose which applications stay out of the launcher grid." = "Wähle, welche Apps nicht im Launcher-Raster erscheinen.";
+"Include user Applications folder" = "Benutzer-Anwendungsordner einbeziehen";
+"Launchy searches %@ for apps when enabled." = "Launchy durchsucht %@ nach Apps, wenn es aktiviert ist.";
 "Launch at login" = "Beim Anmelden starten";
 "Launcher layout" = "Launcher-Layout";
+"Top Left" = "Oben links";
+"Top Right" = "Oben rechts";
+"Bottom Left" = "Unten links";
+"Bottom Right" = "Unten rechts";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Füge unten ein Kürzel hinzu, um überall sofort den Modus zu wechseln.";
 "Hide Dock icon" = "Dock-Symbol ausblenden";
 "Hide menu bar icon" = "Menüleisten-Symbol ausblenden";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "Entwickelt vom Launchy-Team";
 "Launchy Settings" = "Launchy-Einstellungen";
 
+"Settings" = "Einstellungen";
 "Settings..." = "Einstellungen...";
 "Check for Updates..." = "Nach Updates suchen...";
 "Toggle Launcher Layout" = "Launcher-Layout umschalten";
@@ -115,10 +122,13 @@
 
 "No items found" = "Keine Elemente gefunden";
 "No matching items" = "Keine passenden Elemente";
+"No applications available" = "Keine Apps verfügbar";
 "Page %lld of %lld" = "Seite %lld von %lld";
 "Try a different search term." = "Versuche einen anderen Suchbegriff.";
 "Launchy has not indexed any applications yet." = "Launchy hat noch keine Anwendungen indiziert.";
 "Search items" = "Elemente durchsuchen";
+"Search" = "Suchen";
+"Clear search text" = "Suchtext löschen";
 "Open" = "Öffnen";
 "Rename App" = "App umbenennen";
 "Enter a custom name for this app. Leave empty to reset." = "Gib einen eigenen Namen für diese App ein. Leer lassen, um zurückzusetzen.";
@@ -140,3 +150,4 @@
 "Folder is empty." = "Der Ordner ist leer.";
 "Apps:\n%@" = "Apps:\n%@";
 "Save" = "Sichern";
+

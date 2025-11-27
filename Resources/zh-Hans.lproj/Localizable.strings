@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "全局快捷键与快速重置工具。";
 "Hidden Apps" = "隐藏的应用";
 "Choose which applications stay out of the launcher grid." = "选择哪些应用不显示在启动器网格中。";
+"Include user Applications folder" = "包含用户的“应用程序”文件夹";
+"Launchy searches %@ for apps when enabled." = "启用后，Launchy 会在 %@ 中搜索应用。";
 "Launch at login" = "开机启动";
 "Launcher layout" = "启动器布局";
+"Top Left" = "左上";
+"Top Right" = "右上";
+"Bottom Left" = "左下";
+"Bottom Right" = "右下";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "在下方添加布局切换快捷键，即可随时在任何地方切换模式。";
 "Hide Dock icon" = "隐藏 Dock 图标";
 "Hide menu bar icon" = "隐藏菜单栏图标";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "由 Launchy 团队打造";
 "Launchy Settings" = "Launchy 设置";
 
+"Settings" = "设置";
 "Settings..." = "设置...";
 "Check for Updates..." = "检查更新...";
 "Toggle Launcher Layout" = "切换启动器布局";
@@ -115,10 +122,13 @@
 
 "No items found" = "未找到项目";
 "No matching items" = "没有匹配的项目";
+"No applications available" = "暂无可用应用";
 "Page %lld of %lld" = "第 %lld / %lld 页";
 "Try a different search term." = "尝试不同的搜索词。";
 "Launchy has not indexed any applications yet." = "Launchy 还未索引任何应用。";
 "Search items" = "搜索项目";
+"Search" = "搜索";
+"Clear search text" = "清除搜索内容";
 "Open" = "打开";
 "Rename App" = "重命名应用";
 "Enter a custom name for this app. Leave empty to reset." = "为该应用输入自定义名称。留空则恢复原状。";
@@ -140,3 +150,4 @@
 "Folder is empty." = "文件夹为空。";
 "Apps:\n%@" = "应用：\n%@";
 "Save" = "保存";
+

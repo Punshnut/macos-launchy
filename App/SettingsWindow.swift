@@ -555,13 +555,13 @@ struct SettingsWindow: View {
             .path
 
         return VStack(alignment: .leading, spacing: 6) {
-            Toggle("Include user Applications folder", isOn: Binding(
+            Toggle(String(localized: "Include user Applications folder"), isOn: Binding(
                 get: { settingsStore.settingsSnapshot.shouldScanUserApplicationsFolder },
                 set: { settingsStore.setShouldScanUserApplicationsFolder($0) }
             ))
             .toggleStyle(.switch)
 
-            Text("Launchy searches \(userApplicationsPath) for apps when enabled.")
+            Text(String(format: String(localized: "Launchy searches %@ for apps when enabled."), userApplicationsPath))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }

@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "Глобальні комбінації та інструменти швидкого скидання.";
 "Hidden Apps" = "Приховані додатки";
 "Choose which applications stay out of the launcher grid." = "Оберіть програми, які не з’являтимуться в сітці лаунчера.";
+"Include user Applications folder" = "Включити папку з додатками користувача";
+"Launchy searches %@ for apps when enabled." = "Launchy шукає додатки в %@, коли ця опція увімкнена.";
 "Launch at login" = "Запуск при вході";
 "Launcher layout" = "Макет лаунчера";
+"Top Left" = "Угорі зліва";
+"Top Right" = "Угорі справа";
+"Bottom Left" = "Внизу зліва";
+"Bottom Right" = "Внизу справа";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Додайте нижче перемикач макету, щоб з будь-якого місця миттєво міняти режим.";
 "Hide Dock icon" = "Сховати іконку Dock";
 "Hide menu bar icon" = "Сховати іконку меню";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "Створено командою Launchy";
 "Launchy Settings" = "Налаштування Launchy";
 
+"Settings" = "Налаштування";
 "Settings..." = "Налаштування...";
 "Check for Updates..." = "Перевірити оновлення...";
 "Toggle Launcher Layout" = "Перемкнути макет лаунчера";
@@ -115,10 +122,13 @@
 
 "No items found" = "Елементи не знайдені";
 "No matching items" = "Немає відповідних елементів";
+"No applications available" = "Немає доступних програм";
 "Page %lld of %lld" = "Сторінка %lld з %lld";
 "Try a different search term." = "Спробуйте інший пошуковий запит.";
 "Launchy has not indexed any applications yet." = "Launchy ще не проіндексував жодного додатку.";
 "Search items" = "Шукати елементи";
+"Search" = "Пошук";
+"Clear search text" = "Очистити текст пошуку";
 "Open" = "Відкрити";
 "Rename App" = "Перейменувати додаток";
 "Enter a custom name for this app. Leave empty to reset." = "Введіть власну назву для цього додатку. Залиште пустим, щоб скинути.";
@@ -140,3 +150,4 @@
 "Folder is empty." = "Папка порожня.";
 "Apps:\n%@" = "Додатки:\n%@";
 "Save" = "Зберегти";
+

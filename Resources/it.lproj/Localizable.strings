@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "Scorciatoie globali e strumenti rapidi di ripristino.";
 "Hidden Apps" = "App nascoste";
 "Choose which applications stay out of the launcher grid." = "Scegli quali applicazioni escludere dalla griglia del launcher.";
+"Include user Applications folder" = "Includi la cartella Applicazioni dell'utente";
+"Launchy searches %@ for apps when enabled." = "Launchy cerca le app in %@ quando è abilitato.";
 "Launch at login" = "Avvia all’accesso";
 "Launcher layout" = "Layout del launcher";
+"Top Left" = "In alto a sinistra";
+"Top Right" = "In alto a destra";
+"Bottom Left" = "In basso a sinistra";
+"Bottom Right" = "In basso a destra";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Aggiungi qui sotto un comando per cambiare modalità all’istante da qualsiasi punto.";
 "Hide Dock icon" = "Nascondi icona nel Dock";
 "Hide menu bar icon" = "Nascondi icona nella barra dei menu";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "Creato dal team Launchy";
 "Launchy Settings" = "Impostazioni Launchy";
 
+"Settings" = "Impostazioni";
 "Settings..." = "Impostazioni...";
 "Check for Updates..." = "Cerca aggiornamenti...";
 "Toggle Launcher Layout" = "Cambia layout del launcher";
@@ -115,10 +122,13 @@
 
 "No items found" = "Nessun elemento trovato";
 "No matching items" = "Nessun elemento corrispondente";
+"No applications available" = "Nessuna app disponibile";
 "Page %lld of %lld" = "Pagina %lld di %lld";
 "Try a different search term." = "Prova un’altra ricerca.";
 "Launchy has not indexed any applications yet." = "Launchy non ha ancora indicizzato applicazioni.";
 "Search items" = "Cerca elementi";
+"Search" = "Cerca";
+"Clear search text" = "Cancella testo di ricerca";
 "Open" = "Apri";
 "Rename App" = "Rinomina app";
 "Enter a custom name for this app. Leave empty to reset." = "Inserisci un nome personalizzato per questa app. Lascia vuoto per ripristinare.";
@@ -140,3 +150,4 @@
 "Folder is empty." = "La cartella è vuota.";
 "Apps:\n%@" = "App:\n%@";
 "Save" = "Salva";
+

@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "Genel kısayollar ve hızlı sıfırlama araçları.";
 "Hidden Apps" = "Gizli uygulamalar";
 "Choose which applications stay out of the launcher grid." = "Launcher ızgarasının dışında kalacak uygulamaları seç.";
+"Include user Applications folder" = "Kullanıcının Uygulamalar klasörünü dahil et";
+"Launchy searches %@ for apps when enabled." = "Launchy, etkinleştirildiğinde %@ klasöründe uygulamaları arar.";
 "Launch at login" = "Girişte başlat";
 "Launcher layout" = "Launcher düzeni";
+"Top Left" = "Sol üst";
+"Top Right" = "Sağ üst";
+"Bottom Left" = "Sol alt";
+"Bottom Right" = "Sağ alt";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Aşağıya, her yerden modları anında değiştirmek için bir kısayol ekle.";
 "Hide Dock icon" = "Dock simgesini gizle";
 "Hide menu bar icon" = "Menü çubuğu simgesini gizle";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "Launchy ekibi tarafından geliştirildi";
 "Launchy Settings" = "Launchy ayarları";
 
+"Settings" = "Ayarlar";
 "Settings..." = "Ayarlar...";
 "Check for Updates..." = "Güncellemeleri denetle...";
 "Toggle Launcher Layout" = "Launcher düzenini değiştir";
@@ -115,10 +122,13 @@
 
 "No items found" = "Öğe bulunamadı";
 "No matching items" = "Eşleşen öğe yok";
+"No applications available" = "Kullanılabilir uygulama yok";
 "Page %lld of %lld" = "Sayfa %lld / %lld";
 "Try a different search term." = "Başka bir arama terimi dene.";
 "Launchy has not indexed any applications yet." = "Launchy henüz uygulama indekslemedi.";
 "Search items" = "Öğeleri ara";
+"Search" = "Ara";
+"Clear search text" = "Arama metnini temizle";
 "Open" = "Aç";
 "Rename App" = "Uygulamayı yeniden adlandır";
 "Enter a custom name for this app. Leave empty to reset." = "Bu uygulama için özel bir ad gir. Sıfırlamak için boş bırak.";
@@ -140,3 +150,4 @@
 "Folder is empty." = "Klasör boş.";
 "Apps:\n%@" = "Uygulamalar:\n%@";
 "Save" = "Kaydet";
+

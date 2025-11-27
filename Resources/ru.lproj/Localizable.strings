@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "Глобальные сочетания и инструменты быстрого сброса.";
 "Hidden Apps" = "Скрытые приложения";
 "Choose which applications stay out of the launcher grid." = "Выберите приложения, которые не показываются в сетке лаунчера.";
+"Include user Applications folder" = "Включить папку приложений пользователя";
+"Launchy searches %@ for apps when enabled." = "Launchy ищет приложения в %@, когда опция включена.";
 "Launch at login" = "Запуск при входе";
 "Launcher layout" = "Макет лаунчера";
+"Top Left" = "Вверху слева";
+"Top Right" = "Вверху справа";
+"Bottom Left" = "Внизу слева";
+"Bottom Right" = "Внизу справа";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Добавьте ниже переключатель макета, чтобы менять режим мгновенно из любой точки.";
 "Hide Dock icon" = "Скрыть иконку Dock";
 "Hide menu bar icon" = "Скрыть иконку строки меню";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "Создано командой Launchy";
 "Launchy Settings" = "Настройки Launchy";
 
+"Settings" = "Настройки";
 "Settings..." = "Настройки...";
 "Check for Updates..." = "Проверить обновления...";
 "Toggle Launcher Layout" = "Переключить макет лаунчера";
@@ -115,10 +122,13 @@
 
 "No items found" = "Элементы не найдены";
 "No matching items" = "Совпадающих элементов нет";
+"No applications available" = "Нет доступных приложений";
 "Page %lld of %lld" = "Страница %lld из %lld";
 "Try a different search term." = "Попробуйте другой запрос.";
 "Launchy has not indexed any applications yet." = "Launchy ещё не проиндексировал ни одного приложения.";
 "Search items" = "Искать элементы";
+"Search" = "Поиск";
+"Clear search text" = "Очистить текст поиска";
 "Open" = "Открыть";
 "Rename App" = "Переименовать приложение";
 "Enter a custom name for this app. Leave empty to reset." = "Введите собственное имя для этого приложения. Оставьте пустым, чтобы сбросить.";
@@ -140,3 +150,4 @@
 "Folder is empty." = "Папка пуста.";
 "Apps:\n%@" = "Приложения:\n%@";
 "Save" = "Сохранить";
+

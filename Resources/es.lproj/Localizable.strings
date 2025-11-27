@@ -65,8 +65,14 @@
 "Global shortcuts and quick reset tools." = "Atajos globales y herramientas rápidas de restablecimiento.";
 "Hidden Apps" = "Apps ocultas";
 "Choose which applications stay out of the launcher grid." = "Elige qué aplicaciones se excluyen de la cuadrícula.";
+"Include user Applications folder" = "Incluir la carpeta de Aplicaciones del usuario";
+"Launchy searches %@ for apps when enabled." = "Launchy busca aplicaciones en %@ cuando está activado.";
 "Launch at login" = "Iniciar al iniciar sesión";
 "Launcher layout" = "Diseño del launcher";
+"Top Left" = "Arriba a la izquierda";
+"Top Right" = "Arriba a la derecha";
+"Bottom Left" = "Abajo a la izquierda";
+"Bottom Right" = "Abajo a la derecha";
 "Add a layout toggle shortcut below to flip modes instantly from anywhere." = "Añade abajo un atajo para alternar modos al instante desde cualquier lugar.";
 "Hide Dock icon" = "Ocultar icono del Dock";
 "Hide menu bar icon" = "Ocultar icono de la barra de menús";
@@ -103,6 +109,7 @@
 "Built by the Launchy team" = "Creado por el equipo de Launchy";
 "Launchy Settings" = "Ajustes de Launchy";
 
+"Settings" = "Ajustes";
 "Settings..." = "Ajustes...";
 "Check for Updates..." = "Buscar actualizaciones...";
 "Toggle Launcher Layout" = "Alternar diseño del launcher";
@@ -115,10 +122,13 @@
 
 "No items found" = "No se encontraron elementos";
 "No matching items" = "No hay elementos coincidentes";
+"No applications available" = "No hay aplicaciones disponibles";
 "Page %lld of %lld" = "Página %lld de %lld";
 "Try a different search term." = "Prueba con otra búsqueda.";
 "Launchy has not indexed any applications yet." = "Launchy aún no ha indexado ninguna aplicación.";
 "Search items" = "Buscar elementos";
+"Search" = "Buscar";
+"Clear search text" = "Borrar texto de búsqueda";
 "Open" = "Abrir";
 "Rename App" = "Renombrar app";
 "Enter a custom name for this app. Leave empty to reset." = "Introduce un nombre personalizado para esta app. Déjalo vacío para restablecer.";
@@ -140,3 +150,4 @@
 "Folder is empty." = "La carpeta está vacía.";
 "Apps:\n%@" = "Apps:\n%@";
 "Save" = "Guardar";
+

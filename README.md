@@ -42,7 +42,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 </p>
 
 <p align="center">
-  <img src="Media/ScreenshotFullscreenMode.png" alt="Launchy Screenshot Fullscreen Mode">
+  <img src="Media/ScreenshotFullscreenMode.png" alt="Launchy Screenshot Fullscreen Mode" width="600">
 </p>
 
 ## Highlights

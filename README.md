@@ -65,6 +65,7 @@ Launchy is the open-source launchpad alternative macOS users have been waiting f
 - **Launch search result:** `Return` fires the first match without leaving the search field
 - **Page with arrows:** left/right arrows flip between pages
 - **Open settings:** `Cmd` + `,`
+- **Direct page jumps:** hold `Control` and tap a number key (1‑9 or `0` for page 10) to instantly switch pages while the launcher is visible
 
 ## Quick tips
 

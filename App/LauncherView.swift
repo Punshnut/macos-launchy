@@ -429,7 +429,8 @@ struct LauncherView: View {
                             shouldHandleEscape: { shouldHandleEscapeKeys },
                             onPreviousPage: { handleKeyboardPager(.backward) },
                             onNextPage: { handleKeyboardPager(.forward) },
-                            onEscape: { handleEscapeKeyPress() }
+                            onEscape: { handleEscapeKeyPress() },
+                            onPageShortcut: { handlePageShortcutRequest($0) }
                         )
                         .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
                         .allowsHitTesting(false)
@@ -1021,7 +1022,10 @@ struct LauncherView: View {
     private func normalizePageSizes(_ raw: [Int], itemCount: Int) -> [Int] {
         guard itemCount > 0, pageCapacity > 0 else { return [] }
 
-        var normalized = raw.map { min(max($0, 0), pageCapacity) }
+        var normalized = raw.compactMap { value -> Int? in
+            let bounded = min(max(value, 0), pageCapacity)
+            return bounded > 0 ? bounded : nil
+        }
         if normalized.isEmpty {
             normalized.append(min(itemCount, pageCapacity))
         }
@@ -1942,6 +1946,24 @@ struct LauncherView: View {
             pageBackward()
         case .forward:
             pageForward()
+        }
+    }
+
+    private func handlePageShortcutRequest(_ targetPage: Int) {
+        if activeFolder != nil {
+            jumpToActiveFolderPage(targetPage)
+        } else {
+            jumpToPage(targetPage)
+        }
+    }
+
+    private func jumpToActiveFolderPage(_ targetPage: Int) {
+        guard activeFolder != nil else { return }
+        guard activeFolderPageCount > 0 else { return }
+        let bounded = min(max(targetPage, 0), activeFolderPageCount - 1)
+        guard bounded != activeFolderPage else { return }
+        withAnimation(folderOpenAnimation) {
+            activeFolderPage = bounded
         }
     }
 

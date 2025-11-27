@@ -1,6 +1,43 @@
 import SwiftUI
 import AppKit
 
+enum LauncherPageShortcuts {
+    static func pageIndex(for event: NSEvent) -> Int? {
+        let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        let filteredModifiers = modifiers.subtracting([.numericPad, .function, .capsLock])
+        guard filteredModifiers == [.control] else { return nil }
+        return pageIndex(for: event.keyCode)
+    }
+
+    static func pageIndex(for keyCode: UInt16) -> Int? {
+        let primary: [UInt16: Int] = [
+            18: 0, // 1
+            19: 1, // 2
+            20: 2, // 3
+            21: 3, // 4
+            23: 4, // 5
+            22: 5, // 6
+            26: 6, // 7
+            28: 7, // 8
+            25: 8, // 9
+            29: 9  // 0 -> page 10
+        ]
+        let keypad: [UInt16: Int] = [
+            83: 0, // keypad 1
+            84: 1, // keypad 2
+            85: 2, // keypad 3
+            86: 3, // keypad 4
+            87: 4, // keypad 5
+            88: 5, // keypad 6
+            89: 6, // keypad 7
+            91: 7, // keypad 8
+            92: 8, // keypad 9
+            82: 9  // keypad 0
+        ]
+        return primary[keyCode] ?? keypad[keyCode]
+    }
+}
+
 /// Invisible AppKit host that captures scroll wheel events so users can page through the launcher with gestures.
 struct ScrollWheelPagerOverlay: NSViewRepresentable {
     var isEnabled: Bool
@@ -197,6 +234,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
     var onPreviousPage: () -> Void
     var onNextPage: () -> Void
     var onEscape: () -> Void = {}
+    var onPageShortcut: ((Int) -> Void)?
 
     func makeCoordinator() -> Coordinator {
         Coordinator(
@@ -204,7 +242,8 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             shouldHandleEscape: shouldHandleEscape,
             onPreviousPage: onPreviousPage,
             onNextPage: onNextPage,
-            onEscape: onEscape
+            onEscape: onEscape,
+            onPageShortcut: onPageShortcut
         )
     }
 
@@ -245,6 +284,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
         private let shouldCaptureArrowKeys: () -> Bool
         private let shouldHandleEscape: () -> Bool
         private let onEscape: () -> Void
+        private let onPageShortcut: ((Int) -> Void)?
         private let repeatInterval: TimeInterval = 0.5 // Hold-to-repeat cadence.
         private var keyDownMonitorToken: Any?
         private var keyUpMonitorToken: Any?
@@ -256,13 +296,15 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             shouldHandleEscape: @escaping () -> Bool,
             onPreviousPage: @escaping () -> Void,
             onNextPage: @escaping () -> Void,
-            onEscape: @escaping () -> Void
+            onEscape: @escaping () -> Void,
+            onPageShortcut: ((Int) -> Void)?
         ) {
             self.shouldCaptureArrowKeys = shouldCaptureArrowKeys
             self.shouldHandleEscape = shouldHandleEscape
             self.onPreviousPage = onPreviousPage
             self.onNextPage = onNextPage
             self.onEscape = onEscape
+            self.onPageShortcut = onPageShortcut
         }
 
         func startMonitoringIfNeeded() {
@@ -294,10 +336,15 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             guard isEnabled else { return event }
             guard let view = hostView, view.window != nil else { return event }
 
-            let modifiers = event.modifierFlags
-                .intersection(.deviceIndependentFlagsMask)
-                .subtracting([.numericPad, .function])
-            guard modifiers.isEmpty else { return event }
+            let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+            if let pageIndex = LauncherPageShortcuts.pageIndex(for: event),
+               let onPageShortcut = onPageShortcut {
+                onPageShortcut(pageIndex)
+                return nil
+            }
+
+            let arrowModifiers = modifiers.subtracting([.numericPad, .function])
+            guard arrowModifiers.isEmpty else { return event }
 
             if event.keyCode == Self.escapeKeyCode {
                 guard shouldHandleEscape() else { return event }

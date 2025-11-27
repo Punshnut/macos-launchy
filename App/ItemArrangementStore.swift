@@ -259,7 +259,10 @@ final class ItemArrangementStore {
     private func normalizePageSizes(_ sizes: [Int], itemCount: Int, pageCapacity: Int) -> [Int] {
         guard itemCount > 0, pageCapacity > 0 else { return [] }
 
-        var normalized = sizes.map { min(max($0, 0), pageCapacity) }
+        var normalized = sizes.compactMap { value -> Int? in
+            let bounded = min(max(value, 0), pageCapacity)
+            return bounded > 0 ? bounded : nil
+        }
         if normalized.isEmpty {
             normalized.append(min(itemCount, pageCapacity))
         }

@@ -265,10 +265,20 @@ final class FloatyLauncherWindow: NSPanel {
 
     /// Arrow keys trigger paging; swallow them here so macOS does not emit the error tone.
     override func keyDown(with event: NSEvent) {
+        if LauncherPageShortcuts.pageIndex(for: event) != nil {
+            return
+        }
         guard event.keyCode == 123 || event.keyCode == 124 else {
             super.keyDown(with: event)
             return
         }
+    }
+
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        if LauncherPageShortcuts.pageIndex(for: event) != nil {
+            return true
+        }
+        return super.performKeyEquivalent(with: event)
     }
 }
 
@@ -306,10 +316,20 @@ final class FullscreenLauncherWindow: NSWindow {
 
     /// Prevent the arrow key beep the same way as in floaty mode.
     override func keyDown(with event: NSEvent) {
+        if LauncherPageShortcuts.pageIndex(for: event) != nil {
+            return
+        }
         guard event.keyCode == 123 || event.keyCode == 124 else {
             super.keyDown(with: event)
             return
         }
+    }
+
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        if LauncherPageShortcuts.pageIndex(for: event) != nil {
+            return true
+        }
+        return super.performKeyEquivalent(with: event)
     }
 
     /// Sets up window appearance so the SwiftUI view takes over the full display.

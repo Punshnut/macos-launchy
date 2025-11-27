@@ -4,7 +4,8 @@ import AppKit
 final class AppDiscoveryService {
     private let fileSystem: FileManager
     private let workspaceInterface: NSWorkspace
-    private let applicationSearchDirectories: [URL]
+    private let customApplicationDirectories: [URL]?
+    private let userApplicationsDirectory: URL
     private var iconCacheByBundleID: [String: NSImage] = [:]
     private let preferredLanguageCodes: [String]
 
@@ -16,24 +17,25 @@ final class AppDiscoveryService {
     ) {
         self.fileSystem = fileManager
         self.workspaceInterface = workspace
-        if let applicationDirectories {
-            self.applicationSearchDirectories = applicationDirectories
-        } else {
-            self.applicationSearchDirectories = [
-                URL(fileURLWithPath: "/Applications", isDirectory: true),
-                URL(fileURLWithPath: "/System/Applications", isDirectory: true),
-                fileSystem.homeDirectoryForCurrentUser.appendingPathComponent("Applications", isDirectory: true)
-            ]
-        }
+        self.customApplicationDirectories = applicationDirectories
+        self.userApplicationsDirectory = fileSystem
+            .homeDirectoryForCurrentUser
+            .appendingPathComponent("Applications", isDirectory: true)
 
         preferredLanguageCodes = Self.buildPreferredLanguageCodes()
     }
 
     /// Rebuilds the cached list of installed apps, optionally excluding hidden bundle identifiers.
-    func reloadApps(hiddenBundleIDs: Set<String> = []) -> [AppItem] {
+    func reloadApps(
+        includeUserApplicationsFolder: Bool = true,
+        hiddenBundleIDs: Set<String> = []
+    ) -> (main: [AppItem], userApplications: [AppItem]) {
         var appsByBundleID: [String: AppItem] = [:]
 
-        for directory in applicationSearchDirectories {
+        let directories = customApplicationDirectories
+            ?? defaultApplicationDirectories(includeUserApplicationsFolder: includeUserApplicationsFolder)
+
+        for directory in directories {
             for app in discoverApplications(in: directory) {
                 appsByBundleID[app.bundleIdentifier] = app
             }
@@ -42,8 +44,11 @@ final class AppDiscoveryService {
         let sortedApps = appsByBundleID.values
             .sorted { $0.sortingName.localizedCaseInsensitiveCompare($1.sortingName) == .orderedAscending }
 
-        guard hiddenBundleIDs.isEmpty == false else { return sortedApps }
-        return sortedApps.filter { hiddenBundleIDs.contains($0.bundleIdentifier) == false }
+        let visibleApps = sortedApps.filter { hiddenBundleIDs.contains($0.bundleIdentifier) == false }
+        let userApplications = visibleApps.filter { $0.isUserApplication }
+        let mainApplications = visibleApps.filter { $0.isUserApplication == false }
+        let userAppsToReturn = includeUserApplicationsFolder ? userApplications : []
+        return (main: mainApplications, userApplications: userAppsToReturn)
     }
 
     /// Returns the lazily-loaded icon for an app, caching results by bundle identifier.
@@ -68,7 +73,8 @@ final class AppDiscoveryService {
             customName: app.customName,
             bundleIdentifier: app.bundleIdentifier,
             iconImage: resolveIcon(for: app),
-            bundleURL: app.bundleURL
+            bundleURL: app.bundleURL,
+            isUserApplication: app.isUserApplication
         )
     }
 
@@ -93,14 +99,23 @@ final class AppDiscoveryService {
             .compactMap(buildAppItem)
     }
 
+    private func defaultApplicationDirectories(includeUserApplicationsFolder: Bool) -> [URL] {
+        var directories: [URL] = [
+            URL(fileURLWithPath: "/Applications", isDirectory: true),
+            URL(fileURLWithPath: "/System/Applications", isDirectory: true)
+        ]
+
+        if includeUserApplicationsFolder {
+            directories.append(userApplicationsDirectory)
+        }
+
+        return directories
+    }
+
     /// Converts a bundle on disk into an `AppItem`, extracting the display name and identifier.
     private func buildAppItem(from bundleURL: URL) -> AppItem? {
-        guard
-            let bundle = Bundle(url: bundleURL),
-            let bundleIdentifier = bundle.bundleIdentifier
-        else {
-            return nil
-        }
+        guard let bundle = Bundle(url: bundleURL) else { return nil }
+        let bundleIdentifier = bundle.bundleIdentifier ?? bundleURL.path
 
         let infoDictionary = bundle.infoDictionary ?? [:]
         let displayName = (infoDictionary["CFBundleDisplayName"] as? String)
@@ -115,7 +130,8 @@ final class AppDiscoveryService {
             customName: nil,
             bundleIdentifier: bundleIdentifier,
             iconImage: nil,
-            bundleURL: bundleURL
+            bundleURL: bundleURL,
+            isUserApplication: isUserApplication(bundleURL)
         )
     }
 
@@ -226,6 +242,15 @@ final class AppDiscoveryService {
         }
 
         return nil
+    }
+
+    private func isUserApplication(_ bundleURL: URL?) -> Bool {
+        guard let bundleURL else { return false }
+        let folderPath = userApplicationsDirectory.path
+        guard bundleURL.path.hasPrefix(folderPath) else { return false }
+        return bundleURL.path == folderPath
+            ? false
+            : bundleURL.path.dropFirst(folderPath.count).hasPrefix("/")
     }
 
     private static func buildPreferredLanguageCodes() -> [String] {

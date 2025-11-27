@@ -11,6 +11,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private let itemOrderStore = ItemArrangementStore()
     private var orderedItems: [LauncherItem] = []
     private var pageSizes: [Int] = []
+    private var userAppPageSizes: [Int] = []
     private var currentLauncherMode: LauncherMode?
     private var currentSettings = LauncherSettings.defaults
     private var settingsStreamTask: Task<Void, Never>?
@@ -241,11 +242,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private func handleSettingsChange() {
         let previousHidden = Set(currentSettings.hiddenBundleIDs)
         let previousGapSetting = currentSettings.fillsGapsAutomatically
+        let previousUserApplicationsScan = currentSettings.shouldScanUserApplicationsFolder
         currentSettings = LauncherSettingsPersistence.loadSettings()
         LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
         let hiddenChanged = previousHidden != Set(currentSettings.hiddenBundleIDs)
         let gapSettingChanged = previousGapSetting != currentSettings.fillsGapsAutomatically
-        if hiddenChanged || gapSettingChanged {
+        let scanSettingChanged = previousUserApplicationsScan != currentSettings.shouldScanUserApplicationsFolder
+        if hiddenChanged || gapSettingChanged || scanSettingChanged {
             refreshLauncherItems()
         }
         applyLauncherMode()
@@ -454,16 +457,74 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Rebuilds the visible items list using the current hidden settings.
     private func refreshLauncherItems(preservingCustomNames names: [String: String] = [:]) {
         let hiddenBundleIDs = Set(currentSettings.hiddenBundleIDs)
+        let includeUserApplications = currentSettings.shouldScanUserApplicationsFolder
+        let (baseApps, userApps) = applicationDiscovery.reloadApps(
+            includeUserApplicationsFolder: includeUserApplications,
+            hiddenBundleIDs: hiddenBundleIDs
+        )
+        let decoratedBaseApps = baseApps.map(applicationDiscovery.loadIcon)
+        let decoratedUserApps = userApps
+            .map(applicationDiscovery.loadIcon)
+            .map { app -> AppItem in
+                var modified = app
+                if let custom = names[app.bundleIdentifier] {
+                    modified.customName = custom
+                }
+                return modified
+            }
+
         let (items, sizes) = itemOrderStore.arrangedItems(
-            from: applicationDiscovery
-                .reloadApps(hiddenBundleIDs: hiddenBundleIDs)
-                .map(applicationDiscovery.loadIcon),
+            from: decoratedBaseApps,
             pageCapacity: LauncherGridConfiguration.pageCapacity,
             fillsGapsAutomatically: currentSettings.fillsGapsAutomatically,
             preferredCustomNames: names
         )
-        orderedItems = items
-        pageSizes = sizes
+
+        let computedUserPageSizes = pageSizesForUserApplications(decoratedUserApps.count)
+        userAppPageSizes = computedUserPageSizes
+
+        orderedItems = items + decoratedUserApps.map(LauncherItem.app)
+        pageSizes = sizes + computedUserPageSizes
+    }
+
+    private func pageSizesForUserApplications(_ count: Int) -> [Int] {
+        guard count > 0 else { return [] }
+        var remaining = count
+        var sizes: [Int] = []
+        let capacity = LauncherGridConfiguration.pageCapacity
+
+        while remaining > 0 {
+            let fill = min(capacity, remaining)
+            sizes.append(fill)
+            remaining -= fill
+        }
+
+        return sizes
+    }
+
+    private func isUserLauncherItem(_ item: LauncherItem) -> Bool {
+        guard case .app(let app) = item else { return false }
+        return app.isUserApplication
+    }
+
+    private func basePageSizes(from items: [LauncherItem], pageSizes: [Int]) -> [Int] {
+        guard items.isEmpty == false else { return [] }
+        var sanitized: [Int] = []
+        var cursor = 0
+        for size in pageSizes {
+            guard size > 0 else { continue }
+            let end = min(cursor + size, items.count)
+            guard end > cursor else { continue }
+            let pageItems = items[cursor..<end]
+            let baseCount = pageItems.reduce(0) { partial, item in
+                partial + (isUserLauncherItem(item) ? 0 : 1)
+            }
+            if baseCount > 0 {
+                sanitized.append(min(baseCount, LauncherGridConfiguration.pageCapacity))
+            }
+            cursor = end
+        }
+        return sanitized
     }
 
     /// Builds a bundle ID keyed map of custom names from both root items and folder contents.
@@ -502,9 +563,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             }
         ) { [weak self] reorderedItems, newPageSizes in
             guard let self else { return }
+            let baseItems = reorderedItems.filter { !isUserLauncherItem($0) }
+            let basePageSizes = basePageSizes(from: reorderedItems, pageSizes: newPageSizes)
             orderedItems = reorderedItems
-            pageSizes = newPageSizes
-            itemOrderStore.saveOrderedItems(reorderedItems, pageSizes: newPageSizes)
+            pageSizes = basePageSizes + userAppPageSizes
+            itemOrderStore.saveOrderedItems(baseItems, pageSizes: basePageSizes)
         }
     }
 

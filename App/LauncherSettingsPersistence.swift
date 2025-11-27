@@ -94,6 +94,23 @@ enum LauncherSettingsPersistence {
         }
     }
 
+    /// Reads whether the user's Applications folder is scanned for installed apps.
+    static func shouldScanUserApplicationsFolder(
+        userDefaults: UserDefaults = .standard
+    ) -> Bool {
+        loadSettings(userDefaults: userDefaults).shouldScanUserApplicationsFolder
+    }
+
+    /// Persists whether the user's Applications folder should be indexed.
+    static func setShouldScanUserApplicationsFolder(
+        _ value: Bool,
+        userDefaults: UserDefaults = .standard
+    ) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.shouldScanUserApplicationsFolder = value
+        }
+    }
+
     /// Reads the preferred background style selection.
     static func preferredBackgroundStyle(
         userDefaults: UserDefaults = .standard

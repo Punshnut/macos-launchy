@@ -2879,11 +2879,39 @@ struct LauncherView: View {
 #Preview {
     LauncherView(
         itemCatalog: [
-            .app(AppItem(id: UUID(), displayName: "Safari", bundleIdentifier: "com.apple.Safari", iconImage: NSImage(named: NSImage.networkName), bundleURL: nil)),
-            .app(AppItem(id: UUID(), displayName: "Xcode", bundleIdentifier: "com.apple.dt.Xcode", iconImage: nil, bundleURL: nil)),
+            .app(AppItem(
+                id: UUID(),
+                displayName: "Safari",
+                bundleIdentifier: "com.apple.Safari",
+                iconImage: NSImage(named: NSImage.networkName),
+                bundleURL: nil,
+                isUserApplication: false
+            )),
+            .app(AppItem(
+                id: UUID(),
+                displayName: "Xcode",
+                bundleIdentifier: "com.apple.dt.Xcode",
+                iconImage: nil,
+                bundleURL: nil,
+                isUserApplication: false
+            )),
             .folder(FolderItem(name: FolderItem.defaultName, apps: [
-                AppItem(id: UUID(), displayName: "Notes", bundleIdentifier: "com.apple.Notes", iconImage: nil, bundleURL: nil),
-                AppItem(id: UUID(), displayName: "Mail", bundleIdentifier: "com.apple.mail", iconImage: nil, bundleURL: nil)
+                AppItem(
+                    id: UUID(),
+                    displayName: "Notes",
+                    bundleIdentifier: "com.apple.Notes",
+                    iconImage: nil,
+                    bundleURL: nil,
+                    isUserApplication: false
+                ),
+                AppItem(
+                    id: UUID(),
+                    displayName: "Mail",
+                    bundleIdentifier: "com.apple.mail",
+                    iconImage: nil,
+                    bundleURL: nil,
+                    isUserApplication: false
+                )
             ]))
         ],
         backgroundStylePreference: .standard

@@ -17,6 +17,8 @@ struct AppItem: Identifiable, Hashable {
     let iconImage: NSImage?
     /// File URL pointing at the actual `.app` bundle.
     let bundleURL: URL?
+    /// Whether the bundle originates from the user-owned `~/Applications` folder.
+    let isUserApplication: Bool
 
     init(
         id: UUID,
@@ -25,7 +27,8 @@ struct AppItem: Identifiable, Hashable {
         customName: String? = nil,
         bundleIdentifier: String,
         iconImage: NSImage?,
-        bundleURL: URL?
+        bundleURL: URL?,
+        isUserApplication: Bool = false
     ) {
         self.id = id
         self.displayName = displayName
@@ -34,6 +37,7 @@ struct AppItem: Identifiable, Hashable {
         self.bundleIdentifier = bundleIdentifier
         self.iconImage = iconImage
         self.bundleURL = bundleURL
+        self.isUserApplication = isUserApplication
     }
 
     static func == (lhs: AppItem, rhs: AppItem) -> Bool {
@@ -304,6 +308,8 @@ struct LauncherSettings: Hashable, Codable {
     var fillsGapsAutomatically: Bool
     /// Whether the user has already gone through the Launchy introduction.
     var hasCompletedIntroduction: Bool
+    /// When enabled, Launchy also indexes `~/Applications`.
+    var shouldScanUserApplicationsFolder: Bool
     init(
         isVisibleOnAllSpaces: Bool,
         launchesAtLogin: Bool,
@@ -316,7 +322,8 @@ struct LauncherSettings: Hashable, Codable {
         launcherHotkey: HotkeyDescriptor?,
         layoutToggleHotkey: HotkeyDescriptor?,
         fillsGapsAutomatically: Bool,
-        hasCompletedIntroduction: Bool
+        hasCompletedIntroduction: Bool,
+        shouldScanUserApplicationsFolder: Bool
     ) {
         self.isVisibleOnAllSpaces = isVisibleOnAllSpaces
         self.launchesAtLogin = launchesAtLogin
@@ -330,6 +337,7 @@ struct LauncherSettings: Hashable, Codable {
         self.layoutToggleHotkey = layoutToggleHotkey
         self.fillsGapsAutomatically = fillsGapsAutomatically
         self.hasCompletedIntroduction = hasCompletedIntroduction
+        self.shouldScanUserApplicationsFolder = shouldScanUserApplicationsFolder
     }
 }
 
@@ -348,7 +356,8 @@ extension LauncherSettings {
             launcherHotkey: .toggleLauncher,
             layoutToggleHotkey: nil,
             fillsGapsAutomatically: false,
-            hasCompletedIntroduction: false
+            hasCompletedIntroduction: false,
+            shouldScanUserApplicationsFolder: true
         )
     }
 }
@@ -367,6 +376,7 @@ extension LauncherSettings {
         case layoutToggleHotkey
         case fillsGapsAutomatically
         case hasCompletedIntroduction
+        case shouldScanUserApplicationsFolder
     }
 
     init(from decoder: Decoder) throws {
@@ -392,7 +402,8 @@ extension LauncherSettings {
             launcherHotkey: decodedLauncherHotkey,
             layoutToggleHotkey: try container.decodeIfPresent(HotkeyDescriptor.self, forKey: .layoutToggleHotkey),
             fillsGapsAutomatically: try container.decodeIfPresent(Bool.self, forKey: .fillsGapsAutomatically) ?? false,
-            hasCompletedIntroduction: try container.decodeIfPresent(Bool.self, forKey: .hasCompletedIntroduction) ?? false
+            hasCompletedIntroduction: try container.decodeIfPresent(Bool.self, forKey: .hasCompletedIntroduction) ?? false,
+            shouldScanUserApplicationsFolder: try container.decodeIfPresent(Bool.self, forKey: .shouldScanUserApplicationsFolder) ?? true
         )
     }
 
@@ -410,6 +421,7 @@ extension LauncherSettings {
         try container.encode(layoutToggleHotkey, forKey: .layoutToggleHotkey)
         try container.encode(fillsGapsAutomatically, forKey: .fillsGapsAutomatically)
         try container.encode(hasCompletedIntroduction, forKey: .hasCompletedIntroduction)
+        try container.encode(shouldScanUserApplicationsFolder, forKey: .shouldScanUserApplicationsFolder)
     }
 }
 

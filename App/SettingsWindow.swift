@@ -30,8 +30,12 @@ final class SettingsWindowStore: NSObject, ObservableObject {
     /// Reloads the list of apps on a background queue.
     func reloadApps() {
         let discoveryEngine = appDiscoveryService
+        let includeUserApplications = settingsSnapshot.shouldScanUserApplicationsFolder
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            let discoveredApps = discoveryEngine.reloadApps().map(discoveryEngine.loadIcon)
+            let (mainApps, userApps) = discoveryEngine.reloadApps(
+                includeUserApplicationsFolder: includeUserApplications
+            )
+            let discoveredApps = (mainApps + userApps).map(discoveryEngine.loadIcon)
             Task { @MainActor [weak self] in
                 self?.discoveredApps = discoveredApps
             }
@@ -148,6 +152,14 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         settingsSnapshot.hiddenBundleIDs.contains(app.bundleIdentifier)
     }
 
+    /// Controls whether the user's Applications folder is indexed for hidden apps.
+    func setShouldScanUserApplicationsFolder(_ value: Bool) {
+        guard settingsSnapshot.shouldScanUserApplicationsFolder != value else { return }
+        settingsSnapshot.shouldScanUserApplicationsFolder = value
+        LauncherSettingsPersistence.setShouldScanUserApplicationsFolder(value)
+        reloadApps()
+    }
+
     /// Observes cross-process setting updates and mirrors them locally.
     private func observeSettingsChanges() {
         settingsStreamTask?.cancel()
@@ -162,7 +174,12 @@ final class SettingsWindowStore: NSObject, ObservableObject {
 
     /// Reloads the latest settings payload from persistence.
     private func reloadSettingsFromDisk() {
-        settingsSnapshot = LauncherSettingsPersistence.loadSettings()
+        let previousIncludeUserApplications = settingsSnapshot.shouldScanUserApplicationsFolder
+        let updatedSettings = LauncherSettingsPersistence.loadSettings()
+        settingsSnapshot = updatedSettings
+        if previousIncludeUserApplications != updatedSettings.shouldScanUserApplicationsFolder {
+            reloadApps()
+        }
     }
 
     private func resolvedLauncherHotkey(
@@ -509,7 +526,29 @@ struct SettingsWindow: View {
             title: String(localized: "Hidden Apps"),
             subtitle: String(localized: "Choose which applications stay out of the launcher grid.")
         ) {
-            hiddenAppsList
+            VStack(spacing: 16) {
+                userApplicationsFolderToggle
+                hiddenAppsList
+            }
+        }
+    }
+
+    private var userApplicationsFolderToggle: some View {
+        let userApplicationsPath = FileManager.default
+            .homeDirectoryForCurrentUser
+            .appendingPathComponent("Applications")
+            .path
+
+        return VStack(alignment: .leading, spacing: 6) {
+            Toggle("Include user Applications folder", isOn: Binding(
+                get: { settingsStore.settingsSnapshot.shouldScanUserApplicationsFolder },
+                set: { settingsStore.setShouldScanUserApplicationsFolder($0) }
+            ))
+            .toggleStyle(.switch)
+
+            Text("Launchy searches \(userApplicationsPath) for apps when enabled.")
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
     }
 

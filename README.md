@@ -1,6 +1,6 @@
 # Launchy
 
-Launchy is the open-source launchpad alternative macOS users have been waiting for: fullscreen mode mirrors the classic Launchpad flow while giving you richer controls, and floaty mode doubles as a HUD with fast toggles that nail the look and feel of the new macOS design without breaking the behavior you already rely on. It scans your apps, caches icons, and keeps a responsive grid ready on every Space, all completely free.
+Launchy is the open-source Launchpad alternative macOS users have been waiting for. Fullscreen mode mirrors the classic Launchpad experience but adds richer controls, while Floaty Mode doubles as a HUD with fast toggles that match the new macOS design without changing the behavior you rely on. It scans your apps, caches icons, and keeps a responsive grid ready on every Space, all completely free.
 
 <p align="center">
   <img src="https://img.shields.io/badge/platform-macOS-blue" alt="Platform macOS">
@@ -39,6 +39,10 @@ Launchy is the open-source launchpad alternative macOS users have been waiting f
 </div>
 <p align="center">
   <sub>Spanish ships in both 🇲🇽 LatAm and 🇪🇸 Spain variants - the Americas card highlights LatAm while Europe lists the Iberian pack.</sub>
+</p>
+
+<p align="center">
+  <img src="Media/ScreenshotFullscreenMode.png" alt="Launchy Screenshot Fullscreen Mode">
 </p>
 
 ## Highlights
@@ -84,6 +88,14 @@ Launchy is the open-source launchpad alternative macOS users have been waiting f
 
 ## Get Launchy
 
-- Don't miss it out - download the free, open source launchpad alternative now and keep your launcher in sync with auto-updates.
+- <a href="https://github.com/Punshnut/macos-launchy/releases/latest">Download Launchy for free</a> and enjoy automatic updates.
+
+## Roadmap
+
+Here are a few improvements planned for upcoming releases:
+- Richer, but unobtrusive animations - smoother transitions and calmer motion across fullscreen and Floaty mode.
+- Enhanced folder styling - clearer folder icons, improved previews, and a cleaner visual hierarchy.
+- Floaty mode visual overhaul - refinements to spacing, layout, and HUD elements to better match modern macOS design.
+- Dock menu enhancements - icons inside the Dock right-click menu for quicker recognition and a more polished feel.
 
 Made with ❤️

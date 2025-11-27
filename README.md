@@ -64,8 +64,8 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 ## Keyboard shortcuts
 
-- **Toggle fullscreen ⇄ floaty palette:** configurable in Settings (no default) — set it to `Control` + `Space` if that combo is free for a comfortable switch (fresh installs default to `Cmd` + `Shift` + `Space`).
-- **Show / hide Launchy:** configurable in Settings (defaults to `Cmd` + `Shift` + `Space`) — switch it to `Control` + `Space` for a comfortable, launchpad-style trigger if that combo isn’t already taken.
+- **Toggle fullscreen ⇄ floaty palette:** configurable in Settings (no default) - set it to `Control` + `Space` if that combo is free for a comfortable switch (fresh installs default to `Cmd` + `Shift` + `Space`).
+- **Show / hide Launchy:** configurable in Settings (defaults to `Cmd` + `Shift` + `Space`) - switch it to `Control` + `Space` for a comfortable, launchpad-style trigger if that combo isn’t already taken.
 - **Launch search result:** `Return` fires the first match without leaving the search field
 - **Page with arrows:** left/right arrows flip between pages
 - **Open settings:** `Cmd` + `,`
@@ -73,7 +73,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 ## Quick tips
 
-- Right-click any icon (Dock menu icons included) for rename, move, hide, Finder reveal, or folder shortcuts—there is no difference between apps and folders.
+- Right-click any icon for rename, move, hide, Finder reveal, or folder shortcuts.
 - Drag apps together while holding Shift or Option as you release to create a folder or drop into one without disturbing the grid; skip the modifiers and use the right-click menu on the icon to add/remove apps instead.
 - Floaty mode keeps the quick palette feel and fast toggles; assign a hotkey for instant fullscreen/HUD switching instead of mouse-only taps.
 - Dock and menu bar icons mirror your layout for repeat launches plus instant access to auto-updater, settings, and Quit.

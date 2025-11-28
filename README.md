@@ -97,5 +97,6 @@ Here are a few improvements planned for upcoming releases:
 - Enhanced folder styling - clearer folder icons, improved previews, and a cleaner visual hierarchy.
 - Floaty mode visual overhaul - refinements to spacing, layout, and HUD elements to better match modern macOS design.
 - Dock menu enhancements - icons inside the Dock right-click menu for quicker recognition and a more polished feel.
+- planned localization languages: Stage 1: 🇮🇳 हिन्दी (Hindi), 🇮🇩 Bahasa Indonesia, 🇻🇳 Tiếng Việt, Strage 2: 🇵🇭 Filipino / Tagalog, 🇵🇱 Polski, 🇮🇷 Farsi, Stage 3: 🇬🇷 Ελληνικά, 🇳🇱 Nederlands, 🇸🇪 Svenska
 
 Made with ❤️

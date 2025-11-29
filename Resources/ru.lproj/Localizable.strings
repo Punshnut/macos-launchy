@@ -112,7 +112,7 @@
 "Settings" = "Настройки";
 "Settings..." = "Настройки...";
 "Check for Updates..." = "Проверить обновления...";
-"Toggle Launcher Layout" = "Переключить макет лаунчера";
+"Toggle Floaty Panel" = "Toggle Floaty Panel";
 "Debug" = "Отладка";
 "Reload Apps" = "Перезагрузить приложения";
 "Reset Settings" = "Сбросить настройки";

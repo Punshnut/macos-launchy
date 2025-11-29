@@ -112,7 +112,7 @@
 "Settings" = "設定";
 "Settings..." = "設定...";
 "Check for Updates..." = "アップデートを確認...";
-"Toggle Launcher Layout" = "ランチャーレイアウトを切り替え";
+"Toggle Floaty Panel" = "Toggle Floaty Panel";
 "Debug" = "デバッグ";
 "Reload Apps" = "アプリを再読み込み";
 "Reset Settings" = "設定をリセット";

@@ -128,14 +128,18 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Hides unused top-level macOS menu bar items.
+    /// Keeps only the application menu so no extra menus appear.
     private func removeDefaultMainMenuItems() {
-        guard let mainMenu = NSApp.mainMenu else { return }
-        let titlesToRemove: Set<String> = ["Edit", "View", "Window", "Help"]
-        let itemsToRemove = mainMenu.items.filter { titlesToRemove.contains($0.title) }
-        for item in itemsToRemove {
-            mainMenu.removeItem(item)
+        guard let mainMenu = NSApp.mainMenu,
+              let appMenuItem = mainMenu.items.first else {
+            return
         }
+
+        appMenuItem.menu?.removeItem(appMenuItem)
+
+        let trimmedMenu = NSMenu(title: "")
+        trimmedMenu.addItem(appMenuItem)
+        NSApp.mainMenu = trimmedMenu
     }
 
     /// Applies the current launcher mode, rebuilding the window when the persisted value changes.
@@ -442,6 +446,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         LauncherSettingsPersistence.setLauncherMode(nextMode)
     }
 
+    /// Connects the floating-layout toggle to a status-item menu command.
+    @objc private func toggleLauncherModeMenuItem(_ sender: Any?) {
+        toggleLauncherModeShortcut()
+    }
+
     /// Opens the settings window regardless of activation policy.
     func showSettingsWindow() {
         settingsWindowPresenter.showWindowAndActivate()
@@ -596,6 +605,14 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let showItem = NSMenuItem(title: String(localized: "Show Launcher"), action: #selector(showLauncherFromStatusItem(_:)), keyEquivalent: "")
         showItem.target = self
         menu.addItem(showItem)
+
+        let toggleFloatyItem = NSMenuItem(
+            title: String(localized: "Toggle Floaty Panel"),
+            action: #selector(toggleLauncherModeMenuItem(_:)),
+            keyEquivalent: ""
+        )
+        toggleFloatyItem.target = self
+        menu.addItem(toggleFloatyItem)
 
         let settingsItem = NSMenuItem(title: String(localized: "Settings..."), action: #selector(openSettingsFromStatusItem(_:)), keyEquivalent: ",")
         settingsItem.target = self

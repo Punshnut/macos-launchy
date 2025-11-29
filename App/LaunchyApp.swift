@@ -26,22 +26,8 @@ struct LaunchyApp: App {
             }
 
             CommandGroup(after: .appSettings) {
-                Button("Toggle Launcher Layout") {
+                Button("Toggle Floaty Panel") {
                     appDelegate.toggleLauncherModeShortcut()
-                }
-            }
-
-            CommandMenu("Debug") {
-                Button("Reload Apps") {
-                    appDelegate.reloadAppsFromDebugMenu()
-                }
-
-                Button("Reset Settings") {
-                    appDelegate.resetSettingsFromDebugMenu()
-                }
-
-                Button("Toggle Test Background Styles") {
-                    appDelegate.toggleTestBackgroundStyles()
                 }
             }
         }

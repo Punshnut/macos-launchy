@@ -126,7 +126,7 @@
 "Page %lld of %lld" = "Страница %lld из %lld";
 "Try a different search term." = "Попробуйте другой запрос.";
 "Launchy has not indexed any applications yet." = "Launchy ещё не проиндексировал ни одного приложения.";
-"Search items" = "Искать элементы";
+"Search apps" = "Искать приложения";
 "Search" = "Поиск";
 "Clear search text" = "Очистить текст поиска";
 "Open" = "Открыть";

@@ -126,7 +126,7 @@
 "Page %lld of %lld" = "Sayfa %lld / %lld";
 "Try a different search term." = "Başka bir arama terimi dene.";
 "Launchy has not indexed any applications yet." = "Launchy henüz uygulama indekslemedi.";
-"Search items" = "Öğeleri ara";
+"Search apps" = "Uygulamaları ara";
 "Search" = "Ara";
 "Clear search text" = "Arama metnini temizle";
 "Open" = "Aç";

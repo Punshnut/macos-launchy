@@ -126,7 +126,7 @@
 "Page %lld of %lld" = "الصفحة %lld من %lld";
 "Try a different search term." = "جرّب مصطلح بحث مختلف.";
 "Launchy has not indexed any applications yet." = "لم يقم Launchy بفهرسة أي تطبيقات بعد.";
-"Search items" = "ابحث في العناصر";
+"Search apps" = "ابحث عن التطبيقات";
 "Search" = "بحث";
 "Clear search text" = "مسح نص البحث";
 "Open" = "فتح";

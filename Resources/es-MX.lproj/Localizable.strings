@@ -126,7 +126,7 @@
 "Page %lld of %lld" = "Página %lld de %lld";
 "Try a different search term." = "Prueba con otra búsqueda.";
 "Launchy has not indexed any applications yet." = "Launchy aún no ha indexado ninguna aplicación.";
-"Search items" = "Buscar elementos";
+"Search apps" = "Buscar aplicaciones";
 "Search" = "Buscar";
 "Clear search text" = "Borrar texto de búsqueda";
 "Open" = "Abrir";

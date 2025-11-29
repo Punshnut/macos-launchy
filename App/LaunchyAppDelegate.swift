@@ -21,6 +21,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var lastFocusedApplication: NSRunningApplication?
     private var pendingLaunchedApplication: NSRunningApplication?
     private var pendingLaunchBundleIdentifier: String?
+    private var mainMenuUpdateObserver: NSObjectProtocol?
+    private var isTrimmingMainMenu = false
     private lazy var settingsWindowPresenter: SettingsWindowController = {
         let controller = SettingsWindowController()
         controller.onClose = { [weak self] in
@@ -59,6 +61,10 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         launcherHotkeyManager.deactivate()
         layoutHotkeyManager.deactivate()
         hotCornerMonitor.stopMonitoring()
+        if let observer = mainMenuUpdateObserver {
+            NotificationCenter.default.removeObserver(observer)
+            mainMenuUpdateObserver = nil
+        }
     }
 
     /// Allows menu items to kick off a manual Sparkle check.
@@ -116,6 +122,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         observeSettingsChanges()
         observeArrangementResetRequests()
         showIntroductionIfNeeded()
+        observeMainMenuChanges()
     }
 
     /// Double-checks that unused menu bar items are stripped even if AppKit rebuilds the menu.
@@ -128,12 +135,31 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// Observes AppKit updates so we can trim the menu anytime Launchy is active.
+    private func observeMainMenuChanges() {
+        mainMenuUpdateObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.didUpdateNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                guard let self = self, NSApp.isActive else { return }
+                self.removeDefaultMainMenuItems()
+            }
+        }
+    }
+
     /// Keeps only the application menu so no extra menus appear.
     private func removeDefaultMainMenuItems() {
+        guard isTrimmingMainMenu == false else { return }
         guard let mainMenu = NSApp.mainMenu,
+              mainMenu.items.count > 1,
               let appMenuItem = mainMenu.items.first else {
             return
         }
+
+        isTrimmingMainMenu = true
+        defer { isTrimmingMainMenu = false }
 
         appMenuItem.menu?.removeItem(appMenuItem)
 

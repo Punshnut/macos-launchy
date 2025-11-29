@@ -126,7 +126,7 @@
 "Page %lld of %lld" = "Сторінка %lld з %lld";
 "Try a different search term." = "Спробуйте інший пошуковий запит.";
 "Launchy has not indexed any applications yet." = "Launchy ще не проіндексував жодного додатку.";
-"Search items" = "Шукати елементи";
+"Search apps" = "Шукати програми";
 "Search" = "Пошук";
 "Clear search text" = "Очистити текст пошуку";
 "Open" = "Відкрити";

@@ -1,6 +1,11 @@
 import SwiftUI
 import AppKit
 
+extension Notification.Name {
+    /// Informs the launcher view that the search bar should regain focus after a mode switch.
+    static let launcherShouldRefocusSearch = Notification.Name("launchyLauncherShouldRefocusSearch")
+}
+
 private struct FolderDragContext {
     let folderID: UUID
     let app: AppItem
@@ -447,6 +452,20 @@ struct LauncherView: View {
             if let folder = activeFolder {
                 folderOverlay(for: folder, layout: layout)
             }
+        }
+        .onChange(of: isSearchFieldFocused) { isFocused in
+            if isFocused {
+                ensureSearchFieldCaretHidden()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSTextView.didBeginEditingNotification)) { _ in
+            ensureSearchFieldCaretHidden()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .launcherShouldRefocusSearch)) { _ in
+            focusSearchFieldIfAppropriate()
+        }
+        .onChange(of: launcherMode) { _ in
+            focusSearchFieldIfAppropriate()
         }
         .frame(width: containerSize.width, height: containerSize.height)
         .contentShape(Rectangle())
@@ -1822,18 +1841,22 @@ struct LauncherView: View {
 
     /// Simple empty state shown when the grid has nothing to display.
     private func emptyState() -> some View {
-        VStack(spacing: 12) {
+        let primaryForeground = emptyStatePrimaryForegroundColor
+        let secondaryForeground = emptyStateSecondaryForegroundColor
+
+        return VStack(spacing: 12) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 32, weight: .light))
-                .foregroundColor(.secondary)
+                .foregroundColor(primaryForeground)
             Text(orderedItems.isEmpty ? String(localized: "No items found") : String(localized: "No matching items"))
                 .font(.title3)
+                .foregroundColor(primaryForeground)
             if orderedItems.isEmpty == false && searchText.isEmpty == false {
                 Text(String(localized: "Try a different search term."))
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(secondaryForeground)
             } else if orderedItems.isEmpty {
                 Text(String(localized: "Launchy has not indexed any applications yet."))
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(secondaryForeground)
             }
         }
     }
@@ -2003,7 +2026,7 @@ struct LauncherView: View {
 
         if hasActiveSearchQuery {
             searchText = ""
-            isSearchFieldFocused = false
+            focusSearchFieldIfAppropriate()
             return
         }
 
@@ -2154,6 +2177,17 @@ struct LauncherView: View {
     private func focusSearchFieldIfAppropriate() {
         guard isEditingFolderName == false else { return }
         isSearchFieldFocused = true
+        ensureSearchFieldCaretHidden()
+    }
+
+    /// Makes sure the system text editor uses a transparent caret while the search field is first responder.
+    private func ensureSearchFieldCaretHidden() {
+        Task { @MainActor in
+            guard isSearchFieldFocused,
+                  let window = NSApp.keyWindow,
+                  let editor = window.firstResponder as? NSTextView else { return }
+            editor.insertionPointColor = NSColor.clear
+        }
     }
 
     /// Chooses the right search bar variant based on the launcher mode.
@@ -2168,11 +2202,12 @@ struct LauncherView: View {
 
     /// Glassy search bar used when the launcher is fullscreen.
     private func fullscreenSearchBar(layout: LauncherLayoutMetrics) -> some View {
-        TextField("Search items", text: $searchText)
-            .textFieldStyle(.plain)
-            .font(.system(size: layout.searchBarFontSize, weight: .medium))
-            .foregroundColor(searchBarForegroundColor())
-            .focused($isSearchFieldFocused)
+            TextField("Search apps", text: $searchText)
+                .textFieldStyle(.plain)
+                .font(.system(size: layout.searchBarFontSize, weight: .medium))
+                .foregroundColor(searchBarForegroundColor())
+                .accentColor(searchBarCursorColor)
+                .focused($isSearchFieldFocused)
             .onSubmit {
                 launchSearchResultIfPossible()
             }
@@ -2203,6 +2238,7 @@ struct LauncherView: View {
                 .textFieldStyle(.plain)
                 .font(.system(size: layout.searchBarFontSize, weight: .medium))
                 .foregroundColor(searchBarForegroundColor())
+                .accentColor(searchBarCursorColor)
                 .focused($isSearchFieldFocused)
                 .onSubmit {
                     launchSearchResultIfPossible()
@@ -2283,6 +2319,11 @@ struct LauncherView: View {
         usesDarkSearchBarAppearance ? .white : .primary
     }
 
+    /// Ensures the search bar caret/tracking is invisible even while focused.
+    private var searchBarCursorColor: Color {
+        Color.clear
+    }
+
     /// Overrides the color scheme locally so placeholder and accent colors match the background.
     private func searchBarColorSchemeOverride() -> ColorScheme {
         usesDarkSearchBarAppearance ? .dark : colorScheme
@@ -2316,6 +2357,28 @@ struct LauncherView: View {
             return solidBackgroundColor.nsColor.launchy_perceivedBrightness < 0.6
         case .transparent:
             return colorScheme == .dark
+        }
+    }
+
+    /// Primary color used in the empty state view to stay readable on any backdrop.
+    private var emptyStatePrimaryForegroundColor: Color {
+        shouldUseLightEmptyStateText ? Color.white : Color.black.opacity(0.9)
+    }
+
+    /// Secondary color for supporting empty state details when the primary text is bright.
+    private var emptyStateSecondaryForegroundColor: Color {
+        shouldUseLightEmptyStateText ? Color.white.opacity(0.72) : Color.black.opacity(0.65)
+    }
+
+    /// Decides whether the empty state should stick to light text for better contrast.
+    private var shouldUseLightEmptyStateText: Bool {
+        switch backgroundStylePreference {
+        case .standard, .transparent:
+            return true
+        case .light:
+            return false
+        case .solid:
+            return solidBackgroundColor.nsColor.launchy_perceivedBrightness < 0.95
         }
     }
 

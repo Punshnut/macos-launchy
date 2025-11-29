@@ -126,7 +126,7 @@
 "Page %lld of %lld" = "หน้า %lld จาก %lld";
 "Try a different search term." = "ลองคำค้นหาอื่น";
 "Launchy has not indexed any applications yet." = "Launchy ยังไม่ได้จัดทำดัชนีแอปใด ๆ";
-"Search items" = "ค้นหารายการ";
+"Search apps" = "ค้นหาแอป";
 "Search" = "ค้นหา";
 "Clear search text" = "ล้างข้อความค้นหา";
 "Open" = "เปิด";

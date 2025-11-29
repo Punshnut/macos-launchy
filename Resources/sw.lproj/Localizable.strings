@@ -126,7 +126,7 @@
 "Page %lld of %lld" = "Ukurasa %lld wa %lld";
 "Try a different search term." = "Jaribu neno tofauti la utafutaji.";
 "Launchy has not indexed any applications yet." = "Launchy bado haijafanyia faharisi programu yoyote.";
-"Search items" = "Tafuta vitu";
+"Search apps" = "Tafuta programu";
 "Search" = "Tafuta";
 "Clear search text" = "Futa maandishi ya utafutaji";
 "Open" = "Fungua";

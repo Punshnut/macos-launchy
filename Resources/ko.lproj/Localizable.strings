@@ -126,7 +126,7 @@
 "Page %lld of %lld" = "%lld / %lld 페이지";
 "Try a different search term." = "다른 검색어를 시도하세요.";
 "Launchy has not indexed any applications yet." = "Launchy는 아직 애플리케이션을 인덱싱하지 않았습니다.";
-"Search items" = "항목 검색";
+"Search apps" = "앱 검색";
 "Search" = "검색";
 "Clear search text" = "검색어 지우기";
 "Open" = "열기";

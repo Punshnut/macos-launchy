@@ -60,6 +60,9 @@ struct GridReorderDropDelegate: DropDelegate {
     var afterReorder: (Int?) -> Void
     var performFolderDrop: (LauncherItem, LauncherItem) -> Void
     var onFolderHoverExit: () -> Void
+    var onFolderSnapPreviewChange: (UUID?) -> Void
+    var lastLiveReorderTargetIndex: Binding<Int?>
+    var performLiveReorder: (LauncherItem, Int) -> Int?
 
     func dropEntered(info: DropInfo) {
         handleHover(info)
@@ -67,11 +70,22 @@ struct GridReorderDropDelegate: DropDelegate {
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
         handleHover(info)
+        applyLiveReorder(info)
         return DropProposal(operation: .move)
     }
 
+    func dropExited(info: DropInfo) {
+        onFolderSnapPreviewChange(nil)
+        onFolderHoverExit()
+        lastLiveReorderTargetIndex.wrappedValue = nil
+    }
+
     func performDrop(info: DropInfo) -> Bool {
-        defer { draggedItem = nil }
+        defer {
+            draggedItem = nil
+            onFolderSnapPreviewChange(nil)
+            lastLiveReorderTargetIndex.wrappedValue = nil
+        }
         guard let draggedItem else { return false }
 
         let targetIndex = targetIndex(for: info.location)
@@ -107,8 +121,42 @@ struct GridReorderDropDelegate: DropDelegate {
     }
 
     private func handleHover(_ info: DropInfo) {
+        updateFolderSnapPreview(for: info)
         // Keep grid stable while hovering; no live reordering or folder auto-creation.
         onFolderHoverExit()
+    }
+
+    private func applyLiveReorder(_ info: DropInfo) {
+        guard let draggedItem else { return }
+        guard shouldSuppressReorder() == false else {
+            lastLiveReorderTargetIndex.wrappedValue = nil
+            return
+        }
+        let targetIndex = targetIndex(for: info.location)
+        guard lastLiveReorderTargetIndex.wrappedValue != targetIndex else { return }
+        lastLiveReorderTargetIndex.wrappedValue = targetIndex
+        _ = performLiveReorder(draggedItem, targetIndex)
+    }
+
+    private func updateFolderSnapPreview(for info: DropInfo) {
+        guard draggedItem != nil else {
+            onFolderSnapPreviewChange(nil)
+            return
+        }
+
+        guard shouldSuppressReorder() else {
+            onFolderSnapPreviewChange(nil)
+            return
+        }
+
+        guard let targetIndex = itemIndex(for: info.location),
+              items.indices.contains(targetIndex),
+              case .folder = items[targetIndex] else {
+            onFolderSnapPreviewChange(nil)
+            return
+        }
+
+        onFolderSnapPreviewChange(items[targetIndex].id)
     }
 
     /// Converts a cursor point into a linear index within the overall arranged apps.
@@ -220,6 +268,7 @@ struct FolderReorderDropDelegate: DropDelegate {
     var resolveDraggedApp: () -> AppItem?
     var isAppInFolder: (AppItem) -> Bool
     var performReorder: (AppItem, Int) -> Void
+    var performLiveReorder: (AppItem, Int) -> Void
     var insertApp: (AppItem, Int) -> Void
     var onDropEnded: (() -> Void)?
 
@@ -253,7 +302,7 @@ struct FolderReorderDropDelegate: DropDelegate {
         guard let draggedApp = draggedApp ?? resolveDraggedApp() else { return }
         guard isAppInFolder(draggedApp) else { return }
         let target = targetIndex(for: info.location)
-        performReorder(draggedApp, target)
+        performLiveReorder(draggedApp, target)
     }
 
     private func targetIndex(for location: CGPoint) -> Int {

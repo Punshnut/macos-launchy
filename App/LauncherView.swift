@@ -85,6 +85,9 @@ struct LauncherView: View {
     @State private var folderHoverWorkItem: DispatchWorkItem?
     @State private var folderHoverTargetID: UUID?
     @State private var folderHoverWithSuppressedReorder = false
+    @State private var folderSnapPreviewTargetID: UUID?
+    @State private var lastLiveReorderTargetIndex: Int?
+    @State private var suppressGridAnimation = false
     @State private var isEditingFolderName = false
     @State private var renamingAppID: UUID?
     @State private var appNameDraft = ""
@@ -180,6 +183,12 @@ struct LauncherView: View {
             currentPage = 0
             pageDirection = .forward
             pagerDragOffset = 0
+        }
+        .onChange(of: draggedItem) { newItem in
+            if newItem == nil {
+                folderSnapPreviewTargetID = nil
+            }
+            suppressGridAnimation = newItem != nil
         }
         .onChange(of: orderedItems) { newItems in
             if fillsGapsAutomatically {
@@ -391,7 +400,18 @@ struct LauncherView: View {
                                                         performFolderDrop: { dragged, target in
                                                             mergeItemsIfNeeded(dragged: dragged, onto: target)
                                                         },
-                                                        onFolderHoverExit: cancelFolderHover
+                                                        onFolderHoverExit: cancelFolderHover,
+                                                        onFolderSnapPreviewChange: { previewID in
+                                                            folderSnapPreviewTargetID = previewID
+                                                        },
+                                                        lastLiveReorderTargetIndex: $lastLiveReorderTargetIndex,
+                                                        performLiveReorder: { item, targetIndex in
+                                                            reorderItem(
+                                                                item,
+                                                                to: targetIndex,
+                                                                animated: false
+                                                            )
+                                                        }
                                                     )
                                             )
                                             .opacity(pageOpacity(for: pageIndex, pageWidth: pageWidth))
@@ -400,7 +420,7 @@ struct LauncherView: View {
                                     }
                                     .frame(width: pageWidth, height: layout.gridHeight, alignment: .leading)
                                     .gesture(dragGesture)
-                                    .animation(gridSpringAnimation, value: orderedItems)
+                                    .animation(suppressGridAnimation ? nil : gridSpringAnimation, value: orderedItems)
                                     .onAppear {
                                         pagerViewportWidth = pageWidth
                                     }
@@ -706,6 +726,7 @@ struct LauncherView: View {
         _ item: LauncherItem,
         to targetIndex: Int,
         preferSwap: Bool = false,
+        animated: Bool = true,
         targetPageHint: Int? = nil
     ) -> Int? {
         guard let originalIndex = orderedItems.firstIndex(of: item) else { return nil }
@@ -716,7 +737,11 @@ struct LauncherView: View {
            targetIndex >= 0,
            targetIndex != originalIndex {
             updated.swapAt(originalIndex, targetIndex)
-            withAnimation(gridSpringAnimation) {
+            if animated {
+                withAnimation(gridSpringAnimation) {
+                    orderedItems = updated
+                }
+            } else {
                 orderedItems = updated
             }
             persistOrderChange(using: fillsGapsAutomatically ? nil : currentSizes)
@@ -737,7 +762,11 @@ struct LauncherView: View {
                 resultingCount: updated.count,
                 targetPageHint: targetPageHint
             )
-            withAnimation(gridSpringAnimation) {
+            if animated {
+                withAnimation(gridSpringAnimation) {
+                    orderedItems = updated
+                }
+            } else {
                 orderedItems = updated
             }
             persistOrderChange(using: afterInsertSizes)
@@ -752,7 +781,7 @@ struct LauncherView: View {
     }
 
     /// Reorders an app within a folder, keeping the active overlay in sync.
-    private func reorderApp(_ app: AppItem, inFolderWithID folderID: UUID, to targetIndex: Int) {
+    private func reorderApp(_ app: AppItem, inFolderWithID folderID: UUID, to targetIndex: Int, animated: Bool = true) {
         guard let folderIndex = orderedItems.firstIndex(where: { item in
             if case let .folder(folder) = item {
                 return folder.id == folderID
@@ -770,7 +799,7 @@ struct LauncherView: View {
         apps.insert(app, at: boundedIndex)
 
         folder.apps = apps
-        updateFolder(folder, at: folderIndex)
+        updateFolder(folder, at: folderIndex, animated: animated)
     }
 
     /// Places an app inside a folder at the desired index, removing it from its previous location first.
@@ -802,7 +831,7 @@ struct LauncherView: View {
     }
 
     /// Updates a folder in the ordered list and propagates the change outward.
-    private func updateFolder(_ folder: FolderItem, at index: Int? = nil) {
+    private func updateFolder(_ folder: FolderItem, at index: Int? = nil, animated: Bool = true) {
         guard let idx = index ?? orderedItems.firstIndex(where: { item in
             if case let .folder(existing) = item {
                 return existing.id == folder.id
@@ -812,7 +841,12 @@ struct LauncherView: View {
 
         var updated = orderedItems
         updated[idx] = .folder(folder)
-        withAnimation(gridSpringAnimation) {
+        if animated {
+            withAnimation(gridSpringAnimation) {
+                orderedItems = updated
+                activeFolder = folder
+            }
+        } else {
             orderedItems = updated
             activeFolder = folder
         }
@@ -1239,6 +1273,7 @@ struct LauncherView: View {
         let padding = spacing
         let columns = Array(repeating: GridItem(.flexible(), spacing: spacing, alignment: .center), count: 3)
         let tileSize = max((layout.iconDimension - padding * 2 - spacing * 2) / 3, 10)
+        let isSnapPreviewTarget = folder.id == folderSnapPreviewTargetID
 
         return ZStack {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -1257,7 +1292,19 @@ struct LauncherView: View {
                 }
             }
             .padding(padding)
+
+            if isSnapPreviewTarget {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .stroke(Color.accentColor.opacity(0.85), lineWidth: 2)
+                    .shadow(color: Color.accentColor.opacity(0.35), radius: 12, y: 0)
+                    .blendMode(.screen)
+                    .scaleEffect(1.02)
+                    .allowsHitTesting(false)
+                    .transition(.opacity)
+            }
         }
+        .scaleEffect(isSnapPreviewTarget ? 1.01 : 1.0)
+        .animation(.easeInOut(duration: 0.25), value: isSnapPreviewTarget)
     }
 
     /// Shows a single tiny app icon inside the folder preview grid.
@@ -1726,7 +1773,15 @@ struct LauncherView: View {
                         folder.apps.contains(app)
                     },
                     performReorder: { app, target in
-                        reorderApp(app, inFolderWithID: folder.id, to: target)
+                        reorderApp(app, inFolderWithID: folder.id, to: target, animated: false)
+                    },
+                    performLiveReorder: { app, target in
+                        reorderApp(
+                            app,
+                            inFolderWithID: folder.id,
+                            to: target,
+                            animated: false
+                        )
                     },
                     insertApp: { app, target in
                         insertApp(app, intoFolderWithID: folder.id, at: target)
@@ -1739,7 +1794,6 @@ struct LauncherView: View {
                 )
             )
         }
-        .animation(gridSpringAnimation, value: folder.apps)
         .frame(maxWidth: .infinity)
         .frame(height: overlayLayout.gridHeight)
     }
@@ -1750,9 +1804,9 @@ struct LauncherView: View {
         GeometryReader { proxy in
             let overlayLayout = folderOverlayLayout(for: folder, containerSize: proxy.size, layout: layout)
             ZStack {
-                VisualEffectBackground(material: .hudWindow, blendingMode: .behindWindow)
+                backgroundView()
                     .ignoresSafeArea()
-                Color.black.opacity(0.35)
+                Color.black.opacity(0.2)
                     .ignoresSafeArea()
 
                 let pages = folderPages(for: folder, overlayLayout: overlayLayout)
@@ -1794,7 +1848,7 @@ struct LauncherView: View {
                 .padding(.trailing, overlayLayout.contentInsets.trailing)
                 .frame(maxWidth: overlayLayout.cardWidth)
                 .background(
-                    VisualEffectBackground(material: .menu, blendingMode: .withinWindow)
+                    searchBarBackgroundMaterial()
                         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
                 )
                 .overlay(

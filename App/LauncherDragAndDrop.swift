@@ -132,6 +132,10 @@ struct GridReorderDropDelegate: DropDelegate {
             lastLiveReorderTargetIndex.wrappedValue = nil
             return
         }
+        if isLocationInEmptySlot(info.location) {
+            lastLiveReorderTargetIndex.wrappedValue = nil
+            return
+        }
         let targetIndex = targetIndex(for: info.location)
         guard lastLiveReorderTargetIndex.wrappedValue != targetIndex else { return }
         lastLiveReorderTargetIndex.wrappedValue = targetIndex
@@ -159,8 +163,7 @@ struct GridReorderDropDelegate: DropDelegate {
         onFolderSnapPreviewChange(items[targetIndex].id)
     }
 
-    /// Converts a cursor point into a linear index within the overall arranged apps.
-    private func targetIndex(for location: CGPoint) -> Int {
+    private func linearIndex(for location: CGPoint) -> Int {
         let location = adjustedLocation(location)
         let columns = LauncherGridConfiguration.columnsPerPage
         let rows = LauncherGridConfiguration.rowsPerPage
@@ -183,7 +186,30 @@ struct GridReorderDropDelegate: DropDelegate {
             rows - 1
         )
 
-        return clampedIndexWithinPage(pageStartIndex + linearIndexInPage(row: row, column: column))
+        return linearIndexInPage(row: row, column: column)
+    }
+
+    private var effectivePageItemCount: Int {
+        let baseCount = max(min(pageItemCount, boundedPageItemCount), 0)
+        guard let draggedItem else { return baseCount }
+        guard let draggedIndex = items.firstIndex(of: draggedItem) else { return baseCount }
+        if draggedIndex >= pageStartIndex && draggedIndex < pageStartIndex + baseCount {
+            return max(baseCount - 1, 0)
+        }
+        return baseCount
+    }
+
+    private func targetIndex(for location: CGPoint) -> Int {
+        let linearIndex = linearIndex(for: location)
+        let pageEndIndex = pageStartIndex + effectivePageItemCount
+        if linearIndex >= effectivePageItemCount {
+            return min(pageEndIndex, items.count)
+        }
+        return min(pageStartIndex + linearIndex, items.count)
+    }
+
+    private func isLocationInEmptySlot(_ location: CGPoint) -> Bool {
+        linearIndex(for: location) >= effectivePageItemCount
     }
 
     /// Returns the item index for the cell under the cursor within the current page.
@@ -237,12 +263,6 @@ struct GridReorderDropDelegate: DropDelegate {
 
     private func linearIndexInPage(row: Int, column: Int) -> Int {
         row * LauncherGridConfiguration.columnsPerPage + column
-    }
-
-    private func clampedIndexWithinPage(_ rawIndex: Int) -> Int {
-        let start = max(pageStartIndex, 0)
-        let end = max(lastIndexInPage, start)
-        return min(max(rawIndex, start), end)
     }
 
     private func indexInCurrentPage(forAbsoluteIndex index: Int) -> Int? {

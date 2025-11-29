@@ -60,6 +60,8 @@ struct LauncherView: View {
     var onSettingsRequested: (() -> Void)?
     /// Callback fired whenever the user changes the arrangement.
     var onItemOrderChange: (([LauncherItem], [Int]) -> Void)?
+    /// Provides the icon that should be used for a specific app.
+    var iconProvider: (AppItem) -> NSImage? = { $0.iconImage }
 
     private var pageCapacity: Int { LauncherGridConfiguration.pageCapacity }
     private let closeAnimationDuration: TimeInterval = 0.25
@@ -110,7 +112,8 @@ struct LauncherView: View {
         launcherMode: LauncherMode = .floaty,
         fillsGapsAutomatically: Bool = true,
         onSettingsRequested: (() -> Void)? = nil,
-        onItemOrderChange: (([LauncherItem], [Int]) -> Void)? = nil
+        onItemOrderChange: (([LauncherItem], [Int]) -> Void)? = nil,
+        iconProvider: @escaping (AppItem) -> NSImage? = { $0.iconImage }
     ) {
         self.itemCatalog = itemCatalog
         self.initialPageSizes = initialPageSizes
@@ -120,6 +123,7 @@ struct LauncherView: View {
         self.fillsGapsAutomatically = fillsGapsAutomatically
         self.onSettingsRequested = onSettingsRequested
         self.onItemOrderChange = onItemOrderChange
+        self.iconProvider = iconProvider
         _orderedItems = State(initialValue: itemCatalog)
         _pageSizes = State(initialValue: initialPageSizes)
     }
@@ -1203,7 +1207,8 @@ struct LauncherView: View {
     private func iconView(for item: LauncherItem, layout: LauncherLayoutMetrics) -> some View {
         switch item {
         case .app(let app):
-            if let nsImage = app.iconImage {
+            let resolvedIcon = iconProvider(app) ?? app.iconImage
+            if let nsImage = resolvedIcon {
                 Image(nsImage: nsImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -1258,7 +1263,8 @@ struct LauncherView: View {
     /// Shows a single tiny app icon inside the folder preview grid.
     @ViewBuilder
     private func folderTile(for app: AppItem) -> some View {
-        if let icon = app.iconImage {
+        let resolvedIcon = iconProvider(app) ?? app.iconImage
+        if let icon = resolvedIcon {
             Image(nsImage: icon)
                 .resizable()
                 .aspectRatio(contentMode: .fit)

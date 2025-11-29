@@ -35,11 +35,16 @@ final class SettingsWindowStore: NSObject, ObservableObject {
             let (mainApps, userApps) = discoveryEngine.reloadApps(
                 includeUserApplicationsFolder: includeUserApplications
             )
-            let discoveredApps = (mainApps + userApps).map(discoveryEngine.loadIcon)
+            let discoveredApps = mainApps + userApps
             Task { @MainActor [weak self] in
                 self?.discoveredApps = discoveredApps
             }
         }
+    }
+
+    /// Resolves the cached icon for the given app without storing it permanently.
+    func icon(for app: AppItem) -> NSImage? {
+        appDiscoveryService.resolveIcon(for: app)
     }
 
     /// Persists the launch-at-login preference and updates the in-memory copy.
@@ -1030,7 +1035,7 @@ struct SettingsWindow: View {
 
     private func iconView(for app: AppItem) -> some View {
         Group {
-            if let image = app.iconImage {
+            if let image = settingsStore.icon(for: app) {
                 Image(nsImage: image)
                     .resizable()
             } else {

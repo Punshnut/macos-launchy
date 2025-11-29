@@ -96,7 +96,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         private let onScrollEnd: () -> Void
         private let onPreviousPage: () -> Void
         private let onNextPage: () -> Void
-        private var scrollMonitorToken: Any?
+        private var scrollMonitor: EventMonitorToken?
         private var hasActiveHorizontalScroll = false
 
         init(
@@ -112,18 +112,19 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         }
 
         func startMonitoringIfNeeded() {
-            guard scrollMonitorToken == nil else { return }
-            scrollMonitorToken = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] event in
+            guard scrollMonitor == nil else { return }
+            let token = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] event in
                 self?.handleScrollEvent(event)
                 return event
+            }
+            if let token {
+                scrollMonitor = EventMonitorToken(token: token) { NSEvent.removeMonitor($0) }
             }
         }
 
         func stopMonitoring() {
-            if let scrollMonitorToken {
-                NSEvent.removeMonitor(scrollMonitorToken)
-            }
-            scrollMonitorToken = nil
+            scrollMonitor?.invalidate()
+            scrollMonitor = nil
             resetState()
         }
 
@@ -286,8 +287,8 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
         private let onEscape: () -> Void
         private let onPageShortcut: ((Int) -> Void)?
         private let repeatInterval: TimeInterval = 0.5 // Hold-to-repeat cadence.
-        private var keyDownMonitorToken: Any?
-        private var keyUpMonitorToken: Any?
+        private var keyDownMonitor: EventMonitorToken?
+        private var keyUpMonitor: EventMonitorToken?
         private var repeatTimer: Timer?
         private var repeatingDirection: ArrowDirection?
 
@@ -308,27 +309,29 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
         }
 
         func startMonitoringIfNeeded() {
-            if keyDownMonitorToken == nil {
-                keyDownMonitorToken = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            if keyDownMonitor == nil {
+                let token = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
                     self?.handleKeyDown(event) ?? event
                 }
+                if let token {
+                    keyDownMonitor = EventMonitorToken(token: token) { NSEvent.removeMonitor($0) }
+                }
             }
-            if keyUpMonitorToken == nil {
-                keyUpMonitorToken = NSEvent.addLocalMonitorForEvents(matching: .keyUp) { [weak self] event in
+            if keyUpMonitor == nil {
+                let token = NSEvent.addLocalMonitorForEvents(matching: .keyUp) { [weak self] event in
                     self?.handleKeyUp(event) ?? event
+                }
+                if let token {
+                    keyUpMonitor = EventMonitorToken(token: token) { NSEvent.removeMonitor($0) }
                 }
             }
         }
 
         func stopMonitoring() {
-            if let keyDownMonitorToken {
-                NSEvent.removeMonitor(keyDownMonitorToken)
-            }
-            if let keyUpMonitorToken {
-                NSEvent.removeMonitor(keyUpMonitorToken)
-            }
-            keyDownMonitorToken = nil
-            keyUpMonitorToken = nil
+            keyDownMonitor?.invalidate()
+            keyUpMonitor?.invalidate()
+            keyDownMonitor = nil
+            keyUpMonitor = nil
             stopRepeating()
         }
 

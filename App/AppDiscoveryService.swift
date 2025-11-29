@@ -6,8 +6,11 @@ final class AppDiscoveryService {
     private let workspaceInterface: NSWorkspace
     private let customApplicationDirectories: [URL]?
     private let userApplicationsDirectory: URL
-    private var iconCacheByBundleID: [String: NSImage] = [:]
     private let preferredLanguageCodes: [String]
+    private let iconCache = NSCache<NSString, NSImage>()
+    private static let maximumIconDimension: CGFloat = 160
+    private static let iconCacheCountLimit = 256
+    private static let iconCacheCostLimit = 65_536
 
     /// Configures the service with dependencies mainly to aid testing.
     init(
@@ -23,6 +26,7 @@ final class AppDiscoveryService {
             .appendingPathComponent("Applications", isDirectory: true)
 
         preferredLanguageCodes = Self.buildPreferredLanguageCodes()
+        configureIconCacheLimits()
     }
 
     /// Rebuilds the cached list of installed apps, optionally excluding hidden bundle identifiers.
@@ -53,34 +57,20 @@ final class AppDiscoveryService {
 
     /// Returns the lazily-loaded icon for an app, caching results by bundle identifier.
     func resolveIcon(for app: AppItem) -> NSImage? {
-        if let cached = iconCacheByBundleID[app.bundleIdentifier] {
+        if let cached = iconCache.object(forKey: app.bundleIdentifier as NSString) {
             return cached
         }
 
         guard let appURL = app.bundleURL else { return nil }
         let icon = workspaceInterface.icon(forFile: appURL.path)
-        iconCacheByBundleID[app.bundleIdentifier] = icon
-        return icon
-    }
-
-    /// Produces a copy of the provided item with the icon field populated.
-    func loadIcon(for app: AppItem) -> AppItem {
-        guard app.iconImage == nil else { return app }
-        return AppItem(
-            id: app.id,
-            displayName: app.displayName,
-            localizedDisplayName: app.localizedDisplayName,
-            customName: app.customName,
-            bundleIdentifier: app.bundleIdentifier,
-            iconImage: resolveIcon(for: app),
-            bundleURL: app.bundleURL,
-            isUserApplication: app.isUserApplication
-        )
+        let scaledIcon = scaledIconIfNeeded(icon)
+        cacheIcon(scaledIcon, for: app.bundleIdentifier)
+        return scaledIcon
     }
 
     /// Clears the cached icons, forcing the next `resolveIcon(for:)` call to reload from disk.
     func clearIconCache() {
-        iconCacheByBundleID.removeAll()
+        iconCache.removeAllObjects()
     }
 
     /// Lists `.app` bundles inside the provided directory.
@@ -97,6 +87,44 @@ final class AppDiscoveryService {
             .compactMap { $0 as? URL }
             .filter { $0.pathExtension == "app" }
             .compactMap(buildAppItem)
+    }
+
+    /// Ensures the cached icon never exceeds the largest size we actually display.
+    private func scaledIconIfNeeded(_ icon: NSImage) -> NSImage {
+        let maxSide = max(icon.size.width, icon.size.height)
+        guard maxSide > Self.maximumIconDimension else {
+            return icon
+        }
+
+        let scale = Self.maximumIconDimension / maxSide
+        let targetSize = NSSize(
+            width: icon.size.width * scale,
+            height: icon.size.height * scale
+        )
+
+        let scaled = NSImage(size: targetSize)
+        scaled.lockFocus()
+        NSGraphicsContext.current?.imageInterpolation = .high
+        icon.draw(
+            in: NSRect(origin: .zero, size: targetSize),
+            from: NSRect(origin: .zero, size: icon.size),
+            operation: .copy,
+            fraction: 1
+        )
+        scaled.unlockFocus()
+        scaled.size = targetSize
+        scaled.isTemplate = icon.isTemplate
+        return scaled
+    }
+
+    private func cacheIcon(_ icon: NSImage, for bundleIdentifier: String) {
+        let cost = max(1, Int(icon.size.width * icon.size.height))
+        iconCache.setObject(icon, forKey: bundleIdentifier as NSString, cost: cost)
+    }
+
+    private func configureIconCacheLimits() {
+        iconCache.countLimit = Self.iconCacheCountLimit
+        iconCache.totalCostLimit = Self.iconCacheCostLimit
     }
 
     private func defaultApplicationDirectories(includeUserApplicationsFolder: Bool) -> [URL] {

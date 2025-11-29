@@ -551,16 +551,14 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             includeUserApplicationsFolder: includeUserApplications,
             hiddenBundleIDs: hiddenBundleIDs
         )
-        let decoratedBaseApps = baseApps.map(applicationDiscovery.loadIcon)
-        let decoratedUserApps = userApps
-            .map(applicationDiscovery.loadIcon)
-            .map { app -> AppItem in
-                var modified = app
-                if let custom = names[app.bundleIdentifier] {
-                    modified.customName = custom
-                }
-                return modified
+        let decoratedBaseApps = baseApps
+        let decoratedUserApps = userApps.map { app -> AppItem in
+            var modified = app
+            if let custom = names[app.bundleIdentifier] {
+                modified.customName = custom
             }
+            return modified
+        }
 
         let (items, sizes) = itemOrderStore.arrangedItems(
             from: decoratedBaseApps,
@@ -649,15 +647,20 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             fillsGapsAutomatically: currentSettings.fillsGapsAutomatically,
             onSettingsRequested: { [weak self] in
                 self?.showSettingsWindow()
+            },
+            onItemOrderChange: { [weak self] reorderedItems, newPageSizes in
+                guard let self else { return }
+                let baseItems = reorderedItems.filter { !self.isUserLauncherItem($0) }
+                let basePageSizes = self.basePageSizes(from: reorderedItems, pageSizes: newPageSizes)
+                self.orderedItems = reorderedItems
+                self.pageSizes = basePageSizes + self.userAppPageSizes
+                self.itemOrderStore.saveOrderedItems(baseItems, pageSizes: basePageSizes)
+            },
+            iconProvider: { [weak self] app in
+                guard let self else { return nil }
+                return self.applicationDiscovery.resolveIcon(for: app)
             }
-        ) { [weak self] reorderedItems, newPageSizes in
-            guard let self else { return }
-            let baseItems = reorderedItems.filter { !isUserLauncherItem($0) }
-            let basePageSizes = basePageSizes(from: reorderedItems, pageSizes: newPageSizes)
-            orderedItems = reorderedItems
-            pageSizes = basePageSizes + userAppPageSizes
-            itemOrderStore.saveOrderedItems(baseItems, pageSizes: basePageSizes)
-        }
+        )
     }
 
     /// Shows the introduction dialog on first launch.

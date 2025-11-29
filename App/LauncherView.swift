@@ -98,6 +98,7 @@ struct LauncherView: View {
     @State private var launchingItemID: UUID?
     @State private var pageDirection: PageShiftDirection = .forward
     @State private var folderIconWaveToggle = false
+    @Namespace private var folderIconAnimationNamespace
     @State private var pagerDragOffset: CGFloat = 0
     @State private var pagerViewportWidth: CGFloat = 1
     @State private var lastPagerDragDate: Date?
@@ -166,14 +167,18 @@ struct LauncherView: View {
                 isEditingFolderName = false
                 folderNameDraft = ""
                 isFolderNameFieldFocused = false
-                folderIconWaveToggle = false
+                withAnimation(.easeOut(duration: 0.18)) {
+                    folderIconWaveToggle = false
+                }
                 launchingItemID = nil
                 activeFolderPage = 0
                 activeFolderPageCount = 0
             } else if let folder = newValue {
                 folderNameDraft = folder.name
                 isEditingFolderName = false
-                folderIconWaveToggle = true
+                withAnimation(folderOpenAnimation) {
+                    folderIconWaveToggle = true
+                }
                 launchingItemID = nil
                 activeFolderPage = 0
                 activeFolderPageCount = 1
@@ -1271,9 +1276,11 @@ struct LauncherView: View {
         let previews = Array(folder.apps.prefix(9))
         let spacing = max(layout.iconDimension * 0.04, 2)
         let padding = spacing
-        let columns = Array(repeating: GridItem(.flexible(), spacing: spacing, alignment: .center), count: 3)
         let tileSize = max((layout.iconDimension - padding * 2 - spacing * 2) / 3, 10)
+        let columns = Array(repeating: GridItem(.fixed(tileSize), spacing: spacing, alignment: .center), count: 3)
         let isSnapPreviewTarget = folder.id == folderSnapPreviewTargetID
+
+        let shouldAnimatePreview = folderIconWaveToggle && activeFolder?.id == folder.id
 
         return ZStack {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -1283,8 +1290,17 @@ struct LauncherView: View {
 
             LazyVGrid(columns: columns, alignment: .center, spacing: spacing) {
                 ForEach(previews, id: \.id) { app in
-                    folderTile(for: app)
+                    let tile = folderTile(for: app)
                         .frame(width: tileSize, height: tileSize)
+
+                    if shouldAnimatePreview {
+                        tile.matchedGeometryEffect(
+                            id: folderPreviewAnimationID(for: folder, app: app),
+                            in: folderIconAnimationNamespace
+                        )
+                    } else {
+                        tile
+                    }
                 }
                 ForEach(0..<max(0, 9 - previews.count), id: \.self) { _ in
                     Color.clear
@@ -1303,8 +1319,10 @@ struct LauncherView: View {
                     .transition(.opacity)
             }
         }
+        .frame(width: layout.iconDimension, height: layout.iconDimension)
         .scaleEffect(isSnapPreviewTarget ? 1.01 : 1.0)
         .animation(.easeInOut(duration: 0.25), value: isSnapPreviewTarget)
+        .environment(\.colorScheme, colorScheme)
     }
 
     /// Shows a single tiny app icon inside the folder preview grid.
@@ -1327,6 +1345,15 @@ struct LauncherView: View {
                     .foregroundColor(.primary.opacity(0.75))
             }
         }
+    }
+
+    private func folderPreviewAnimationID(for folder: FolderItem, app: AppItem) -> String {
+        "\(folder.id.uuidString)-\(app.id.uuidString)"
+    }
+
+    private func isPreviewApp(_ app: AppItem, in folder: FolderItem) -> Bool {
+        guard let index = folder.apps.firstIndex(where: { $0.id == app.id }) else { return false }
+        return index < 9
     }
 
     /// Renders a standard title for either an app or folder.
@@ -1695,8 +1722,7 @@ struct LauncherView: View {
 
         GeometryReader { gridProxy in
             LazyVGrid(columns: columns, alignment: .center, spacing: overlayLayout.spacing) {
-                ForEach(Array(pageApps.enumerated()), id: \.element.id) { offset, app in
-                    let index = pageStartIndex + offset
+                ForEach(Array(pageApps.enumerated()), id: \.element.id) { _, app in
                     let isLaunching = launchingItemID == app.id
                     let isRenaming = renamingAppID == app.id
                     let cell: AnyView = {
@@ -1705,30 +1731,40 @@ struct LauncherView: View {
                                 editableAppCell(app: app, layout: layout, fontSize: 14)
                             )
                         }
+
+                        let iconBase = iconView(for: .app(app), layout: layout)
+                            .frame(width: tileSize, height: tileSize)
+                            .scaleEffect(isLaunching ? 1.08 : 1.0)
+                            .opacity(isLaunching ? 0.4 : 1.0)
+                            .animation(.easeInOut(duration: 0.18), value: launchingItemID)
+                            .opacity(folderIconWaveToggle ? 1 : 0)
+                            .environment(\.colorScheme, colorScheme)
+
                         return AnyView(
                             Button {
                                 openItem(.app(app))
                             } label: {
                                 VStack(spacing: 10) {
-                                    iconView(for: .app(app), layout: layout)
-                                        .frame(width: tileSize, height: tileSize)
-                                        .scaleEffect(isLaunching ? 1.08 : 1.0)
-                                        .opacity(isLaunching ? 0.4 : 1.0)
-                                        .animation(.easeInOut(duration: 0.18), value: launchingItemID)
+                                    if isPreviewApp(app, in: folder) {
+                                        iconBase
+                                            .matchedGeometryEffect(
+                                                id: folderPreviewAnimationID(for: folder, app: app),
+                                                in: folderIconAnimationNamespace
+                                            )
+                                    } else {
+                                        iconBase
+                                    }
+
                                     Text(app.resolvedDisplayName)
                                         .font(.system(size: 14, weight: .medium))
                                         .foregroundColor(iconLabelColor())
                                         .lineLimit(2)
                                         .multilineTextAlignment(.center)
+                                        .opacity(folderIconWaveToggle ? 1 : 0)
                                 }
                                 .padding(.vertical, 6)
                                 .frame(maxWidth: .infinity)
-                                .scaleEffect(folderIconWaveToggle ? 1 : 0.9)
-                                .opacity(folderIconWaveToggle ? 1 : 0.0)
-                                .animation(
-                                    folderOpenAnimation.delay(Double(index) * 0.025),
-                                    value: folderIconWaveToggle
-                                )
+                                .opacity(folderIconWaveToggle ? 1 : 0)
                             }
                             .buttonStyle(.plain)
                         )
@@ -1806,7 +1842,8 @@ struct LauncherView: View {
             ZStack {
                 backgroundView()
                     .ignoresSafeArea()
-                Color.black.opacity(0.2)
+                Color.black
+                    .opacity(folderIconWaveToggle ? 0.2 : 0)
                     .ignoresSafeArea()
 
                 let pages = folderPages(for: folder, overlayLayout: overlayLayout)
@@ -1856,6 +1893,7 @@ struct LauncherView: View {
                         .strokeBorder(Color.white.opacity(0.25))
                 )
                 .shadow(color: .black.opacity(0.3), radius: 24, y: 14)
+                .opacity(folderIconWaveToggle ? 1 : 0)
                 .anchorPreference(key: FolderFramePreference.self, value: .bounds) { anchor in
                     proxy[anchor]
                 }
@@ -1865,9 +1903,7 @@ struct LauncherView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                withAnimation(folderOpenAnimation) {
-                    activeFolder = nil
-                }
+                activeFolder = nil
             }
             .onDrop(
                 of: [.text],
@@ -1880,13 +1916,7 @@ struct LauncherView: View {
                     }
                 )
             )
-            .transition(
-                .asymmetric(
-                    insertion: .scale(scale: 0.92).combined(with: .opacity),
-                    removal: .scale(scale: 0.9).combined(with: .opacity)
-                )
-            )
-            .animation(folderOpenAnimation, value: activeFolder?.id)
+            .transition(.opacity)
             .onAppear {
                 updateActiveFolderPageCount(pageCount)
             }
@@ -1897,6 +1927,7 @@ struct LauncherView: View {
                 activeFolderPageCount = 0
             }
         }
+        .environment(\.colorScheme, colorScheme)
     }
 
     /// Simple empty state shown when the grid has nothing to display.
@@ -2078,9 +2109,7 @@ struct LauncherView: View {
         }
 
         if activeFolder != nil {
-            withAnimation(folderOpenAnimation) {
-                activeFolder = nil
-            }
+            activeFolder = nil
             return
         }
 

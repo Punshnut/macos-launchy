@@ -23,6 +23,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var pendingLaunchBundleIdentifier: String?
     private var mainMenuUpdateObserver: NSObjectProtocol?
     private var isTrimmingMainMenu = false
+    private var applicationDirectoryMonitor: ApplicationDirectoryMonitor?
     private lazy var settingsWindowPresenter: SettingsWindowController = {
         let controller = SettingsWindowController()
         controller.onClose = { [weak self] in
@@ -57,6 +58,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_ notification: Notification) {
         settingsStreamTask?.cancel()
         arrangementResetTask?.cancel()
+        applicationDirectoryMonitor?.stop()
+        applicationDirectoryMonitor = nil
         removeStatusItem()
         launcherHotkeyManager.deactivate()
         layoutHotkeyManager.deactivate()
@@ -104,6 +107,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         // 2) Initialize launcher settings persisted from prior sessions.
         LauncherSettingsPersistence.registerDefaults()
         currentSettings = LauncherSettingsPersistence.loadSettings()
+        configureApplicationDirectoryMonitoring()
         LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
 
         // 1 & 6) Load apps and immediately apply hidden/background style choices.
@@ -283,6 +287,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let hiddenChanged = previousHidden != Set(currentSettings.hiddenBundleIDs)
         let gapSettingChanged = previousGapSetting != currentSettings.fillsGapsAutomatically
         let scanSettingChanged = previousUserApplicationsScan != currentSettings.shouldScanUserApplicationsFolder
+        if scanSettingChanged {
+            configureApplicationDirectoryMonitoring()
+        }
         if hiddenChanged || gapSettingChanged || scanSettingChanged {
             refreshLauncherItems()
         }
@@ -290,6 +297,40 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         updateStatusItemVisibility()
         refreshHotkeyRegistrations()
         updateHotCornerMonitoring()
+    }
+
+    /// Ensures the directory watcher covers the locations we scan for apps.
+    private func configureApplicationDirectoryMonitoring() {
+        let directories = monitoredApplicationDirectories()
+        applicationDirectoryMonitor?.stop()
+        guard directories.isEmpty == false else {
+            applicationDirectoryMonitor = nil
+            return
+        }
+
+        applicationDirectoryMonitor = ApplicationDirectoryMonitor(
+            directories: directories
+        ) { [weak self] in
+            Task { @MainActor in
+                self?.refreshLauncherItems()
+            }
+        }
+    }
+
+    /// Mirrors the same directories AppDiscoveryService inspects.
+    private func monitoredApplicationDirectories() -> [URL] {
+        var directories: [URL] = [
+            URL(fileURLWithPath: "/Applications", isDirectory: true),
+            URL(fileURLWithPath: "/System/Applications", isDirectory: true)
+        ]
+
+        if currentSettings.shouldScanUserApplicationsFolder {
+            let userApps = FileManager.default.homeDirectoryForCurrentUser
+                .appendingPathComponent("Applications", isDirectory: true)
+            directories.append(userApps)
+        }
+
+        return directories
     }
 
     /// Clears saved arrangement data and reloads apps from disk.

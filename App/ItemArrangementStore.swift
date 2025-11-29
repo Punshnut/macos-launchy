@@ -139,7 +139,10 @@ final class ItemArrangementStore {
         }
 
         for app in remainingApps {
-            let insertIndex = firstAvailableInsertionIndex(currentCount: orderedItems.count, pageCapacity: pageCapacity)
+            let insertIndex = firstAvailableInsertionIndex(
+                currentItems: orderedItems,
+                pageCapacity: pageCapacity
+            )
             var renamed = app
             if let custom = preferredCustomNames[app.bundleIdentifier] {
                 renamed.customName = custom
@@ -165,18 +168,19 @@ final class ItemArrangementStore {
         saveItems()
     }
 
-    private func firstAvailableInsertionIndex(currentCount: Int, pageCapacity: Int) -> Int {
-        guard pageCapacity > 0 else { return currentCount }
-        if currentCount < pageCapacity {
-            return currentCount
+    /// Returns the insertion index that keeps new apps on the earliest partially filled page.
+    private func firstAvailableInsertionIndex(currentItems: [LauncherItem], pageCapacity: Int) -> Int {
+        guard pageCapacity > 0 else { return currentItems.count }
+        var cursor = 0
+        while cursor < currentItems.count {
+            let pageEnd = min(currentItems.count, cursor + pageCapacity)
+            let itemsOnPage = pageEnd - cursor
+            if itemsOnPage < pageCapacity {
+                return pageEnd
+            }
+            cursor = pageEnd
         }
-
-        let remainder = currentCount % pageCapacity
-        if remainder == 0 {
-            return currentCount
-        } else {
-            return currentCount
-        }
+        return currentItems.count
     }
 
     private func persistedItem(from item: LauncherItem) -> PersistedItem {

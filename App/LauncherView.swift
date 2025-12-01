@@ -4,6 +4,8 @@ import AppKit
 extension Notification.Name {
     /// Informs the launcher view that the search bar should regain focus after a mode switch.
     static let launcherShouldRefocusSearch = Notification.Name("launchyLauncherShouldRefocusSearch")
+    /// Triggers the fullscreen grid fly-in animation when the launcher appears.
+    static let launcherShouldAnimateGridEntrance = Notification.Name("launchyLauncherShouldAnimateGridEntrance")
 }
 
 private struct FolderDragContext {
@@ -67,7 +69,27 @@ struct LauncherView: View {
 
     private var pageCapacity: Int { LauncherGridConfiguration.pageCapacity }
     private let closeAnimationDuration: TimeInterval = 0.25
+    private var fullscreenGridEntranceScale: CGFloat {
+        guard launcherMode == .fullscreen else { return 1 }
+        return 0.92 + 0.08 * CGFloat(fullscreenGridEntranceProgress)
+    }
+
+    private var fullscreenGridEntranceOpacity: Double {
+        guard launcherMode == .fullscreen else { return 1 }
+        return 0.25 + 0.75 * fullscreenGridEntranceProgress
+    }
+
+    private var fullscreenGridEntranceOffset: CGFloat {
+        guard launcherMode == .fullscreen else { return 0 }
+        return (1 - CGFloat(fullscreenGridEntranceProgress)) * fullscreenGridEntranceTranslation
+    }
     private let gridSpringAnimation = Animation.spring(response: 0.42, dampingFraction: 0.86, blendDuration: 0.12)
+    private let fullscreenGridEntranceAnimation = Animation.spring(
+        response: 0.45,
+        dampingFraction: 0.78,
+        blendDuration: 0.08
+    )
+    private let fullscreenGridEntranceTranslation: CGFloat = 48
     private let pageSwitchAnimation = Animation.interactiveSpring(response: 0.16, dampingFraction: 0.9, blendDuration: 0.05)
     private let gestureSettleAnimation = Animation.interactiveSpring(response: 0.18, dampingFraction: 0.88, blendDuration: 0.05)
     private let folderOpenAnimation = Animation.spring(response: 0.36, dampingFraction: 0.82, blendDuration: 0.08)
@@ -101,6 +123,7 @@ struct LauncherView: View {
     @State private var activeFolderPage = 0
     @State private var activeFolderPageCount = 0
     @State private var pageSizes: [Int]
+    @State private var fullscreenGridEntranceProgress: Double = 1
     @State private var launchingItemID: UUID?
     @State private var pageDirection: PageShiftDirection = .forward
     @State private var folderIconWaveToggle = false
@@ -484,6 +507,9 @@ struct LauncherView: View {
                         .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
                         .allowsHitTesting(false)
                     }
+                    .scaleEffect(fullscreenGridEntranceScale, anchor: .center)
+                    .opacity(fullscreenGridEntranceOpacity)
+                    .offset(y: fullscreenGridEntranceOffset)
                     .padding(.top, layout.gridVerticalOffset)
 
                     gridPager(canReorder: canReorder, layout: layout)
@@ -509,8 +535,20 @@ struct LauncherView: View {
         .onReceive(NotificationCenter.default.publisher(for: .launcherShouldRefocusSearch)) { _ in
             focusSearchFieldIfAppropriate()
         }
-        .onChange(of: launcherMode) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: .launcherShouldAnimateGridEntrance)) { _ in
+            guard launcherMode == .fullscreen else { return }
+            withTransaction(Transaction(animation: nil)) {
+                fullscreenGridEntranceProgress = 0
+            }
+            withAnimation(fullscreenGridEntranceAnimation) {
+                fullscreenGridEntranceProgress = 1
+            }
+        }
+        .onChange(of: launcherMode) { newMode in
             focusSearchFieldIfAppropriate()
+            if newMode != .fullscreen {
+                fullscreenGridEntranceProgress = 1
+            }
         }
         .frame(width: containerSize.width, height: containerSize.height)
         .contentShape(Rectangle())

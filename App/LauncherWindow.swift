@@ -122,6 +122,9 @@ final class LauncherWindowController: NSWindowController {
         showWindow(nil)
         window.makeKeyAndOrderFront(nil)
         NotificationCenter.default.post(name: .launcherShouldRefocusSearch, object: nil)
+        if shouldAnimateEntrance && launcherMode == .fullscreen {
+            NotificationCenter.default.post(name: .launcherShouldAnimateGridEntrance, object: nil)
+        }
 
         if shouldAnimateEntrance {
             runEntranceAnimation(window: window, originalFrame: originalFrame)

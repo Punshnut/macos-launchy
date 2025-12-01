@@ -1,289 +1,11 @@
 import SwiftUI
-import Combine
-import AppKit
-import Carbon
-
-/// Backing store responsible for loading apps and persisting launcher settings toggles.
-@MainActor
-final class SettingsWindowStore: NSObject, ObservableObject {
-    /// Latest persisted settings payload mirrored into memory for the UI.
-    @Published private(set) var settingsSnapshot: LauncherSettings
-    /// Collection of applications discovered on disk for the hidden-apps table.
-    @Published private(set) var discoveredApps: [AppItem] = []
-
-    private let appDiscoveryService: AppDiscoveryService
-    private var settingsStreamTask: Task<Void, Never>?
-
-    /// Configures the store with dependencies (mainly useful for previews/tests) and preloads data.
-    init(discoveryService: AppDiscoveryService = AppDiscoveryService()) {
-        self.appDiscoveryService = discoveryService
-        self.settingsSnapshot = LauncherSettingsPersistence.loadSettings()
-        super.init()
-        reloadApps()
-        observeSettingsChanges()
-    }
-
-    deinit {
-        settingsStreamTask?.cancel()
-    }
-
-    /// Reloads the list of apps on a background queue.
-    func reloadApps() {
-        let discoveryEngine = appDiscoveryService
-        let includeUserApplications = settingsSnapshot.shouldScanUserApplicationsFolder
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            let (mainApps, userApps) = discoveryEngine.reloadApps(
-                includeUserApplicationsFolder: includeUserApplications
-            )
-            let discoveredApps = mainApps + userApps
-            Task { @MainActor [weak self] in
-                self?.discoveredApps = discoveredApps
-            }
-        }
-    }
-
-    /// Resolves the cached icon for the given app without storing it permanently.
-    func icon(for app: AppItem) -> NSImage? {
-        appDiscoveryService.resolveIcon(for: app)
-    }
-
-    /// Persists the launch-at-login preference and updates the in-memory copy.
-    func setLaunchAtLogin(_ newValue: Bool) {
-        guard settingsSnapshot.launchesAtLogin != newValue else { return }
-        settingsSnapshot.launchesAtLogin = newValue
-        LaunchAtLoginManager.setEnabled(newValue)
-        LauncherSettingsPersistence.setLaunchAtLogin(newValue)
-    }
-
-    /// Persists the preferred background style.
-    func setPreferredBackgroundStyle(_ style: LauncherSettings.PreferredBackgroundStyle) {
-        guard settingsSnapshot.backgroundStylePreference != style else { return }
-        settingsSnapshot.backgroundStylePreference = style
-        LauncherSettingsPersistence.setPreferredBackgroundStyle(style)
-    }
-
-    /// Persists the chosen solid background color.
-    func setSolidBackgroundColor(_ color: LauncherSettings.SolidBackgroundColor) {
-        guard settingsSnapshot.solidBackgroundColor != color else { return }
-        settingsSnapshot.solidBackgroundColor = color
-        LauncherSettingsPersistence.setSolidBackgroundColor(color)
-    }
-
-    /// Persists the launcher mode selection.
-    func setLauncherMode(_ mode: LauncherMode) {
-        guard settingsSnapshot.selectedLauncherMode != mode else { return }
-        settingsSnapshot.selectedLauncherMode = mode
-        LauncherSettingsPersistence.setLauncherMode(mode)
-    }
-
-    /// Persists whether the Dock icon should be hidden in any mode.
-    func setDockIconHidden(_ isHidden: Bool) {
-        guard settingsSnapshot.isDockIconHidden != isHidden else { return }
-        let resolvedHotkey = resolvedLauncherHotkey(
-            forDockHidden: isHidden,
-            menuHidden: settingsSnapshot.isMenuBarIconHidden,
-            requestedHotkey: settingsSnapshot.launcherHotkey
-        )
-        settingsSnapshot.isDockIconHidden = isHidden
-        if settingsSnapshot.launcherHotkey != resolvedHotkey {
-            settingsSnapshot.launcherHotkey = resolvedHotkey
-        }
-        LauncherSettingsPersistence.setDockIconHidden(isHidden)
-    }
-
-    /// Persists whether the menu bar status item should be hidden.
-    func setMenuBarIconHidden(_ isHidden: Bool) {
-        guard settingsSnapshot.isMenuBarIconHidden != isHidden else { return }
-        let resolvedHotkey = resolvedLauncherHotkey(
-            forDockHidden: settingsSnapshot.isDockIconHidden,
-            menuHidden: isHidden,
-            requestedHotkey: settingsSnapshot.launcherHotkey
-        )
-        settingsSnapshot.isMenuBarIconHidden = isHidden
-        if settingsSnapshot.launcherHotkey != resolvedHotkey {
-            settingsSnapshot.launcherHotkey = resolvedHotkey
-        }
-        LauncherSettingsPersistence.setMenuBarIconHidden(isHidden)
-    }
-
-    /// Persists the selected global hotkey used to toggle Launchy.
-    func setLauncherHotkey(_ descriptor: HotkeyDescriptor?) {
-        let resolvedHotkey = resolvedLauncherHotkey(requestedHotkey: descriptor)
-        guard settingsSnapshot.launcherHotkey != resolvedHotkey else { return }
-        settingsSnapshot.launcherHotkey = resolvedHotkey
-        LauncherSettingsPersistence.setLauncherHotkey(resolvedHotkey)
-    }
-
-    /// Persists the shortcut used to flip between floaty and fullscreen layouts.
-    func setLayoutToggleHotkey(_ descriptor: HotkeyDescriptor?) {
-        guard settingsSnapshot.layoutToggleHotkey != descriptor else { return }
-        settingsSnapshot.layoutToggleHotkey = descriptor
-        LauncherSettingsPersistence.setLayoutToggleHotkey(descriptor)
-    }
-
-    /// Enables or disables the hot corner trigger.
-    func setHotCornerEnabled(_ value: Bool) {
-        guard settingsSnapshot.hotCornerEnabled != value else { return }
-        settingsSnapshot.hotCornerEnabled = value
-        LauncherSettingsPersistence.setHotCornerEnabled(value)
-    }
-
-    /// Persists the hot corner selection.
-    func setHotCornerPosition(_ position: HotCornerPosition) {
-        guard settingsSnapshot.hotCornerPosition != position else { return }
-        settingsSnapshot.hotCornerPosition = position
-        LauncherSettingsPersistence.setHotCornerPosition(position)
-    }
-
-    /// Restores the launcher hotkey back to its default value.
-    func resetLauncherHotkeyToDefault() {
-        setLauncherHotkey(.toggleLauncher)
-    }
-
-    /// Persists whether gaps should be collapsed automatically.
-    func setFillsGapsAutomatically(_ value: Bool) {
-        guard settingsSnapshot.fillsGapsAutomatically != value else { return }
-        settingsSnapshot.fillsGapsAutomatically = value
-        LauncherSettingsPersistence.setFillsGapsAutomatically(value)
-    }
-
-    /// Requests a full reset of the saved launcher arrangement.
-    func requestArrangementReset() {
-        NotificationCenter.default.post(name: .launcherArrangementResetRequested, object: nil)
-    }
-
-    /// Toggles the bundle identifier in the hidden apps list.
-    func setHidden(_ isHidden: Bool, for app: AppItem) {
-        var identifiers = Set(settingsSnapshot.hiddenBundleIDs)
-        if isHidden {
-            identifiers.insert(app.bundleIdentifier)
-        } else {
-            identifiers.remove(app.bundleIdentifier)
-        }
-        let sortedIdentifiers = identifiers.sorted()
-        guard settingsSnapshot.hiddenBundleIDs != sortedIdentifiers else { return }
-        settingsSnapshot.hiddenBundleIDs = sortedIdentifiers
-        LauncherSettingsPersistence.setHiddenBundleIdentifiers(sortedIdentifiers)
-    }
-
-    /// Determines whether a specific app should be treated as hidden.
-    func isHidden(_ app: AppItem) -> Bool {
-        settingsSnapshot.hiddenBundleIDs.contains(app.bundleIdentifier)
-    }
-
-    /// Controls whether the user's Applications folder is indexed for hidden apps.
-    func setShouldScanUserApplicationsFolder(_ value: Bool) {
-        guard settingsSnapshot.shouldScanUserApplicationsFolder != value else { return }
-        settingsSnapshot.shouldScanUserApplicationsFolder = value
-        LauncherSettingsPersistence.setShouldScanUserApplicationsFolder(value)
-        reloadApps()
-    }
-
-    /// Observes cross-process setting updates and mirrors them locally.
-    private func observeSettingsChanges() {
-        settingsStreamTask?.cancel()
-        settingsStreamTask = Task.detached { [weak self] in
-            let notifications = NotificationCenter.default.notifications(named: .launcherSettingsDidChange)
-            for await _ in notifications {
-                guard let self else { continue }
-                await self.reloadSettingsFromDisk()
-            }
-        }
-    }
-
-    /// Reloads the latest settings payload from persistence.
-    private func reloadSettingsFromDisk() {
-        let previousIncludeUserApplications = settingsSnapshot.shouldScanUserApplicationsFolder
-        let updatedSettings = LauncherSettingsPersistence.loadSettings()
-        settingsSnapshot = updatedSettings
-        if previousIncludeUserApplications != updatedSettings.shouldScanUserApplicationsFolder {
-            reloadApps()
-        }
-    }
-
-    private func resolvedLauncherHotkey(
-        forDockHidden dockHidden: Bool? = nil,
-        menuHidden: Bool? = nil,
-        requestedHotkey: HotkeyDescriptor?
-    ) -> HotkeyDescriptor? {
-        let dockHiddenValue = dockHidden ?? settingsSnapshot.isDockIconHidden
-        let menuHiddenValue = menuHidden ?? settingsSnapshot.isMenuBarIconHidden
-        if dockHiddenValue && menuHiddenValue && requestedHotkey == nil {
-            return .toggleLauncher
-        }
-        return requestedHotkey
-    }
-}
-
-// MARK: - Settings Window UI
-
-private enum SettingsTab: Int, CaseIterable, Identifiable {
-    case visuals
-    case shortcuts
-    case hiddenApps
-    case about
-
-    var id: Int { rawValue }
-
-    var iconName: String {
-        switch self {
-        case .visuals:
-            return "paintpalette.fill"
-        case .shortcuts:
-            return "keyboard.fill"
-        case .hiddenApps:
-            return "eye.slash.fill"
-        case .about:
-            return "info.circle"
-        }
-    }
-
-    var title: String {
-        switch self {
-        case .visuals:
-            return String(localized: "Visuals")
-        case .shortcuts:
-            return String(localized: "Shortcuts")
-        case .hiddenApps:
-            return String(localized: "Hidden Apps")
-        case .about:
-            return String(localized: "About")
-        }
-    }
-}
-
-private enum SettingsWindowMetrics {
-    static let defaultContentWidth: CGFloat = 720
-    static let visualsHeight: CGFloat = 650
-    static let shortcutsHeight: CGFloat = 520
-    static let hiddenAppsHeight: CGFloat = 700
-    static let aboutHeight: CGFloat = 700
-    static let minimumContentSize = NSSize(width: 640, height: shortcutsHeight)
-
-    static var defaultContentSize: NSSize {
-        NSSize(width: defaultContentWidth, height: visualsHeight)
-    }
-
-    static func preferredContentHeight(for tab: SettingsTab) -> CGFloat {
-        switch tab {
-        case .visuals:
-            return visualsHeight
-        case .shortcuts:
-            return shortcutsHeight
-        case .hiddenApps:
-            return hiddenAppsHeight
-        case .about:
-            return aboutHeight
-        }
-    }
-}
 
 /// SwiftUI-based macOS settings window content that drives `LauncherSettings`.
 struct SettingsWindow: View {
     /// Backing store powering the macOS settings UI.
     @StateObject private var settingsStore: SettingsWindowStore
     @State private var activeTab: SettingsTab = .visuals
-    @State private var hostingWindow: NSWindow?
+    @State private var hostingWindow: AnyObject?
     @State private var hasAppliedInitialWindowSizing = false
     @Namespace private var tabSelectionNamespace
     @Environment(\.colorScheme) private var colorScheme
@@ -325,9 +47,7 @@ struct SettingsWindow: View {
             .overlay(
                 HostingWindowFinder { window in
                     hostingWindow = window
-                    if let window {
-                        applyWindowConfiguration(for: window)
-                    }
+                    applyWindowConfiguration(for: window)
                 }
                 .allowsHitTesting(false)
             )
@@ -343,10 +63,6 @@ struct SettingsWindow: View {
         }
         .onChange(of: activeTab) { newValue in
             resizeWindow(for: newValue, animated: true)
-        }
-        .onChange(of: hostingWindow) { window in
-            guard let window else { return }
-            applyWindowConfiguration(for: window)
         }
     }
 
@@ -498,7 +214,7 @@ struct SettingsWindow: View {
             subtitle: String(localized: "Launch at login, layouts, and background styling."),
             customIcon: {
                 AnyView(
-                    Image(nsImage: NSApp.applicationIconImage)
+                    (applicationIconImage() ?? Image(systemName: "app"))
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 28, height: 28)
@@ -880,7 +596,7 @@ struct SettingsWindow: View {
 
     private var aboutHeader: some View {
         VStack(spacing: 12) {
-            Image(nsImage: NSApp.applicationIconImage)
+            (applicationIconImage() ?? Image(systemName: "app"))
                 .resizable()
                 .scaledToFit()
                 .frame(width: 96, height: 96)
@@ -962,7 +678,7 @@ struct SettingsWindow: View {
 
             Button {
                 if let url = URL(string: "https://github.com/Punshnut/macos-launchy") {
-                    NSWorkspace.shared.open(url)
+                    SettingsWindowAppKitBridge.openURL(url)
                 }
             } label: {
                 Label("View on GitHub", systemImage: "chevron.right.circle")
@@ -1071,107 +787,34 @@ struct SettingsWindow: View {
         IntroductionWindowController.shared.present(startingAt: 0, markCompletionOnFinish: false)
     }
 
-    @MainActor
     private func confirmArrangementReset() {
-        let alert = NSAlert()
-        alert.alertStyle = .warning
-        alert.messageText = String(localized: "Reset icon arrangement?")
-        alert.informativeText = String(localized: "This deletes your saved ordering, folders, and page layout. Type RESET to continue.")
-
-        let confirmationField = NSTextField(string: "")
-        confirmationField.placeholderString = String(localized: "RESET")
-        confirmationField.frame = NSRect(x: 0, y: 0, width: 220, height: 22)
-        alert.accessoryView = confirmationField
-
-        alert.addButton(withTitle: String(localized: "Reset"))
-        alert.addButton(withTitle: String(localized: "Cancel"))
-
-        if let window = hostingWindow {
-            NSApp.activate(ignoringOtherApps: true)
-            alert.beginSheetModal(for: window) { response in
-                handleArrangementResetResponse(response, typedValue: confirmationField.stringValue)
+        SettingsWindowAlertPresenter.confirmArrangementReset(
+            hostingWindow: hostingWindow,
+            onConfirm: { @MainActor [weak settingsStore] in
+                settingsStore?.requestArrangementReset()
             }
-            DispatchQueue.main.async {
-                window.makeFirstResponder(confirmationField)
-            }
-        } else {
-            let response = presentModalAlert(alert)
-            handleArrangementResetResponse(response, typedValue: confirmationField.stringValue)
-        }
-    }
-
-    @MainActor
-    private func handleArrangementResetResponse(_ response: NSApplication.ModalResponse, typedValue: String) {
-        let normalized = typedValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard response == .alertFirstButtonReturn,
-              normalized.caseInsensitiveCompare(String(localized: "RESET")) == .orderedSame else { return }
-        settingsStore.requestArrangementReset()
-    }
-
-    @MainActor
-    private func presentModalAlert(_ alert: NSAlert) -> NSApplication.ModalResponse {
-        NSApp.activate(ignoringOtherApps: true)
-        let alertWindow = alert.window
-        alertWindow.level = .statusBar
-        alertWindow.collectionBehavior.insert([.moveToActiveSpace, .fullScreenAuxiliary, .canJoinAllSpaces])
-        alertWindow.makeKeyAndOrderFront(nil)
-        alertWindow.orderFrontRegardless()
-
-        let response = alert.runModal()
-
-        hostingWindow?.makeKeyAndOrderFront(nil)
-
-        return response
+        )
     }
 
     // MARK: - Window Configuration
 
-    private func applyWindowConfiguration(for window: NSWindow) {
-        updateWindowChrome(for: window)
-
+    private func applyWindowConfiguration(for window: AnyObject?) {
+        SettingsWindowHostManager.applyConfiguration(to: window)
         guard hasAppliedInitialWindowSizing == false else { return }
         hasAppliedInitialWindowSizing = true
-        resizeWindow(for: activeTab, in: window, animated: false)
+        SettingsWindowHostManager.resize(window: window, for: activeTab, animated: false)
     }
 
     private func resizeWindow(for tab: SettingsTab, animated: Bool) {
-        guard let window = hostingWindow else { return }
-        resizeWindow(for: tab, in: window, animated: animated)
-    }
-
-    private func resizeWindow(for tab: SettingsTab, in window: NSWindow, animated: Bool) {
-        let currentFrame = window.frame
-        let currentContentRect = window.contentRect(forFrameRect: currentFrame)
-        let targetContentHeight = SettingsWindowMetrics.preferredContentHeight(for: tab)
-
-        guard abs(currentContentRect.height - targetContentHeight) > 0.5 else { return }
-
-        let targetContentSize = NSSize(
-            width: currentContentRect.width,
-            height: targetContentHeight
-        )
-        let targetFrameSize = window.frameRect(
-            forContentRect: NSRect(origin: .zero, size: targetContentSize)
-        ).size
-
-        // Pin resizing to the top-center so the custom chrome stays put.
-        let anchorPoint = NSPoint(x: currentFrame.midX, y: currentFrame.maxY)
-        let newOrigin = NSPoint(
-            x: anchorPoint.x - targetFrameSize.width / 2,
-            y: anchorPoint.y - targetFrameSize.height
-        )
-        let newFrame = NSRect(origin: newOrigin, size: targetFrameSize)
-        window.setFrame(newFrame, display: true, animate: animated)
+        SettingsWindowHostManager.resize(window: hostingWindow, for: tab, animated: animated)
     }
 
     private var borderStrokeColor: Color {
         Color.white.opacity(0.12)
     }
 
-    private func updateWindowChrome(for window: NSWindow?) {
-        guard let window else { return }
-        window.isOpaque = false
-        window.backgroundColor = .clear
+    private func performWindowAction(for kind: WindowControlKind) {
+        SettingsWindowHostManager.performWindowAction(kind, on: hostingWindow)
     }
 
     private var topChromeHeight: CGFloat {
@@ -1180,18 +823,6 @@ struct SettingsWindow: View {
 
     private var topChromeControlInset: CGFloat {
         12
-    }
-
-    private func performWindowAction(for kind: WindowControlKind) {
-        guard let window = hostingWindow else { return }
-        switch kind {
-        case .close:
-            window.performClose(nil)
-        case .minimize:
-            window.performMiniaturize(nil)
-        case .zoom:
-            window.performZoom(nil)
-        }
     }
 
     @ViewBuilder
@@ -1218,6 +849,10 @@ struct SettingsWindow: View {
             return copyright
         }
         return String(localized: "Built by the Launchy team")
+    }
+
+    private func applicationIconImage() -> Image? {
+        SettingsWindowAppKitBridge.applicationIconImage()
     }
 }
 
@@ -1256,220 +891,6 @@ private struct HotkeyRecorderRow: View {
     }
 }
 
-private struct HotkeyRecorderField: NSViewRepresentable {
-    var hotkey: HotkeyDescriptor?
-    var placeholder: String
-    var onChange: (HotkeyDescriptor?) -> Void
-
-    func makeNSView(context: Context) -> HotkeyRecorderTextField {
-        let view = HotkeyRecorderTextField()
-        view.placeholderText = placeholder
-        view.onHotkeyChange = onChange
-        view.hotkey = hotkey
-        return view
-    }
-
-    func updateNSView(_ nsView: HotkeyRecorderTextField, context: Context) {
-        nsView.placeholderText = placeholder
-        nsView.hotkey = hotkey
-        nsView.onHotkeyChange = onChange
-    }
-}
-
-private final class HotkeyRecorderTextField: NSTextField {
-    var hotkey: HotkeyDescriptor? {
-        didSet { updateDisplay() }
-    }
-
-    var placeholderText: String = String(localized: "Click to record") {
-        didSet { updateDisplay() }
-    }
-
-    var onHotkeyChange: ((HotkeyDescriptor?) -> Void)?
-
-    private var isRecording = false
-
-    override init(frame frameRect: NSRect) {
-        super.init(frame: frameRect)
-        isBordered = true
-        isEditable = false
-        isSelectable = false
-        drawsBackground = true
-        backgroundColor = .controlBackgroundColor
-        focusRingType = .default
-        alignment = .center
-        font = .systemFont(ofSize: NSFont.systemFontSize)
-        cell?.wraps = false
-        cell?.isScrollable = true
-        updateDisplay()
-    }
-
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override var acceptsFirstResponder: Bool { true }
-
-    override func becomeFirstResponder() -> Bool {
-        let success = super.becomeFirstResponder()
-        isRecording = true
-        updateDisplay()
-        return success
-    }
-
-    override func resignFirstResponder() -> Bool {
-        isRecording = false
-        updateDisplay()
-        return super.resignFirstResponder()
-    }
-
-    override func mouseDown(with event: NSEvent) {
-        window?.makeFirstResponder(self)
-        isRecording = true
-        updateDisplay()
-    }
-
-    override func keyDown(with event: NSEvent) {
-        handleKeyEvent(event)
-    }
-
-    private func handleKeyEvent(_ event: NSEvent) {
-        let deleteKeyCodes: Set<UInt16> = [
-            UInt16(kVK_Delete),
-            UInt16(kVK_ForwardDelete)
-        ]
-
-        if event.keyCode == UInt16(kVK_Escape) {
-            isRecording = false
-            window?.makeFirstResponder(nil)
-            updateDisplay()
-            return
-        }
-
-        if deleteKeyCodes.contains(event.keyCode) {
-            hotkey = nil
-            onHotkeyChange?(nil)
-            isRecording = false
-            window?.makeFirstResponder(nil)
-            updateDisplay()
-            return
-        }
-
-        guard let descriptor = HotkeyDescriptor(event: event) else {
-            NSSound.beep()
-            return
-        }
-
-        hotkey = descriptor
-        onHotkeyChange?(descriptor)
-        isRecording = false
-        window?.makeFirstResponder(nil)
-        updateDisplay()
-    }
-
-    private func updateDisplay() {
-        if isRecording {
-            stringValue = ""
-            placeholderString = String(localized: "Press shortcut...")
-            return
-        }
-
-        if let hotkey {
-            stringValue = hotkey.displayString
-            placeholderString = placeholderText
-        } else {
-            stringValue = ""
-            placeholderString = placeholderText
-        }
-    }
-}
-
-/// Wraps the SwiftUI settings content inside a reusable macOS window controller.
-final class SettingsWindowController: NSWindowController, NSWindowDelegate {
-    private let hostingController: NSHostingController<SettingsWindow>
-    @MainActor
-    var onClose: (() -> Void)?
-
-    init() {
-        let view = SettingsWindow()
-        hostingController = NSHostingController(rootView: view)
-        let defaultContentSize = SettingsWindowMetrics.defaultContentSize
-        let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: defaultContentSize.width, height: defaultContentSize.height),
-            styleMask: [
-                .titled,
-                .closable,
-                .miniaturizable,
-                .resizable,
-                .fullSizeContentView
-            ],
-            backing: .buffered,
-            defer: false
-        )
-        window.title = String(localized: "Launchy Settings")
-        window.titlebarAppearsTransparent = true
-        window.titleVisibility = .hidden
-        window.isMovableByWindowBackground = true
-        window.isOpaque = false
-        window.toolbarStyle = .unifiedCompact
-        window.isReleasedWhenClosed = false
-        // Keep the settings window visible above the launcher UI, even in fullscreen, while leaving room for alerts.
-        window.level = .statusBar
-        window.collectionBehavior.insert(.fullScreenAuxiliary)
-        window.collectionBehavior.insert(.canJoinAllSpaces)
-        window.standardWindowButton(.closeButton)?.isHidden = true
-        window.standardWindowButton(.miniaturizeButton)?.isHidden = true
-        window.standardWindowButton(.zoomButton)?.isHidden = true
-        window.contentMinSize = SettingsWindowMetrics.minimumContentSize
-        window.center()
-        window.contentViewController = hostingController
-        super.init(window: window)
-        window.delegate = self
-    }
-
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    /// Brings the settings window to the front and activates the app if needed.
-    func showWindowAndActivate() {
-        guard let window else { return }
-        centerWindowOnPreferredScreen()
-        showWindow(nil)
-        window.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
-    }
-
-    private func centerWindowOnPreferredScreen() {
-        guard let window else { return }
-        guard let screen = ScreenProvider.screenUnderMouseOrMain() else { return }
-
-        let contentSize = window.frame.size
-        let visible = screen.visibleFrame
-        let targetX = visible.midX - contentSize.width / 2
-        let targetY = visible.midY - contentSize.height / 2
-
-        let clampedX = min(
-            max(targetX, visible.minX),
-            max(visible.maxX - contentSize.width, visible.minX)
-        )
-        let clampedY = min(
-            max(targetY, visible.minY),
-            max(visible.maxY - contentSize.height, visible.minY)
-        )
-
-        window.setFrameOrigin(NSPoint(x: clampedX, y: clampedY))
-    }
-
-    func windowWillClose(_ notification: Notification) {
-        Task { @MainActor in
-            onClose?()
-        }
-    }
-}
-
 #Preview {
     SettingsWindow(
         store: SettingsWindowStore(
@@ -1480,27 +901,6 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
             )
         )
     )
-}
-
-// MARK: - Frosted Elements and Window Controls
-
-struct FrostedBackgroundView: NSViewRepresentable {
-    let material: NSVisualEffectView.Material
-
-    func makeNSView(context: Context) -> NSVisualEffectView {
-        let view = NSVisualEffectView()
-        view.material = material
-        view.state = .active
-        view.blendingMode = .behindWindow
-        view.isEmphasized = true
-        view.wantsLayer = true
-        return view
-    }
-
-    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
-        nsView.material = material
-        nsView.state = .active
-    }
 }
 
 enum WindowControlKind: CaseIterable, Identifiable {
@@ -1544,24 +944,6 @@ struct WindowControlDot: View {
                 )
         }
         .buttonStyle(.plain)
-    }
-}
-
-struct HostingWindowFinder: NSViewRepresentable {
-    let onResolve: (NSWindow?) -> Void
-
-    func makeNSView(context: Context) -> NSView {
-        let view = NSView()
-        DispatchQueue.main.async {
-            onResolve(view.window)
-        }
-        return view
-    }
-
-    func updateNSView(_ nsView: NSView, context: Context) {
-        DispatchQueue.main.async {
-            onResolve(nsView.window)
-        }
     }
 }
 

@@ -11,7 +11,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 <p align="center">
     <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
-    <img src="https://img.shields.io/badge/Download-Beta%200.2.1-blueviolet?style=for-the-badge" alt="Download Beta 0.2.1">
+    <img src="https://img.shields.io/badge/Download-Beta%200.2.2-blueviolet?style=for-the-badge" alt="Download Beta 0.2.2">
   </a>
 </p>
 
@@ -51,9 +51,9 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 - **Fully featured grid** - Scans /Applications, /System/Applications, and user apps, caches icons, and fills 7x5 pages instantly while respecting your custom labels and hidden items.
 - **Context-aware controls** - Right click on any app, folder, or Dock/menu bar icon to rename, hide, move, add to folders, show in Finder, reset gaps, or create new folders without switching views.
 - **Floaty mode & fast toggles** - Switch between fullscreen and HUD styles instantly; floaty keeps a new macOS feel while preserving Launchpad behavior.
+- **Hot corner activation** - Assign Launchy to a corner and moving your cursor there will open or close the launcher without touching the keyboard (macOS may ask for Input Monitoring permission; if it doesn’t, add Launchy under System Settings → Privacy & Security → Input Monitoring).
 - **Open source, free forever** - Launchy remains MIT-licensed, unbundled from paid tiers, and the #1 launchpad alternative you can trust.
 - **Auto-updating comfort** - Sparkle-powered updates keep you on the latest fixes and features automatically, so you just keep launching.
-- **Hot corner activation** - Assign Launchy to a corner and moving your cursor there will open or close the launcher without touching the keyboard (macOS may ask for Input Monitoring permission; if it doesn’t, add Launchy under System Settings → Privacy & Security → Input Monitoring).
 
 ## Gestures (touchpad or mouse)
 
@@ -64,8 +64,8 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 ## Keyboard shortcuts
 
-- **Toggle fullscreen ⇄ floaty palette:** configurable in Settings (no default) - set it to `Control` + `Space` if that combo is free for a comfortable switch (fresh installs default to `Cmd` + `Shift` + `Space`).
 - **Show / hide Launchy:** configurable in Settings (defaults to `Cmd` + `Shift` + `Space`) - switch it to `Control` + `Space` for a comfortable, launchpad-style trigger if that combo isn’t already taken.
+- **Toggle fullscreen ⇄ floaty palette:** configurable in Settings (no default)
 - **Launch search result:** `Return` fires the first match without leaving the search field
 - **Page with arrows:** left/right arrows flip between pages
 - **Open settings:** `Cmd` + `,`
@@ -75,7 +75,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 - Right-click any icon for rename, move, hide, Finder reveal, or folder shortcuts.
 - Drag apps together while holding Shift or Option as you release to create a folder or drop into one without disturbing the grid; skip the modifiers and use the right-click menu on the icon to add/remove apps instead.
-- Floaty mode keeps the quick palette feel and fast toggles; assign a hotkey for instant fullscreen/HUD switching instead of mouse-only taps.
+- Floaty mode keeps the quick palette feel and fast toggles; assign a hotkey for instant fullscreen/HUD switching instead of mouse-only taps.wa
 - Dock and menu bar icons mirror your layout for repeat launches plus instant access to auto-updater, settings, and Quit.
 - Reset the grid from Settings whenever you want, hide apps safely, and choose whether icons auto-fill gaps for a clean layout.
 

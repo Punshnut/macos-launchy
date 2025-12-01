@@ -36,6 +36,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         self?.toggleLauncherVisibility()
     }
     private let updaterController = UpdaterController()
+    private var hasHandledInitialActivation = false
 
     /// Finishes bootstrapping the app by loading settings, refreshing apps, and preparing the window.
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -46,6 +47,32 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Reapplies menu pruning after the app is foregrounded.
     func applicationDidBecomeActive(_ notification: Notification) {
         enforceMinimalMainMenu()
+
+        if hasHandledInitialActivation == false {
+            hasHandledInitialActivation = true
+            return
+        }
+
+        guard launcherWindowManager?.window?.isVisible != true else {
+            return
+        }
+
+        showLauncherWindowAfterActivation()
+    }
+
+    func applicationWillBecomeActive(_ notification: Notification) {
+        guard let frontmost = NSWorkspace.shared.frontmostApplication,
+              frontmost.isTerminated == false,
+              let bundleID = Bundle.main.bundleIdentifier,
+              frontmost.bundleIdentifier != bundleID else {
+            return
+        }
+
+        lastFocusedApplication = frontmost
+    }
+
+    func applicationDidResignActive(_ notification: Notification) {
+        hideLauncherWindow(restoreFocus: false)
     }
 
     /// Reopens the launcher when the Dock icon is clicked while the app is already running.
@@ -446,13 +473,38 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
 
         if window.isVisible {
-            window.orderOut(nil)
-            focusPreferredApplicationAfterLauncherHides()
+            hideLauncherWindow(restoreFocus: true)
         } else {
             recordFrontmostApplicationForRestoration()
             activateApplicationForCurrentModeIfNeeded()
             launcherWindowManager.presentWindow()
         }
+    }
+
+    /// Hides the launcher window and optionally restores the previously focused app.
+    private func hideLauncherWindow(restoreFocus: Bool) {
+        guard let window = launcherWindowManager?.window, window.isVisible else { return }
+        window.orderOut(nil)
+        if restoreFocus {
+            focusPreferredApplicationAfterLauncherHides()
+        }
+    }
+
+    /// Shows the launcher after the system activates the app (e.g., via Cmd+Tab).
+    private func showLauncherWindowAfterActivation() {
+        if launcherWindowManager == nil {
+            applyLauncherMode(shouldPresentWindow: false)
+        }
+
+        guard let controller = launcherWindowManager else { return }
+
+        if let window = controller.window, window.isVisible {
+            window.makeKeyAndOrderFront(nil)
+            return
+        }
+
+        activateApplicationForCurrentModeIfNeeded()
+        controller.presentWindow()
     }
 
     /// Activates the app when the current launcher mode expects a regular foreground experience.

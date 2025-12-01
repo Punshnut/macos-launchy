@@ -71,7 +71,7 @@ struct IntroductionWindow: View {
                 ),
                 bullets: [
                     IntroBullet(iconName: "text.magnifyingglass", title: String(localized: "Instant search"), detail: String(localized: "The search bar narrows results as you type, then Enter launches the first match.")),
-                    IntroBullet(iconName: "hand.point.up.left.fill", title: String(localized: "Rearrange easily"), detail: String(localized: "Drag icons to reorder pages. Hold Option or Shift while dragging to create folders without shuffling the grid.")),
+                    IntroBullet(iconName: "hand.point.up.left.fill", title: String(localized: "Rearrange easily"), detail: String(localized: "Drag icons to reorder pages. Hold Option or Shift while dragging to create folders.")),
                     IntroBullet(iconName: "folder.fill.badge.plus", title: String(localized: "Name folders fast"), detail: String(localized: "Drop onto another app to make a folder, then rename it inline."))
                 ]
             ),

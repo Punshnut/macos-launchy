@@ -24,7 +24,7 @@
 "Instant search" = "即時検索";
 "The search bar narrows results as you type, then Enter launches the first match." = "入力に合わせて検索バーが結果を絞り込み、Enter で最初の一致を起動します。";
 "Rearrange easily" = "簡単に並べ替え";
-"Drag icons to reorder pages. Hold Option or Shift while dragging to create folders without shuffling the grid." = "アイコンをドラッグしてページの順序を入れ替えます。ドラッグ中に Option または Shift を押すと、グリッドを崩さずにフォルダを作成できます。";
+"Drag icons to reorder pages. Hold Option or Shift while dragging to create folders." = "アイコンをドラッグしてページの順序を入れ替えます。ドラッグ中に Option または Shift を押すとフォルダを作成できます。";
 "Name folders fast" = "フォルダに迅速に名前を付ける";
 "Drop onto another app to make a folder, then rename it inline." = "別のアプリにドロップするとフォルダを作成し、その場で名前を変更できます。";
 "Right-click for power" = "右クリックでパワー";

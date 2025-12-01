@@ -2551,16 +2551,23 @@ struct LauncherView: View {
             return nil
         }
 
-        if folders.isEmpty {
+        let folderOptions = folders.map { folder -> (folder: FolderItem, title: String) in
+            let title = folder.name.isEmpty ? FolderItem.defaultName : folder.name
+            return (folder: folder, title: title)
+        }
+        let sortedFolders = folderOptions.sorted {
+            $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
+        }
+
+        if sortedFolders.isEmpty {
             Button("No folders available") { }
                 .disabled(true)
         } else {
-            ForEach(folders, id: \.id) { folder in
-                let folderTitle = folder.name.isEmpty ? FolderItem.defaultName : folder.name
-                Button(folderTitle) {
-                    moveApp(app, toFolderID: folder.id)
+            ForEach(sortedFolders, id: \.folder.id) { entry in
+                Button(entry.title) {
+                    moveApp(app, toFolderID: entry.folder.id)
                 }
-                .disabled(isApp(app, inFolderWithID: folder.id))
+                .disabled(isApp(app, inFolderWithID: entry.folder.id))
             }
         }
     }

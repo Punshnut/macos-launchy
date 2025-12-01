@@ -1,17 +1,30 @@
 import SwiftUI
 
+@MainActor
+final class SettingsWindowCoordinator: ObservableObject {
+    @Published var activeTab: SettingsTab = .visuals
+
+    func selectTab(_ tab: SettingsTab) {
+        activeTab = tab
+    }
+}
+
 /// SwiftUI-based macOS settings window content that drives `LauncherSettings`.
 struct SettingsWindow: View {
     /// Backing store powering the macOS settings UI.
     @StateObject private var settingsStore: SettingsWindowStore
-    @State private var activeTab: SettingsTab = .visuals
+    @ObservedObject private var coordinator: SettingsWindowCoordinator
     @State private var hostingWindow: AnyObject?
     @State private var hasAppliedInitialWindowSizing = false
     @Namespace private var tabSelectionNamespace
     @Environment(\.colorScheme) private var colorScheme
 
-    init(store: SettingsWindowStore = SettingsWindowStore()) {
+    init(
+        store: SettingsWindowStore = SettingsWindowStore(),
+        coordinator: SettingsWindowCoordinator = SettingsWindowCoordinator()
+    ) {
         _settingsStore = StateObject(wrappedValue: store)
+        _coordinator = ObservedObject(wrappedValue: coordinator)
     }
 
     var body: some View {
@@ -61,7 +74,7 @@ struct SettingsWindow: View {
                     .padding(.trailing, 22)
             }
         }
-        .onChange(of: activeTab) { newValue in
+        .onChange(of: coordinator.activeTab) { newValue in
             resizeWindow(for: newValue, animated: true)
         }
     }
@@ -155,10 +168,10 @@ struct SettingsWindow: View {
     }
 
     private func tabButton(for tab: SettingsTab) -> some View {
-        let isSelected = activeTab == tab
+        let isSelected = coordinator.activeTab == tab
         return Button {
             withAnimation(.spring(response: 0.28, dampingFraction: 0.85)) {
-                activeTab = tab
+                coordinator.selectTab(tab)
             }
         } label: {
             HStack(spacing: 10) {
@@ -193,7 +206,7 @@ struct SettingsWindow: View {
 
     @ViewBuilder
     private var tabContent: some View {
-        switch activeTab {
+        switch coordinator.activeTab {
         case .visuals:
             visualsTab
         case .shortcuts:
@@ -802,7 +815,7 @@ struct SettingsWindow: View {
         SettingsWindowHostManager.applyConfiguration(to: window)
         guard hasAppliedInitialWindowSizing == false else { return }
         hasAppliedInitialWindowSizing = true
-        SettingsWindowHostManager.resize(window: window, for: activeTab, animated: false)
+        SettingsWindowHostManager.resize(window: window, for: coordinator.activeTab, animated: false)
     }
 
     private func resizeWindow(for tab: SettingsTab, animated: Bool) {

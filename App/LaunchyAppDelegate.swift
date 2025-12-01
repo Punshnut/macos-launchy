@@ -571,8 +571,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Opens the settings window regardless of activation policy.
-    func showSettingsWindow() {
-        settingsWindowPresenter.showWindowAndActivate()
+    func showSettingsWindow(selecting tab: SettingsTab = .visuals) {
+        settingsWindowPresenter.showWindowAndActivate(selecting: tab)
     }
 
     /// Presents the Launchy introduction flow.
@@ -699,6 +699,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             fillsGapsAutomatically: currentSettings.fillsGapsAutomatically,
             onSettingsRequested: { [weak self] in
                 self?.showSettingsWindow()
+            },
+            onAppInfoRequested: { [weak self] in
+                self?.showSettingsWindow(selecting: .about)
             },
             onItemOrderChange: { [weak self] reorderedItems, newPageSizes in
                 guard let self else { return }

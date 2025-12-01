@@ -315,12 +315,13 @@ struct FrostedBackgroundView: NSViewRepresentable {
 // MARK: - Settings Window Controller
 
 final class SettingsWindowController: NSWindowController, NSWindowDelegate {
+    private let coordinator = SettingsWindowCoordinator()
     private let hostingController: NSHostingController<SettingsWindow>
     @MainActor
     var onClose: (() -> Void)?
 
     init() {
-        let view = SettingsWindow()
+        let view = SettingsWindow(coordinator: coordinator)
         hostingController = NSHostingController(rootView: view)
         let defaultContentSize = SettingsWindowMetrics.defaultContentSize
         let window = NSWindow(
@@ -367,6 +368,11 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         showWindow(nil)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    func showWindowAndActivate(selecting tab: SettingsTab) {
+        coordinator.selectTab(tab)
+        showWindowAndActivate()
     }
 
     private func centerWindowOnPreferredScreen() {

@@ -100,3 +100,7 @@ Here are a few improvements planned for upcoming releases:
 - Localization languages: 🇮🇳 हिन्दी (Hindi), 🇮🇩 Bahasa Indonesia, 🇻🇳 Tiếng Việt, 🇵🇭 Filipino / Tagalog, 🇵🇱 Polski, 🇮🇷 Farsi, 🇬🇷 Ελληνικά, 🇳🇱 Nederlands, 🇸🇪 Svenska
 
 Made with ❤️
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Punshnut/macos-launchy&type=date&legend=top-left)](https://www.star-history.com/#Punshnut/macos-launchy&type=date&legend=top-left)

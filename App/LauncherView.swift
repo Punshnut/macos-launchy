@@ -58,6 +58,8 @@ struct LauncherView: View {
     var fillsGapsAutomatically: Bool = true
     /// Callback fired when the user requests to open settings from a context menu.
     var onSettingsRequested: (() -> Void)?
+    /// Callback fired when the user requests app info/about.
+    var onAppInfoRequested: (() -> Void)?
     /// Callback fired whenever the user changes the arrangement.
     var onItemOrderChange: (([LauncherItem], [Int]) -> Void)?
     /// Provides the icon that should be used for a specific app.
@@ -78,6 +80,10 @@ struct LauncherView: View {
     @State private var currentPage: Int = 0
     @State private var isClosingLauncher = false
     @State private var searchText = ""
+    @State private var searchControlsExpanded = false
+    @State private var isMultiSelectModeActive = false
+    @State private var multiSelectedItemIDs: Set<UUID> = []
+    @State private var expansionAutoCollapseTask: Task<Void, Never>?
     @State private var activeFolder: FolderItem?
     @State private var folderDragContext: FolderDragContext?
     @State private var draggedFolderApp: AppItem?
@@ -116,6 +122,7 @@ struct LauncherView: View {
         launcherMode: LauncherMode = .floaty,
         fillsGapsAutomatically: Bool = true,
         onSettingsRequested: (() -> Void)? = nil,
+        onAppInfoRequested: (() -> Void)? = nil,
         onItemOrderChange: (([LauncherItem], [Int]) -> Void)? = nil,
         iconProvider: @escaping (AppItem) -> NSImage? = { $0.iconImage }
     ) {
@@ -126,6 +133,7 @@ struct LauncherView: View {
         self.launcherMode = launcherMode
         self.fillsGapsAutomatically = fillsGapsAutomatically
         self.onSettingsRequested = onSettingsRequested
+        self.onAppInfoRequested = onAppInfoRequested
         self.onItemOrderChange = onItemOrderChange
         self.iconProvider = iconProvider
         _orderedItems = State(initialValue: itemCatalog)
@@ -184,10 +192,15 @@ struct LauncherView: View {
                 activeFolderPageCount = 1
             }
         }
-        .onChange(of: searchText) { _ in
+        .onChange(of: searchText) { newValue in
             currentPage = 0
             pageDirection = .forward
             pagerDragOffset = 0
+            if newValue.isEmpty == false {
+                exitMultiSelectMode()
+                updateSearchControlsExpansion(to: false)
+                cancelExpansionAutoCollapse()
+            }
         }
         .onChange(of: draggedItem) { newItem in
             if newItem == nil {
@@ -214,6 +227,8 @@ struct LauncherView: View {
                 }) == false {
                 self.activeFolder = nil
             }
+            let validIDs = Set(newItems.map(\.id))
+            multiSelectedItemIDs.formIntersection(validIDs)
         }
         .onChange(of: isEditingFolderName) { isEditing in
             if isEditing == false {
@@ -266,8 +281,8 @@ struct LauncherView: View {
 
                 VStack(spacing: 0) {
                     searchBar(layout: layout)
-                        .padding(.top, layout.floatySearchBarTopPadding)
-                        .padding(.bottom, layout.searchToGridSpacing)
+                    .padding(.top, layout.floatySearchBarTopPadding)
+                    .padding(.bottom, layout.searchToGridSpacing)
 
                     ZStack {
                         Group {
@@ -328,14 +343,14 @@ struct LauncherView: View {
 
                                                         return AnyView(
                                                             Button {
-                                                                openItem(item)
+                                                                if isMultiSelectModeActive {
+                                                                    toggleSelection(for: item)
+                                                                } else {
+                                                                    openItem(item)
+                                                                }
                                                             } label: {
                                                                 VStack(spacing: 10) {
-                                                                    iconView(for: item, layout: layout)
-                                                                        .frame(
-                                                                            width: layout.iconDimension,
-                                                                            height: layout.iconDimension
-                                                                        )
+                                                                    iconCell(for: item, layout: layout)
                                                                         .scaleEffect(isLaunching ? 1.08 : 1.0)
                                                                         .opacity(isLaunching ? 0.4 : 1.0)
                                                                         .animation(.easeInOut(duration: 0.18), value: launchingItemID)
@@ -473,6 +488,7 @@ struct LauncherView: View {
 
                     gridPager(canReorder: canReorder, layout: layout)
                 }
+                .animation(nil, value: searchControlsExpanded)
                 .padding(.horizontal, layout.horizontalPadding)
                 .padding(.bottom, layout.bottomPadding)
             }
@@ -1261,6 +1277,30 @@ struct LauncherView: View {
         }
     }
 
+    private func iconCell(for item: LauncherItem, layout: LauncherLayoutMetrics) -> some View {
+        let isSelected = isMultiSelectModeActive && multiSelectedItemIDs.contains(item.id)
+        return iconView(for: item, layout: layout)
+            .frame(width: layout.iconDimension, height: layout.iconDimension)
+            .overlay(selectionHighlight(for: item, layout: layout, isSelected: isSelected))
+            .shadow(color: Color.accentColor.opacity(isSelected ? 0.28 : 0), radius: isSelected ? 10 : 0, y: isSelected ? 2 : 0)
+            .blendMode(isSelected ? .screen : .normal)
+            .animation(.easeInOut(duration: 0.18), value: isSelected)
+    }
+
+    @ViewBuilder
+    private func selectionHighlight(for item: LauncherItem, layout: LauncherLayoutMetrics, isSelected: Bool) -> some View {
+        let opacity = isSelected ? 0.92 : 0
+        let lineWidth = isSelected ? 2.4 : 0
+        switch item {
+        case .folder:
+            RoundedRectangle(cornerRadius: max(layout.iconDimension * 0.18, 12), style: .continuous)
+                .strokeBorder(Color.accentColor.opacity(opacity), lineWidth: lineWidth)
+        default:
+            RoundedRectangle(cornerRadius: max(layout.iconDimension * 0.32, 14), style: .continuous)
+                .strokeBorder(Color.accentColor.opacity(opacity), lineWidth: lineWidth)
+        }
+    }
+
     /// Monochrome drag preview to keep the in-grid placeholder untouched.
     private func dragPreview(for item: LauncherItem, layout: LauncherLayoutMetrics) -> some View {
         iconView(for: item, layout: layout)
@@ -1323,6 +1363,7 @@ struct LauncherView: View {
         .scaleEffect(isSnapPreviewTarget ? 1.01 : 1.0)
         .animation(.easeInOut(duration: 0.25), value: isSnapPreviewTarget)
         .environment(\.colorScheme, colorScheme)
+        .animation(nil, value: searchControlsExpanded)
     }
 
     /// Shows a single tiny app icon inside the folder preview grid.
@@ -2108,6 +2149,11 @@ struct LauncherView: View {
             return
         }
 
+        if isMultiSelectModeActive {
+            finalizeBulkSelectionAction()
+            return
+        }
+
         if activeFolder != nil {
             activeFolder = nil
             return
@@ -2291,103 +2337,249 @@ struct LauncherView: View {
 
     /// Glassy search bar used when the launcher is fullscreen.
     private func fullscreenSearchBar(layout: LauncherLayoutMetrics) -> some View {
-            TextField("Search apps", text: $searchText)
-                .textFieldStyle(.plain)
-                .font(.system(size: layout.searchBarFontSize, weight: .medium))
-                .foregroundColor(searchBarForegroundColor())
-                .accentColor(searchBarCursorColor)
-                .focused($isSearchFieldFocused)
-            .onSubmit {
-                launchSearchResultIfPossible()
-            }
-            .padding(.leading, 18)
-            .padding(.trailing, 44)
-            .frame(height: layout.searchBarHeight)
-            .background(
-                searchBarBackgroundMaterial()
-                    .clipShape(RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous))
-            )
-            .overlay(alignment: .trailing) {
-                searchBarTrailingButton()
-            }
-            .overlay(
-                RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous)
-                    .strokeBorder(Color.white.opacity(0.25))
-            )
-            .shadow(color: .black.opacity(0.2), radius: 12, y: 4)
-            .frame(maxWidth: layout.searchBarWidth)
-            .frame(maxWidth: .infinity)
-            .environment(\.colorScheme, searchBarColorSchemeOverride())
+        searchFieldBody(layout: layout, isFloaty: false)
     }
 
     /// Search bar modeled after the floaty panel screenshot (rounded, pill-like, with a settings control).
     private func floatySearchBar(layout: LauncherLayoutMetrics) -> some View {
-        HStack(alignment: .center, spacing: 12) {
-            TextField(String(localized: "Search"), text: $searchText)
-                .textFieldStyle(.plain)
-                .font(.system(size: layout.searchBarFontSize, weight: .medium))
-                .foregroundColor(searchBarForegroundColor())
-                .accentColor(searchBarCursorColor)
-                .focused($isSearchFieldFocused)
-                .onSubmit {
-                    launchSearchResultIfPossible()
-                }
-                .padding(.leading, 18)
-                .padding(.trailing, 44)
-                .frame(height: layout.searchBarHeight)
-                .background(
-                    ZStack {
-                        searchBarBackgroundMaterial()
-                        Color.white.opacity(colorScheme == .dark ? 0.12 : 0.78)
-                    }
-                    .clipShape(RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous))
-                )
-            .overlay(alignment: .trailing) {
-                searchBarTrailingButton()
+        searchFieldBody(layout: layout, isFloaty: true)
+    }
+
+    private func searchFieldBody(layout: LauncherLayoutMetrics, isFloaty: Bool) -> some View {
+        TextField(String(localized: "Search"), text: $searchText)
+            .textFieldStyle(.plain)
+            .font(.system(size: layout.searchBarFontSize, weight: .medium))
+            .foregroundColor(searchBarForegroundColor())
+            .accentColor(searchBarCursorColor)
+            .focused($isSearchFieldFocused)
+            .onSubmit {
+                launchSearchResultIfPossible()
             }
-                .overlay(
-                    RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous)
-                        .strokeBorder(Color.white.opacity(0.4))
-                )
-                .shadow(color: .black.opacity(0.18), radius: 18, y: 6)
-                .frame(maxWidth: .infinity)
-                .environment(\.colorScheme, searchBarColorSchemeOverride())
+            .padding(.leading, 18)
+            .padding(.trailing, 14)
+            .frame(width: layout.searchBarWidth, height: layout.searchBarHeight)
+            .background(searchFieldBackground(isFloaty: isFloaty, layout: layout))
+            .overlay(
+                RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous)
+                    .strokeBorder(isMultiSelectModeActive ? Color.accentColor.opacity(0.7) : Color.white.opacity(isFloaty ? 0.4 : 0.25), lineWidth: isMultiSelectModeActive ? 2 : 1)
+            )
+            .overlay(alignment: .trailing) {
+                searchBarTrailingDecorations()
+            }
+            .shadow(color: .black.opacity(isFloaty ? 0.18 : 0.2), radius: isFloaty ? 18 : 12, y: isFloaty ? 6 : 4)
+            .frame(width: layout.searchBarWidth)
+            .frame(maxWidth: .infinity)
+            .environment(\.colorScheme, searchBarColorSchemeOverride())
+    }
+
+    private func searchFieldBackground(isFloaty: Bool, layout: LauncherLayoutMetrics) -> some View {
+        Group {
+            if isFloaty {
+                ZStack {
+                    searchBarBackgroundMaterial()
+                    Color.white.opacity(colorScheme == .dark ? 0.12 : 0.78)
+                }
+            } else {
+                searchBarBackgroundMaterial()
+            }
         }
-        .frame(maxWidth: layout.searchBarWidth)
-        .frame(maxWidth: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous))
+    }
+
+    private var isSearchControlsVisible: Bool {
+        searchControlsExpanded && searchText.isEmpty
+    }
+
+    private var searchControlsAnimation: Animation {
+        .spring(response: 0.45, dampingFraction: 0.72, blendDuration: 0.25)
     }
 
     private var searchBarIconTransition: Animation {
-        .easeInOut(duration: 0.5)
+        .easeInOut(duration: 0.32)
     }
 
-    private func searchBarTrailingButton() -> some View {
-        Button {
-            if searchText.isEmpty {
-                Task { @MainActor in
-                    onSettingsRequested?()
-                }
-            } else {
+    @ViewBuilder
+    private func searchBarTrailingDecorations() -> some View {
+        if searchText.isEmpty == false {
+            Button {
                 searchText = ""
-            }
-        } label: {
-            let isEmpty = searchText.isEmpty
-            ZStack {
-                Image(systemName: "ellipsis.circle")
-                    .scaleEffect(isEmpty ? 1 : 0.03)
-                    .opacity(isEmpty ? 1 : 0)
+            } label: {
                 Image(systemName: "xmark.circle.fill")
-                    .scaleEffect(isEmpty ? 0.03 : 1)
-                    .opacity(isEmpty ? 0 : 1)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(searchBarForegroundColor().opacity(0.65))
+                    .transition(.opacity)
             }
-            .font(.system(size: 16, weight: .semibold))
-            .foregroundColor(searchBarForegroundColor().opacity(0.55))
-            .animation(searchBarIconTransition, value: isEmpty)
+            .buttonStyle(.plain)
+            .padding(.trailing, 14)
+            .contentShape(Rectangle())
+            .help(String(localized: "Clear search text"))
+        } else {
+            ZStack(alignment: .trailing) {
+                Button {
+                    toggleSearchControlsExpansion()
+                } label: {
+                    searchIconStack(isEmpty: true)
+                }
+                .buttonStyle(.plain)
+                .padding(.trailing, 14)
+                .contentShape(Rectangle())
+                .opacity(isSearchControlsVisible ? 0 : 1)
+                .allowsHitTesting(!isSearchControlsVisible)
+                .help(String(localized: "More actions"))
+
+                HStack(spacing: 12) {
+                    Button {
+                        Task { @MainActor in
+                            onAppInfoRequested?()
+                        }
+                    } label: {
+                        Image(systemName: "info.circle")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(searchBarForegroundColor().opacity(0.85))
+                    }
+                    .buttonStyle(.plain)
+                    .help(String(localized: "Launchy info"))
+
+                    multiSelectToggleControl()
+
+                    Button {
+                        Task { @MainActor in
+                            onSettingsRequested?()
+                        }
+                    } label: {
+                        Image(systemName: "gearshape.fill")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(searchBarForegroundColor().opacity(0.85))
+                    }
+                    .buttonStyle(.plain)
+                    .help(String(localized: "Launcher settings"))
+                }
+                .padding(.trailing, 14)
+                .opacity(isSearchControlsVisible ? 1 : 0)
+                .allowsHitTesting(isSearchControlsVisible)
+                .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                .animation(searchControlsAnimation, value: searchControlsExpanded)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func searchIconStack(isEmpty: Bool) -> some View {
+        ZStack {
+            Image(systemName: "ellipsis.circle")
+                .scaleEffect(isEmpty ? 1 : 0.03)
+                .opacity(isEmpty ? 1 : 0)
+            Image(systemName: "xmark.circle.fill")
+                .scaleEffect(isEmpty ? 0.03 : 1)
+                .opacity(isEmpty ? 0 : 1)
+        }
+        .font(.system(size: 16, weight: .semibold))
+        .foregroundColor(searchBarForegroundColor().opacity(0.58))
+        .animation(searchBarIconTransition, value: isEmpty)
+    }
+
+    private func multiSelectToggleControl() -> some View {
+        Button {
+            toggleMultiSelectMode()
+        } label: {
+            Image(systemName: "checklist")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(isMultiSelectModeActive ? Color.accentColor : searchBarForegroundColor().opacity(0.65))
+                .frame(width: 32, height: 32)
+                .background(
+                    Circle()
+                        .strokeBorder(
+                            isMultiSelectModeActive ? Color.accentColor.opacity(0.9) : Color.white.opacity(0.4),
+                            lineWidth: isMultiSelectModeActive ? 2.2 : 1
+                        )
+                )
         }
         .buttonStyle(.plain)
-        .padding(.trailing, 14)
-        .contentShape(Rectangle())
-        .help(searchText.isEmpty ? String(localized: "Settings") : String(localized: "Clear search text"))
+        .contentShape(Circle())
+        .help(isMultiSelectModeActive ? String(localized: "Exit multi-select mode") : String(localized: "Enter multi-select mode"))
+    }
+
+    private func toggleSearchControlsExpansion() {
+        guard searchText.isEmpty else { return }
+        let shouldExpand = !searchControlsExpanded
+        if shouldExpand == false {
+            exitMultiSelectMode()
+        }
+        updateSearchControlsExpansion(to: shouldExpand)
+    }
+
+    private func updateSearchControlsExpansion(to expanded: Bool) {
+        withAnimation(.none) {
+            searchControlsExpanded = expanded
+        }
+        if expanded {
+            scheduleExpansionAutoCollapse()
+        } else {
+            cancelExpansionAutoCollapse()
+        }
+    }
+
+    private func toggleMultiSelectMode() {
+        if isMultiSelectModeActive {
+            exitMultiSelectMode()
+            updateSearchControlsExpansion(to: false)
+        } else {
+            cancelExpansionAutoCollapse()
+            multiSelectedItemIDs.removeAll()
+            isMultiSelectModeActive = true
+            updateSearchControlsExpansion(to: true)
+        }
+    }
+
+    private func scheduleExpansionAutoCollapse() {
+        guard isMultiSelectModeActive == false else { return }
+        cancelExpansionAutoCollapse()
+        expansionAutoCollapseTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            guard searchControlsExpanded && isMultiSelectModeActive == false else { return }
+            updateSearchControlsExpansion(to: false)
+            expansionAutoCollapseTask = nil
+        }
+    }
+
+    private func cancelExpansionAutoCollapse() {
+        expansionAutoCollapseTask?.cancel()
+        expansionAutoCollapseTask = nil
+    }
+
+    private func exitMultiSelectMode() {
+        isMultiSelectModeActive = false
+        multiSelectedItemIDs.removeAll()
+    }
+
+    private var selectedLauncherItems: [LauncherItem] {
+        orderedItems.filter { multiSelectedItemIDs.contains($0.id) }
+    }
+
+    private func multiSelectTargets(for item: LauncherItem) -> [LauncherItem] {
+        let selection = selectedLauncherItems
+        if isMultiSelectModeActive && selection.isEmpty == false {
+            return selection
+        }
+        return [item]
+    }
+
+    private func multiSelectAppTargets(for item: LauncherItem) -> [AppItem] {
+        multiSelectTargets(for: item).compactMap { target in
+            if case let .app(app) = target {
+                return app
+            }
+            return nil
+        }
+    }
+
+    private func toggleSelection(for item: LauncherItem) {
+        guard isMultiSelectModeActive else { return }
+        if multiSelectedItemIDs.contains(item.id) {
+            multiSelectedItemIDs.remove(item.id)
+        } else {
+            multiSelectedItemIDs.insert(item.id)
+        }
     }
 
     /// Chooses the right blur material for the search bar based on the selected background style.
@@ -2514,15 +2706,16 @@ struct LauncherView: View {
             .disabled(app.bundleURL == nil)
 
             Menu("Move to Folder") {
-                folderMoveMenu(for: app)
+                folderMoveMenu(for: multiSelectAppTargets(for: item))
             }
 
             Menu("Move to Page") {
-                pageMoveMenu(for: .app(app))
+                pageMoveMenu(for: item)
             }
 
             Button("Hide App") {
                 hideApp(app)
+                finalizeBulkSelectionAction()
             }
 
             Button("Create Folder with App") {
@@ -2538,14 +2731,14 @@ struct LauncherView: View {
             }
 
             Menu("Move to Page") {
-                pageMoveMenu(for: .folder(folder))
+                pageMoveMenu(for: item)
             }
         }
     }
 
     /// Nested menu showing available folders for an app move.
     @ViewBuilder
-    private func folderMoveMenu(for app: AppItem) -> some View {
+    private func folderMoveMenu(for apps: [AppItem]) -> some View {
         let folders = orderedItems.compactMap { item -> FolderItem? in
             if case let .folder(folder) = item { return folder }
             return nil
@@ -2559,15 +2752,19 @@ struct LauncherView: View {
             $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
         }
 
-        if sortedFolders.isEmpty {
-            Button("No folders available") { }
+        if apps.isEmpty {
+            Button(String(localized: "No apps selected")) { }
+                .disabled(true)
+        } else if sortedFolders.isEmpty {
+            Button(String(localized: "No folders available")) { }
                 .disabled(true)
         } else {
             ForEach(sortedFolders, id: \.folder.id) { entry in
                 Button(entry.title) {
-                    moveApp(app, toFolderID: entry.folder.id)
+                    moveApps(apps, toFolderID: entry.folder.id)
+                    finalizeBulkSelectionAction()
                 }
-                .disabled(isApp(app, inFolderWithID: entry.folder.id))
+                .disabled(apps.allSatisfy { isApp($0, inFolderWithID: entry.folder.id) })
             }
         }
     }
@@ -2577,12 +2774,17 @@ struct LauncherView: View {
     private func pageMoveMenu(for item: LauncherItem) -> some View {
         let totalPages = max(fullPageCount, 1)
         let pageIndices = Array(0..<totalPages)
-        ForEach(pageIndices, id: \.self) { pageIndex in
-            let currentIndex = self.pageIndex(for: item)
-            Button("Page \(pageIndex + 1)") {
-                moveItem(item, toPage: pageIndex)
+        let targets = multiSelectTargets(for: item)
+
+        ForEach(pageIndices, id: \.self) { targetPage in
+            let onPage = targets.allSatisfy {
+                pageIndex(for: $0) == targetPage
             }
-            .disabled(currentIndex == pageIndex)
+            Button("Page \(targetPage + 1)") {
+                moveItems(targets, toPage: targetPage)
+                finalizeBulkSelectionAction()
+            }
+            .disabled(onPage)
         }
     }
 
@@ -2838,6 +3040,12 @@ struct LauncherView: View {
         persistOrderChange()
     }
 
+    private func moveApps(_ apps: [AppItem], toFolderID folderID: UUID) {
+        for app in apps {
+            moveApp(app, toFolderID: folderID)
+        }
+    }
+
     /// Moves an item (or app extracted from a folder) to a target page.
     private func moveItem(_ item: LauncherItem, toPage targetPage: Int) {
         var items = orderedItems
@@ -2880,6 +3088,18 @@ struct LauncherView: View {
         pageSizes = finalSizes
         ensureCurrentPageWithinBounds()
         persistOrderChange(using: finalSizes)
+    }
+
+    private func moveItems(_ items: [LauncherItem], toPage targetPage: Int) {
+        for item in items {
+            moveItem(item, toPage: targetPage)
+        }
+    }
+
+    private func finalizeBulkSelectionAction() {
+        guard isMultiSelectModeActive else { return }
+        exitMultiSelectMode()
+        updateSearchControlsExpansion(to: false)
     }
 
     /// Inserts a launcher item at the end of the requested page slice.

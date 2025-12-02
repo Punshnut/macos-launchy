@@ -108,6 +108,8 @@
 "Version %@" = "เวอร์ชัน %@";
 "Built by the Launchy team" = "สร้างโดยทีม Launchy";
 "Launchy Settings" = "การตั้งค่า Launchy";
+"Launcher settings" = "การตั้งค่า Launcher";
+"Launchy info" = "ข้อมูล Launchy";
 
 "Settings" = "การตั้งค่า";
 "Settings..." = "การตั้งค่า...";
@@ -122,13 +124,17 @@
 
 "No items found" = "ไม่พบรายการ";
 "No matching items" = "ไม่มีรายการตรงกัน";
+"Enter multi-select mode" = "เข้าสู่โหมดเลือกหลายรายการ";
+"Exit multi-select mode" = "ออกจากโหมดเลือกหลายรายการ";
 "No applications available" = "ไม่พบแอปที่ใช้งานได้";
+"No apps selected" = "ยังไม่มีแอปที่ถูกเลือก";
 "Page %lld of %lld" = "หน้า %lld จาก %lld";
 "Try a different search term." = "ลองคำค้นหาอื่น";
 "Launchy has not indexed any applications yet." = "Launchy ยังไม่ได้จัดทำดัชนีแอปใด ๆ";
 "Search apps" = "ค้นหาแอป";
 "Search" = "ค้นหา";
 "Clear search text" = "ล้างข้อความค้นหา";
+"More actions" = "ดำเนินการเพิ่มเติม";
 "Open" = "เปิด";
 "Rename App" = "เปลี่ยนชื่อแอป";
 "Enter a custom name for this app. Leave empty to reset." = "ใส่ชื่อเฉพาะสำหรับแอปนี้ ปล่อยว่างเพื่อรีเซ็ต";

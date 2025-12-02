@@ -25,8 +25,8 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
     <p>🇪🇸 Español (España)<br>🇮🇹 Italiano<br>🇩🇪 Deutsch<br>🇫🇷 Français<br>🇵🇹 Português (Portugal)<br>🇺🇦 Українська<br>🇷🇺 Русский</p>
   </details>
   <details>
-    <summary>🇹🇷 🇨🇳 🇯🇵 🇰🇷 🇹🇭 Asia (5)</summary>
-    <p>🇹🇷 Türkçe<br>🇨🇳 中文（简体）<br>🇯🇵 日本語<br>🇰🇷 한국어 (대한민국)<br>🇹🇭 ภาษาไทย</p>
+    <summary>🇮🇳 🇮🇩 🇻🇳 🇹🇷 🇨🇳 🇯🇵 🇰🇷 🇹🇭 Asia (8)</summary>
+    <p>🇮🇳 हिन्दी<br>🇮🇩 Bahasa Indonesia<br>🇻🇳 Tiếng Việt<br>🇹🇷 Türkçe<br>🇨🇳 中文（简体）<br>🇯🇵 日本語<br>🇰🇷 한국어 (대한민국)<br>🇹🇭 ภาษาไทย</p>
   </details>
   <details>
     <summary>🇧🇷 🇲🇽 🇺🇸 Americas (3)</summary>
@@ -97,7 +97,7 @@ Here are a few improvements planned for upcoming releases:
 - Enhanced folder styling - clearer folder icons, improved previews, and a cleaner visual hierarchy.
 - Floaty mode visual overhaul - refinements to spacing, layout, and HUD elements to better match modern macOS design.
 - Dock menu enhancements - icons inside the Dock right-click menu for quicker recognition and a more polished feel.
-- Localization languages: 🇮🇳 हिन्दी (Hindi), 🇮🇩 Bahasa Indonesia, 🇻🇳 Tiếng Việt, 🇵🇭 Filipino / Tagalog, 🇵🇱 Polski, 🇮🇷 Farsi, 🇬🇷 Ελληνικά, 🇳🇱 Nederlands, 🇸🇪 Svenska
+- Localization languages: 🇵🇭 Filipino / Tagalog, 🇵🇱 Polski, 🇮🇷 Farsi, 🇬🇷 Ελληνικά, 🇳🇱 Nederlands, 🇸🇪 Svenska
 
 Made with ❤️
 

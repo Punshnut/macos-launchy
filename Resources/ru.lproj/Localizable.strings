@@ -108,6 +108,8 @@
 "Version %@" = "Версия %@";
 "Built by the Launchy team" = "Создано командой Launchy";
 "Launchy Settings" = "Настройки Launchy";
+"Launcher settings" = "Настройки лаунчера";
+"Launchy info" = "Информация о Launchy";
 
 "Settings" = "Настройки";
 "Settings..." = "Настройки...";
@@ -122,13 +124,17 @@
 
 "No items found" = "Элементы не найдены";
 "No matching items" = "Совпадающих элементов нет";
+"Enter multi-select mode" = "Включить режим множественного выбора";
+"Exit multi-select mode" = "Выйти из режима множественного выбора";
 "No applications available" = "Нет доступных приложений";
+"No apps selected" = "Приложения не выбраны";
 "Page %lld of %lld" = "Страница %lld из %lld";
 "Try a different search term." = "Попробуйте другой запрос.";
 "Launchy has not indexed any applications yet." = "Launchy ещё не проиндексировал ни одного приложения.";
 "Search apps" = "Искать приложения";
 "Search" = "Поиск";
 "Clear search text" = "Очистить текст поиска";
+"More actions" = "Дополнительные действия";
 "Open" = "Открыть";
 "Rename App" = "Переименовать приложение";
 "Enter a custom name for this app. Leave empty to reset." = "Введите собственное имя для этого приложения. Оставьте пустым, чтобы сбросить.";

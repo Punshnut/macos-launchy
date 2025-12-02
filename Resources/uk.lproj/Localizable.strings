@@ -108,6 +108,8 @@
 "Version %@" = "Версія %@";
 "Built by the Launchy team" = "Створено командою Launchy";
 "Launchy Settings" = "Налаштування Launchy";
+"Launcher settings" = "Налаштування стартера";
+"Launchy info" = "Інформація про Launchy";
 
 "Settings" = "Налаштування";
 "Settings..." = "Налаштування...";
@@ -122,13 +124,17 @@
 
 "No items found" = "Елементи не знайдені";
 "No matching items" = "Немає відповідних елементів";
+"Enter multi-select mode" = "Увімкнути режим множинного вибору";
+"Exit multi-select mode" = "Вийти з режиму множинного вибору";
 "No applications available" = "Немає доступних програм";
+"No apps selected" = "Жодних програм не вибрано";
 "Page %lld of %lld" = "Сторінка %lld з %lld";
 "Try a different search term." = "Спробуйте інший пошуковий запит.";
 "Launchy has not indexed any applications yet." = "Launchy ще не проіндексував жодного додатку.";
 "Search apps" = "Шукати програми";
 "Search" = "Пошук";
 "Clear search text" = "Очистити текст пошуку";
+"More actions" = "Додаткові дії";
 "Open" = "Відкрити";
 "Rename App" = "Перейменувати додаток";
 "Enter a custom name for this app. Leave empty to reset." = "Введіть власну назву для цього додатку. Залиште пустим, щоб скинути.";

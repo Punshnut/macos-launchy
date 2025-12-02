@@ -108,6 +108,8 @@
 "Version %@" = "Sigogin %@";
 "Built by the Launchy team" = "An gina shi da tawagar Launchy";
 "Launchy Settings" = "Saitunan Launchy";
+"Launcher settings" = "Saitunan Launcher";
+"Launchy info" = "Bayanin Launchy";
 
 "Settings" = "Saituna";
 "Settings..." = "Saituna...";
@@ -122,13 +124,17 @@
 
 "No items found" = "Babu abubuwa da aka samu";
 "No matching items" = "Babu abubuwa masu dacewa";
+"Enter multi-select mode" = "Shiga yanayin zaɓi mai yawa";
+"Exit multi-select mode" = "Fita daga yanayin zaɓi mai yawa";
 "No applications available" = "Babu aikace-aikace masu samuwa";
+"No apps selected" = "Babu apps da aka zaɓa";
 "Page %lld of %lld" = "Shafi %lld na %lld";
 "Try a different search term." = "Gwada kalmar bincike daban.";
 "Launchy has not indexed any applications yet." = "Launchy bai lissafa kowanne manhaja ba tukuna.";
 "Search apps" = "Nemo apps";
 "Search" = "Bincike";
 "Clear search text" = "Goge rubutun bincike";
+"More actions" = "Ƙarin ayyuka";
 "Open" = "Buɗe";
 "Rename App" = "Sake suna manhaja";
 "Enter a custom name for this app. Leave empty to reset." = "Shigar da suna na musamman don wannan manhaja. Bar shi babu komai don sake saitawa.";

@@ -108,6 +108,8 @@
 "Version %@" = "Versão %@";
 "Built by the Launchy team" = "Criado pela equipa Launchy";
 "Launchy Settings" = "Definições do Launchy";
+"Launcher settings" = "Definições do lançador";
+"Launchy info" = "Informações do Launchy";
 
 "Settings" = "Definições";
 "Settings..." = "Definições...";
@@ -122,13 +124,17 @@
 
 "No items found" = "Nenhum elemento encontrado";
 "No matching items" = "Nenhum elemento correspondente";
+"Enter multi-select mode" = "Entrar no modo de seleção múltipla";
+"Exit multi-select mode" = "Sair do modo de seleção múltipla";
 "No applications available" = "Nenhuma aplicação disponível";
+"No apps selected" = "Nenhuma app selecionada";
 "Page %lld of %lld" = "Página %lld de %lld";
 "Try a different search term." = "Tenta outra pesquisa.";
 "Launchy has not indexed any applications yet." = "O Launchy ainda não indexou aplicações.";
 "Search apps" = "Pesquisar apps";
 "Search" = "Pesquisar";
 "Clear search text" = "Limpar texto de pesquisa";
+"More actions" = "Mais ações";
 "Open" = "Abrir";
 "Rename App" = "Renomear app";
 "Enter a custom name for this app. Leave empty to reset." = "Introduz um nome personalizado para esta app. Deixa vazio para repor.";

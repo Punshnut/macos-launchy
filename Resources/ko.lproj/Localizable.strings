@@ -108,6 +108,8 @@
 "Version %@" = "버전 %@";
 "Built by the Launchy team" = "Launchy 팀에서 제작";
 "Launchy Settings" = "Launchy 설정";
+"Launcher settings" = "런처 설정";
+"Launchy info" = "Launchy 정보";
 
 "Settings" = "설정";
 "Settings..." = "설정...";
@@ -122,13 +124,17 @@
 
 "No items found" = "항목을 찾을 수 없습니다";
 "No matching items" = "일치하는 항목 없음";
+"Enter multi-select mode" = "다중 선택 모드로 진입";
+"Exit multi-select mode" = "다중 선택 모드 종료";
 "No applications available" = "사용 가능한 앱이 없습니다";
+"No apps selected" = "선택된 앱이 없습니다";
 "Page %lld of %lld" = "%lld / %lld 페이지";
 "Try a different search term." = "다른 검색어를 시도하세요.";
 "Launchy has not indexed any applications yet." = "Launchy는 아직 애플리케이션을 인덱싱하지 않았습니다.";
 "Search apps" = "앱 검색";
 "Search" = "검색";
 "Clear search text" = "검색어 지우기";
+"More actions" = "추가 작업";
 "Open" = "열기";
 "Rename App" = "앱 이름 바꾸기";
 "Enter a custom name for this app. Leave empty to reset." = "이 앱의 사용자 지정 이름을 입력하세요. 비워두면 재설정됩니다.";

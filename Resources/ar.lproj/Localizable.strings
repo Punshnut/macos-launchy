@@ -108,6 +108,8 @@
 "Version %@" = "الإصدار %@";
 "Built by the Launchy team" = "صنعه فريق Launchy";
 "Launchy Settings" = "إعدادات Launchy";
+"Launcher settings" = "إعدادات المشغل";
+"Launchy info" = "معلومات Launchy";
 
 "Settings" = "الإعدادات";
 "Settings..." = "الإعدادات...";
@@ -122,13 +124,17 @@
 
 "No items found" = "لم يتم العثور على عناصر";
 "No matching items" = "لا توجد عناصر مطابقة";
+"Enter multi-select mode" = "ادخل وضع التحديد المتعدد";
+"Exit multi-select mode" = "اخرج من وضع التحديد المتعدد";
 "No applications available" = "لا توجد تطبيقات متاحة";
+"No apps selected" = "لا توجد تطبيقات محددة";
 "Page %lld of %lld" = "الصفحة %lld من %lld";
 "Try a different search term." = "جرّب مصطلح بحث مختلف.";
 "Launchy has not indexed any applications yet." = "لم يقم Launchy بفهرسة أي تطبيقات بعد.";
 "Search apps" = "ابحث عن التطبيقات";
 "Search" = "بحث";
 "Clear search text" = "مسح نص البحث";
+"More actions" = "المزيد من الإجراءات";
 "Open" = "فتح";
 "Rename App" = "إعادة تسمية التطبيق";
 "Enter a custom name for this app. Leave empty to reset." = "أدخل اسمًا مخصصًا لهذا التطبيق. اتركه فارغًا لإعادة التعيين.";

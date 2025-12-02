@@ -108,6 +108,8 @@
 "Version %@" = "バージョン %@";
 "Built by the Launchy team" = "Launchy チームによって制作";
 "Launchy Settings" = "Launchy 設定";
+"Launcher settings" = "ランチャーの設定";
+"Launchy info" = "Launchy 情報";
 
 "Settings" = "設定";
 "Settings..." = "設定...";
@@ -122,13 +124,17 @@
 
 "No items found" = "項目が見つかりません";
 "No matching items" = "一致する項目がありません";
+"Enter multi-select mode" = "複数選択モードに入る";
+"Exit multi-select mode" = "複数選択モードを終了する";
 "No applications available" = "利用できるアプリはありません";
+"No apps selected" = "アプリが選択されていません";
 "Page %lld of %lld" = "%lld / %lld ページ";
 "Try a different search term." = "別の検索語を試してください。";
 "Launchy has not indexed any applications yet." = "Launchy はまだアプリのインデックスを作成していません。";
 "Search apps" = "アプリを検索";
 "Search" = "検索";
 "Clear search text" = "検索文字列をクリア";
+"More actions" = "その他の操作";
 "Open" = "開く";
 "Rename App" = "アプリ名を変更";
 "Enter a custom name for this app. Leave empty to reset." = "このアプリにカスタム名を入力してください。空欄にするとリセットされます。";

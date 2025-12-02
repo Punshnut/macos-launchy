@@ -108,6 +108,8 @@
 "Version %@" = "Sürüm %@";
 "Built by the Launchy team" = "Launchy ekibi tarafından geliştirildi";
 "Launchy Settings" = "Launchy ayarları";
+"Launcher settings" = "Başlatıcı ayarları";
+"Launchy info" = "Launchy bilgisi";
 
 "Settings" = "Ayarlar";
 "Settings..." = "Ayarlar...";
@@ -122,13 +124,17 @@
 
 "No items found" = "Öğe bulunamadı";
 "No matching items" = "Eşleşen öğe yok";
+"Enter multi-select mode" = "Çoklu seçim moduna geç";
+"Exit multi-select mode" = "Çoklu seçim modundan çık";
 "No applications available" = "Kullanılabilir uygulama yok";
+"No apps selected" = "Hiç uygulama seçilmedi";
 "Page %lld of %lld" = "Sayfa %lld / %lld";
 "Try a different search term." = "Başka bir arama terimi dene.";
 "Launchy has not indexed any applications yet." = "Launchy henüz uygulama indekslemedi.";
 "Search apps" = "Uygulamaları ara";
 "Search" = "Ara";
 "Clear search text" = "Arama metnini temizle";
+"More actions" = "Daha fazla işlem";
 "Open" = "Aç";
 "Rename App" = "Uygulamayı yeniden adlandır";
 "Enter a custom name for this app. Leave empty to reset." = "Bu uygulama için özel bir ad gir. Sıfırlamak için boş bırak.";

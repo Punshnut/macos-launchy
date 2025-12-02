@@ -108,6 +108,8 @@
 "Version %@" = "Version %@";
 "Built by the Launchy team" = "Built by the Launchy team";
 "Launchy Settings" = "Launchy Settings";
+"Launcher settings" = "Launcher settings";
+"Launchy info" = "Launchy info";
 
 "Settings" = "Settings";
 "Settings..." = "Settings...";
@@ -122,13 +124,17 @@
 
 "No items found" = "No items found";
 "No matching items" = "No matching items";
+"Enter multi-select mode" = "Enter multi-select mode";
+"Exit multi-select mode" = "Exit multi-select mode";
 "No applications available" = "No applications available";
+"No apps selected" = "No apps selected";
 "Page %lld of %lld" = "Page %lld of %lld";
 "Try a different search term." = "Try a different search term.";
 "Launchy has not indexed any applications yet." = "Launchy has not indexed any applications yet.";
 "Search apps" = "Search apps";
 "Search" = "Search";
 "Clear search text" = "Clear search text";
+"More actions" = "More actions";
 "Open" = "Open";
 "Rename App" = "Rename App";
 "Enter a custom name for this app. Leave empty to reset." = "Enter a custom name for this app. Leave empty to reset.";

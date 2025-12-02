@@ -382,7 +382,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Sets up global hotkeys for toggling the launcher and switching layouts.
     private func configureHotkeyManagers() {
-        LaunchyLogger.log("configureHotkeyManagers: launcherHotkey=\(currentSettings.launcherHotkey) layoutHotkey=\(currentSettings.layoutToggleHotkey)")
+        LaunchyLogger.log("configureHotkeyManagers: launcherHotkey=\(String(describing: currentSettings.launcherHotkey)) layoutHotkey=\(String(describing: currentSettings.layoutToggleHotkey))")
         launcherHotkeyManager.onHotkeyPressed = { [weak self] in
             self?.toggleLauncherVisibility()
         }

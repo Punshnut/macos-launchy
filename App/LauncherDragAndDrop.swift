@@ -63,18 +63,24 @@ struct GridReorderDropDelegate: DropDelegate {
     var onFolderSnapPreviewChange: (UUID?) -> Void
     var lastLiveReorderTargetIndex: Binding<Int?>
     var performLiveReorder: (LauncherItem, Int) -> Int?
+    var onModifierStateChange: ((Bool) -> Void)?
 
     func dropEntered(info: DropInfo) {
+        let modifiersActive = shouldSuppressReorder()
+        onModifierStateChange?(modifiersActive)
         handleHover(info)
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
+        let modifiersActive = shouldSuppressReorder()
+        onModifierStateChange?(modifiersActive)
         handleHover(info)
         applyLiveReorder(info)
         return DropProposal(operation: .move)
     }
 
     func dropExited(info: DropInfo) {
+        onModifierStateChange?(false)
         onFolderSnapPreviewChange(nil)
         onFolderHoverExit()
         lastLiveReorderTargetIndex.wrappedValue = nil
@@ -85,6 +91,7 @@ struct GridReorderDropDelegate: DropDelegate {
             draggedItem = nil
             onFolderSnapPreviewChange(nil)
             lastLiveReorderTargetIndex.wrappedValue = nil
+            onModifierStateChange?(false)
         }
         guard let draggedItem else { return false }
 

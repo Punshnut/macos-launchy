@@ -74,6 +74,245 @@ struct LauncherView: View {
         return 0.92 + 0.08 * CGFloat(fullscreenGridEntranceProgress)
     }
 
+    @ViewBuilder
+    private func launcherGridLayer(layout: LauncherLayoutMetrics, canReorder: Bool) -> some View {
+        ZStack {
+            if filteredItemList.isEmpty {
+                emptyState()
+                    .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
+                    .contextMenu {
+                        backgroundContextMenu()
+                    }
+            } else {
+                GeometryReader { gridProxy in
+                    launcherGridPages(layout: layout, canReorder: canReorder, gridProxy: gridProxy)
+                }
+            }
+
+            ScrollWheelPagerOverlay(
+                isEnabled: isGesturePagingEnabled,
+                onScrollProgress: { event in
+                    handleScrollProgress(
+                        deltaX: event.deltaX,
+                        phase: event.phase,
+                        momentumPhase: event.momentumPhase,
+                        isPrecise: event.isPrecise
+                    )
+                },
+                onScrollEnd: {
+                    settlePagerOffset(pageWidth: pagerViewportWidth)
+                },
+                onPreviousPage: { pageBackward() },
+                onNextPage: { pageForward() }
+            )
+            .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
+            .allowsHitTesting(false)
+
+            KeyPressPagerOverlay(
+                isEnabled: isKeyboardPagingEnabled || isRenamingItem || shouldHandleEscapeKeys,
+                shouldCaptureArrowKeys: { shouldCaptureArrowKeys },
+                shouldHandleEscape: { shouldHandleEscapeKeys },
+                onPreviousPage: { handleKeyboardPager(.backward) },
+                onNextPage: { handleKeyboardPager(.forward) },
+                onEscape: { handleEscapeKeyPress() },
+                onPageShortcut: { handlePageShortcutRequest($0) }
+            )
+            .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
+            .allowsHitTesting(false)
+        }
+        .scaleEffect(fullscreenGridEntranceScale, anchor: .center)
+        .opacity(fullscreenGridEntranceOpacity)
+        .offset(y: fullscreenGridEntranceOffset)
+        .padding(.top, layout.gridVerticalOffset)
+    }
+
+    @ViewBuilder
+    private func launcherGridPages(
+        layout: LauncherLayoutMetrics,
+        canReorder: Bool,
+        gridProxy: GeometryProxy
+    ) -> some View {
+        let pageWidth = max(gridProxy.size.width, 1)
+        let sizes = displayPageSizes
+        let totalPages = max(pageCount, 1)
+        let pageIndices = visiblePageIndices(total: totalPages)
+
+        let dragGesture = DragGesture(minimumDistance: 2)
+            .onChanged { value in
+                guard isGesturePagingEnabled else { return }
+                beginPagerInteraction(pageWidth: pageWidth)
+                lastPagerDragDate = Date()
+                pagerDragOffset = clampPagerOffset(
+                    value.translation.width,
+                    pageWidth: pageWidth
+                )
+            }
+            .onEnded { value in
+                guard isGesturePagingEnabled else { return }
+                finishPagerInteraction(
+                    translation: value.translation.width,
+                    predictedEndTranslation: value.predictedEndTranslation.width,
+                    pageWidth: pageWidth
+                )
+            }
+
+        ZStack(alignment: .leading) {
+            ForEach(pageIndices, id: \.self) { pageIndex in
+                let pageItems = itemsForPage(pageIndex, sizes: sizes)
+                let pageStart = pageStartIndex(for: pageIndex, sizes: sizes)
+                let itemCountOnPage = sizes.indices.contains(pageIndex) ? sizes[pageIndex] : 0
+
+        launcherGridPage(
+            layout: layout,
+            pageIndex: pageIndex,
+            pageWidth: pageWidth,
+            pageItems: pageItems,
+            pageStart: pageStart,
+            itemCountOnPage: itemCountOnPage,
+            canReorder: canReorder,
+            gridProxy: gridProxy
+        )
+                .opacity(pageOpacity(for: pageIndex, pageWidth: pageWidth))
+                .offset(x: pageOffset(for: pageIndex, pageWidth: pageWidth))
+            }
+        }
+        .frame(width: pageWidth, height: layout.gridHeight, alignment: .leading)
+        .gesture(dragGesture)
+        .animation(suppressGridAnimation ? nil : gridSpringAnimation, value: orderedItems)
+        .onAppear {
+            pagerViewportWidth = pageWidth
+        }
+        .onChange(of: gridProxy.size.width) { newWidth in
+            pagerViewportWidth = max(newWidth, 1)
+        }
+    }
+
+    @ViewBuilder
+    private func launcherGridPage(
+        layout: LauncherLayoutMetrics,
+        pageIndex: Int,
+        pageWidth: CGFloat,
+        pageItems: [LauncherItem],
+        pageStart: Int,
+        itemCountOnPage: Int,
+        canReorder: Bool,
+        gridProxy: GeometryProxy
+    ) -> some View {
+        LazyVGrid(
+            columns: layout.gridColumns,
+            alignment: .center,
+            spacing: layout.iconSpacing
+        ) {
+            ForEach(Array(pageItems.enumerated()), id: \.element.id) { _, item in
+                let isLaunching = launchingItemID == item.id
+                let isFolderBeingOpened = activeFolder?.id == item.id
+                let isRenamingApp = renamingAppID == item.id
+
+                let cell: AnyView = {
+                    if isRenamingApp, case let .app(app) = item {
+                        return AnyView(
+                            editableAppCell(app: app, layout: layout)
+                        )
+                    }
+
+                    return AnyView(
+                        Button {
+                            if isMultiSelectModeActive {
+                                toggleSelection(for: item)
+                            } else {
+                                openItem(item)
+                            }
+                        } label: {
+                            VStack(spacing: 10) {
+                                iconCell(for: item, layout: layout)
+                                    .scaleEffect(isLaunching ? 1.08 : 1.0)
+                                    .opacity(isLaunching ? 0.4 : 1.0)
+                                    .animation(.easeInOut(duration: 0.18), value: launchingItemID)
+                                appOrFolderTitleView(for: item)
+                                    .font(.system(size: 13, weight: .medium))
+                                    .multilineTextAlignment(.center)
+                                    .foregroundColor(iconLabelColor())
+                                    .lineLimit(2)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 4)
+                            .scaleEffect(isFolderBeingOpened ? 1.03 : 1.0)
+                            .animation(
+                                .spring(response: 0.35, dampingFraction: 0.82, blendDuration: 0.06),
+                                value: activeFolder?.id
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    )
+                }()
+
+                let decoratedCell = cell
+                    .contentShape(Rectangle())
+                    .contextMenu {
+                        itemContextMenu(for: item)
+                    }
+
+                if canReorder && isRenamingApp == false {
+                    decoratedCell
+                        .onDrag {
+                            draggedItem = item
+                            captureDragOrigin(for: item)
+                            return NSItemProvider(object: NSString(string: item.id.uuidString))
+                        } preview: {
+                            dragPreview(for: item, layout: layout)
+                        }
+                } else {
+                    decoratedCell
+                }
+            }
+        }
+        .frame(width: pageWidth, height: layout.gridHeight, alignment: .top)
+        .contentShape(Rectangle())
+        .contextMenu {
+            backgroundContextMenu()
+        }
+        .onDrop(
+            of: [.text],
+            delegate: GridReorderDropDelegate(
+                layout: layout,
+                gridSize: gridProxy.size,
+                pageStartIndex: pageStart,
+                pageItemCount: itemCountOnPage,
+                items: $orderedItems,
+                draggedItem: $draggedItem,
+                shouldSuppressReorder: { isDragReorderSuppressed() },
+                performReorder: { item, targetIndex, preferSwap in
+                    pendingDropPage = pageIndex
+                    return reorderItem(
+                        item,
+                        to: targetIndex,
+                        preferSwap: preferSwap,
+                        targetPageHint: pageIndex
+                    )
+                },
+                afterReorder: updatePageAfterDrop(at:),
+                performFolderDrop: { dragged, target in
+                    mergeItemsIfNeeded(dragged: dragged, onto: target)
+                },
+                onFolderHoverExit: cancelFolderHover,
+                onFolderSnapPreviewChange: { previewID in
+                    folderSnapPreviewTargetID = previewID
+                },
+                lastLiveReorderTargetIndex: $lastLiveReorderTargetIndex,
+                performLiveReorder: { item, targetIndex in
+                    reorderItem(
+                        item,
+                        to: targetIndex,
+                        animated: false
+                    )
+                },
+                onModifierStateChange: handleDragModifierChange
+            )
+        )
+
+    }
+
     private var fullscreenGridEntranceOpacity: Double {
         guard launcherMode == .fullscreen else { return 1 }
         return 0.25 + 0.75 * fullscreenGridEntranceProgress
@@ -99,6 +338,8 @@ struct LauncherView: View {
 
     @State private var orderedItems: [LauncherItem]
     @State private var draggedItem: LauncherItem?
+    @State private var dragOriginIndex: Int?
+    @State private var isDragModifierSnapActive = false
     @State private var currentPage: Int = 0
     @State private var isClosingLauncher = false
     @State private var searchText = ""
@@ -228,6 +469,8 @@ struct LauncherView: View {
         .onChange(of: draggedItem) { newItem in
             if newItem == nil {
                 folderSnapPreviewTargetID = nil
+                dragOriginIndex = nil
+                isDragModifierSnapActive = false
             }
             suppressGridAnimation = newItem != nil
         }
@@ -281,7 +524,34 @@ struct LauncherView: View {
         )
         let canReorder = searchText.isEmpty
 
-        let content = ZStack {
+        let content = launcherContentBody(
+            layout: layout,
+            topInset: topInset,
+            canReorder: canReorder,
+            containerSize: containerSize
+        )
+
+        if launcherMode == .floaty {
+            content
+                .clipShape(RoundedRectangle(cornerRadius: layout.floatyCornerRadius, style: .continuous))
+                .shadow(color: Color.black.opacity(0.25), radius: 40, y: 18)
+                .overlay(
+                    RoundedRectangle(cornerRadius: layout.floatyCornerRadius, style: .continuous)
+                        .stroke(Color.white.opacity(0.4), lineWidth: 1.2)
+                )
+        } else {
+            content
+        }
+    }
+
+    @ViewBuilder
+    private func launcherContentBody(
+        layout: LauncherLayoutMetrics,
+        topInset: CGFloat,
+        canReorder: Bool,
+        containerSize: CGSize
+    ) -> some View {
+        ZStack {
             backgroundView()
                 .ignoresSafeArea()
 
@@ -307,210 +577,7 @@ struct LauncherView: View {
                     .padding(.top, layout.floatySearchBarTopPadding)
                     .padding(.bottom, layout.searchToGridSpacing)
 
-                    ZStack {
-                        Group {
-                            if filteredItemList.isEmpty {
-                                emptyState()
-                                    .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
-                                    .contextMenu {
-                                        backgroundContextMenu()
-                                    }
-                            } else {
-                                GeometryReader { gridProxy in
-                                    let pageWidth = max(gridProxy.size.width, 1)
-                                    let sizes = displayPageSizes
-                                    let totalPages = max(pageCount, 1)
-                                    let pageIndices = visiblePageIndices(total: totalPages)
-
-                                    let dragGesture = DragGesture(minimumDistance: 2)
-                                        .onChanged { value in
-                                            guard isGesturePagingEnabled else { return }
-                                            beginPagerInteraction(pageWidth: pageWidth)
-                                            lastPagerDragDate = Date()
-                                            pagerDragOffset = clampPagerOffset(
-                                                value.translation.width,
-                                                pageWidth: pageWidth
-                                            )
-                                        }
-                                        .onEnded { value in
-                                            guard isGesturePagingEnabled else { return }
-                                            finishPagerInteraction(
-                                                translation: value.translation.width,
-                                                predictedEndTranslation: value.predictedEndTranslation.width,
-                                                pageWidth: pageWidth
-                                            )
-                                        }
-
-                                    ZStack(alignment: .leading) {
-                                        ForEach(pageIndices, id: \.self) { pageIndex in
-                                            let pageItems = itemsForPage(pageIndex, sizes: sizes)
-                                            let pageStart = pageStartIndex(for: pageIndex, sizes: sizes)
-                                            let itemCountOnPage = sizes.indices.contains(pageIndex) ? sizes[pageIndex] : 0
-
-                                            LazyVGrid(
-                                                columns: layout.gridColumns,
-                                                alignment: .center,
-                                                spacing: layout.iconSpacing
-                                            ) {
-                                                ForEach(Array(pageItems.enumerated()), id: \.element.id) { _, item in
-                                                    let isLaunching = launchingItemID == item.id
-                                                    let isFolderBeingOpened = activeFolder?.id == item.id
-                                                    let isRenamingApp = renamingAppID == item.id
-
-                                                    let cell: AnyView = {
-                                                        if isRenamingApp, case let .app(app) = item {
-                                                            return AnyView(
-                                                                editableAppCell(app: app, layout: layout)
-                                                            )
-                                                        }
-
-                                                        return AnyView(
-                                                            Button {
-                                                                if isMultiSelectModeActive {
-                                                                    toggleSelection(for: item)
-                                                                } else {
-                                                                    openItem(item)
-                                                                }
-                                                            } label: {
-                                                                VStack(spacing: 10) {
-                                                                    iconCell(for: item, layout: layout)
-                                                                        .scaleEffect(isLaunching ? 1.08 : 1.0)
-                                                                        .opacity(isLaunching ? 0.4 : 1.0)
-                                                                        .animation(.easeInOut(duration: 0.18), value: launchingItemID)
-                                                                    appOrFolderTitleView(for: item)
-                                                                        .font(.system(size: 13, weight: .medium))
-                                                                        .multilineTextAlignment(.center)
-                                                                        .foregroundColor(iconLabelColor())
-                                                                        .lineLimit(2)
-                                                                        .frame(maxWidth: .infinity)
-                                                                }
-                                                                .frame(maxWidth: .infinity)
-                                                                .padding(.vertical, 4)
-                                                                .scaleEffect(isFolderBeingOpened ? 1.03 : 1.0)
-                                                                .animation(
-                                                                    .spring(response: 0.35, dampingFraction: 0.82, blendDuration: 0.06),
-                                                                    value: activeFolder?.id
-                                                                )
-                                                            }
-                                                            .buttonStyle(.plain)
-                                                        )
-                                                    }()
-
-                                                    let decoratedCell = cell
-                                                        .contentShape(Rectangle())
-                                                        .contextMenu {
-                                                            itemContextMenu(for: item)
-                                                        }
-
-                                                    if canReorder && isRenamingApp == false {
-                                                        decoratedCell
-                                                            .onDrag {
-                                                                draggedItem = item
-                                                                return NSItemProvider(object: NSString(string: item.id.uuidString))
-                                                            } preview: {
-                                                                dragPreview(for: item, layout: layout)
-                                                            }
-                                                    } else {
-                                                        decoratedCell
-                                                    }
-                                                }
-                                            }
-                                            .frame(width: pageWidth, height: layout.gridHeight, alignment: .top)
-                                            .contentShape(Rectangle())
-                                            .contextMenu {
-                                                backgroundContextMenu()
-                                            }
-                                            .onDrop(
-                                                of: [.text],
-                                                    delegate: GridReorderDropDelegate(
-                                                        layout: layout,
-                                                        gridSize: gridProxy.size,
-                                                        pageStartIndex: pageStart,
-                                                        pageItemCount: itemCountOnPage,
-                                                        items: $orderedItems,
-                                                        draggedItem: $draggedItem,
-                                                        shouldSuppressReorder: { isDragReorderSuppressed() },
-                                                        performReorder: { item, targetIndex, preferSwap in
-                                                            pendingDropPage = pageIndex
-                                                            return reorderItem(
-                                                                item,
-                                                                to: targetIndex,
-                                                                preferSwap: preferSwap,
-                                                                targetPageHint: pageIndex
-                                                            )
-                                                        },
-                                                        afterReorder: updatePageAfterDrop(at:),
-                                                        performFolderDrop: { dragged, target in
-                                                            mergeItemsIfNeeded(dragged: dragged, onto: target)
-                                                        },
-                                                        onFolderHoverExit: cancelFolderHover,
-                                                        onFolderSnapPreviewChange: { previewID in
-                                                            folderSnapPreviewTargetID = previewID
-                                                        },
-                                                        lastLiveReorderTargetIndex: $lastLiveReorderTargetIndex,
-                                                        performLiveReorder: { item, targetIndex in
-                                                            reorderItem(
-                                                                item,
-                                                                to: targetIndex,
-                                                                animated: false
-                                                            )
-                                                        }
-                                                    )
-                                            )
-                                            .opacity(pageOpacity(for: pageIndex, pageWidth: pageWidth))
-                                            .offset(x: pageOffset(for: pageIndex, pageWidth: pageWidth))
-                                        }
-                                    }
-                                    .frame(width: pageWidth, height: layout.gridHeight, alignment: .leading)
-                                    .gesture(dragGesture)
-                                    .animation(suppressGridAnimation ? nil : gridSpringAnimation, value: orderedItems)
-                                    .onAppear {
-                                        pagerViewportWidth = pageWidth
-                                    }
-                                    .onChange(of: gridProxy.size.width) { newWidth in
-                                        pagerViewportWidth = max(newWidth, 1)
-                                    }
-                                }
-                                .frame(height: layout.gridHeight)
-                            }
-                        }
-                        .disabled(isClosingLauncher)
-
-                        ScrollWheelPagerOverlay(
-                            isEnabled: isGesturePagingEnabled,
-                            onScrollProgress: { event in
-                                handleScrollProgress(
-                                    deltaX: event.deltaX,
-                                    phase: event.phase,
-                                    momentumPhase: event.momentumPhase,
-                                    isPrecise: event.isPrecise
-                                )
-                            },
-                            onScrollEnd: {
-                                settlePagerOffset(pageWidth: pagerViewportWidth)
-                            },
-                            onPreviousPage: { pageBackward() },
-                            onNextPage: { pageForward() }
-                        )
-                        .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
-                        .allowsHitTesting(false)
-
-                        KeyPressPagerOverlay(
-                            isEnabled: isKeyboardPagingEnabled || isRenamingItem || shouldHandleEscapeKeys,
-                            shouldCaptureArrowKeys: { shouldCaptureArrowKeys },
-                            shouldHandleEscape: { shouldHandleEscapeKeys },
-                            onPreviousPage: { handleKeyboardPager(.backward) },
-                            onNextPage: { handleKeyboardPager(.forward) },
-                            onEscape: { handleEscapeKeyPress() },
-                            onPageShortcut: { handlePageShortcutRequest($0) }
-                        )
-                        .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
-                        .allowsHitTesting(false)
-                    }
-                    .scaleEffect(fullscreenGridEntranceScale, anchor: .center)
-                    .opacity(fullscreenGridEntranceOpacity)
-                    .offset(y: fullscreenGridEntranceOffset)
-                    .padding(.top, layout.gridVerticalOffset)
+                    launcherGridLayer(layout: layout, canReorder: canReorder)
 
                     gridPager(canReorder: canReorder, layout: layout)
                 }
@@ -559,18 +626,6 @@ struct LauncherView: View {
                 },
             including: .gesture
         )
-
-        if launcherMode == .floaty {
-            content
-                .clipShape(RoundedRectangle(cornerRadius: layout.floatyCornerRadius, style: .continuous))
-                .shadow(color: Color.black.opacity(0.25), radius: 40, y: 18)
-                .overlay(
-                    RoundedRectangle(cornerRadius: layout.floatyCornerRadius, style: .continuous)
-                        .stroke(Color.white.opacity(0.4), lineWidth: 1.2)
-                )
-        } else {
-            content
-        }
     }
 
     private var usesGappedLayout: Bool {
@@ -773,6 +828,40 @@ struct LauncherView: View {
         return flags.contains(.shift) || flags.contains(.option)
     }
 
+    private func handleDragModifierChange(_ active: Bool) {
+        guard draggedItem != nil else {
+            isDragModifierSnapActive = false
+            return
+        }
+
+        if active {
+            guard isDragModifierSnapActive == false else { return }
+            isDragModifierSnapActive = true
+            snapDraggedItemToOrigin()
+        } else {
+            isDragModifierSnapActive = false
+        }
+    }
+
+    private func snapDraggedItemToOrigin() {
+        guard
+            let draggedItem,
+            let originIndex = dragOriginIndex,
+            let currentIndex = orderedItems.firstIndex(of: draggedItem),
+            currentIndex != originIndex
+        else {
+            return
+        }
+
+        _ = reorderItem(draggedItem, to: originIndex, animated: false)
+    }
+
+    private func captureDragOrigin(for item: LauncherItem) {
+        dragOriginIndex = orderedItems.firstIndex(of: item)
+        isDragModifierSnapActive = false
+        lastLiveReorderTargetIndex = nil
+    }
+
     /// Convenience accessor for the currently dragged app, if any.
     private func currentDraggedApp() -> AppItem? {
         guard case let .app(app) = draggedItem else { return nil }
@@ -950,6 +1039,7 @@ struct LauncherView: View {
         guard activeFolder != nil else { return }
         if let extracted = extractAppFromFolderForDrag() {
             draggedItem = extracted
+            captureDragOrigin(for: extracted)
             draggedFolderApp = nil
         }
     }
@@ -2438,66 +2528,55 @@ struct LauncherView: View {
 
     @ViewBuilder
     private func searchBarTrailingDecorations() -> some View {
-        if searchText.isEmpty == false {
+        ZStack(alignment: .trailing) {
             Button {
-                searchText = ""
+                if searchText.isEmpty {
+                    toggleSearchControlsExpansion()
+                } else {
+                    searchText = ""
+                }
             } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(searchBarForegroundColor().opacity(0.65))
-                    .transition(.opacity)
+                searchIconStack(isEmpty: searchText.isEmpty)
             }
             .buttonStyle(.plain)
             .padding(.trailing, 14)
             .contentShape(Rectangle())
-            .help(String(localized: "Clear search text"))
-        } else {
-            ZStack(alignment: .trailing) {
+            .opacity(isSearchControlsVisible ? 0 : 1)
+            .allowsHitTesting(!isSearchControlsVisible)
+            .help(searchText.isEmpty ? String(localized: "More actions") : String(localized: "Clear search text"))
+
+            HStack(spacing: 12) {
                 Button {
-                    toggleSearchControlsExpansion()
+                    Task { @MainActor in
+                        onAppInfoRequested?()
+                    }
                 } label: {
-                    searchIconStack(isEmpty: true)
+                    Image(systemName: "info.circle")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(searchBarForegroundColor().opacity(0.85))
                 }
                 .buttonStyle(.plain)
-                .padding(.trailing, 14)
-                .contentShape(Rectangle())
-                .opacity(isSearchControlsVisible ? 0 : 1)
-                .allowsHitTesting(!isSearchControlsVisible)
-                .help(String(localized: "More actions"))
+                .help(String(localized: "Launchy info"))
 
-                HStack(spacing: 12) {
-                    Button {
-                        Task { @MainActor in
-                            onAppInfoRequested?()
-                        }
-                    } label: {
-                        Image(systemName: "info.circle")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(searchBarForegroundColor().opacity(0.85))
+                multiSelectToggleControl()
+
+                Button {
+                    Task { @MainActor in
+                        onSettingsRequested?()
                     }
-                    .buttonStyle(.plain)
-                    .help(String(localized: "Launchy info"))
-
-                    multiSelectToggleControl()
-
-                    Button {
-                        Task { @MainActor in
-                            onSettingsRequested?()
-                        }
-                    } label: {
-                        Image(systemName: "gearshape.fill")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(searchBarForegroundColor().opacity(0.85))
-                    }
-                    .buttonStyle(.plain)
-                    .help(String(localized: "Launcher settings"))
+                } label: {
+                    Image(systemName: "gearshape.fill")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(searchBarForegroundColor().opacity(0.85))
                 }
-                .padding(.trailing, 14)
-                .opacity(isSearchControlsVisible ? 1 : 0)
-                .allowsHitTesting(isSearchControlsVisible)
-                .transition(.opacity.combined(with: .scale(scale: 0.96)))
-                .animation(searchControlsAnimation, value: searchControlsExpanded)
+                .buttonStyle(.plain)
+                .help(String(localized: "Launcher settings"))
             }
+            .padding(.trailing, 14)
+            .opacity(isSearchControlsVisible ? 1 : 0)
+            .allowsHitTesting(isSearchControlsVisible)
+            .transition(.opacity.combined(with: .scale(scale: 0.96)))
+            .animation(searchControlsAnimation, value: searchControlsExpanded)
         }
     }
 
@@ -2609,6 +2688,23 @@ struct LauncherView: View {
             }
             return nil
         }
+    }
+
+    private var selectedAppEntries: [(index: Int, app: AppItem)] {
+        orderedItems.enumerated().compactMap { index, item in
+            guard
+                isMultiSelectModeActive,
+                multiSelectedItemIDs.contains(item.id),
+                case let .app(app) = item
+            else {
+                return nil
+            }
+            return (index: index, app: app)
+        }
+    }
+
+    private var canCreateFolderFromSelection: Bool {
+        selectedAppEntries.count >= 2
     }
 
     private func toggleSelection(for item: LauncherItem) {
@@ -2756,8 +2852,19 @@ struct LauncherView: View {
                 finalizeBulkSelectionAction()
             }
 
-            Button("Create Folder with App") {
-                createFolder(from: app, promptForName: true)
+            if isMultiSelectModeActive,
+               multiSelectedItemIDs.contains(app.id),
+               canCreateFolderFromSelection
+            {
+                Button("Create Folder with Selection") {
+                    createFolderFromSelection(promptForName: true)
+                }
+            }
+
+            if isMultiSelectModeActive == false || multiSelectedItemIDs.contains(app.id) == false {
+                Button("Create Folder with App") {
+                    createFolder(from: app, promptForName: true)
+                }
             }
         case .folder(let folder):
             Button("Folder Details") {
@@ -2829,6 +2936,12 @@ struct LauncherView: View {
     /// Context menu for the empty grid background.
     @ViewBuilder
     private func backgroundContextMenu() -> some View {
+        if isMultiSelectModeActive && canCreateFolderFromSelection {
+            Button("Create Folder with Selection") {
+                createFolderFromSelection(promptForName: true)
+            }
+        }
+
         Button("Create Folder") {
             createEmptyFolder(onPage: currentPage, promptForName: true)
         }
@@ -3138,6 +3251,30 @@ struct LauncherView: View {
         guard isMultiSelectModeActive else { return }
         exitMultiSelectMode()
         updateSearchControlsExpansion(to: false)
+    }
+
+    private func createFolderFromSelection(promptForName: Bool) {
+        let selection = selectedAppEntries
+        guard selection.count >= 2 else { return }
+
+        var updatedItems = orderedItems
+        let indices = selection.map { $0.index }.sorted()
+        for index in indices.reversed() {
+            updatedItems.remove(at: index)
+        }
+
+        let folder = FolderItem(apps: selection.map { $0.app })
+        let insertIndex = min(indices.first ?? 0, updatedItems.count)
+        updatedItems.insert(.folder(folder), at: insertIndex)
+
+        orderedItems = updatedItems
+        persistOrderChange()
+
+        if promptForName {
+            beginFolderRename(folder)
+        }
+
+        finalizeBulkSelectionAction()
     }
 
     /// Inserts a launcher item at the end of the requested page slice.

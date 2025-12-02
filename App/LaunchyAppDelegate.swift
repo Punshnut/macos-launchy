@@ -40,6 +40,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Finishes bootstrapping the app by loading settings, refreshing apps, and preparing the window.
     func applicationDidFinishLaunching(_ notification: Notification) {
+        LaunchyLogger.startup()
+        LaunchyLogger.log("applicationDidFinishLaunching")
         bootstrapApplication()
         enforceMinimalMainMenu()
     }
@@ -131,23 +133,28 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Performs the ordered initialization steps required before the UI appears.
     private func bootstrapApplication() {
+        LaunchyLogger.log("bootstrap: initializing launcher")
         // 2) Initialize launcher settings persisted from prior sessions.
         LauncherSettingsPersistence.registerDefaults()
         currentSettings = LauncherSettingsPersistence.loadSettings()
         configureApplicationDirectoryMonitoring()
         LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
 
+        LaunchyLogger.log("bootstrap: loading apps (hidden=\(currentSettings.hiddenBundleIDs.count) scanUser=\(currentSettings.shouldScanUserApplicationsFolder))")
         // 1 & 6) Load apps and immediately apply hidden/background style choices.
         refreshLauncherItems()
 
+        LaunchyLogger.log("bootstrap: applying launcher mode")
         // 3) Build the launcher window so the UI is ready for the hotkey without surfacing it yet.
         applyLauncherMode(shouldPresentWindow: false)
 
+        LaunchyLogger.log("bootstrap: configuring hotkeys")
         // 4) `LaunchyApp` declares the SwiftUI `SettingsWindow` scene, so nothing else is needed here.
 
         // 5) Wire the global hotkey so it toggles the launcher window on demand.
         configureHotkeyManagers()
 
+        LaunchyLogger.log("bootstrap: refreshing UI chrome and monitoring")
         updateStatusItemVisibility()
         updateHotCornerMonitoring()
         observeSettingsChanges()
@@ -201,6 +208,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Applies the current launcher mode, rebuilding the window when the persisted value changes.
     func applyLauncherMode(shouldPresentWindow: Bool = true) {
+        LaunchyLogger.log("applyLauncherMode: mode=\(currentSettings.selectedLauncherMode) shouldPresentWindow=\(shouldPresentWindow)")
         let mode = currentSettings.selectedLauncherMode
         let modeChanged = currentLauncherMode != mode
         currentLauncherMode = mode
@@ -208,8 +216,10 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         updateActivationPolicy(for: mode, shouldActivate: shouldActivateApp)
 
         if modeChanged == false, let controller = launcherWindowManager {
+            LaunchyLogger.log("applyLauncherMode: updating existing window controller")
             controller.update(rootView: buildLauncherView())
         } else {
+            LaunchyLogger.log("applyLauncherMode: rebuilding window controller for mode \(mode)")
             rebuildWindow(for: mode, shouldPresentWindow: shouldPresentWindow)
         }
     }
@@ -244,6 +254,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Ensures the menu bar status item matches the persisted setting.
     private func updateStatusItemVisibility() {
+        LaunchyLogger.log("updateStatusItemVisibility: menuBarIconVisible=\(currentSettings.isMenuBarIconVisible)")
         if currentSettings.isMenuBarIconVisible {
             createStatusItemIfNeeded()
         } else {
@@ -371,6 +382,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Sets up global hotkeys for toggling the launcher and switching layouts.
     private func configureHotkeyManagers() {
+        LaunchyLogger.log("configureHotkeyManagers: launcherHotkey=\(currentSettings.launcherHotkey) layoutHotkey=\(currentSettings.layoutToggleHotkey)")
         launcherHotkeyManager.onHotkeyPressed = { [weak self] in
             self?.toggleLauncherVisibility()
         }
@@ -382,6 +394,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Applies the persisted hotkey selections to the running listeners.
     private func refreshHotkeyRegistrations() {
+        LaunchyLogger.log("refreshHotkeyRegistrations: applying hotkeys")
         launcherHotkeyManager.update(descriptor: currentSettings.launcherHotkey)
         launcherHotkeyManager.activate()
 
@@ -597,12 +610,14 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Rebuilds the visible items list using the current hidden settings.
     private func refreshLauncherItems(preservingCustomNames names: [String: String] = [:]) {
+        LaunchyLogger.log("refreshLauncherItems: preserving names=\(names.count)")
         let hiddenBundleIDs = Set(currentSettings.hiddenBundleIDs)
         let includeUserApplications = currentSettings.shouldScanUserApplicationsFolder
         let (baseApps, userApps) = applicationDiscovery.reloadApps(
             includeUserApplicationsFolder: includeUserApplications,
             hiddenBundleIDs: hiddenBundleIDs
         )
+        LaunchyLogger.log("app discovery results: base=\(baseApps.count), user=\(userApps.count)")
         let decoratedBaseApps = baseApps
         let decoratedUserApps = userApps.map { app -> AppItem in
             var modified = app
@@ -624,6 +639,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         orderedItems = items + decoratedUserApps.map(LauncherItem.app)
         pageSizes = sizes + computedUserPageSizes
+        LaunchyLogger.log("refreshLauncherItems: totalLauncherItems=\(orderedItems.count), pages=\(pageSizes.count)")
     }
 
     private func pageSizesForUserApplications(_ count: Int) -> [Int] {

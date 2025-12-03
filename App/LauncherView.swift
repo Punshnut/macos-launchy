@@ -31,6 +31,8 @@ private struct RemovedAppContext {
     var items: [LauncherItem]
     var app: AppItem
     var suggestedIndex: Int
+    var removedRootItem: Bool
+    var pageSizesAfterRemoval: [Int]
 }
 
 private struct FolderOverlayLayout {
@@ -1129,7 +1131,7 @@ struct LauncherView: View {
         }
         currentPage = folderIndex / max(pageCapacity, 1)
         pagerDragOffset = 0
-        persistOrderChange()
+        persistOrderChange(using: pageSizes)
     }
 
     /// Updates a folder in the ordered list and propagates the change outward.
@@ -1159,33 +1161,33 @@ struct LauncherView: View {
     @discardableResult
     private func extractAppFromFolderForDrag() -> LauncherItem? {
         guard let context = folderDragContext else { return nil }
-        guard let folderIndex = orderedItems.firstIndex(where: { item in
-            if case let .folder(folder) = item {
-                return folder.id == context.folderID
-            }
-            return false
-        }) else { return nil }
-        guard case var .folder(folder) = orderedItems[folderIndex] else { return nil }
-        guard let removalIndex = folder.apps.firstIndex(of: context.app) else { return nil }
-
-        let app = folder.apps.remove(at: removalIndex)
-        var updated = orderedItems
-        updated.remove(at: folderIndex)
-
-        if folder.apps.isEmpty == false {
-            updated.insert(.folder(folder), at: folderIndex)
-        }
-
-        let insertIndex = folder.apps.isEmpty ? folderIndex : folderIndex + 1
-        updated.insert(.app(app), at: insertIndex)
+        guard let removal = removeAppFromHierarchy(
+            context.app,
+            updatePageSizes: false,
+            normalizePageSizes: false
+        ) else { return nil }
+        var updated = removal.items
+        let insertionIndex = min(removal.suggestedIndex, updated.count)
+        let extractedApp = removal.app
+        updated.insert(.app(extractedApp), at: insertionIndex)
 
         withAnimation(gridSpringAnimation) {
             orderedItems = updated
             activeFolder = nil
         }
-        persistOrderChange()
+
+        let targetPageHint = pageIndex(forLinearIndex: insertionIndex, sizes: removal.pageSizesAfterRemoval)
+            ?? removal.pageSizesAfterRemoval.count
+        let finalSizes = pageSizesAfterInsertion(
+            removal.pageSizesAfterRemoval,
+            insertingIndex: insertionIndex,
+            resultingCount: updated.count,
+            targetPageHint: targetPageHint
+        )
+        pageSizes = finalSizes
+        persistOrderChange(using: finalSizes)
         folderDragContext = nil
-        return .app(app)
+        return .app(extractedApp)
     }
 
     /// Converts an active folder drag into a root-level drag by pulling the app out and closing the overlay.
@@ -1440,6 +1442,20 @@ struct LauncherView: View {
         return sizes
     }
 
+    private func resolveTargetPageForInsertion(
+        hint: Int?,
+        sizes: [Int]
+    ) -> Int {
+        let normalizedHint = max(hint ?? sizes.count, 0)
+        guard pageCapacity > 0 else {
+            return normalizedHint
+        }
+        if normalizedHint < sizes.count {
+            return sizes[normalizedHint] < pageCapacity ? normalizedHint : sizes.count
+        }
+        return sizes.count
+    }
+
     private func normalizePageSizes(_ raw: [Int], itemCount: Int) -> [Int] {
         guard itemCount > 0, pageCapacity > 0 else { return [] }
 
@@ -1511,18 +1527,27 @@ struct LauncherView: View {
         )
     }
 
-    private func pageSizesAfterRemoval(_ sizes: [Int], removingIndex: Int, currentCount: Int) -> [Int] {
+    private func pageSizesAfterRemoval(
+        _ sizes: [Int],
+        removingIndex: Int,
+        currentCount: Int,
+        normalize: Bool = true
+    ) -> [Int] {
         if fillsGapsAutomatically {
             return densePageSizes(for: max(currentCount - 1, 0))
         }
 
         guard let page = pageIndex(forLinearIndex: removingIndex, sizes: sizes) else {
-            return normalizePageSizes(sizes, itemCount: max(currentCount - 1, 0))
+            let trimmed = trimTrailingEmptyPages(sizes)
+            return normalize ? normalizePageSizes(trimmed, itemCount: max(currentCount - 1, 0)) : sizes
         }
         var updated = sizes
         updated[page] = max(updated[page] - 1, 0)
-        updated = trimTrailingEmptyPages(updated)
-        return normalizePageSizes(updated, itemCount: max(currentCount - 1, 0))
+        if normalize {
+            updated = trimTrailingEmptyPages(updated)
+            return normalizePageSizes(updated, itemCount: max(currentCount - 1, 0))
+        }
+        return updated
     }
 
     private func pageSizesAfterInsertion(
@@ -1536,21 +1561,13 @@ struct LauncherView: View {
         }
 
         var updated = sizes
-        let targetPage = max(targetPageHint ?? pageIndex(forLinearIndex: insertingIndex, sizes: updated) ?? updated.count, 0)
+        let pageHint = max(targetPageHint ?? pageIndex(forLinearIndex: insertingIndex, sizes: updated) ?? updated.count, 0)
+        let targetPage = resolveTargetPageForInsertion(hint: pageHint, sizes: updated)
         if targetPage >= updated.count {
-            if let lastPopulatedPage = updated.lastIndex(where: { $0 > 0 }),
-               pageCapacity > 0,
-               updated[lastPopulatedPage] < pageCapacity
-            {
-                updated[lastPopulatedPage] += 1
-            } else {
-                updated.append(1)
-            }
-            return normalizePageSizes(updated, itemCount: resultingCount)
+            updated.append(contentsOf: Array(repeating: 0, count: targetPage - updated.count + 1))
         }
-
         updated[targetPage] += 1
-        return normalizePageSizes(updated, itemCount: resultingCount)
+        return trimTrailingEmptyPages(updated)
     }
 
     private func trimTrailingEmptyPages(_ sizes: [Int]) -> [Int] {
@@ -1607,6 +1624,13 @@ struct LauncherView: View {
         }
 
         return results
+    }
+
+    private func pageHasSpace(_ page: Int) -> Bool {
+        guard pageCapacity > 0 else { return false }
+        let sizes = activePageSizes(for: orderedItems.count)
+        guard page < sizes.count else { return true }
+        return sizes[page] < pageCapacity
     }
 
     /// Picks either the discovered icon or the fallback system glyph.
@@ -1935,6 +1959,13 @@ struct LauncherView: View {
                     commitFolderNameEdit(for: folder)
                 }
                 .onChange(of: isFolderNameFieldFocused) { focused in
+                    if focused {
+                        DispatchQueue.main.async {
+                            (NSApp.keyWindow?.firstResponder as? NSText)?.selectAll(nil)
+                        }
+                        return
+                    }
+
                     if focused == false && isEditingFolderName {
                         commitFolderNameEdit(for: folder)
                     }
@@ -3338,14 +3369,20 @@ struct LauncherView: View {
         }()
 
         ForEach(pageIndices, id: \.self) { targetPage in
+            let pageIsFull = pageHasSpace(targetPage) == false
             let onPage = targets.allSatisfy {
                 pageIndex(for: $0) == targetPage
             }
+            let shouldDisable = usesFolderOverlay ? pageIsFull : onPage
             Button("Page \(targetPage + 1)") {
-                moveItems(targets, toPage: targetPage)
-                finalizeBulkSelectionAction()
+                if usesFolderOverlay, let first = targets.first {
+                    moveAppOutOfFolderToPage(first, targetPage: targetPage)
+                } else {
+                    moveItems(targets, toPage: targetPage)
+                    finalizeBulkSelectionAction()
+                }
             }
-            .disabled(onPage)
+            .disabled(shouldDisable)
         }
     }
 
@@ -3575,7 +3612,7 @@ struct LauncherView: View {
             withAnimation(gridSpringAnimation) {
                 orderedItems = removal.items
             }
-            persistOrderChange()
+            persistOrderChange(using: pageSizes)
             currentPage = min(currentPage, fullPageCount - 1)
             pagerDragOffset = 0
         }
@@ -3604,7 +3641,7 @@ struct LauncherView: View {
             activeFolder = folder
         }
         ensureCurrentPageWithinBounds()
-        persistOrderChange()
+        persistOrderChange(using: pageSizes)
     }
 
     private func moveApps(_ apps: [AppItem], toFolderID folderID: UUID) {
@@ -3622,10 +3659,14 @@ struct LauncherView: View {
 
         switch item {
         case .app(let app):
-            guard let removal = removeAppFromHierarchy(app) else { return }
-            workingSizes = pageSizesAfterRemoval(currentSizes, removingIndex: removal.suggestedIndex, currentCount: items.count)
+            guard let removal = removeAppFromHierarchy(
+                app,
+                updatePageSizes: false,
+                normalizePageSizes: false
+            ) else { return }
             items = removal.items
             itemToInsert = .app(removal.app)
+            workingSizes = removal.removedRootItem ? removal.pageSizesAfterRemoval : currentSizes
         case .folder(let folder):
             guard let index = items.firstIndex(where: { entry in
                 if case let .folder(existing) = entry {
@@ -3633,22 +3674,18 @@ struct LauncherView: View {
                 }
                 return false
             }) else { return }
-            workingSizes = pageSizesAfterRemoval(currentSizes, removingIndex: index, currentCount: items.count)
+            workingSizes = pageSizesAfterRemoval(currentSizes, removingIndex: index, currentCount: items.count, normalize: false)
             itemToInsert = items.remove(at: index)
         }
 
-        let boundedPage = max(0, targetPage)
-        if boundedPage >= workingSizes.count {
-            workingSizes.append(contentsOf: Array(repeating: 0, count: boundedPage - workingSizes.count + 1))
+        let resolvedPage = resolveTargetPageForInsertion(hint: max(0, targetPage), sizes: workingSizes)
+        while resolvedPage >= workingSizes.count {
+            workingSizes.append(0)
         }
-        let insertionIndex = insertionIndexForPage(boundedPage, sizes: workingSizes)
+        let insertionIndex = insertionIndexForPage(resolvedPage, sizes: workingSizes)
         items.insert(itemToInsert, at: insertionIndex)
-        let finalSizes = pageSizesAfterInsertion(
-            workingSizes,
-            insertingIndex: insertionIndex,
-            resultingCount: items.count,
-            targetPageHint: boundedPage
-        )
+        workingSizes[resolvedPage] += 1
+        let finalSizes = trimTrailingEmptyPages(workingSizes)
         withAnimation(gridSpringAnimation) {
             orderedItems = items
         }
@@ -3661,6 +3698,33 @@ struct LauncherView: View {
         for item in items {
             moveItem(item, toPage: targetPage)
         }
+    }
+
+    private func moveAppOutOfFolderToPage(_ item: LauncherItem, targetPage: Int) {
+        guard case .app(let app) = item else { return }
+        guard let removal = removeAppFromHierarchy(
+            app,
+            updatePageSizes: false,
+            normalizePageSizes: false
+        ) else { return }
+
+        var items = removal.items
+        var afterRemovalSizes = removal.pageSizesAfterRemoval
+        let resolvedPage = resolveTargetPageForInsertion(hint: max(0, targetPage), sizes: afterRemovalSizes)
+        while resolvedPage >= afterRemovalSizes.count {
+            afterRemovalSizes.append(0)
+        }
+        let insertionIndex = insertionIndexForPage(resolvedPage, sizes: afterRemovalSizes)
+        items.insert(.app(removal.app), at: insertionIndex)
+        afterRemovalSizes[resolvedPage] += 1
+        let finalSizes = trimTrailingEmptyPages(afterRemovalSizes)
+
+        withAnimation(gridSpringAnimation) {
+            orderedItems = items
+        }
+        pageSizes = finalSizes
+        ensureCurrentPageWithinBounds()
+        persistOrderChange(using: finalSizes)
     }
 
     private func finalizeBulkSelectionAction() {
@@ -3782,7 +3846,11 @@ struct LauncherView: View {
     }
 
     /// Removes an app from either the root list or a folder.
-    private func removeAppFromHierarchy(_ app: AppItem) -> RemovedAppContext? {
+    private func removeAppFromHierarchy(
+        _ app: AppItem,
+        updatePageSizes: Bool = true,
+        normalizePageSizes: Bool = true
+    ) -> RemovedAppContext? {
         guard let location = locateApp(app) else { return nil }
         let currentSizes = activePageSizes(for: orderedItems.count)
         var items = orderedItems
@@ -3790,8 +3858,22 @@ struct LauncherView: View {
         switch location {
         case .root(let index):
             guard case let .app(existing) = items.remove(at: index) else { return nil }
-            pageSizes = pageSizesAfterRemoval(currentSizes, removingIndex: index, currentCount: orderedItems.count)
-            return RemovedAppContext(items: items, app: existing, suggestedIndex: index)
+            let removalSizes = pageSizesAfterRemoval(
+                currentSizes,
+                removingIndex: index,
+                currentCount: orderedItems.count,
+                normalize: normalizePageSizes
+            )
+            if updatePageSizes {
+                pageSizes = removalSizes
+            }
+            return RemovedAppContext(
+                items: items,
+                app: existing,
+                suggestedIndex: index,
+                removedRootItem: true,
+                pageSizesAfterRemoval: removalSizes
+            )
         case .folder(let folderIndex, let appIndex):
             guard case var .folder(folder) = items[folderIndex] else { return nil }
             guard folder.apps.indices.contains(appIndex) else { return nil }
@@ -3805,13 +3887,33 @@ struct LauncherView: View {
                 if activeFolder?.id == folder.id {
                     activeFolder = folder
                 }
-                return RemovedAppContext(items: items, app: removedApp, suggestedIndex: insertionIndex)
+                return RemovedAppContext(
+                    items: items,
+                    app: removedApp,
+                    suggestedIndex: insertionIndex,
+                    removedRootItem: false,
+                    pageSizesAfterRemoval: currentSizes
+                )
             } else if activeFolder?.id == folder.id {
                 closeActiveFolder()
             }
 
-            pageSizes = pageSizesAfterRemoval(currentSizes, removingIndex: folderIndex, currentCount: orderedItems.count)
-            return RemovedAppContext(items: items, app: removedApp, suggestedIndex: insertionIndex)
+            let removalSizes = pageSizesAfterRemoval(
+                currentSizes,
+                removingIndex: folderIndex,
+                currentCount: orderedItems.count,
+                normalize: normalizePageSizes
+            )
+            if updatePageSizes {
+                pageSizes = removalSizes
+            }
+            return RemovedAppContext(
+                items: items,
+                app: removedApp,
+                suggestedIndex: insertionIndex,
+                removedRootItem: true,
+                pageSizesAfterRemoval: removalSizes
+            )
         }
     }
 

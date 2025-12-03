@@ -11,7 +11,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private let itemOrderStore = ItemArrangementStore()
     private var orderedItems: [LauncherItem] = []
     private var pageSizes: [Int] = []
-    private var userAppPageSizes: [Int] = []
     private var currentLauncherMode: LauncherMode?
     private var currentSettings = LauncherSettings.defaults
     private var settingsStreamTask: Task<Void, Never>?
@@ -657,61 +656,19 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             }
             return modified
         }
+        let allDecoratedApps = decoratedBaseApps + decoratedUserApps
 
         let (items, sizes) = itemOrderStore.arrangedItems(
-            from: decoratedBaseApps,
+            from: allDecoratedApps,
             pageCapacity: LauncherGridConfiguration.pageCapacity,
             fillsGapsAutomatically: currentSettings.fillsGapsAutomatically,
             preferredCustomNames: names
         )
 
-        let computedUserPageSizes = pageSizesForUserApplications(decoratedUserApps.count)
-        userAppPageSizes = computedUserPageSizes
-
-        orderedItems = items + decoratedUserApps.map(LauncherItem.app)
-        pageSizes = sizes + computedUserPageSizes
+        orderedItems = items
+        pageSizes = sizes
         LaunchyLogger.log("refreshLauncherItems: totalLauncherItems=\(orderedItems.count), pages=\(pageSizes.count)")
         preheatIconsForCurrentLayout()
-    }
-
-    private func pageSizesForUserApplications(_ count: Int) -> [Int] {
-        guard count > 0 else { return [] }
-        var remaining = count
-        var sizes: [Int] = []
-        let capacity = LauncherGridConfiguration.pageCapacity
-
-        while remaining > 0 {
-            let fill = min(capacity, remaining)
-            sizes.append(fill)
-            remaining -= fill
-        }
-
-        return sizes
-    }
-
-    private func isUserLauncherItem(_ item: LauncherItem) -> Bool {
-        guard case .app(let app) = item else { return false }
-        return app.isUserApplication
-    }
-
-    private func basePageSizes(from items: [LauncherItem], pageSizes: [Int]) -> [Int] {
-        guard items.isEmpty == false else { return [] }
-        var sanitized: [Int] = []
-        var cursor = 0
-        for size in pageSizes {
-            guard size > 0 else { continue }
-            let end = min(cursor + size, items.count)
-            guard end > cursor else { continue }
-            let pageItems = items[cursor..<end]
-            let baseCount = pageItems.reduce(0) { partial, item in
-                partial + (isUserLauncherItem(item) ? 0 : 1)
-            }
-            if baseCount > 0 {
-                sanitized.append(min(baseCount, LauncherGridConfiguration.pageCapacity))
-            }
-            cursor = end
-        }
-        return sanitized
     }
 
     private func preheatIconsForCurrentLayout() {
@@ -803,11 +760,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             },
             onItemOrderChange: { [weak self] reorderedItems, newPageSizes in
                 guard let self else { return }
-                let baseItems = reorderedItems.filter { !self.isUserLauncherItem($0) }
-                let basePageSizes = self.basePageSizes(from: reorderedItems, pageSizes: newPageSizes)
                 self.orderedItems = reorderedItems
-                self.pageSizes = basePageSizes + self.userAppPageSizes
-                self.itemOrderStore.saveOrderedItems(baseItems, pageSizes: basePageSizes)
+                self.pageSizes = newPageSizes
+                self.itemOrderStore.saveOrderedItems(reorderedItems, pageSizes: newPageSizes)
             },
             iconProvider: { [weak self] app, dimension, quality in
                 guard let self else { return nil }

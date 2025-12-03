@@ -222,6 +222,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             LaunchyLogger.log("applyLauncherMode: rebuilding window controller for mode \(mode)")
             rebuildWindow(for: mode, shouldPresentWindow: shouldPresentWindow)
         }
+
+        preheatIconsForCurrentLayout()
     }
 
     /// Creates a fresh `LauncherWindowController` using the provided mode.
@@ -233,6 +235,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let controller = LauncherWindowController(rootView: view, launcherMode: mode)
         if shouldPresentWindow {
             controller.presentWindow()
+            prefetchMinimalIconsForVisibleLauncher()
+            NotificationCenter.default.post(name: .launcherDidShow, object: nil)
         }
         launcherWindowManager = controller
     }
@@ -482,6 +486,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         guard let window = launcherWindowManager.window else {
             recordFrontmostApplicationForRestoration()
             launcherWindowManager.presentWindow()
+            prefetchMinimalIconsForVisibleLauncher()
             return
         }
 
@@ -491,6 +496,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             recordFrontmostApplicationForRestoration()
             activateApplicationForCurrentModeIfNeeded()
             launcherWindowManager.presentWindow()
+            prefetchMinimalIconsForVisibleLauncher()
+            NotificationCenter.default.post(name: .launcherDidShow, object: nil)
         }
     }
 
@@ -498,6 +505,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private func hideLauncherWindow(restoreFocus: Bool) {
         guard let window = launcherWindowManager?.window, window.isVisible else { return }
         window.orderOut(nil)
+        shrinkIconCachesForHiddenLauncher()
+        NotificationCenter.default.post(name: .launcherDidHide, object: nil)
         if restoreFocus {
             focusPreferredApplicationAfterLauncherHides()
         }
@@ -518,6 +527,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         activateApplicationForCurrentModeIfNeeded()
         controller.presentWindow()
+        prefetchMinimalIconsForVisibleLauncher()
+        NotificationCenter.default.post(name: .launcherDidShow, object: nil)
     }
 
     /// Activates the app when the current launcher mode expects a regular foreground experience.
@@ -565,6 +576,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         applyLauncherMode()
         activateApplicationForCurrentModeIfNeeded()
         launcherWindowManager?.presentWindow()
+        prefetchMinimalIconsForVisibleLauncher()
+        NotificationCenter.default.post(name: .launcherDidShow, object: nil)
     }
 
     /// Supplies the Dock's context menu with the arranged launcher items.
@@ -581,6 +594,24 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Connects the floating-layout toggle to a status-item menu command.
     @objc private func toggleLauncherModeMenuItem(_ sender: Any?) {
         toggleLauncherModeShortcut()
+    }
+
+    /// Releases cached icon memory after the launcher hides.
+    func shrinkIconCachesForHiddenLauncher() {
+        applicationDiscovery.shrinkCachesForHiddenLauncher()
+    }
+
+    /// Warms a tiny set of low/medium icons so the first page appears quickly after reopening.
+    private func prefetchMinimalIconsForVisibleLauncher() {
+        let limit = LauncherGridConfiguration.pageCapacity
+        let apps = prioritizedAppsForPrefetch(limit: limit)
+        guard apps.isEmpty == false else { return }
+        applicationDiscovery.preheatIcons(
+            for: apps,
+            targetDimension: preferredIconRenderDimension(for: currentSettings.selectedLauncherMode),
+            qualities: [.low],
+            limit: limit
+        )
     }
 
     /// Opens the settings window regardless of activation policy.
@@ -640,6 +671,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         orderedItems = items + decoratedUserApps.map(LauncherItem.app)
         pageSizes = sizes + computedUserPageSizes
         LaunchyLogger.log("refreshLauncherItems: totalLauncherItems=\(orderedItems.count), pages=\(pageSizes.count)")
+        preheatIconsForCurrentLayout()
     }
 
     private func pageSizesForUserApplications(_ count: Int) -> [Int] {
@@ -680,6 +712,56 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             cursor = end
         }
         return sanitized
+    }
+
+    private func preheatIconsForCurrentLayout() {
+        let dimension = preferredIconRenderDimension(for: currentSettings.selectedLauncherMode)
+        let limit = LauncherGridConfiguration.pageCapacity * 2
+        let apps = prioritizedAppsForPrefetch(limit: limit)
+        guard apps.isEmpty == false else { return }
+        applicationDiscovery.preheatIcons(
+            for: apps,
+            targetDimension: dimension,
+            qualities: [.low, .medium],
+            limit: limit
+        )
+    }
+
+    private func preferredIconRenderDimension(for mode: LauncherMode) -> CGFloat {
+        switch mode {
+        case .floaty:
+            return 102
+        case .fullscreen:
+            return 140
+        }
+    }
+
+    private func prioritizedAppsForPrefetch(limit: Int) -> [AppItem] {
+        var seen = Set<String>()
+        var prioritized: [AppItem] = []
+
+        func appendIfNeeded(_ app: AppItem) {
+            guard prioritized.count < limit else { return }
+            if seen.insert(app.bundleIdentifier).inserted {
+                prioritized.append(app)
+            }
+        }
+
+        for item in orderedItems {
+            switch item {
+            case .app(let app):
+                appendIfNeeded(app)
+            case .folder(let folder):
+                for app in folder.apps {
+                    appendIfNeeded(app)
+                }
+            }
+            if prioritized.count >= limit {
+                break
+            }
+        }
+
+        return prioritized
     }
 
     /// Builds a bundle ID keyed map of custom names from both root items and folder contents.
@@ -727,9 +809,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                 self.pageSizes = basePageSizes + self.userAppPageSizes
                 self.itemOrderStore.saveOrderedItems(baseItems, pageSizes: basePageSizes)
             },
-            iconProvider: { [weak self] app in
+            iconProvider: { [weak self] app, dimension, quality in
                 guard let self else { return nil }
-                return self.applicationDiscovery.resolveIcon(for: app)
+                return self.applicationDiscovery.preparedIcon(
+                    for: app,
+                    targetDimension: dimension,
+                    quality: quality
+                )
             }
         )
     }

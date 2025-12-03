@@ -43,7 +43,11 @@ final class SettingsWindowStore: NSObject, ObservableObject {
 
     /// Resolves the cached icon for the given app without storing it permanently.
     func icon(for app: AppItem) -> NSImage? {
-        appDiscoveryService.resolveIcon(for: app)
+        appDiscoveryService.preparedIcon(
+            for: app,
+            targetDimension: 64,
+            quality: .medium
+        )
     }
 
     /// Persists the launch-at-login preference and updates the in-memory copy.

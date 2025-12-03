@@ -1,5 +1,38 @@
 import AppKit
 
+enum IconRenderQuality: String {
+    case low
+    case medium
+    case high
+
+    var cacheSuffix: String {
+        switch self {
+        case .low: return "l"
+        case .medium: return "m"
+        case .high: return "h"
+        }
+    }
+
+    var pixelCap: Int {
+        switch self {
+        case .low: return 80
+        case .medium: return 160
+        case .high: return 200
+        }
+    }
+
+    var imageInterpolation: NSImageInterpolation {
+        switch self {
+        case .low:
+            return .low
+        case .medium:
+            return .medium
+        case .high:
+            return .high
+        }
+    }
+}
+
 /// Discoverer that scans common application folders and prepares `AppItem` models.
 final class AppDiscoveryService {
     private let fileSystem: FileManager
@@ -8,9 +41,17 @@ final class AppDiscoveryService {
     private let userApplicationsDirectory: URL
     private let preferredLanguageCodes: [String]
     private let iconCache = NSCache<NSString, NSImage>()
-    private static let maximumIconDimension: CGFloat = 160
-    private static let iconCacheCountLimit = 256
-    private static let iconCacheCostLimit = 65_536
+    private let preparedIconCache = NSCache<NSString, NSImage>()
+    private let metadataLock = NSLock()
+    private var iconModificationDates: [String: Date] = [:]
+    private var iconGenerations: [String: Int] = [:]
+    private var preparedIconKeysByBundleID: [String: Set<String>] = [:]
+    private let iconPreparationQueue = DispatchQueue(label: "com.launchy.icon-prep", qos: .userInitiated)
+    private static let maximumIconDimension: CGFloat = 256
+    private static let iconCacheCountLimit = 200
+    private static let preparedIconCacheCountLimit = 260
+    private static let iconCacheCostLimit = 12_000_000
+    private static let preparedIconCacheCostLimit = 16_000_000
 
     /// Configures the service with dependencies mainly to aid testing.
     init(
@@ -52,11 +93,22 @@ final class AppDiscoveryService {
         let userApplications = visibleApps.filter { $0.isUserApplication }
         let mainApplications = visibleApps.filter { $0.isUserApplication == false }
         let userAppsToReturn = includeUserApplicationsFolder ? userApplications : []
+        synchronizeIconMetadata(for: visibleApps)
         return (main: mainApplications, userApplications: userAppsToReturn)
+    }
+
+    /// Keeps cache metadata in sync with the current set of apps and evicts stale entries.
+    func synchronizeIconMetadata(for apps: [AppItem]) {
+        let bundleIDs = Set(apps.map(\.bundleIdentifier))
+        evictMissingBundleCaches(keeping: bundleIDs)
+        for app in apps {
+            invalidateIfBundleUpdated(app)
+        }
     }
 
     /// Returns the lazily-loaded icon for an app, caching results by bundle identifier.
     func resolveIcon(for app: AppItem) -> NSImage? {
+        invalidateIfBundleUpdated(app)
         if let cached = iconCache.object(forKey: app.bundleIdentifier as NSString) {
             return cached
         }
@@ -71,6 +123,74 @@ final class AppDiscoveryService {
     /// Clears the cached icons, forcing the next `resolveIcon(for:)` call to reload from disk.
     func clearIconCache() {
         iconCache.removeAllObjects()
+        preparedIconCache.removeAllObjects()
+        metadataLock.lock()
+        iconModificationDates.removeAll()
+        iconGenerations.removeAll()
+        preparedIconKeysByBundleID.removeAll()
+        metadataLock.unlock()
+    }
+
+    /// Drops prepared and base icon bitmaps to minimize memory while the launcher is hidden.
+    func shrinkCachesForHiddenLauncher() {
+        preparedIconCache.removeAllObjects()
+        iconCache.removeAllObjects()
+    }
+
+    /// Returns an icon scaled to the exact dimension the grid needs, keeping memory usage bounded.
+    func preparedIcon(
+        for app: AppItem,
+        targetDimension: CGFloat,
+        quality: IconRenderQuality = .medium,
+        screenScale: CGFloat = NSScreen.main?.backingScaleFactor ?? 2
+    ) -> NSImage? {
+        invalidateIfBundleUpdated(app)
+        let pixelDimension = pixelDimension(for: targetDimension, quality: quality, screenScale: screenScale)
+        let generation = iconGeneration(for: app.bundleIdentifier)
+        let cacheKey = preparedIconCacheKey(
+            for: app.bundleIdentifier,
+            dimension: pixelDimension,
+            quality: quality,
+            generation: generation
+        )
+        if let cached = preparedIconCache.object(forKey: cacheKey as NSString) {
+            return cached
+        }
+
+        guard let baseIcon = resolveIcon(for: app) else { return nil }
+        let sized = resizedIcon(baseIcon, pixelDimension: pixelDimension, quality: quality)
+        cachePreparedIcon(sized, forKey: cacheKey, bundleIdentifier: app.bundleIdentifier)
+        return sized
+    }
+
+    /// Warms a bounded number of icons on a background queue so the grid renders without stalls.
+    func preheatIcons(
+        for apps: [AppItem],
+        targetDimension: CGFloat,
+        qualities: [IconRenderQuality] = [.low, .medium],
+        screenScale: CGFloat = NSScreen.main?.backingScaleFactor ?? 2,
+        limit: Int = 80
+    ) {
+        guard apps.isEmpty == false else { return }
+        let slice = Array(apps.prefix(limit))
+        let resolvedScale = max(screenScale, 1)
+        let dimension = targetDimension
+
+        iconPreparationQueue.async { [weak self] in
+            guard let self else { return }
+            for app in slice {
+                autoreleasepool {
+                    for quality in qualities {
+                        _ = self.preparedIcon(
+                            for: app,
+                            targetDimension: dimension,
+                            quality: quality,
+                            screenScale: resolvedScale
+                        )
+                    }
+                }
+            }
+        }
     }
 
     /// Lists `.app` bundles inside the provided directory.
@@ -102,29 +222,97 @@ final class AppDiscoveryService {
             height: icon.size.height * scale
         )
 
-        let scaled = NSImage(size: targetSize)
-        scaled.lockFocus()
-        NSGraphicsContext.current?.imageInterpolation = .high
-        icon.draw(
-            in: NSRect(origin: .zero, size: targetSize),
-            from: NSRect(origin: .zero, size: icon.size),
-            operation: .copy,
-            fraction: 1
-        )
-        scaled.unlockFocus()
-        scaled.size = targetSize
-        scaled.isTemplate = icon.isTemplate
-        return scaled
+        return renderIcon(icon, targetSize: targetSize, quality: .high)
     }
 
     private func cacheIcon(_ icon: NSImage, for bundleIdentifier: String) {
-        let cost = max(1, Int(icon.size.width * icon.size.height))
+        let cost = imageCost(icon)
         iconCache.setObject(icon, forKey: bundleIdentifier as NSString, cost: cost)
+    }
+
+    private func cachePreparedIcon(_ icon: NSImage, forKey key: String, bundleIdentifier: String) {
+        let cost = imageCost(icon)
+        preparedIconCache.setObject(icon, forKey: key as NSString, cost: cost)
+        metadataLock.lock()
+        preparedIconKeysByBundleID[bundleIdentifier, default: []].insert(key)
+        metadataLock.unlock()
     }
 
     private func configureIconCacheLimits() {
         iconCache.countLimit = Self.iconCacheCountLimit
         iconCache.totalCostLimit = Self.iconCacheCostLimit
+        preparedIconCache.countLimit = Self.preparedIconCacheCountLimit
+        preparedIconCache.totalCostLimit = Self.preparedIconCacheCostLimit
+    }
+
+    private func pixelDimension(
+        for targetDimension: CGFloat,
+        quality: IconRenderQuality,
+        screenScale: CGFloat
+    ) -> Int {
+        let scaled = Int(ceil(max(targetDimension, 1) * max(screenScale, 1)))
+        return min(max(scaled, 1), quality.pixelCap)
+    }
+
+    private func iconGeneration(for bundleIdentifier: String) -> Int {
+        metadataLock.lock()
+        let generation = iconGenerations[bundleIdentifier] ?? 0
+        metadataLock.unlock()
+        return generation
+    }
+
+    private func invalidateIfBundleUpdated(_ app: AppItem) {
+        guard let bundleURL = app.bundleURL else { return }
+        let bundleID = app.bundleIdentifier
+        let modificationDate = bundleModificationDate(bundleURL)
+        metadataLock.lock()
+        let previous = iconModificationDates[bundleID]
+        if let modificationDate {
+            iconModificationDates[bundleID] = modificationDate
+        } else {
+            iconModificationDates.removeValue(forKey: bundleID)
+        }
+        let changed = previous != modificationDate
+        if changed {
+            iconGenerations[bundleID, default: 0] += 1
+            removeCachedIconsLocked(for: bundleID)
+        }
+        metadataLock.unlock()
+    }
+
+    private func evictMissingBundleCaches(keeping bundleIDs: Set<String>) {
+        metadataLock.lock()
+        let tracked = Set(iconModificationDates.keys).union(preparedIconKeysByBundleID.keys)
+        let stale = tracked.subtracting(bundleIDs)
+        for bundleID in stale {
+            removeCachedIconsLocked(for: bundleID)
+            iconModificationDates.removeValue(forKey: bundleID)
+            iconGenerations.removeValue(forKey: bundleID)
+        }
+        metadataLock.unlock()
+    }
+
+    private func removeCachedIcons(for bundleIdentifier: String) {
+        metadataLock.lock()
+        removeCachedIconsLocked(for: bundleIdentifier)
+        metadataLock.unlock()
+    }
+
+    private func removeCachedIconsLocked(for bundleIdentifier: String) {
+        iconCache.removeObject(forKey: bundleIdentifier as NSString)
+        if let keys = preparedIconKeysByBundleID[bundleIdentifier] {
+            for key in keys {
+                preparedIconCache.removeObject(forKey: key as NSString)
+            }
+        }
+        preparedIconKeysByBundleID[bundleIdentifier] = nil
+    }
+
+    private func bundleModificationDate(_ bundleURL: URL) -> Date? {
+        guard let values = try? bundleURL.resourceValues(forKeys: [.contentModificationDateKey]) else {
+            return nil
+        }
+        return values.contentModificationDate
     }
 
     private func defaultApplicationDirectories(includeUserApplicationsFolder: Bool) -> [URL] {
@@ -138,6 +326,44 @@ final class AppDiscoveryService {
         }
 
         return directories
+    }
+
+    private func preparedIconCacheKey(
+        for bundleIdentifier: String,
+        dimension: Int,
+        quality: IconRenderQuality,
+        generation: Int
+    ) -> String {
+        "\(bundleIdentifier)-\(dimension)-\(quality.cacheSuffix)-\(generation)"
+    }
+
+    private func imageCost(_ image: NSImage) -> Int {
+        let size = image.size
+        let pixels = Int(size.width * size.height)
+        let bytesPerPixel = 4
+        return max(pixels * bytesPerPixel, 1)
+    }
+
+    private func resizedIcon(_ icon: NSImage, pixelDimension: Int, quality: IconRenderQuality) -> NSImage {
+        guard pixelDimension > 0 else { return icon }
+        let targetSize = NSSize(width: pixelDimension, height: pixelDimension)
+        return renderIcon(icon, targetSize: targetSize, quality: quality)
+    }
+
+    private func renderIcon(_ icon: NSImage, targetSize: NSSize, quality: IconRenderQuality) -> NSImage {
+        let rendered = NSImage(size: targetSize)
+        rendered.lockFocus()
+        NSGraphicsContext.current?.imageInterpolation = quality.imageInterpolation
+        let rect = NSRect(origin: .zero, size: targetSize)
+        if let rep = icon.bestRepresentation(for: rect, context: nil, hints: nil) {
+            rep.draw(in: rect)
+        } else {
+            icon.draw(in: rect, from: NSRect(origin: .zero, size: icon.size), operation: .copy, fraction: 1)
+        }
+        rendered.unlockFocus()
+        rendered.size = targetSize
+        rendered.isTemplate = icon.isTemplate
+        return rendered
     }
 
     /// Converts a bundle on disk into an `AppItem`, extracting the display name and identifier.

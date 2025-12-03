@@ -6,6 +6,10 @@ extension Notification.Name {
     static let launcherShouldRefocusSearch = Notification.Name("launchyLauncherShouldRefocusSearch")
     /// Triggers the fullscreen grid fly-in animation when the launcher appears.
     static let launcherShouldAnimateGridEntrance = Notification.Name("launchyLauncherShouldAnimateGridEntrance")
+    /// Indicates the launcher window became visible.
+    static let launcherDidShow = Notification.Name("launchyLauncherDidShow")
+    /// Indicates the launcher window was fully hidden.
+    static let launcherDidHide = Notification.Name("launchyLauncherDidHide")
 }
 
 private struct FolderDragContext {
@@ -65,7 +69,7 @@ struct LauncherView: View {
     /// Callback fired whenever the user changes the arrangement.
     var onItemOrderChange: (([LauncherItem], [Int]) -> Void)?
     /// Provides the icon that should be used for a specific app.
-    var iconProvider: (AppItem) -> NSImage? = { $0.iconImage }
+    var iconProvider: @Sendable (AppItem, CGFloat, IconRenderQuality) -> NSImage? = { app, _, _ in app.iconImage }
 
     private var pageCapacity: Int { LauncherGridConfiguration.pageCapacity }
     private let closeAnimationDuration: TimeInterval = 0.25
@@ -256,6 +260,7 @@ struct LauncherView: View {
                 if canReorder && isRenamingApp == false {
                     decoratedCell
                         .onDrag {
+                            enterPerformanceShedding(duration: 0.6)
                             draggedItem = item
                             captureDragOrigin(for: item)
                             return NSItemProvider(object: NSString(string: item.id.uuidString))
@@ -335,6 +340,8 @@ struct LauncherView: View {
     private let pagerButtonHitPadding: CGFloat = 12
     private let pagerButtonHitSize: CGFloat = 44
     private let pagerButtonHitExpansion: CGFloat = 12
+    private let highQualityIconCacheLimit = 90
+    private let highQualityRequestDelay: TimeInterval = 0.28
 
     @State private var orderedItems: [LauncherItem]
     @State private var draggedItem: LauncherItem?
@@ -359,6 +366,15 @@ struct LauncherView: View {
     @State private var suppressGridAnimation = false
     @State private var isEditingFolderName = false
     @State private var renamingAppID: UUID?
+    @State private var highQualityIconOverrides: [UUID: NSImage] = [:]
+    @State private var highQualityIconOrder: [UUID] = []
+    @State private var pendingHighQualityIconIDs: Set<UUID> = []
+    @State private var delayedHighQualityRequests: Set<UUID> = []
+    @State private var highQualityRequestEpoch: Int = 0
+    @State private var lastPageChangeDate: Date?
+    @State private var isLauncherVisible = true
+    @State private var interactionPressureEpoch: Int = 0
+    @State private var interactionPressureUntil: Date?
     @State private var appNameDraft = ""
     @State private var folderNameDraft = ""
     @State private var activeFolderPage = 0
@@ -369,6 +385,7 @@ struct LauncherView: View {
     @State private var pageDirection: PageShiftDirection = .forward
     @State private var folderIconWaveToggle = false
     @Namespace private var folderIconAnimationNamespace
+    private let highQualityRenderQueue = DispatchQueue(label: "com.launchy.icon.high", qos: .utility)
     @State private var pagerDragOffset: CGFloat = 0
     @State private var pagerViewportWidth: CGFloat = 1
     @State private var lastPagerDragDate: Date?
@@ -388,7 +405,7 @@ struct LauncherView: View {
         onSettingsRequested: (() -> Void)? = nil,
         onAppInfoRequested: (() -> Void)? = nil,
         onItemOrderChange: (([LauncherItem], [Int]) -> Void)? = nil,
-        iconProvider: @escaping (AppItem) -> NSImage? = { $0.iconImage }
+        iconProvider: @escaping @Sendable (AppItem, CGFloat, IconRenderQuality) -> NSImage? = { app, _, _ in app.iconImage }
     ) {
         self.itemCatalog = itemCatalog
         self.initialPageSizes = initialPageSizes
@@ -406,6 +423,10 @@ struct LauncherView: View {
 
     /// Builds the full launcher UI including background, grid, and pager controls.
     var body: some View {
+        AnyView(bodyContent)
+    }
+
+    private var bodyContent: some View {
         GeometryReader { proxy in
             buildLauncherContent(for: proxy.size)
         }
@@ -429,6 +450,14 @@ struct LauncherView: View {
             currentPage = 0
             pageDirection = .forward
             pagerDragOffset = 0
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .launcherDidHide)) { _ in
+            isLauncherVisible = false
+            purgeHighQualityOverrides()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .launcherDidShow)) { _ in
+            isLauncherVisible = true
+            cancelPendingHighQualityRequests()
         }
         .onChange(of: activeFolder) { newValue in
             if newValue == nil {
@@ -473,6 +502,9 @@ struct LauncherView: View {
                 isDragModifierSnapActive = false
             }
             suppressGridAnimation = newItem != nil
+            if newItem != nil {
+                enterPerformanceShedding(duration: 0.8)
+            }
         }
         .onChange(of: orderedItems) { newItems in
             if fillsGapsAutomatically {
@@ -492,6 +524,7 @@ struct LauncherView: View {
                     return false
                 }) == false {
                 self.activeFolder = nil
+                enterPerformanceShedding(duration: 0.6, cancelHeavyWork: false)
             }
             let validIDs = Set(newItems.map(\.id))
             multiSelectedItemIDs.formIntersection(validIDs)
@@ -706,6 +739,86 @@ struct LauncherView: View {
         return CGFloat(page - current) * pageWidth + pagerDragOffset
     }
 
+    private var shouldUseHighQualityIcons: Bool {
+        guard suppressGridAnimation == false else { return false }
+        guard abs(pagerDragOffset) < 1 else { return false }
+        guard isClosingLauncher == false else { return false }
+        guard isLauncherVisible else { return false }
+        guard isUnderInteractionPressure == false else { return false }
+        return isHighQualityCoolingDown == false
+    }
+
+    private var isHighQualityCoolingDown: Bool {
+        guard let lastPageChangeDate else { return false }
+        return Date().timeIntervalSince(lastPageChangeDate) < 0.6
+    }
+
+    private var isUnderInteractionPressure: Bool {
+        guard let until = interactionPressureUntil else { return false }
+        return until.timeIntervalSinceNow > 0
+    }
+
+    private func baseIconRequest(for layout: LauncherLayoutMetrics) -> (dimension: CGFloat, quality: IconRenderQuality) {
+        if shouldUseHighQualityIcons {
+            return (layout.iconDimension, .medium)
+        }
+        let reduced = max(layout.iconDimension * 0.55, 48)
+        return (reduced, .low)
+    }
+
+    private func folderTileIconRequest(for layout: LauncherLayoutMetrics) -> (dimension: CGFloat, quality: IconRenderQuality) {
+        let base = baseIconRequest(for: layout)
+        let scaledDimension = max(base.dimension * 0.72, 40)
+        return (scaledDimension, base.quality)
+    }
+
+    private func highQualityRequestDimension(for layout: LauncherLayoutMetrics) -> CGFloat {
+        let boosted = max(layout.iconDimension * 1.2, layout.iconDimension)
+        return min(boosted, 200)
+    }
+
+    private func markPageSwitch() {
+        lastPageChangeDate = Date()
+        bumpHighQualityRequestEpoch(resetPending: true)
+        enterPerformanceShedding()
+    }
+
+    private func bumpHighQualityRequestEpoch(resetPending: Bool = false) {
+        highQualityRequestEpoch &+= 1
+        if resetPending {
+            pendingHighQualityIconIDs.removeAll()
+            delayedHighQualityRequests.removeAll()
+        }
+    }
+
+    private func purgeHighQualityOverrides() {
+        highQualityIconOverrides.removeAll()
+        highQualityIconOrder.removeAll()
+        pendingHighQualityIconIDs.removeAll()
+        delayedHighQualityRequests.removeAll()
+        bumpHighQualityRequestEpoch(resetPending: true)
+    }
+
+    private func cancelPendingHighQualityRequests() {
+        pendingHighQualityIconIDs.removeAll()
+        delayedHighQualityRequests.removeAll()
+        bumpHighQualityRequestEpoch(resetPending: true)
+    }
+
+    private func enterPerformanceShedding(duration: TimeInterval = 0.9, cancelHeavyWork: Bool = true) {
+        interactionPressureEpoch &+= 1
+        interactionPressureUntil = Date().addingTimeInterval(duration)
+        if cancelHeavyWork {
+            cancelPendingHighQualityRequests()
+        }
+
+        let epoch = interactionPressureEpoch
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [self] in
+            guard epoch == interactionPressureEpoch else { return }
+            interactionPressureUntil = nil
+        }
+    }
+
     /// Records the active viewport width so scroll-based gestures map 1:1 with page width.
     private func beginPagerInteraction(pageWidth: CGFloat) {
         pagerViewportWidth = max(pageWidth, 1)
@@ -774,10 +887,12 @@ struct LauncherView: View {
         }
 
         let targetPage = clampPageIndex(currentPage - delta)
+        enterPerformanceShedding()
         withAnimation(gestureSettleAnimation) {
             pageDirection = targetPage >= currentPage ? .forward : .backward
             currentPage = targetPage
             pagerDragOffset = 0
+            markPageSwitch()
         }
         lastPagerDragDate = nil
     }
@@ -878,6 +993,7 @@ struct LauncherView: View {
         targetPageHint: Int? = nil
     ) -> Int? {
         guard let originalIndex = orderedItems.firstIndex(of: item) else { return nil }
+        enterPerformanceShedding(duration: 0.6, cancelHeavyWork: false)
         let currentSizes = activePageSizes(for: orderedItems.count)
         var updated = orderedItems
         if preferSwap,
@@ -939,6 +1055,7 @@ struct LauncherView: View {
 
         guard case var .folder(folder) = orderedItems[folderIndex] else { return }
         guard let originalIndex = folder.apps.firstIndex(of: app) else { return }
+        enterPerformanceShedding(duration: 0.6, cancelHeavyWork: false)
 
         var apps = folder.apps
         apps.remove(at: originalIndex)
@@ -1106,6 +1223,7 @@ struct LauncherView: View {
     private func mergeItemsIfNeeded(dragged: LauncherItem, onto target: LauncherItem) {
         guard dragged.id != target.id else { return }
 
+        enterPerformanceShedding(duration: 0.9, cancelHeavyWork: true)
         var updated = orderedItems
         guard let draggedIndex = updated.firstIndex(of: dragged) else { return }
         let currentSizes = activePageSizes(for: orderedItems.count)
@@ -1176,6 +1294,7 @@ struct LauncherView: View {
             pageDirection = boundedTarget >= currentPage ? .forward : .backward
             currentPage = boundedTarget
             pagerDragOffset = 0
+            markPageSwitch()
         }
     }
 
@@ -1188,6 +1307,7 @@ struct LauncherView: View {
                 pageDirection = boundedPage >= currentPage ? .forward : .backward
                 currentPage = boundedPage
                 pagerDragOffset = 0
+                markPageSwitch()
             }
         } else {
             pagerDragOffset = 0
@@ -1390,9 +1510,21 @@ struct LauncherView: View {
     private func iconView(for item: LauncherItem, layout: LauncherLayoutMetrics) -> some View {
         switch item {
         case .app(let app):
-            let resolvedIcon = iconProvider(app) ?? app.iconImage
-            if let nsImage = resolvedIcon {
-                Image(nsImage: nsImage)
+            iconForApp(app, layout: layout)
+        case .folder(let folder):
+            folderIcon(for: folder, layout: layout)
+        }
+    }
+
+    @ViewBuilder
+    private func iconForApp(_ app: AppItem, layout: LauncherLayoutMetrics) -> some View {
+        let request = baseIconRequest(for: layout)
+        let baseIcon = iconProvider(app, request.dimension, request.quality) ?? app.iconImage
+        let highIcon = shouldUseHighQualityIcons ? highQualityIconOverrides[app.id] : nil
+
+        ZStack {
+            if let icon = baseIcon {
+                Image(nsImage: icon)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
             } else {
@@ -1400,8 +1532,17 @@ struct LauncherView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
             }
-        case .folder(let folder):
-            folderIcon(for: folder, layout: layout)
+
+            if let detailedIcon = highIcon {
+                Image(nsImage: detailedIcon)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .transition(.opacity)
+                    .opacity(1)
+            }
+        }
+        .onAppear {
+            requestHighQualityIconIfNeeded(for: app, layout: layout)
         }
     }
 
@@ -1458,7 +1599,7 @@ struct LauncherView: View {
 
             LazyVGrid(columns: columns, alignment: .center, spacing: spacing) {
                 ForEach(previews, id: \.id) { app in
-                    let tile = folderTile(for: app)
+                    let tile = folderTile(for: app, layout: layout)
                         .frame(width: tileSize, height: tileSize)
 
                     if shouldAnimatePreview {
@@ -1496,23 +1637,29 @@ struct LauncherView: View {
 
     /// Shows a single tiny app icon inside the folder preview grid.
     @ViewBuilder
-    private func folderTile(for app: AppItem) -> some View {
-        let resolvedIcon = iconProvider(app) ?? app.iconImage
-        if let icon = resolvedIcon {
-            Image(nsImage: icon)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
-        } else {
-            ZStack {
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .fill(Color.white.opacity(0.15))
-                Image(systemName: "app.fill")
+    private func folderTile(for app: AppItem, layout: LauncherLayoutMetrics) -> some View {
+        let request = folderTileIconRequest(for: layout)
+        let resolvedIcon = iconProvider(app, request.dimension, request.quality) ?? app.iconImage
+        Group {
+            if let icon = resolvedIcon {
+                Image(nsImage: icon)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .padding(4)
-                    .foregroundColor(.primary.opacity(0.75))
+                    .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+            } else {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(Color.white.opacity(0.15))
+                    Image(systemName: "app.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .padding(4)
+                        .foregroundColor(.primary.opacity(0.75))
+                }
             }
+        }
+        .onAppear {
+            requestHighQualityIconIfNeeded(for: app, layout: layout)
         }
     }
 
@@ -1523,6 +1670,87 @@ struct LauncherView: View {
     private func isPreviewApp(_ app: AppItem, in folder: FolderItem) -> Bool {
         guard let index = folder.apps.firstIndex(where: { $0.id == app.id }) else { return false }
         return index < 9
+    }
+
+    private func displayIcon(for app: AppItem, layout: LauncherLayoutMetrics) -> NSImage? {
+        if shouldUseHighQualityIcons, let detailed = highQualityIconOverrides[app.id] {
+            return detailed
+        }
+        let request = baseIconRequest(for: layout)
+        return iconProvider(app, request.dimension, request.quality) ?? app.iconImage
+    }
+
+    private func requestHighQualityIconIfNeeded(for app: AppItem, layout: LauncherLayoutMetrics) {
+        guard highQualityIconOverrides[app.id] == nil else { return }
+        guard delayedHighQualityRequests.contains(app.id) == false else { return }
+        guard isLauncherVisible else { return }
+        guard isUnderInteractionPressure == false else { return }
+        guard isHighQualityCoolingDown == false else { return }
+
+        if shouldUseHighQualityIcons == false {
+            delayedHighQualityRequests.insert(app.id)
+            DispatchQueue.main.asyncAfter(deadline: .now() + highQualityRequestDelay) { [self] in
+                delayedHighQualityRequests.remove(app.id)
+                requestHighQualityIconIfNeeded(for: app, layout: layout)
+            }
+            return
+        }
+
+        let targetDimension = highQualityRequestDimension(for: layout)
+        let provider: @Sendable (AppItem, CGFloat, IconRenderQuality) -> NSImage? = iconProvider
+        let cachedAppIcon = app.iconImage
+        if pendingHighQualityIconIDs.insert(app.id).inserted == false {
+            return
+        }
+        let requestEpoch = highQualityRequestEpoch
+        let pressureEpoch = interactionPressureEpoch
+        highQualityRenderQueue.async {
+            let detailed = provider(app, targetDimension, .high)
+                ?? cachedAppIcon
+            guard let detailed else {
+                DispatchQueue.main.async {
+                    pendingHighQualityIconIDs.remove(app.id)
+                }
+                return
+            }
+            DispatchQueue.main.async {
+                guard pressureEpoch == interactionPressureEpoch else {
+                    pendingHighQualityIconIDs.remove(app.id)
+                    return
+                }
+                guard requestEpoch == highQualityRequestEpoch else {
+                    pendingHighQualityIconIDs.remove(app.id)
+                    return
+                }
+                guard isHighQualityCoolingDown == false else {
+                    pendingHighQualityIconIDs.remove(app.id)
+                    return
+                }
+                recordHighQualityIcon(detailed, for: app.id)
+                pendingHighQualityIconIDs.remove(app.id)
+            }
+        }
+    }
+
+    @MainActor
+    private func recordHighQualityIcon(_ icon: NSImage, for id: UUID) {
+        guard highQualityIconOverrides[id] == nil else { return }
+        withAnimation(.easeInOut(duration: 0.16)) {
+            highQualityIconOverrides[id] = icon
+            highQualityIconOrder.append(id)
+            trimHighQualityIconCacheIfNeeded()
+        }
+    }
+
+    @MainActor
+    private func trimHighQualityIconCacheIfNeeded() {
+        let overflow = highQualityIconOverrides.count - highQualityIconCacheLimit
+        guard overflow > 0 else { return }
+        let removable = highQualityIconOrder.prefix(overflow)
+        for id in removable {
+            highQualityIconOverrides.removeValue(forKey: id)
+        }
+        highQualityIconOrder.removeFirst(min(overflow, highQualityIconOrder.count))
     }
 
     /// Renders a standard title for either an app or folder.
@@ -1947,6 +2175,7 @@ struct LauncherView: View {
                     if isRenaming == false {
                         decoratedCell
                             .onDrag {
+                                enterPerformanceShedding(duration: 0.6)
                                 folderDragContext = FolderDragContext(folderID: folder.id, app: app)
                                 draggedFolderApp = app
                                 draggedItem = .app(app)
@@ -2127,6 +2356,7 @@ struct LauncherView: View {
 
         switch item {
         case .folder(let folder):
+            enterPerformanceShedding(duration: 1.1)
             withAnimation(folderOpenAnimation) {
                 activeFolder = folder
                 folderIconWaveToggle = true
@@ -2177,6 +2407,9 @@ struct LauncherView: View {
                 contentView?.alphaValue = 1
                 isClosingLauncher = false
                 launchingItemID = nil
+                purgeHighQualityOverrides()
+                notifyCachesShouldShrink()
+                NotificationCenter.default.post(name: .launcherDidHide, object: nil)
                 focusAfterLauncherDismisses()
             }
         }
@@ -2192,6 +2425,12 @@ struct LauncherView: View {
     private func focusAfterLauncherDismisses() {
         guard let delegate = NSApp?.delegate as? LaunchyAppDelegate else { return }
         delegate.focusPreferredApplicationAfterLauncherHides()
+    }
+
+    /// Instructs the app delegate to aggressively shrink icon caches after hiding.
+    private func notifyCachesShouldShrink() {
+        guard let delegate = NSApp?.delegate as? LaunchyAppDelegate else { return }
+        delegate.shrinkIconCachesForHiddenLauncher()
     }
 
     /// Returns the NSWindow currently hosting the launcher content, if any.
@@ -2299,10 +2538,12 @@ struct LauncherView: View {
     /// Moves to the previous page if possible.
     private func pageBackward() {
         guard pageCount > 0 else { return }
+        enterPerformanceShedding()
         withAnimation(pageSwitchAnimation) {
             pageDirection = .backward
             currentPage = max(currentPage - 1, 0)
             pagerDragOffset = 0
+            markPageSwitch()
         }
     }
 
@@ -2311,20 +2552,24 @@ struct LauncherView: View {
         guard pageCount > 0 else { return }
         let bounded = min(max(targetPage, 0), pageCount - 1)
         guard bounded != currentPage else { return }
+        enterPerformanceShedding()
         withAnimation(pageSwitchAnimation) {
             pageDirection = bounded >= currentPage ? .forward : .backward
             currentPage = bounded
             pagerDragOffset = 0
+            markPageSwitch()
         }
     }
 
     /// Moves to the next page if possible.
     private func pageForward() {
         guard pageCount > 0 else { return }
+        enterPerformanceShedding()
         withAnimation(pageSwitchAnimation) {
             pageDirection = .forward
             currentPage = min(currentPage + 1, pageCount - 1)
             pagerDragOffset = 0
+            markPageSwitch()
         }
     }
 

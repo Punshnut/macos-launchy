@@ -58,7 +58,9 @@ struct GridReorderDropDelegate: DropDelegate {
     var shouldSuppressReorder: () -> Bool
     var performReorder: (LauncherItem, Int, Bool) -> Int?
     var afterReorder: (Int?) -> Void
-    var performFolderDrop: (LauncherItem, LauncherItem) -> Void
+    var performFolderDrop: ([LauncherItem], LauncherItem) -> Void
+    var isMultiSelectionDragActive: () -> Bool
+    var multiSelectionItems: () -> [LauncherItem]
     var onFolderHoverExit: () -> Void
     var onFolderSnapPreviewChange: (UUID?) -> Void
     var lastLiveReorderTargetIndex: Binding<Int?>
@@ -102,6 +104,18 @@ struct GridReorderDropDelegate: DropDelegate {
             items.indices.contains(index) ? items[index] : nil
         }
 
+        if isMultiSelectionDragActive() {
+            guard let folderTarget = targetItem,
+                  case .folder = folderTarget else {
+                return false
+            }
+            let selection = multiSelectionItems().filter { $0.id != folderTarget.id }
+            guard selection.isEmpty == false else { return false }
+            onFolderHoverExit()
+            performFolderDrop(selection, folderTarget)
+            return true
+        }
+
         if modifiersActive, let targetItem {
             let shouldMerge: Bool
             switch (draggedItem, targetItem) {
@@ -116,7 +130,7 @@ struct GridReorderDropDelegate: DropDelegate {
             if shouldMerge {
                 // With Option/Shift held, treat a drop onto another item as a folder create/append instead of a reorder.
                 onFolderHoverExit()
-                performFolderDrop(draggedItem, targetItem)
+                performFolderDrop([draggedItem], targetItem)
                 return true
             }
         }

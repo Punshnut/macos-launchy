@@ -258,15 +258,28 @@ struct LauncherView: View {
                     }
 
                 if canReorder && isRenamingApp == false {
-                    decoratedCell
-                        .onDrag {
-                            enterPerformanceShedding(duration: 0.6)
-                            draggedItem = item
-                            captureDragOrigin(for: item)
-                            return NSItemProvider(object: NSString(string: item.id.uuidString))
-                        } preview: {
-                            dragPreview(for: item, layout: layout)
-                        }
+                    if shouldStartMultiSelectionDrag(for: item) {
+                        decoratedCell
+                            .onDrag {
+                                enterPerformanceShedding(duration: 0.6)
+                                draggedItem = item
+                                captureDragOrigin(for: item)
+                                isPerformingMultiSelectionDrag = true
+                                return NSItemProvider(object: NSString(string: item.id.uuidString))
+                            } preview: {
+                                multiSelectionDragPreview(layout: layout)
+                            }
+                    } else {
+                        decoratedCell
+                            .onDrag {
+                                enterPerformanceShedding(duration: 0.6)
+                                draggedItem = item
+                                captureDragOrigin(for: item)
+                                return NSItemProvider(object: NSString(string: item.id.uuidString))
+                            } preview: {
+                                dragPreview(for: item, layout: layout)
+                            }
+                    }
                 } else {
                     decoratedCell
                 }
@@ -298,8 +311,14 @@ struct LauncherView: View {
                 },
                 afterReorder: updatePageAfterDrop(at:),
                 performFolderDrop: { dragged, target in
-                    mergeItemsIfNeeded(dragged: dragged, onto: target)
+                    if dragged.count == 1, let single = dragged.first {
+                        mergeItemsIfNeeded(dragged: single, onto: target)
+                    } else {
+                        mergeMultiSelection(into: target)
+                    }
                 },
+                isMultiSelectionDragActive: { isMultiSelectionDragActive },
+                multiSelectionItems: { selectedLauncherItems },
                 onFolderHoverExit: cancelFolderHover,
                 onFolderSnapPreviewChange: { previewID in
                     folderSnapPreviewTargetID = previewID
@@ -346,6 +365,7 @@ struct LauncherView: View {
     @State private var orderedItems: [LauncherItem]
     @State private var draggedItem: LauncherItem?
     @State private var dragOriginIndex: Int?
+    @State private var isPerformingMultiSelectionDrag = false
     @State private var isDragModifierSnapActive = false
     @State private var currentPage: Int = 0
     @State private var isClosingLauncher = false
@@ -384,6 +404,7 @@ struct LauncherView: View {
     @State private var launchingItemID: UUID?
     @State private var pageDirection: PageShiftDirection = .forward
     @State private var folderIconWaveToggle = false
+    @State private var shouldSkipActiveFolderChangeEffects = false
     @Namespace private var folderIconAnimationNamespace
     private let highQualityRenderQueue = DispatchQueue(label: "com.launchy.icon.high", qos: .utility)
     @State private var pagerDragOffset: CGFloat = 0
@@ -460,6 +481,10 @@ struct LauncherView: View {
             cancelPendingHighQualityRequests()
         }
         .onChange(of: activeFolder) { newValue in
+            if shouldSkipActiveFolderChangeEffects {
+                shouldSkipActiveFolderChangeEffects = false
+                return
+            }
             if newValue == nil {
                 activeFolderFrame = .zero
                 folderDragContext = nil
@@ -500,6 +525,7 @@ struct LauncherView: View {
                 folderSnapPreviewTargetID = nil
                 dragOriginIndex = nil
                 isDragModifierSnapActive = false
+                isPerformingMultiSelectionDrag = false
             }
             suppressGridAnimation = newItem != nil
             if newItem != nil {
@@ -516,15 +542,19 @@ struct LauncherView: View {
             currentPage = min(currentPage, maxPage)
             pageDirection = .forward
             pagerDragOffset = 0
-            if let activeFolder,
-               newItems.contains(where: { item in
-                    if case let .folder(folder) = item {
-                        return folder.id == activeFolder.id
+            if let currentFolder = activeFolder {
+                if let updatedFolder = folderItem(withID: currentFolder.id, in: newItems) {
+                    if updatedFolder != currentFolder {
+                        if isEditingFolderName == false {
+                            folderNameDraft = updatedFolder.name
+                        }
+                        shouldSkipActiveFolderChangeEffects = true
+                        activeFolder = updatedFolder
                     }
-                    return false
-                }) == false {
-                self.activeFolder = nil
-                enterPerformanceShedding(duration: 0.6, cancelHeavyWork: false)
+                } else {
+                    self.activeFolder = nil
+                    enterPerformanceShedding(duration: 0.6, cancelHeavyWork: false)
+                }
             }
             let validIDs = Set(newItems.map(\.id))
             multiSelectedItemIDs.formIntersection(validIDs)
@@ -939,6 +969,10 @@ struct LauncherView: View {
 
     /// Detects modifier keys that disable live reordering during a drag.
     private func isDragReorderSuppressed() -> Bool {
+        if isMultiSelectionDragActive {
+            return true
+        }
+
         let flags = NSApp?.currentEvent?.modifierFlags.intersection(.deviceIndependentFlagsMask) ?? []
         return flags.contains(.shift) || flags.contains(.option)
     }
@@ -946,6 +980,9 @@ struct LauncherView: View {
     private func handleDragModifierChange(_ active: Bool) {
         guard draggedItem != nil else {
             isDragModifierSnapActive = false
+            return
+        }
+        guard isMultiSelectionDragActive == false else {
             return
         }
 
@@ -1280,6 +1317,64 @@ struct LauncherView: View {
         updatePageAfterDrop(at: targetIndex)
     }
 
+    /// Merges the current multi-selection items into the provided folder target.
+    private func mergeMultiSelection(into target: LauncherItem) {
+        guard case let .folder(folderTarget) = target else { return }
+        let selectionEntries = orderedItems.enumerated().compactMap { index, item -> (index: Int, item: LauncherItem)? in
+            guard multiSelectedItemIDs.contains(item.id) else { return nil }
+            guard item.id != folderTarget.id else { return nil }
+            return (index: index, item: item)
+        }
+        guard selectionEntries.isEmpty == false else { return }
+
+        var updated = orderedItems
+        var workingSizes = activePageSizes(for: orderedItems.count)
+        var currentCount = orderedItems.count
+
+        let removalIndices = selectionEntries.map(\.index).sorted(by: >)
+        for removalIndex in removalIndices {
+            updated.remove(at: removalIndex)
+            workingSizes = pageSizesAfterRemoval(workingSizes, removingIndex: removalIndex, currentCount: currentCount)
+            currentCount -= 1
+        }
+
+        guard let targetIndex = updated.firstIndex(where: { item in
+            if case let .folder(existing) = item {
+                return existing.id == folderTarget.id
+            }
+            return false
+        }) else {
+            return
+        }
+
+        guard case var .folder(updatedFolder) = updated[targetIndex] else { return }
+        for entry in selectionEntries {
+            switch entry.item {
+            case .app(let app):
+                updatedFolder.apps.append(app)
+            case .folder(let otherFolder):
+                updatedFolder.apps.append(contentsOf: otherFolder.apps)
+            }
+        }
+        updated[targetIndex] = .folder(updatedFolder)
+
+        withAnimation(gridSpringAnimation) {
+            orderedItems = updated
+        }
+        persistOrderChange(using: workingSizes)
+        updatePageAfterDrop(at: targetIndex)
+
+        if let active = activeFolder {
+            if active.id == updatedFolder.id {
+                activeFolder = updatedFolder
+            } else if selectionEntries.contains(where: { $0.item.id == active.id }) {
+                activeFolder = nil
+            }
+        }
+
+        finalizeBulkSelectionAction()
+    }
+
     /// Keeps the visible page pinned to where the moved app now lives.
     private func updatePageAfterDrop(at index: Int?) {
         let sizes = activePageSizes(for: orderedItems.count)
@@ -1578,6 +1673,30 @@ struct LauncherView: View {
             .saturation(0)
             .opacity(0.72)
             .shadow(color: .black.opacity(0.18), radius: 10, y: 6)
+    }
+
+    private func multiSelectionDragPreview(layout: LauncherLayoutMetrics) -> some View {
+        let stackItems = Array(selectedLauncherItems.prefix(4))
+        let offsetStep: CGFloat = layout.iconDimension * 0.06
+        let verticalStep: CGFloat = layout.iconDimension * 0.03
+        let scaleStep: CGFloat = 0.02
+
+        return ZStack {
+            ForEach(Array(stackItems.enumerated()), id: \.element.id) { index, item in
+                iconView(for: item, layout: layout)
+                    .frame(width: layout.iconDimension, height: layout.iconDimension)
+                    .scaleEffect(1 - CGFloat(index) * scaleStep)
+                    .offset(
+                        x: CGFloat(index) * offsetStep,
+                        y: -CGFloat(index) * verticalStep
+                    )
+            }
+        }
+        .frame(width: layout.iconDimension + offsetStep * 3, height: layout.iconDimension + verticalStep * 3)
+        .grayscale(1.0)
+        .saturation(0)
+        .opacity(0.8)
+        .shadow(color: .black.opacity(0.25), radius: 12, y: 6)
     }
 
     /// Composes a 3x3 grid of the first nine app icons to mimic the macOS folder style.
@@ -2912,10 +3031,22 @@ struct LauncherView: View {
     private func exitMultiSelectMode() {
         isMultiSelectModeActive = false
         multiSelectedItemIDs.removeAll()
+        isPerformingMultiSelectionDrag = false
     }
 
     private var selectedLauncherItems: [LauncherItem] {
         orderedItems.filter { multiSelectedItemIDs.contains($0.id) }
+    }
+
+    private var isMultiSelectionDragActive: Bool {
+        isMultiSelectModeActive && isPerformingMultiSelectionDrag && selectedLauncherItems.count > 1
+    }
+
+    private func shouldStartMultiSelectionDrag(for item: LauncherItem) -> Bool {
+        guard isMultiSelectModeActive else { return false }
+        guard multiSelectedItemIDs.contains(item.id) else { return false }
+        guard selectedLauncherItems.count > 1 else { return false }
+        return true
     }
 
     private func multiSelectTargets(for item: LauncherItem) -> [LauncherItem] {
@@ -2946,6 +3077,12 @@ struct LauncherView: View {
             }
             return (index: index, app: app)
         }
+    }
+
+    private func canAddSelection(to folder: FolderItem) -> Bool {
+        guard isMultiSelectModeActive else { return false }
+        let selection = selectedLauncherItems.filter { $0.id != folder.id }
+        return selection.isEmpty == false
     }
 
     private var canCreateFolderFromSelection: Bool {
@@ -3120,6 +3257,13 @@ struct LauncherView: View {
                 beginFolderRename(folder)
             }
 
+            if isMultiSelectModeActive {
+                Button("Add Selection to Folder") {
+                    mergeMultiSelection(into: .folder(folder))
+                }
+                .disabled(canAddSelection(to: folder) == false)
+            }
+
             Menu("Move to Page") {
                 pageMoveMenu(for: item)
             }
@@ -3164,7 +3308,13 @@ struct LauncherView: View {
     private func pageMoveMenu(for item: LauncherItem) -> some View {
         let totalPages = max(fullPageCount, 1)
         let pageIndices = Array(0..<totalPages)
-        let targets = multiSelectTargets(for: item)
+        let usesFolderOverlay = activeFolder != nil
+        let targets: [LauncherItem] = {
+            if usesFolderOverlay {
+                return [item]
+            }
+            return multiSelectTargets(for: item)
+        }()
 
         ForEach(pageIndices, id: \.self) { targetPage in
             let onPage = targets.allSatisfy {
@@ -3579,6 +3729,15 @@ struct LauncherView: View {
                 }
             default:
                 continue
+            }
+        }
+        return nil
+    }
+
+    private func folderItem(withID id: UUID, in items: [LauncherItem]) -> FolderItem? {
+        for item in items {
+            if case let .folder(folder) = item, folder.id == id {
+                return folder
             }
         }
         return nil

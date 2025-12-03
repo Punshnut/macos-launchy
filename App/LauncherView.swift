@@ -1538,8 +1538,17 @@ struct LauncherView: View {
         var updated = sizes
         let targetPage = max(targetPageHint ?? pageIndex(forLinearIndex: insertingIndex, sizes: updated) ?? updated.count, 0)
         if targetPage >= updated.count {
-            updated.append(contentsOf: Array(repeating: 0, count: targetPage - updated.count + 1))
+            if let lastPopulatedPage = updated.lastIndex(where: { $0 > 0 }),
+               pageCapacity > 0,
+               updated[lastPopulatedPage] < pageCapacity
+            {
+                updated[lastPopulatedPage] += 1
+            } else {
+                updated.append(1)
+            }
+            return normalizePageSizes(updated, itemCount: resultingCount)
         }
+
         updated[targetPage] += 1
         return normalizePageSizes(updated, itemCount: resultingCount)
     }

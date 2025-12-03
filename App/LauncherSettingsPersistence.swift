@@ -94,6 +94,21 @@ enum LauncherSettingsPersistence {
         }
     }
 
+    /// Reads whether hidden apps should be anchored at the top of the list.
+    static func showHiddenAppsFirst(userDefaults: UserDefaults = .standard) -> Bool {
+        loadSettings(userDefaults: userDefaults).showHiddenAppsFirst
+    }
+
+    /// Persists the hidden-apps ordering preference.
+    static func setShowHiddenAppsFirst(
+        _ value: Bool,
+        userDefaults: UserDefaults = .standard
+    ) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.showHiddenAppsFirst = value
+        }
+    }
+
     /// Reads whether the user's Applications folder is scanned for installed apps.
     static func shouldScanUserApplicationsFolder(
         userDefaults: UserDefaults = .standard

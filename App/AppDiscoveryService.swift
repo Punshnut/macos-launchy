@@ -77,10 +77,13 @@ final class AppDiscoveryService {
     ) -> (main: [AppItem], userApplications: [AppItem]) {
         var appsByBundleID: [String: AppItem] = [:]
 
+        LaunchyLogger.log("AppDiscovery: reload apps (includeUserApplicationsFolder=\(includeUserApplicationsFolder), hiddenCount=\(hiddenBundleIDs.count))")
+
         let directories = customApplicationDirectories
             ?? defaultApplicationDirectories(includeUserApplicationsFolder: includeUserApplicationsFolder)
 
         for directory in directories {
+            LaunchyLogger.log("AppDiscovery: scanning directory \(directory.path)")
             for app in discoverApplications(in: directory) {
                 appsByBundleID[app.bundleIdentifier] = app
             }
@@ -200,13 +203,17 @@ final class AppDiscoveryService {
             includingPropertiesForKeys: [.isDirectoryKey],
             options: [.skipsHiddenFiles, .skipsPackageDescendants]
         ) else {
+            LaunchyLogger.error("AppDiscovery: failed to enumerate \(searchDirectory.path)")
             return []
         }
 
-        return enumerator
+        let discoveredApps = enumerator
             .compactMap { $0 as? URL }
             .filter { $0.pathExtension == "app" }
             .compactMap(buildAppItem)
+
+        LaunchyLogger.log("AppDiscovery: found \(discoveredApps.count) app bundles in \(searchDirectory.lastPathComponent)")
+        return discoveredApps
     }
 
     /// Ensures the cached icon never exceeds the largest size we actually display.
@@ -368,8 +375,14 @@ final class AppDiscoveryService {
 
     /// Converts a bundle on disk into an `AppItem`, extracting the display name and identifier.
     private func buildAppItem(from bundleURL: URL) -> AppItem? {
-        guard let bundle = Bundle(url: bundleURL) else { return nil }
+        guard let bundle = Bundle(url: bundleURL) else {
+            LaunchyLogger.error("AppDiscovery: malformed bundle at \(bundleURL.path)")
+            return nil
+        }
         let bundleIdentifier = bundle.bundleIdentifier ?? bundleURL.path
+        if bundle.bundleIdentifier == nil {
+            LaunchyLogger.log("AppDiscovery: bundle at \(bundleURL.lastPathComponent) missing identifier, using path fallback")
+        }
 
         let infoDictionary = bundle.infoDictionary ?? [:]
         let displayName = (infoDictionary["CFBundleDisplayName"] as? String)

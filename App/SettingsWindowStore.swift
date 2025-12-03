@@ -174,6 +174,34 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         settingsSnapshot.hiddenBundleIDs.contains(app.bundleIdentifier)
     }
 
+    /// Determines the order hidden apps should display in the table.
+    var orderedHiddenAppList: [AppItem] {
+        guard settingsSnapshot.showHiddenAppsFirst else {
+            return discoveredApps
+        }
+
+        let hiddenIdentifiers = Set(settingsSnapshot.hiddenBundleIDs)
+        var hiddenApps: [AppItem] = []
+        var visibleApps: [AppItem] = []
+
+        for app in discoveredApps {
+            if hiddenIdentifiers.contains(app.bundleIdentifier) {
+                hiddenApps.append(app)
+            } else {
+                visibleApps.append(app)
+            }
+        }
+
+        return hiddenApps + visibleApps
+    }
+
+    /// Persists whether hidden apps should float to the top of the list.
+    func setShowHiddenAppsFirst(_ value: Bool) {
+        guard settingsSnapshot.showHiddenAppsFirst != value else { return }
+        settingsSnapshot.showHiddenAppsFirst = value
+        LauncherSettingsPersistence.setShowHiddenAppsFirst(value)
+    }
+
     /// Controls whether the user's Applications folder is indexed for hidden apps.
     func setShouldScanUserApplicationsFolder(_ value: Bool) {
         guard settingsSnapshot.shouldScanUserApplicationsFolder != value else { return }

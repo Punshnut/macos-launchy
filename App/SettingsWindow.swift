@@ -278,6 +278,7 @@ struct SettingsWindow: View {
             VStack(spacing: 16) {
                 userApplicationsFolderToggle
                 hiddenAppsList
+                hiddenAppsOrderToggle
             }
         }
     }
@@ -515,10 +516,11 @@ struct SettingsWindow: View {
             } else {
                 ScrollView(.vertical, showsIndicators: true) {
                     LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(Array(settingsStore.discoveredApps.enumerated()), id: \.element.id) { index, app in
+                        let orderedApps = settingsStore.orderedHiddenAppList
+                        ForEach(Array(orderedApps.enumerated()), id: \.element.id) { index, app in
                             hiddenAppRow(app: app)
 
-                            if index < settingsStore.discoveredApps.count - 1 {
+                            if index < orderedApps.count - 1 {
                                 Divider()
                                     .overlay(Color.white.opacity(0.05))
                                     .padding(.leading, 44)
@@ -545,6 +547,16 @@ struct SettingsWindow: View {
         .shadow(color: Color.black.opacity(0.3), radius: 20, y: 14)
         .padding(.horizontal, 2)
         .padding(.top, 2)
+    }
+
+    private var hiddenAppsOrderToggle: some View {
+        Toggle(String(localized: "Show hidden apps first"), isOn: Binding(
+            get: { settingsStore.settingsSnapshot.showHiddenAppsFirst },
+            set: { settingsStore.setShowHiddenAppsFirst($0) }
+        ))
+        .toggleStyle(.checkbox)
+        .controlSize(.small)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var hiddenAppsEmptyState: some View {

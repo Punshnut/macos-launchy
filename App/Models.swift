@@ -311,6 +311,8 @@ struct LauncherSettings: Hashable, Codable {
     var launchesAtLogin: Bool
     /// Bundle identifiers that should be hidden from the grid UI.
     var hiddenBundleIDs: [String]
+    /// When enabled, keeps hidden apps pinned to the top of the hidden Apps list.
+    var showHiddenAppsFirst: Bool
     /// Selected background styling preference for the launcher UI.
     var backgroundStylePreference: PreferredBackgroundStyle
     /// Solid color selected when the solid background is active.
@@ -339,6 +341,7 @@ struct LauncherSettings: Hashable, Codable {
         isVisibleOnAllSpaces: Bool,
         launchesAtLogin: Bool,
         hiddenBundleIDs: [String],
+        showHiddenAppsFirst: Bool,
         backgroundStylePreference: PreferredBackgroundStyle,
         solidBackgroundColor: SolidBackgroundColor,
         selectedLauncherMode: LauncherMode,
@@ -355,6 +358,7 @@ struct LauncherSettings: Hashable, Codable {
         self.isVisibleOnAllSpaces = isVisibleOnAllSpaces
         self.launchesAtLogin = launchesAtLogin
         self.hiddenBundleIDs = hiddenBundleIDs
+        self.showHiddenAppsFirst = showHiddenAppsFirst
         self.backgroundStylePreference = backgroundStylePreference
         self.solidBackgroundColor = solidBackgroundColor
         self.selectedLauncherMode = selectedLauncherMode
@@ -377,6 +381,7 @@ extension LauncherSettings {
             isVisibleOnAllSpaces: false,
             launchesAtLogin: false,
             hiddenBundleIDs: [],
+            showHiddenAppsFirst: false,
             backgroundStylePreference: .standard,
             solidBackgroundColor: .system,
             selectedLauncherMode: .fullscreen,
@@ -398,6 +403,7 @@ extension LauncherSettings {
         case isVisibleOnAllSpaces
         case launchesAtLogin
         case hiddenBundleIDs
+        case showHiddenAppsFirst
         case backgroundStylePreference
         case solidBackgroundColor
         case selectedLauncherMode
@@ -425,6 +431,7 @@ extension LauncherSettings {
             isVisibleOnAllSpaces: try container.decodeIfPresent(Bool.self, forKey: .isVisibleOnAllSpaces) ?? false,
             launchesAtLogin: try container.decodeIfPresent(Bool.self, forKey: .launchesAtLogin) ?? false,
             hiddenBundleIDs: try container.decodeIfPresent([String].self, forKey: .hiddenBundleIDs) ?? [],
+            showHiddenAppsFirst: try container.decodeIfPresent(Bool.self, forKey: .showHiddenAppsFirst) ?? false,
             backgroundStylePreference: PreferredBackgroundStyle.from(
                 rawValue: try container.decodeIfPresent(String.self, forKey: .backgroundStylePreference)
             ),
@@ -447,6 +454,7 @@ extension LauncherSettings {
         try container.encode(isVisibleOnAllSpaces, forKey: .isVisibleOnAllSpaces)
         try container.encode(launchesAtLogin, forKey: .launchesAtLogin)
         try container.encode(hiddenBundleIDs, forKey: .hiddenBundleIDs)
+        try container.encode(showHiddenAppsFirst, forKey: .showHiddenAppsFirst)
         try container.encode(backgroundStylePreference, forKey: .backgroundStylePreference)
         try container.encode(solidBackgroundColor, forKey: .solidBackgroundColor)
         try container.encode(selectedLauncherMode, forKey: .selectedLauncherMode)

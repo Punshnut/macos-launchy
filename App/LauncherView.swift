@@ -353,8 +353,8 @@ struct LauncherView: View {
         blendDuration: 0.08
     )
     private let fullscreenGridEntranceTranslation: CGFloat = 48
-    private let pageSwitchAnimation = Animation.interactiveSpring(response: 0.16, dampingFraction: 0.9, blendDuration: 0.05)
-    private let gestureSettleAnimation = Animation.interactiveSpring(response: 0.18, dampingFraction: 0.88, blendDuration: 0.05)
+    private let pageSwitchAnimation = Animation.interactiveSpring(response: 0.12, dampingFraction: 0.9, blendDuration: 0.04)
+    private let gestureSettleAnimation = Animation.interactiveSpring(response: 0.12, dampingFraction: 0.88, blendDuration: 0.04)
     private let folderOpenAnimation = Animation.spring(response: 0.36, dampingFraction: 0.82, blendDuration: 0.08)
     private let pagerButtonHitPadding: CGFloat = 12
     private let pagerButtonHitSize: CGFloat = 44
@@ -542,20 +542,20 @@ struct LauncherView: View {
             currentPage = min(currentPage, maxPage)
             pageDirection = .forward
             pagerDragOffset = 0
-            if let currentFolder = activeFolder {
-                if let updatedFolder = folderItem(withID: currentFolder.id, in: newItems) {
-                    if updatedFolder != currentFolder {
-                        if isEditingFolderName == false {
-                            folderNameDraft = updatedFolder.name
+                if let currentFolder = activeFolder {
+                    if let updatedFolder = folderItem(withID: currentFolder.id, in: newItems) {
+                        if updatedFolder != currentFolder {
+                            if isEditingFolderName == false {
+                                folderNameDraft = updatedFolder.name
+                            }
+                            shouldSkipActiveFolderChangeEffects = true
+                            activeFolder = updatedFolder
                         }
-                        shouldSkipActiveFolderChangeEffects = true
-                        activeFolder = updatedFolder
+                    } else {
+                        closeActiveFolder(animated: false)
+                        enterPerformanceShedding(duration: 0.6, cancelHeavyWork: false)
                     }
-                } else {
-                    self.activeFolder = nil
-                    enterPerformanceShedding(duration: 0.6, cancelHeavyWork: false)
                 }
-            }
             let validIDs = Set(newItems.map(\.id))
             multiSelectedItemIDs.formIntersection(validIDs)
         }
@@ -890,8 +890,8 @@ struct LauncherView: View {
         let normalizedWidth = max(pageWidth, 1)
         let totalOffset = pagerDragOffset + projectedDelta
         let progress = totalOffset / normalizedWidth
-        let snapThreshold: CGFloat = 0.09
-        let fastThreshold: CGFloat = 0.26
+        let snapThreshold: CGFloat = 0.07
+        let fastThreshold: CGFloat = 0.22
         let doubleProgressThreshold: CGFloat = 1.65
         let highVelocityThreshold: CGFloat = 1.15
         let velocity = projectedDelta / normalizedWidth
@@ -1368,7 +1368,7 @@ struct LauncherView: View {
             if active.id == updatedFolder.id {
                 activeFolder = updatedFolder
             } else if selectionEntries.contains(where: { $0.item.id == active.id }) {
-                activeFolder = nil
+                closeActiveFolder()
             }
         }
 
@@ -2420,7 +2420,7 @@ struct LauncherView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                activeFolder = nil
+                closeActiveFolder()
             }
             .onDrop(
                 of: [.text],
@@ -2641,7 +2641,7 @@ struct LauncherView: View {
         }
 
         if activeFolder != nil {
-            activeFolder = nil
+            closeActiveFolder()
             return
         }
 
@@ -2652,6 +2652,18 @@ struct LauncherView: View {
         }
 
         hideLauncher()
+    }
+
+    /// Animates closing the active folder overlay so the transition stays smooth.
+    private func closeActiveFolder(animated: Bool = true) {
+        guard activeFolder != nil else { return }
+        if animated {
+            withAnimation(folderOpenAnimation) {
+                activeFolder = nil
+            }
+        } else {
+            activeFolder = nil
+        }
     }
 
     /// Moves to the previous page if possible.
@@ -3786,7 +3798,7 @@ struct LauncherView: View {
                 }
                 return RemovedAppContext(items: items, app: removedApp, suggestedIndex: insertionIndex)
             } else if activeFolder?.id == folder.id {
-                activeFolder = nil
+                closeActiveFolder()
             }
 
             pageSizes = pageSizesAfterRemoval(currentSizes, removingIndex: folderIndex, currentCount: orderedItems.count)

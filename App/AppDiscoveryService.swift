@@ -47,11 +47,16 @@ final class AppDiscoveryService {
     private var iconGenerations: [String: Int] = [:]
     private var preparedIconKeysByBundleID: [String: Set<String>] = [:]
     private let iconPreparationQueue = DispatchQueue(label: "com.launchy.icon-prep", qos: .userInitiated)
+    private let cacheReleaseQueue = DispatchQueue(label: "com.launchy.cache-release", qos: .utility)
+    private var preparedCacheReleaseTask: Task<Void, Never>?
+    private var iconCacheReleaseTask: Task<Void, Never>?
     private static let maximumIconDimension: CGFloat = 256
     private static let iconCacheCountLimit = 200
     private static let preparedIconCacheCountLimit = 260
     private static let iconCacheCostLimit = 12_000_000
     private static let preparedIconCacheCostLimit = 16_000_000
+    private static let preparedIconCacheIdleReleaseInterval: TimeInterval = 65
+    private static let iconCacheIdleReleaseInterval: TimeInterval = 300
 
     /// Configures the service with dependencies mainly to aid testing.
     init(
@@ -111,6 +116,7 @@ final class AppDiscoveryService {
 
     /// Returns the lazily-loaded icon for an app, caching results by bundle identifier.
     func resolveIcon(for app: AppItem) -> NSImage? {
+        recordIconAccess()
         invalidateIfBundleUpdated(app)
         if let cached = iconCache.object(forKey: app.bundleIdentifier as NSString) {
             return cached
@@ -124,20 +130,27 @@ final class AppDiscoveryService {
     }
 
     /// Clears the cached icons, forcing the next `resolveIcon(for:)` call to reload from disk.
-    func clearIconCache() {
+    func clearIconCache(cancelIdleRelease: Bool = true) {
+        if cancelIdleRelease {
+            cancelIdleCacheRelease()
+        }
         iconCache.removeAllObjects()
-        preparedIconCache.removeAllObjects()
+        clearPreparedIconCaches()
         metadataLock.lock()
         iconModificationDates.removeAll()
         iconGenerations.removeAll()
-        preparedIconKeysByBundleID.removeAll()
         metadataLock.unlock()
     }
 
     /// Drops prepared and base icon bitmaps to minimize memory while the launcher is hidden.
     func shrinkCachesForHiddenLauncher() {
-        preparedIconCache.removeAllObjects()
+        cancelIdleCacheRelease()
+        clearPreparedIconCaches()
         iconCache.removeAllObjects()
+        metadataLock.lock()
+        iconModificationDates.removeAll()
+        iconGenerations.removeAll()
+        metadataLock.unlock()
     }
 
     /// Returns an icon scaled to the exact dimension the grid needs, keeping memory usage bounded.
@@ -147,6 +160,7 @@ final class AppDiscoveryService {
         quality: IconRenderQuality = .medium,
         screenScale: CGFloat = NSScreen.main?.backingScaleFactor ?? 2
     ) -> NSImage? {
+        recordIconAccess()
         invalidateIfBundleUpdated(app)
         let pixelDimension = pixelDimension(for: targetDimension, quality: quality, screenScale: screenScale)
         let generation = iconGeneration(for: app.bundleIdentifier)
@@ -250,6 +264,63 @@ final class AppDiscoveryService {
         iconCache.totalCostLimit = Self.iconCacheCostLimit
         preparedIconCache.countLimit = Self.preparedIconCacheCountLimit
         preparedIconCache.totalCostLimit = Self.preparedIconCacheCostLimit
+    }
+
+    private func clearPreparedIconCaches() {
+        preparedIconCache.removeAllObjects()
+        metadataLock.lock()
+        preparedIconKeysByBundleID.removeAll()
+        metadataLock.unlock()
+    }
+
+    private func recordIconAccess() {
+        scheduleIdleCacheRelease()
+    }
+
+    private func scheduleIdleCacheRelease() {
+        let preparedDelay = UInt64(Self.preparedIconCacheIdleReleaseInterval * 1_000_000_000)
+        let iconDelay = UInt64(Self.iconCacheIdleReleaseInterval * 1_000_000_000)
+
+        let preparedTask = Task.detached { [weak self] in
+            guard let self else { return }
+            do {
+                try await Task.sleep(nanoseconds: preparedDelay)
+            } catch {
+                return
+            }
+            self.clearPreparedIconCaches()
+            self.cacheReleaseQueue.sync {
+                self.preparedCacheReleaseTask = nil
+            }
+        }
+        let iconTask = Task.detached { [weak self] in
+            guard let self else { return }
+            do {
+                try await Task.sleep(nanoseconds: iconDelay)
+            } catch {
+                return
+            }
+            self.clearIconCache(cancelIdleRelease: false)
+            self.cacheReleaseQueue.sync {
+                self.iconCacheReleaseTask = nil
+            }
+        }
+
+        cacheReleaseQueue.sync {
+            preparedCacheReleaseTask?.cancel()
+            iconCacheReleaseTask?.cancel()
+            preparedCacheReleaseTask = preparedTask
+            iconCacheReleaseTask = iconTask
+        }
+    }
+
+    private func cancelIdleCacheRelease() {
+        cacheReleaseQueue.sync {
+            preparedCacheReleaseTask?.cancel()
+            iconCacheReleaseTask?.cancel()
+            preparedCacheReleaseTask = nil
+            iconCacheReleaseTask = nil
+        }
     }
 
     private func pixelDimension(

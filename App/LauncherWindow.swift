@@ -109,11 +109,11 @@ final class LauncherWindowController: NSWindowController {
     }
 
     /// Presents the window using the right ordering semantics for panels vs regular windows.
-    func presentWindow() {
+    func presentWindow(skipEntranceAnimation: Bool = false) {
         guard let window else { return }
         updateFrameForPreferredScreenIfNeeded()
         let originalFrame = window.frame
-        let shouldAnimateEntrance = window.isVisible == false
+        let shouldAnimateEntrance = window.isVisible == false && skipEntranceAnimation == false
 
         if shouldAnimateEntrance {
             prepareForEntranceAnimation(window: window, originalFrame: originalFrame)

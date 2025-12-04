@@ -5,6 +5,7 @@ import SwiftUI
 @MainActor
 final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var launcherWindowManager: LauncherWindowController?
+    private var launcherWindowControllersByMode: [LauncherMode: LauncherWindowController] = [:]
     private let applicationDiscovery = AppDiscoveryService()
     private let launcherHotkeyManager = HotkeyManager()
     private let layoutHotkeyManager = HotkeyManager(descriptor: nil)
@@ -92,6 +93,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         launcherHotkeyManager.deactivate()
         layoutHotkeyManager.deactivate()
         hotCornerMonitor.stopMonitoring()
+        launcherWindowManager?.close()
+        for controller in launcherWindowControllersByMode.values {
+            controller.close()
+        }
+        launcherWindowControllersByMode.removeAll()
         if let observer = mainMenuUpdateObserver {
             NotificationCenter.default.removeObserver(observer)
             mainMenuUpdateObserver = nil
@@ -227,17 +233,28 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Creates a fresh `LauncherWindowController` using the provided mode.
     private func rebuildWindow(for mode: LauncherMode, shouldPresentWindow: Bool) {
-        launcherWindowManager?.close()
-
         let view = buildLauncherView()
+        let controller = launcherWindowController(for: mode, rootView: view)
+        let previousController = launcherWindowManager
+        launcherWindowManager = controller
 
-        let controller = LauncherWindowController(rootView: view, launcherMode: mode)
         if shouldPresentWindow {
-            controller.presentWindow()
+            let skipAnimation = previousController?.window?.isVisible == true
+            controller.presentWindow(skipEntranceAnimation: skipAnimation)
             prefetchMinimalIconsForVisibleLauncher()
             NotificationCenter.default.post(name: .launcherDidShow, object: nil)
+            previousController?.window?.orderOut(nil)
         }
-        launcherWindowManager = controller
+    }
+
+    private func launcherWindowController(for mode: LauncherMode, rootView: LauncherView) -> LauncherWindowController {
+        if let existing = launcherWindowControllersByMode[mode] {
+            existing.update(rootView: rootView)
+            return existing
+        }
+        let controller = LauncherWindowController(rootView: rootView, launcherMode: mode)
+        launcherWindowControllersByMode[mode] = controller
+        return controller
     }
 
     /// Adjusts the app's activation policy so the Dock and Spaces behave appropriately for each mode.

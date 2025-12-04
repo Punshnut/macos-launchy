@@ -8,6 +8,7 @@ final class LauncherWindowController: NSWindowController {
     private let launcherMode: LauncherMode
     private let entranceContentOffset: CGFloat = 32
     private let entranceAnimationDuration: TimeInterval = 0.34
+    private let hideAnimationDuration: TimeInterval = 0.25
     private var entranceContentOrigin: NSPoint = .zero
 
     /// Wraps the provided SwiftUI content inside either a panel or fullscreen window.
@@ -186,6 +187,35 @@ final class LauncherWindowController: NSWindowController {
                 window.alphaValue = 1
                 self.launcherContentHost.view.setFrameOrigin(self.entranceContentOrigin)
                 self.launcherContentHost.view.alphaValue = 1
+            }
+        }
+    }
+
+    /// Fades the window out before ordering it offscreen so hides feel consistent across entry points.
+    func fadeOutWindow(completion: @escaping @MainActor @Sendable () -> Void) {
+        guard let window else {
+            completion()
+            return
+        }
+        guard window.isVisible else {
+            completion()
+            return
+        }
+
+        let contentView = window.contentView
+
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = hideAnimationDuration
+            context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            context.allowsImplicitAnimation = true
+            window.animator().alphaValue = 0
+            contentView?.animator().alphaValue = 0
+        } completionHandler: { [weak window, weak contentView] in
+            Task { @MainActor in
+                window?.orderOut(nil)
+                window?.alphaValue = 1
+                contentView?.alphaValue = 1
+                completion()
             }
         }
     }

@@ -37,6 +37,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
     private let updaterController = UpdaterController()
     private var hasHandledInitialActivation = false
+    private var isAnimatingLauncherHide = false
 
     /// Finishes bootstrapping the app by loading settings, refreshing apps, and preparing the window.
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -519,12 +520,35 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Hides the launcher window and optionally restores the previously focused app.
     private func hideLauncherWindow(restoreFocus: Bool) {
-        guard let window = launcherWindowManager?.window, window.isVisible else { return }
-        window.orderOut(nil)
-        shrinkIconCachesForHiddenLauncher()
-        NotificationCenter.default.post(name: .launcherDidHide, object: nil)
-        if restoreFocus {
-            focusPreferredApplicationAfterLauncherHides()
+        fadeOutLauncherWindow(restoreFocus: restoreFocus)
+    }
+
+    /// Animates the launcher window out and handles cache/focus cleanup.
+    func fadeOutLauncherWindow(
+        restoreFocus: Bool,
+        completion: @escaping @MainActor () -> Void = {}
+    ) {
+        guard let controller = launcherWindowManager,
+              let window = controller.window,
+              window.isVisible else {
+            completion()
+            return
+        }
+        guard isAnimatingLauncherHide == false else {
+            completion()
+            return
+        }
+
+        isAnimatingLauncherHide = true
+        controller.fadeOutWindow { @MainActor [weak self] in
+            guard let self else { return }
+            isAnimatingLauncherHide = false
+            shrinkIconCachesForHiddenLauncher()
+            NotificationCenter.default.post(name: .launcherDidHide, object: nil)
+            if restoreFocus {
+                focusPreferredApplicationAfterLauncherHides()
+            }
+            completion()
         }
     }
 

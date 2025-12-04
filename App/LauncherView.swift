@@ -2347,18 +2347,15 @@ struct LauncherView: View {
         targetPage: Int,
         action: @escaping () -> Void
     ) -> some View {
-        let button = Button(action: action) {
-            Image(systemName: systemName)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundColor(pagerControlForegroundColor.opacity(disabled ? 0.35 : 0.8))
-                .frame(width: 28, height: 28)
-        }
-        .padding(.horizontal, pagerButtonHitPadding)
-        .padding(.vertical, pagerButtonHitPadding)
-        .frame(minWidth: pagerButtonHitSize, minHeight: pagerButtonHitSize)
-        .contentShape(Rectangle().inset(by: -pagerButtonHitExpansion))
-        .buttonStyle(.plain)
-        .disabled(disabled)
+        let button = PagerChevronButtonView(
+            systemName: systemName,
+            disabled: disabled,
+            foregroundColor: pagerControlForegroundColor.opacity(disabled ? 0.35 : 0.8),
+            hitPadding: pagerButtonHitPadding,
+            hitSize: pagerButtonHitSize,
+            hitExpansion: pagerButtonHitExpansion,
+            action: action
+        )
 
         if canReorder {
             button.onDrop(
@@ -2378,6 +2375,60 @@ struct LauncherView: View {
             )
         } else {
             button
+        }
+    }
+
+    /// Pager chevron that fires on press-down to reduce perceived latency.
+    private struct PagerChevronButtonView: View {
+        let systemName: String
+        let disabled: Bool
+        let foregroundColor: Color
+        let hitPadding: CGFloat
+        let hitSize: CGFloat
+        let hitExpansion: CGFloat
+        let action: () -> Void
+
+        @State private var didTriggerOnPress = false
+
+        var body: some View {
+            Button(action: triggerIfNeededFromRelease) {
+                Image(systemName: systemName)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(foregroundColor)
+                    .frame(width: 28, height: 28)
+            }
+            .padding(.horizontal, hitPadding)
+            .padding(.vertical, hitPadding)
+            .frame(minWidth: hitSize, minHeight: hitSize)
+            .contentShape(Rectangle().inset(by: -hitExpansion))
+            .buttonStyle(.plain)
+            .disabled(disabled)
+            .simultaneousGesture(
+                LongPressGesture(minimumDuration: 0, maximumDistance: 36)
+                    .onChanged { _ in
+                        guard disabled == false else { return }
+                        triggerFromPress()
+                    }
+                    .onEnded { _ in
+                        didTriggerOnPress = false
+                    }
+            )
+        }
+
+        private func triggerFromPress() {
+            guard didTriggerOnPress == false else { return }
+            didTriggerOnPress = true
+            action()
+        }
+
+        private func triggerIfNeededFromRelease() {
+            guard disabled == false else { return }
+            guard didTriggerOnPress == false else {
+                // Press already dispatched the action for this click.
+                didTriggerOnPress = false
+                return
+            }
+            action()
         }
     }
 
@@ -2727,6 +2778,15 @@ struct LauncherView: View {
 
     /// Fades the launcher window away before hiding it.
     private func animateAndDismissLauncher() {
+        if let delegate = NSApp?.delegate as? LaunchyAppDelegate {
+            delegate.fadeOutLauncherWindow(restoreFocus: true) { @MainActor in
+                isClosingLauncher = false
+                launchingItemID = nil
+                purgeHighQualityOverrides()
+            }
+            return
+        }
+
         guard let window = hostingWindow() else {
             isClosingLauncher = false
             focusAfterLauncherDismisses()

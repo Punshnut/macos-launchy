@@ -86,6 +86,7 @@
 "Reset" = "Đặt lại";
 "Clear" = "Xóa";
 "Switch fullscreen <-> floaty" = "Chuyển đổi toàn màn hình <-> floaty";
+"Toggle Floaty Panel" = "Chuyển đổi bảng Floaty";
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Chọn một phím tắt nếu bạn muốn chuyển bố cục nhanh. Để trống để vô hiệu hóa.";
 "Add shortcut" = "Thêm phím tắt";
 "Reset icon arrangement..." = "Đặt lại thứ tự biểu tượng...";
@@ -114,7 +115,6 @@
 "Settings" = "Cài đặt";
 "Settings..." = "Cài đặt...";
 "Check for Updates..." = "Kiểm tra cập nhật...";
-"Toggle Floaty Panel" = "Chuyển đổi bảng Floaty";
 "Debug" = "Gỡ lỗi";
 "Reload Apps" = "Tải lại ứng dụng";
 "Reset Settings" = "Đặt lại cài đặt";

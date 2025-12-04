@@ -86,6 +86,7 @@
 "Reset" = "รีเซ็ต";
 "Clear" = "ล้าง";
 "Switch fullscreen <-> floaty" = "สลับเต็มหน้าจอ <-> Floaty";
+"Toggle Floaty Panel" = "สลับแผง Floaty";
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "เลือกทางลัดหากต้องการสลับเลย์เอาต์เร็ว ๆ ทิ้งไว้ว่างเพื่อปิดใช้งาน";
 "Add shortcut" = "เพิ่มทางลัด";
 "Reset icon arrangement..." = "รีเซ็ตการจัดเรียงไอคอน...";
@@ -114,7 +115,6 @@
 "Settings" = "การตั้งค่า";
 "Settings..." = "การตั้งค่า...";
 "Check for Updates..." = "ตรวจสอบการอัปเดต...";
-"Toggle Floaty Panel" = "Toggle Floaty Panel";
 "Debug" = "ดีบัก";
 "Reload Apps" = "โหลดแอปใหม่";
 "Reset Settings" = "รีเซ็ตการตั้งค่า";
@@ -156,4 +156,3 @@
 "Folder is empty." = "โฟลเดอร์ว่างเปล่า";
 "Apps:\n%@" = "แอป:\n%@";
 "Save" = "บันทึก";
-

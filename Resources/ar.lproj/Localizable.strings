@@ -86,6 +86,7 @@
 "Reset" = "إعادة ضبط";
 "Clear" = "مسح";
 "Switch fullscreen <-> floaty" = "بدّل بين ملء الشاشة <-> Floaty";
+"Toggle Floaty Panel" = "تبديل لوحة Floaty";
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "اختر اختصارًا لتبديل التخطيطات بسرعة. اتركه فارغًا لتعطيل.";
 "Add shortcut" = "أضف اختصارًا";
 "Reset icon arrangement..." = "إعادة ضبط ترتيب الأيقونات...";
@@ -114,7 +115,6 @@
 "Settings" = "الإعدادات";
 "Settings..." = "الإعدادات...";
 "Check for Updates..." = "بحث عن تحديثات...";
-"Toggle Floaty Panel" = "Toggle Floaty Panel";
 "Debug" = "تصحيح";
 "Reload Apps" = "إعادة تحميل التطبيقات";
 "Reset Settings" = "إعادة ضبط الإعدادات";
@@ -156,4 +156,3 @@
 "Folder is empty." = "المجلد فارغ.";
 "Apps:\n%@" = "التطبيقات:\n%@";
 "Save" = "حفظ";
-

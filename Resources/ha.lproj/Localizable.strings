@@ -86,6 +86,7 @@
 "Reset" = "Sake saiti";
 "Clear" = "Share";
 "Switch fullscreen <-> floaty" = "Canza cikakken allo <-> Floaty";
+"Toggle Floaty Panel" = "Canza panel ɗin Floaty";
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Zaɓi hanya idan kana son canza tsarin da sauri. Bar shi babu komai don kashe.";
 "Add shortcut" = "Ƙara hanya";
 "Reset icon arrangement..." = "Sake saita tsarin gumaka...";
@@ -114,7 +115,6 @@
 "Settings" = "Saituna";
 "Settings..." = "Saituna...";
 "Check for Updates..." = "Duba sabuntawa...";
-"Toggle Floaty Panel" = "Toggle Floaty Panel";
 "Debug" = "Gyara";
 "Reload Apps" = "Sake loda apps";
 "Reset Settings" = "Sake saita saituna";
@@ -156,4 +156,3 @@
 "Folder is empty." = "Fayil ɗin babu komai.";
 "Apps:\n%@" = "Manhajoji:\n%@";
 "Save" = "Ajiye";
-

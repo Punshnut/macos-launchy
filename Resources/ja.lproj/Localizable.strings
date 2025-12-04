@@ -86,6 +86,7 @@
 "Reset" = "リセット";
 "Clear" = "クリア";
 "Switch fullscreen <-> floaty" = "全画面 <-> Floaty を切り替え";
+"Toggle Floaty Panel" = "Floatyパネルを切り替える";
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "レイアウトを素早く切り替えたいならショートカットを選択してください。空欄にすると無効になります。";
 "Add shortcut" = "ショートカットを追加";
 "Reset icon arrangement..." = "アイコンの配置をリセット...";
@@ -114,7 +115,6 @@
 "Settings" = "設定";
 "Settings..." = "設定...";
 "Check for Updates..." = "アップデートを確認...";
-"Toggle Floaty Panel" = "Toggle Floaty Panel";
 "Debug" = "デバッグ";
 "Reload Apps" = "アプリを再読み込み";
 "Reset Settings" = "設定をリセット";
@@ -156,4 +156,3 @@
 "Folder is empty." = "フォルダは空です。";
 "Apps:\n%@" = "アプリ：\n%@";
 "Save" = "保存";
-

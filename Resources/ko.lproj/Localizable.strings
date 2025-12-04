@@ -86,6 +86,7 @@
 "Reset" = "재설정";
 "Clear" = "지우기";
 "Switch fullscreen <-> floaty" = "전체 화면 <-> Floaty 전환";
+"Toggle Floaty Panel" = "Floaty 패널 전환";
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "레이아웃을 빠르게 바꾸고 싶다면 단축키를 선택하세요. 비워두면 비활성화됩니다.";
 "Add shortcut" = "단축키 추가";
 "Reset icon arrangement..." = "아이콘 배열 재설정...";
@@ -114,7 +115,6 @@
 "Settings" = "설정";
 "Settings..." = "설정...";
 "Check for Updates..." = "업데이트 확인...";
-"Toggle Floaty Panel" = "Toggle Floaty Panel";
 "Debug" = "디버그";
 "Reload Apps" = "앱 다시 로드";
 "Reset Settings" = "설정 재설정";
@@ -156,4 +156,3 @@
 "Folder is empty." = "폴더가 비어 있습니다.";
 "Apps:\n%@" = "앱:\n%@";
 "Save" = "저장";
-

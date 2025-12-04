@@ -86,6 +86,7 @@
 "Reset" = "रीसेट";
 "Clear" = "साफ़ करें";
 "Switch fullscreen <-> floaty" = "फुलस्क्रीन <-> फ़्लोटी स्विच करें";
+"Toggle Floaty Panel" = "Floaty पैनल को टॉगल करें";
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "यदि आप तेजी से लेआउट बदलना चाहते हैं तो एक शॉर्टकट चुनें। अक्षम करने के लिए खाली छोड़ दें।";
 "Add shortcut" = "शॉर्टकट जोड़ें";
 "Reset icon arrangement..." = "आइकन का क्रम रीसेट करें...";
@@ -114,7 +115,6 @@
 "Settings" = "सेटिंग्स";
 "Settings..." = "सेटिंग्स...";
 "Check for Updates..." = "अपडेट जांचें...";
-"Toggle Floaty Panel" = "फ़्लोटी पैनल टॉगल";
 "Debug" = "डिबग";
 "Reload Apps" = "ऐप्स रीलोड करें";
 "Reset Settings" = "सेटिंग्स रीसेट करें";

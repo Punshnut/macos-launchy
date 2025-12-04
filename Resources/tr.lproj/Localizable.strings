@@ -86,6 +86,7 @@
 "Reset" = "Sıfırla";
 "Clear" = "Temizle";
 "Switch fullscreen <-> floaty" = "Tam ekran <-> kayan geçiş";
+"Toggle Floaty Panel" = "Floaty panelini değiştir";
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Düzenleri hızlıca değiştirmek için bir kısayol seç. Devre dışı bırakmak için boş bırak.";
 "Add shortcut" = "Kısayol ekle";
 "Reset icon arrangement..." = "Simge düzenini sıfırla...";
@@ -114,7 +115,6 @@
 "Settings" = "Ayarlar";
 "Settings..." = "Ayarlar...";
 "Check for Updates..." = "Güncellemeleri denetle...";
-"Toggle Floaty Panel" = "Toggle Floaty Panel";
 "Debug" = "Hata ayıklama";
 "Reload Apps" = "Uygulamaları yeniden yükle";
 "Reset Settings" = "Ayarları sıfırla";
@@ -156,4 +156,3 @@
 "Folder is empty." = "Klasör boş.";
 "Apps:\n%@" = "Uygulamalar:\n%@";
 "Save" = "Kaydet";
-

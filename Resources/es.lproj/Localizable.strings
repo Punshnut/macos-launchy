@@ -86,6 +86,7 @@
 "Reset" = "Restablecer";
 "Clear" = "Borrar";
 "Switch fullscreen <-> floaty" = "Cambiar pantalla completa <-> flotante";
+"Toggle Floaty Panel" = "Alternar panel Floaty";
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Elige un atajo si quieres cambiar de diseño rápido. Déjalo vacío para desactivar.";
 "Add shortcut" = "Añadir atajo";
 "Reset icon arrangement..." = "Restablecer disposición de iconos...";
@@ -114,7 +115,6 @@
 "Settings" = "Ajustes";
 "Settings..." = "Ajustes...";
 "Check for Updates..." = "Buscar actualizaciones...";
-"Toggle Floaty Panel" = "Toggle Floaty Panel";
 "Debug" = "Depuración";
 "Reload Apps" = "Recargar apps";
 "Reset Settings" = "Restablecer ajustes";
@@ -156,4 +156,3 @@
 "Folder is empty." = "La carpeta está vacía.";
 "Apps:\n%@" = "Apps:\n%@";
 "Save" = "Guardar";
-

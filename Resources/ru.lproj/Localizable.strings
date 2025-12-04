@@ -86,6 +86,7 @@
 "Reset" = "Сброс";
 "Clear" = "Очистить";
 "Switch fullscreen <-> floaty" = "Переключить полноэкранный <-> Floaty";
+"Toggle Floaty Panel" = "Переключить панель Floaty";
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Выберите сочетание, если хотите быстро менять макеты. Оставьте пустым, чтобы отключить.";
 "Add shortcut" = "Добавить сочетание";
 "Reset icon arrangement..." = "Сбросить расположение иконок...";
@@ -114,7 +115,6 @@
 "Settings" = "Настройки";
 "Settings..." = "Настройки...";
 "Check for Updates..." = "Проверить обновления...";
-"Toggle Floaty Panel" = "Toggle Floaty Panel";
 "Debug" = "Отладка";
 "Reload Apps" = "Перезагрузить приложения";
 "Reset Settings" = "Сбросить настройки";
@@ -156,4 +156,3 @@
 "Folder is empty." = "Папка пуста.";
 "Apps:\n%@" = "Приложения:\n%@";
 "Save" = "Сохранить";
-

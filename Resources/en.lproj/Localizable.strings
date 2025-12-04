@@ -86,6 +86,7 @@
 "Reset" = "Reset";
 "Clear" = "Clear";
 "Switch fullscreen <-> floaty" = "Switch fullscreen <-> floaty";
+"Toggle Floaty Panel" = "Toggle Floaty Panel";
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable.";
 "Add shortcut" = "Add shortcut";
 "Reset icon arrangement..." = "Reset icon arrangement...";
@@ -114,7 +115,6 @@
 "Settings" = "Settings";
 "Settings..." = "Settings...";
 "Check for Updates..." = "Check for Updates...";
-"Toggle Floaty Panel" = "Toggle Floaty Panel";
 "Debug" = "Debug";
 "Reload Apps" = "Reload Apps";
 "Reset Settings" = "Reset Settings";

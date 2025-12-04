@@ -80,6 +80,14 @@ struct LauncherView: View {
         return 0.92 + 0.08 * CGFloat(fullscreenGridEntranceProgress)
     }
 
+    private func folderGridTranslation(pageWidth: CGFloat, totalPages: Int, basePageOffset: CGFloat) -> CGFloat {
+        guard totalPages > 0 else { return basePageOffset }
+        let maxScroll = CGFloat(max(totalPages - 1, 0)) * pageWidth
+        let minTranslation = min(0, -maxScroll)
+        let rawTranslation = basePageOffset + folderPagerDragOffset
+        return min(max(rawTranslation, minTranslation), 0)
+    }
+
     @ViewBuilder
     private func launcherGridLayer(layout: LauncherLayoutMetrics, canReorder: Bool) -> some View {
         ZStack {
@@ -412,6 +420,9 @@ struct LauncherView: View {
     @State private var pagerDragOffset: CGFloat = 0
     @State private var pagerViewportWidth: CGFloat = 1
     @State private var lastPagerDragDate: Date?
+    @State private var folderPagerDragOffset: CGFloat = 0
+    @State private var folderPagerViewportWidth: CGFloat = 1
+    @State private var folderLastPagerDragDate: Date?
     @State private var pendingDropPage: Int?
     @FocusState private var isFolderNameFieldFocused: Bool
     @FocusState private var isAppNameFieldFocused: Bool
@@ -719,7 +730,7 @@ struct LauncherView: View {
 
     /// Determines when gesture-driven paging should be active.
     private var isGesturePagingEnabled: Bool {
-        pageCount > 1 && isClosingLauncher == false
+        activeFolder == nil && pageCount > 1 && isClosingLauncher == false
     }
 
     private var isKeyboardPagingEnabled: Bool {
@@ -753,6 +764,10 @@ struct LauncherView: View {
             return true
         }
         return launcherMode == .floaty || launcherMode == .fullscreen
+    }
+
+    private var isFolderGesturePagingEnabled: Bool {
+        activeFolder != nil && activeFolderPageCount > 1 && isClosingLauncher == false
     }
 
     /// Returns the slice of apps that should be visible for a specific page index.
@@ -942,6 +957,109 @@ struct LauncherView: View {
         }
 
         return bounded
+    }
+
+    private func folderBeginPagerInteraction(pageWidth: CGFloat) {
+        folderPagerViewportWidth = max(pageWidth, 1)
+    }
+
+    private func handleFolderScrollProgress(deltaX: CGFloat, phase: NSEvent.Phase, momentumPhase: NSEvent.Phase, isPrecise: Bool) {
+        guard isFolderGesturePagingEnabled else { return }
+        let width = folderPagerViewportWidth
+        guard width > 0 else { return }
+        folderBeginPagerInteraction(pageWidth: width)
+
+        let scale: CGFloat = isPrecise ? 1.0 : 12.0
+        folderPagerDragOffset = folderClampPagerOffset(folderPagerDragOffset + deltaX * scale, pageWidth: width)
+        folderLastPagerDragDate = Date()
+
+        if phase.isEmpty && momentumPhase.isEmpty && isPrecise == false {
+            folderSettlePagerOffset(pageWidth: width)
+            return
+        }
+
+        if phase.contains(.ended) || momentumPhase.contains(.ended) {
+            folderSettlePagerOffset(pageWidth: width)
+        }
+    }
+
+    private func folderSettlePagerOffset(pageWidth: CGFloat, projectedDelta: CGFloat = 0) {
+        guard activeFolder != nil else {
+            folderPagerDragOffset = 0
+            return
+        }
+
+        let normalizedWidth = max(pageWidth, 1)
+        let totalPages = max(activeFolderPageCount, 1)
+        guard totalPages > 1 else {
+            folderPagerDragOffset = 0
+            return
+        }
+
+        let totalOffset = folderPagerDragOffset + projectedDelta
+        let progress = totalOffset / normalizedWidth
+        let snapThreshold: CGFloat = 0.07
+        let fastThreshold: CGFloat = 0.22
+        let doubleProgressThreshold: CGFloat = 1.65
+        let highVelocityThreshold: CGFloat = 1.15
+        let velocity = projectedDelta / normalizedWidth
+        let absVelocity = abs(velocity)
+        let absProgress = abs(progress)
+        let recentDrag = (folderLastPagerDragDate.map { Date().timeIntervalSince($0) < 0.12 }) ?? false
+        let directionSign: Int = {
+            if absVelocity > 0.15 {
+                return velocity > 0 ? 1 : -1
+            }
+            return progress > 0 ? 1 : -1
+        }()
+
+        var delta = 0
+        let allowDouble = (absVelocity > highVelocityThreshold && absProgress > 0.8) || absProgress > doubleProgressThreshold
+
+        if allowDouble {
+            delta = 2 * directionSign
+        } else if absProgress > fastThreshold {
+            delta = 1 * directionSign
+        } else if absProgress > snapThreshold || (recentDrag && absProgress > 0.06) {
+            delta = 1 * directionSign
+        }
+
+        let targetPage = folderClampPageIndex(activeFolderPage - delta)
+        enterPerformanceShedding()
+        withAnimation(gestureSettleAnimation) {
+            pageDirection = targetPage >= activeFolderPage ? .forward : .backward
+            activeFolderPage = targetPage
+            folderPagerDragOffset = 0
+            markPageSwitch()
+        }
+        folderLastPagerDragDate = nil
+    }
+
+    private func folderClampPagerOffset(_ offset: CGFloat, pageWidth: CGFloat) -> CGFloat {
+        let limit = pageWidth * 0.35
+        let bounded = max(min(offset, limit), -limit)
+
+        if activeFolderPage == 0 && bounded > 0 {
+            return 0
+        }
+        if activeFolderPage >= activeFolderPageCount - 1 && bounded < 0 {
+            return 0
+        }
+
+        return bounded
+    }
+
+    private func folderPageOpacity(for page: Int, pageWidth: CGFloat) -> Double {
+        guard pageWidth > 0 else { return page == activeFolderPage ? 1 : 0 }
+        let dragProgress = folderPagerDragOffset / pageWidth
+        let distance = abs(CGFloat(page - activeFolderPage) + dragProgress)
+        let visibility = max(0, 1 - distance)
+        return Double(min(1, visibility))
+    }
+
+    private func folderClampPageIndex(_ index: Int) -> Int {
+        guard activeFolderPageCount > 0 else { return 0 }
+        return min(max(index, 0), activeFolderPageCount - 1)
     }
 
     /// Safely clamps a page index into the available range.
@@ -2115,6 +2233,7 @@ struct LauncherView: View {
         let clampedPage = min(activeFolderPage, max(bounded - 1, 0))
         if activeFolderPage != clampedPage {
             activeFolderPage = clampedPage
+            folderPagerDragOffset = 0
         }
     }
 
@@ -2387,8 +2506,52 @@ struct LauncherView: View {
                 )
             )
         }
-        .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity)
+            .frame(height: overlayLayout.gridHeight)
+    }
+
+    @ViewBuilder
+    private func folderGridPager(
+        for folder: FolderItem,
+        layout: LauncherLayoutMetrics,
+        overlayLayout: FolderOverlayLayout,
+        pages: [[AppItem]],
+        currentPage: Int,
+        pageCapacity: Int
+    ) -> some View {
+        GeometryReader { pagerProxy in
+            let pageWidth = max(pagerProxy.size.width, 1)
+            let totalPages = max(pages.count, 1)
+            let stackedWidth = CGFloat(totalPages) * pageWidth
+
+            HStack(spacing: 0) {
+                ForEach(Array(pages.enumerated()), id: \.offset) { pageIndex, apps in
+                    folderGrid(
+                        for: folder,
+                        layout: layout,
+                        overlayLayout: overlayLayout,
+                        pageStartIndex: pageIndex * pageCapacity,
+                        pageApps: apps
+                    )
+                    .frame(width: pageWidth)
+                    .opacity(folderPageOpacity(for: pageIndex, pageWidth: pageWidth))
+                }
+            }
+            .frame(width: stackedWidth, height: overlayLayout.gridHeight, alignment: .leading)
+            .offset(x: folderGridTranslation(
+                pageWidth: pageWidth,
+                totalPages: totalPages,
+                basePageOffset: -CGFloat(currentPage) * pageWidth
+            ))
+            .onAppear {
+                folderPagerViewportWidth = pageWidth
+            }
+            .onChange(of: pageWidth) { newWidth in
+                folderPagerViewportWidth = max(newWidth, 1)
+            }
+        }
         .frame(height: overlayLayout.gridHeight)
+        .clipped()
     }
 
     /// Displays a blurred overlay showing a folder's contents with Launchpad-inspired styling.
@@ -2403,6 +2566,29 @@ struct LauncherView: View {
                     .opacity(folderIconWaveToggle ? 0.2 : 0)
                     .ignoresSafeArea()
 
+                ScrollWheelPagerOverlay(
+                    isEnabled: isFolderGesturePagingEnabled,
+                    onScrollProgress: { event in
+                        handleFolderScrollProgress(
+                            deltaX: event.deltaX,
+                            phase: event.phase,
+                            momentumPhase: event.momentumPhase,
+                            isPrecise: event.isPrecise
+                        )
+                    },
+                    onScrollEnd: {
+                        folderSettlePagerOffset(pageWidth: folderPagerViewportWidth)
+                    },
+                    onPreviousPage: {
+                        changeFolderPage(.backward)
+                    },
+                    onNextPage: {
+                        changeFolderPage(.forward)
+                    }
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .allowsHitTesting(false)
+
                 let pages = folderPages(for: folder, overlayLayout: overlayLayout)
                 let pageCount = max(pages.count, 1)
                 let pageCapacity = max(overlayLayout.pageCapacity, 1)
@@ -2412,25 +2598,18 @@ struct LauncherView: View {
                 VStack(spacing: overlayLayout.titleToGridSpacing) {
                     folderTitleView(for: folder)
 
-                    ZStack {
-                        if pages.isEmpty {
-                            Color.clear.frame(height: overlayLayout.gridHeight)
-                        } else {
-                            ForEach(Array(pages.enumerated()), id: \.offset) { pageIndex, apps in
-                                if pageIndex == currentPage {
-                                    folderGrid(
-                                        for: folder,
-                                        layout: layout,
-                                        overlayLayout: overlayLayout,
-                                        pageStartIndex: pageIndex * pageCapacity,
-                                        pageApps: apps
-                                    )
-                                    .transition(.opacity)
-                                }
-                            }
-                        }
+                    if pages.isEmpty {
+                        Color.clear.frame(height: overlayLayout.gridHeight)
+                    } else {
+                        folderGridPager(
+                            for: folder,
+                            layout: layout,
+                            overlayLayout: overlayLayout,
+                            pages: pages,
+                            currentPage: currentPage,
+                            pageCapacity: pageCapacity
+                        )
                     }
-                    .frame(height: overlayLayout.gridHeight)
 
                     if showPager {
                         folderPager(currentPage: currentPage, totalPages: pageCount)
@@ -2482,6 +2661,9 @@ struct LauncherView: View {
             }
             .onDisappear {
                 activeFolderPageCount = 0
+                folderPagerDragOffset = 0
+                folderPagerViewportWidth = 1
+                folderLastPagerDragDate = nil
             }
         }
         .environment(\.colorScheme, colorScheme)
@@ -2645,6 +2827,7 @@ struct LauncherView: View {
         guard bounded != activeFolderPage else { return }
         withAnimation(folderOpenAnimation) {
             activeFolderPage = bounded
+            folderPagerDragOffset = 0
         }
     }
 
@@ -2659,12 +2842,14 @@ struct LauncherView: View {
             guard target != activeFolderPage else { return }
             withAnimation(folderOpenAnimation) {
                 activeFolderPage = target
+                folderPagerDragOffset = 0
             }
         case .forward:
             let target = min(activeFolderPage + 1, totalPages - 1)
             guard target != activeFolderPage else { return }
             withAnimation(folderOpenAnimation) {
                 activeFolderPage = target
+                folderPagerDragOffset = 0
             }
         }
     }

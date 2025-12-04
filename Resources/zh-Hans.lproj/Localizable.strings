@@ -86,6 +86,7 @@
 "Reset" = "重置";
 "Clear" = "清除";
 "Switch fullscreen <-> floaty" = "切换 全屏 <-> Floaty";
+"Toggle Floaty Panel" = "切换 Floaty 面板";
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "如果想快速切换布局，选定快捷键。留空则禁用。";
 "Add shortcut" = "添加快捷键";
 "Reset icon arrangement..." = "重置图标排列...";
@@ -114,7 +115,6 @@
 "Settings" = "设置";
 "Settings..." = "设置...";
 "Check for Updates..." = "检查更新...";
-"Toggle Floaty Panel" = "Toggle Floaty Panel";
 "Debug" = "调试";
 "Reload Apps" = "重新加载应用";
 "Reset Settings" = "重置设置";
@@ -156,4 +156,3 @@
 "Folder is empty." = "文件夹为空。";
 "Apps:\n%@" = "应用：\n%@";
 "Save" = "保存";
-

@@ -86,6 +86,7 @@
 "Reset" = "Reset";
 "Clear" = "Bersihkan";
 "Switch fullscreen <-> floaty" = "Beralih layar penuh <-> floaty";
+"Toggle Floaty Panel" = "Alihkan panel Floaty";
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Pilih pintasan jika ingin mengganti tata letak dengan cepat. Kosongkan untuk menonaktifkan.";
 "Add shortcut" = "Tambah pintasan";
 "Reset icon arrangement..." = "Reset susunan ikon...";
@@ -114,7 +115,6 @@
 "Settings" = "Pengaturan";
 "Settings..." = "Pengaturan...";
 "Check for Updates..." = "Periksa pembaruan...";
-"Toggle Floaty Panel" = "Toggle Panel Floaty";
 "Debug" = "Debug";
 "Reload Apps" = "Muat ulang aplikasi";
 "Reset Settings" = "Reset pengaturan";

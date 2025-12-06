@@ -82,7 +82,6 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 ## License & support
 
 - **License:** MIT. Use it anywhere, just keep the notice.
-- **Support Launchy:** Optional upgrades or donations are a nice signal boost but I will never gate existing features.
 
 [Ko-Fi](https://ko-fi.com/janfeuerbacher)
 
@@ -97,6 +96,7 @@ Here are a few improvements planned for upcoming releases:
 - Enhanced folder styling - clearer folder icons, improved previews, and a cleaner visual hierarchy.
 - Floaty mode visual overhaul - refinements to spacing, layout, and HUD elements to better match modern macOS design.
 - Dock menu enhancements - icons inside the Dock right-click menu for quicker recognition and a more polished feel.
+- more performance - less stuttering from user input while shrinking memory usage
 - Localization languages: 🇵🇭 Filipino / Tagalog, 🇵🇱 Polski, 🇮🇷 Farsi, 🇬🇷 Ελληνικά, 🇳🇱 Nederlands, 🇸🇪 Svenska
 
 Made with ❤️

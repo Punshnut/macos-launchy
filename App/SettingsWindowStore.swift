@@ -1,6 +1,16 @@
 import AppKit
 import Combine
 import SwiftUI
+import UniformTypeIdentifiers
+
+struct HiddenAppsListEntry: Identifiable {
+    let id: String
+    let icon: NSImage?
+    let title: String
+    let subtitle: String?
+    let isHidden: Bool
+    let toggle: (Bool) -> Void
+}
 
 /// Backing store responsible for loading apps and persisting launcher settings toggles.
 @MainActor
@@ -174,25 +184,34 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         settingsSnapshot.hiddenBundleIDs.contains(app.bundleIdentifier)
     }
 
-    /// Determines the order hidden apps should display in the table.
-    var orderedHiddenAppList: [AppItem] {
-        guard settingsSnapshot.showHiddenAppsFirst else {
-            return discoveredApps
-        }
-
+    /// Provides the list of hidden entries (apps plus auto-created folders).
+    var orderedHiddenEntries: [HiddenAppsListEntry] {
+        let apps = discoveredApps.filter { $0.isCoreServiceApplication == false }
         let hiddenIdentifiers = Set(settingsSnapshot.hiddenBundleIDs)
-        var hiddenApps: [AppItem] = []
-        var visibleApps: [AppItem] = []
 
-        for app in discoveredApps {
-            if hiddenIdentifiers.contains(app.bundleIdentifier) {
-                hiddenApps.append(app)
-            } else {
-                visibleApps.append(app)
-            }
+        let mappedApps = apps.map { app -> HiddenAppsListEntry in
+            HiddenAppsListEntry(
+                id: app.bundleIdentifier,
+                icon: icon(for: app),
+                title: app.resolvedDisplayName,
+                subtitle: app.bundleIdentifier,
+                isHidden: hiddenIdentifiers.contains(app.bundleIdentifier),
+                toggle: { [weak self] value in
+                    self?.setHidden(value, for: app)
+                }
+            )
         }
 
-        return hiddenApps + visibleApps
+        let orderedApps: [HiddenAppsListEntry]
+        if settingsSnapshot.showHiddenAppsFirst {
+            let hidden = mappedApps.filter(\.isHidden)
+            let visible = mappedApps.filter { $0.isHidden == false }
+            orderedApps = hidden + visible
+        } else {
+            orderedApps = mappedApps
+        }
+
+        return orderedApps + specialFolderEntries()
     }
 
     /// Persists whether hidden apps should float to the top of the list.
@@ -208,6 +227,20 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         settingsSnapshot.shouldScanUserApplicationsFolder = value
         LauncherSettingsPersistence.setShouldScanUserApplicationsFolder(value)
         reloadApps()
+    }
+
+    /// Persists whether a special entry (like the CoreServices folder) is hidden.
+    func setSpecialEntryHidden(_ identifier: String, _ isHidden: Bool) {
+        var identifiers = Set(settingsSnapshot.hiddenSpecialEntryIDs)
+        if isHidden {
+            identifiers.insert(identifier)
+        } else {
+            identifiers.remove(identifier)
+        }
+        let sorted = identifiers.sorted()
+        guard settingsSnapshot.hiddenSpecialEntryIDs != sorted else { return }
+        settingsSnapshot.hiddenSpecialEntryIDs = sorted
+        LauncherSettingsPersistence.setHiddenSpecialEntryIdentifiers(sorted)
     }
 
     /// Observes cross-process setting updates and mirrors them locally.
@@ -230,6 +263,61 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         if previousIncludeUserApplications != updatedSettings.shouldScanUserApplicationsFolder {
             reloadApps()
         }
+    }
+
+    private func specialFolderEntries() -> [HiddenAppsListEntry] {
+        let coreServiceApps = discoveredApps.filter { $0.isCoreServiceApplication }
+        guard coreServiceApps.isEmpty == false else { return [] }
+        let hiddenSpecialIDs = Set(settingsSnapshot.hiddenSpecialEntryIDs)
+
+        var entries: [HiddenAppsListEntry] = []
+        let knownServices = coreServiceApps.filter(\.hasCustomIcon)
+        if knownServices.isEmpty == false {
+            entries.append(
+                folderEntry(
+                    id: HiddenSpecialEntryIdentifiers.coreServicesFolder,
+                    title: String(localized: "macOS"),
+                    subtitle: String(localized: "Finder, Siri, Spotlight, Game Center, and other CoreServices utilities from /System/Library/CoreServices."),
+                    isHidden: hiddenSpecialIDs.contains(HiddenSpecialEntryIdentifiers.coreServicesFolder)
+                )
+            )
+        }
+
+        let systemTools = coreServiceApps.filter { $0.hasCustomIcon == false }
+        if systemTools.isEmpty == false {
+            entries.append(
+                folderEntry(
+                    id: HiddenSpecialEntryIdentifiers.systemToolsFolder,
+                    title: String(localized: "macOS system tools"),
+                    subtitle: String(localized: "Placeholder utilities without custom icons are grouped here."),
+                    isHidden: hiddenSpecialIDs.contains(HiddenSpecialEntryIdentifiers.systemToolsFolder)
+                )
+            )
+        }
+
+        return entries
+    }
+
+    private func folderEntry(
+        id: String,
+        title: String,
+        subtitle: String,
+        isHidden: Bool
+    ) -> HiddenAppsListEntry {
+        HiddenAppsListEntry(
+            id: id,
+            icon: folderIcon,
+            title: title,
+            subtitle: subtitle,
+            isHidden: isHidden,
+            toggle: { [weak self] value in
+                self?.setSpecialEntryHidden(id, value)
+            }
+        )
+    }
+
+    private var folderIcon: NSImage {
+        NSWorkspace.shared.icon(for: UTType.folder)
     }
 
     private func resolvedLauncherHotkey(

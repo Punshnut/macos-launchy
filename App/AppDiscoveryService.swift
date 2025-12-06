@@ -1,4 +1,5 @@
 import AppKit
+import UniformTypeIdentifiers
 
 enum IconRenderQuality: String {
     case low
@@ -39,6 +40,7 @@ final class AppDiscoveryService {
     private let workspaceInterface: NSWorkspace
     private let customApplicationDirectories: [URL]?
     private let userApplicationsDirectory: URL
+    private let coreServicesDirectory = URL(fileURLWithPath: "/System/Library/CoreServices", isDirectory: true)
     private let preferredLanguageCodes: [String]
     private let iconCache = NSCache<NSString, NSImage>()
     private let preparedIconCache = NSCache<NSString, NSImage>()
@@ -50,6 +52,15 @@ final class AppDiscoveryService {
     private let cacheReleaseQueue = DispatchQueue(label: "com.launchy.cache-release", qos: .utility)
     private var preparedCacheReleaseTask: Task<Void, Never>?
     private var iconCacheReleaseTask: Task<Void, Never>?
+    private lazy var defaultApplicationIconData: Data? = {
+        let icon: NSImage
+        if #available(macOS 12.0, *) {
+            icon = workspaceInterface.icon(for: UTType.applicationBundle)
+        } else {
+            icon = workspaceInterface.icon(forFileType: "app")
+        }
+        return normalizedIconData(for: icon)
+    }()
     private static let maximumIconDimension: CGFloat = 256
     private static let iconCacheCountLimit = 200
     private static let preparedIconCacheCountLimit = 260
@@ -89,7 +100,8 @@ final class AppDiscoveryService {
 
         for directory in directories {
             LaunchyLogger.log("AppDiscovery: scanning directory \(directory.path)")
-            for app in discoverApplications(in: directory) {
+            let isCoreServicesDirectory = directory.standardizedFileURL == coreServicesDirectory.standardizedFileURL
+            for app in discoverApplications(in: directory, isCoreServicesDirectory: isCoreServicesDirectory) {
                 appsByBundleID[app.bundleIdentifier] = app
             }
         }
@@ -211,7 +223,7 @@ final class AppDiscoveryService {
     }
 
     /// Lists `.app` bundles inside the provided directory.
-    private func discoverApplications(in searchDirectory: URL) -> [AppItem] {
+    private func discoverApplications(in searchDirectory: URL, isCoreServicesDirectory: Bool = false) -> [AppItem] {
         guard let enumerator = fileSystem.enumerator(
             at: searchDirectory,
             includingPropertiesForKeys: [.isDirectoryKey],
@@ -224,7 +236,7 @@ final class AppDiscoveryService {
         let discoveredApps = enumerator
             .compactMap { $0 as? URL }
             .filter { $0.pathExtension == "app" }
-            .compactMap(buildAppItem)
+            .compactMap { buildAppItem(from: $0, isCoreService: isCoreServicesDirectory) }
 
         LaunchyLogger.log("AppDiscovery: found \(discoveredApps.count) app bundles in \(searchDirectory.lastPathComponent)")
         return discoveredApps
@@ -399,6 +411,8 @@ final class AppDiscoveryService {
             URL(fileURLWithPath: "/System/Applications", isDirectory: true)
         ]
 
+        directories.append(coreServicesDirectory)
+
         if includeUserApplicationsFolder {
             directories.append(userApplicationsDirectory)
         }
@@ -420,6 +434,13 @@ final class AppDiscoveryService {
         let pixels = Int(size.width * size.height)
         let bytesPerPixel = 4
         return max(pixels * bytesPerPixel, 1)
+    }
+
+    private func hasCustomIcon(for bundleURL: URL) -> Bool {
+        guard let defaultData = defaultApplicationIconData else { return true }
+        let icon = workspaceInterface.icon(forFile: bundleURL.path)
+        guard let iconData = normalizedIconData(for: icon) else { return true }
+        return iconData != defaultData
     }
 
     private func resizedIcon(_ icon: NSImage, pixelDimension: Int, quality: IconRenderQuality) -> NSImage {
@@ -444,8 +465,13 @@ final class AppDiscoveryService {
         return rendered
     }
 
+    private func normalizedIconData(for icon: NSImage) -> Data? {
+        let target = renderIcon(icon, targetSize: NSSize(width: 128, height: 128), quality: .high)
+        return target.tiffRepresentation
+    }
+
     /// Converts a bundle on disk into an `AppItem`, extracting the display name and identifier.
-    private func buildAppItem(from bundleURL: URL) -> AppItem? {
+    private func buildAppItem(from bundleURL: URL, isCoreService: Bool) -> AppItem? {
         guard let bundle = Bundle(url: bundleURL) else {
             LaunchyLogger.error("AppDiscovery: malformed bundle at \(bundleURL.path)")
             return nil
@@ -469,7 +495,9 @@ final class AppDiscoveryService {
             bundleIdentifier: bundleIdentifier,
             iconImage: nil,
             bundleURL: bundleURL,
-            isUserApplication: isUserApplication(bundleURL)
+            isUserApplication: isUserApplication(bundleURL),
+            isCoreServiceApplication: isCoreService,
+            hasCustomIcon: hasCustomIcon(for: bundleURL)
         )
     }
 

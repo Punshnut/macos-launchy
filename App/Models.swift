@@ -1,6 +1,12 @@
 import Foundation
 import AppKit
 
+/// Identifiers used for special entries that don’t correspond to individual apps.
+enum HiddenSpecialEntryIdentifiers {
+    static let coreServicesFolder = "launchy.hidden.core-services-folder"
+    static let systemToolsFolder = "launchy.hidden.system-tools-folder"
+}
+
 /// Represents an application bundle that Launchy can surface and start.
 struct AppItem: Identifiable, Hashable {
     /// Stable identifier backed by a `UUID` so SwiftUI lists animate cleanly.
@@ -19,6 +25,10 @@ struct AppItem: Identifiable, Hashable {
     let bundleURL: URL?
     /// Whether the bundle originates from the user-owned `~/Applications` folder.
     let isUserApplication: Bool
+    /// Marks items discovered under `/System/Library/CoreServices`.
+    let isCoreServiceApplication: Bool
+    /// Tracks whether a non-placeholder icon was available.
+    let hasCustomIcon: Bool
 
     init(
         id: UUID,
@@ -28,7 +38,9 @@ struct AppItem: Identifiable, Hashable {
         bundleIdentifier: String,
         iconImage: NSImage?,
         bundleURL: URL?,
-        isUserApplication: Bool = false
+        isUserApplication: Bool = false,
+        isCoreServiceApplication: Bool = false,
+        hasCustomIcon: Bool = true
     ) {
         self.id = id
         self.displayName = displayName
@@ -38,6 +50,8 @@ struct AppItem: Identifiable, Hashable {
         self.iconImage = iconImage
         self.bundleURL = bundleURL
         self.isUserApplication = isUserApplication
+        self.isCoreServiceApplication = isCoreServiceApplication
+        self.hasCustomIcon = hasCustomIcon
     }
 
     static func == (lhs: AppItem, rhs: AppItem) -> Bool {
@@ -311,6 +325,8 @@ struct LauncherSettings: Hashable, Codable {
     var launchesAtLogin: Bool
     /// Bundle identifiers that should be hidden from the grid UI.
     var hiddenBundleIDs: [String]
+    /// Special hidden entries like auto-created folders.
+    var hiddenSpecialEntryIDs: [String]
     /// When enabled, keeps hidden apps pinned to the top of the hidden Apps list.
     var showHiddenAppsFirst: Bool
     /// Selected background styling preference for the launcher UI.
@@ -341,6 +357,7 @@ struct LauncherSettings: Hashable, Codable {
         isVisibleOnAllSpaces: Bool,
         launchesAtLogin: Bool,
         hiddenBundleIDs: [String],
+        hiddenSpecialEntryIDs: [String],
         showHiddenAppsFirst: Bool,
         backgroundStylePreference: PreferredBackgroundStyle,
         solidBackgroundColor: SolidBackgroundColor,
@@ -358,6 +375,7 @@ struct LauncherSettings: Hashable, Codable {
         self.isVisibleOnAllSpaces = isVisibleOnAllSpaces
         self.launchesAtLogin = launchesAtLogin
         self.hiddenBundleIDs = hiddenBundleIDs
+        self.hiddenSpecialEntryIDs = hiddenSpecialEntryIDs
         self.showHiddenAppsFirst = showHiddenAppsFirst
         self.backgroundStylePreference = backgroundStylePreference
         self.solidBackgroundColor = solidBackgroundColor
@@ -381,6 +399,7 @@ extension LauncherSettings {
             isVisibleOnAllSpaces: false,
             launchesAtLogin: false,
             hiddenBundleIDs: [],
+            hiddenSpecialEntryIDs: [HiddenSpecialEntryIdentifiers.systemToolsFolder],
             showHiddenAppsFirst: false,
             backgroundStylePreference: .standard,
             solidBackgroundColor: .system,
@@ -403,6 +422,7 @@ extension LauncherSettings {
         case isVisibleOnAllSpaces
         case launchesAtLogin
         case hiddenBundleIDs
+        case hiddenSpecialEntryIDs
         case showHiddenAppsFirst
         case backgroundStylePreference
         case solidBackgroundColor
@@ -431,6 +451,7 @@ extension LauncherSettings {
             isVisibleOnAllSpaces: try container.decodeIfPresent(Bool.self, forKey: .isVisibleOnAllSpaces) ?? false,
             launchesAtLogin: try container.decodeIfPresent(Bool.self, forKey: .launchesAtLogin) ?? false,
             hiddenBundleIDs: try container.decodeIfPresent([String].self, forKey: .hiddenBundleIDs) ?? [],
+            hiddenSpecialEntryIDs: try container.decodeIfPresent([String].self, forKey: .hiddenSpecialEntryIDs) ?? [],
             showHiddenAppsFirst: try container.decodeIfPresent(Bool.self, forKey: .showHiddenAppsFirst) ?? false,
             backgroundStylePreference: PreferredBackgroundStyle.from(
                 rawValue: try container.decodeIfPresent(String.self, forKey: .backgroundStylePreference)
@@ -467,6 +488,7 @@ extension LauncherSettings {
         try container.encode(fillsGapsAutomatically, forKey: .fillsGapsAutomatically)
         try container.encode(hasCompletedIntroduction, forKey: .hasCompletedIntroduction)
         try container.encode(shouldScanUserApplicationsFolder, forKey: .shouldScanUserApplicationsFolder)
+        try container.encode(hiddenSpecialEntryIDs, forKey: .hiddenSpecialEntryIDs)
     }
 }
 

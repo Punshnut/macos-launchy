@@ -509,18 +509,22 @@ struct SettingsWindow: View {
             Divider()
                 .overlay(Color.white.opacity(0.05))
 
+            let orderedEntries = settingsStore.orderedHiddenEntries
             if settingsStore.discoveredApps.isEmpty {
+                hiddenAppsEmptyState
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 32)
+            } else if orderedEntries.isEmpty {
                 hiddenAppsEmptyState
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 32)
             } else {
                 ScrollView(.vertical, showsIndicators: true) {
                     LazyVStack(alignment: .leading, spacing: 0) {
-                        let orderedApps = settingsStore.orderedHiddenAppList
-                        ForEach(Array(orderedApps.enumerated()), id: \.element.id) { index, app in
-                            hiddenAppRow(app: app)
+                        ForEach(Array(orderedEntries.enumerated()), id: \.element.id) { index, entry in
+                            hiddenEntryRow(entry: entry)
 
-                            if index < orderedApps.count - 1 {
+                            if index < orderedEntries.count - 1 {
                                 Divider()
                                     .overlay(Color.white.opacity(0.05))
                                     .padding(.leading, 44)
@@ -571,20 +575,22 @@ struct SettingsWindow: View {
         }
     }
 
-    private func hiddenAppRow(app: AppItem) -> some View {
+    private func hiddenEntryRow(entry: HiddenAppsListEntry) -> some View {
         HStack(alignment: .center, spacing: 12) {
-            iconView(for: app)
+            iconView(for: entry)
                 .frame(width: 32, height: 32)
             VStack(alignment: .leading, spacing: 2) {
-                Text(app.resolvedDisplayName)
-                Text(app.bundleIdentifier)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                Text(entry.title)
+                if let subtitle = entry.subtitle {
+                    Text(subtitle)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
             }
             Spacer()
             Toggle(isOn: Binding(
-                get: { settingsStore.isHidden(app) },
-                set: { settingsStore.setHidden($0, for: app) }
+                get: { entry.isHidden },
+                set: { entry.toggle($0) }
             )) {
                 EmptyView()
             }
@@ -598,6 +604,22 @@ struct SettingsWindow: View {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(Color.white.opacity(0.02))
         )
+    }
+
+    private func iconView(for entry: HiddenAppsListEntry) -> some View {
+        Group {
+            if let image = entry.icon {
+                Image(nsImage: image)
+                    .resizable()
+            } else {
+                Image(systemName: "app.fill")
+                    .resizable()
+                    .foregroundColor(.secondary)
+            }
+        }
+        .aspectRatio(contentMode: .fit)
+        .frame(width: 32, height: 32)
+        .cornerRadius(6)
     }
 
     // MARK: - About Content

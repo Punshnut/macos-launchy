@@ -24,6 +24,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var mainMenuUpdateObserver: NSObjectProtocol?
     private var isTrimmingMainMenu = false
     private var applicationDirectoryMonitor: ApplicationDirectoryMonitor?
+    private let coreServicesFolderID = UUID(uuidString: "E5F3D7F7-CCE6-4A3E-9EA1-357C39B58F9A")!
+    private let systemToolsFolderID = UUID(uuidString: "B7291F1D-45DF-46A0-B84F-8B05626DD3C0")!
+    private let coreServicesDirectory = URL(fileURLWithPath: "/System/Library/CoreServices", isDirectory: true)
     private lazy var settingsWindowPresenter: SettingsWindowController = {
         let controller = SettingsWindowController()
         controller.onClose = { [weak self] in
@@ -345,15 +348,17 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let previousHidden = Set(currentSettings.hiddenBundleIDs)
         let previousGapSetting = currentSettings.fillsGapsAutomatically
         let previousUserApplicationsScan = currentSettings.shouldScanUserApplicationsFolder
+        let previousSpecialHiddenEntries = Set(currentSettings.hiddenSpecialEntryIDs)
         currentSettings = LauncherSettingsPersistence.loadSettings()
         LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
         let hiddenChanged = previousHidden != Set(currentSettings.hiddenBundleIDs)
         let gapSettingChanged = previousGapSetting != currentSettings.fillsGapsAutomatically
         let scanSettingChanged = previousUserApplicationsScan != currentSettings.shouldScanUserApplicationsFolder
+        let specialEntryChanged = previousSpecialHiddenEntries != Set(currentSettings.hiddenSpecialEntryIDs)
         if scanSettingChanged {
             configureApplicationDirectoryMonitoring()
         }
-        if hiddenChanged || gapSettingChanged || scanSettingChanged {
+        if hiddenChanged || gapSettingChanged || scanSettingChanged || specialEntryChanged {
             refreshLauncherItems()
         }
         applyLauncherMode()
@@ -392,6 +397,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                 .appendingPathComponent("Applications", isDirectory: true)
             directories.append(userApps)
         }
+
+        directories.append(coreServicesDirectory)
 
         return directories
     }
@@ -701,17 +708,57 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             }
             return modified
         }
-        let allDecoratedApps = decoratedBaseApps + decoratedUserApps
+        let coreServicesApps = decoratedBaseApps.filter(\.isCoreServiceApplication)
+        let coreServicesWithIcon = coreServicesApps.filter(\.hasCustomIcon)
+        let systemToolsApps = coreServicesApps.filter { $0.hasCustomIcon == false }
+        let arrangedBaseApps = decoratedBaseApps.filter { $0.isCoreServiceApplication == false }
+        let arrangementSource = arrangedBaseApps + decoratedUserApps
 
         let (items, sizes) = itemOrderStore.arrangedItems(
-            from: allDecoratedApps,
+            from: arrangementSource,
             pageCapacity: LauncherGridConfiguration.pageCapacity,
             fillsGapsAutomatically: currentSettings.fillsGapsAutomatically,
             preferredCustomNames: names
         )
 
-        orderedItems = items
-        pageSizes = sizes
+        var arrangedItems = items
+        var arrangedSizes = sizes
+        let hiddenSpecialEntries = Set(currentSettings.hiddenSpecialEntryIDs)
+        let isCoreServicesFolderHidden = hiddenSpecialEntries.contains(HiddenSpecialEntryIdentifiers.coreServicesFolder)
+        let isSystemToolsFolderHidden = hiddenSpecialEntries.contains(HiddenSpecialEntryIdentifiers.systemToolsFolder)
+        arrangedItems.removeAll { item in
+            if case .folder(let folder) = item {
+                return folder.id == coreServicesFolderID || folder.id == systemToolsFolderID
+            }
+            return false
+        }
+
+        if isCoreServicesFolderHidden == false,
+           coreServicesWithIcon.isEmpty == false
+        {
+            let folder = FolderItem(
+                id: coreServicesFolderID,
+                name: "macOS",
+                apps: coreServicesWithIcon
+            )
+            arrangedItems.append(.folder(folder))
+            arrangedSizes = pageSizesAfterAppendingItem(arrangedSizes)
+        }
+
+        if isSystemToolsFolderHidden == false,
+           systemToolsApps.isEmpty == false
+        {
+            let folder = FolderItem(
+                id: systemToolsFolderID,
+                name: "macOS system tools",
+                apps: systemToolsApps
+            )
+            arrangedItems.append(.folder(folder))
+            arrangedSizes = pageSizesAfterAppendingItem(arrangedSizes)
+        }
+
+        orderedItems = arrangedItems
+        pageSizes = arrangedSizes
         LaunchyLogger.log("refreshLauncherItems: totalLauncherItems=\(orderedItems.count), pages=\(pageSizes.count)")
         preheatIconsForCurrentLayout()
     }
@@ -766,6 +813,35 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return prioritized
     }
 
+    private func pageSizesAfterAppendingItem(_ sizes: [Int]) -> [Int] {
+        var updated = sizes
+        let capacity = LauncherGridConfiguration.pageCapacity
+        guard capacity > 0 else {
+            return updated
+        }
+
+        if updated.isEmpty {
+            return [1]
+        }
+
+        if let last = updated.last, last < capacity {
+            updated[updated.count - 1] += 1
+        } else {
+            updated.append(1)
+        }
+
+        return updated
+    }
+
+    private func itemsExcludingAutoGeneratedFolders(from items: [LauncherItem]) -> [LauncherItem] {
+        items.filter { item in
+            if case .folder(let folder) = item {
+                return folder.id != coreServicesFolderID && folder.id != systemToolsFolderID
+            }
+            return true
+        }
+    }
+
     /// Builds a bundle ID keyed map of custom names from both root items and folder contents.
     private func customNamesByBundleID(from items: [LauncherItem]) -> [String: String] {
         var names: [String: String] = [:]
@@ -807,7 +883,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                 guard let self else { return }
                 self.orderedItems = reorderedItems
                 self.pageSizes = newPageSizes
-                self.itemOrderStore.saveOrderedItems(reorderedItems, pageSizes: newPageSizes)
+                let filteredItems = self.itemsExcludingAutoGeneratedFolders(from: reorderedItems)
+                self.itemOrderStore.saveOrderedItems(filteredItems, pageSizes: newPageSizes)
             },
             iconProvider: { [weak self] app, dimension, quality in
                 guard let self else { return nil }

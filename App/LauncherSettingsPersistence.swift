@@ -94,6 +94,23 @@ enum LauncherSettingsPersistence {
         }
     }
 
+    /// Reads identifiers for special entries that can be hidden.
+    static func hiddenSpecialEntryIdentifiers(
+        userDefaults: UserDefaults = .standard
+    ) -> [String] {
+        loadSettings(userDefaults: userDefaults).hiddenSpecialEntryIDs
+    }
+
+    /// Persists the hidden state of special entries such as auto-generated folders.
+    static func setHiddenSpecialEntryIdentifiers(
+        _ identifiers: [String],
+        userDefaults: UserDefaults = .standard
+    ) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.hiddenSpecialEntryIDs = identifiers
+        }
+    }
+
     /// Reads whether hidden apps should be anchored at the top of the list.
     static func showHiddenAppsFirst(userDefaults: UserDefaults = .standard) -> Bool {
         loadSettings(userDefaults: userDefaults).showHiddenAppsFirst
@@ -234,15 +251,20 @@ enum LauncherSettingsPersistence {
     /// Reconstructs a `LauncherSettings` value using the stored toggles.
     static func loadSettings(userDefaults: UserDefaults = .standard) -> LauncherSettings {
         guard let data = userDefaults.data(forKey: Keys.settingsPayload) else {
-            return LauncherSettings.defaults
+            var defaults = LauncherSettings.defaults
+            ensureSystemToolsFolderHidden(&defaults)
+            return defaults
         }
 
         do {
             var settings = try JSONDecoder().decode(LauncherSettings.self, from: data)
             enforceLauncherReachability(&settings)
+            ensureSystemToolsFolderHidden(&settings)
             return settings
         } catch {
-            return LauncherSettings.defaults
+            var defaults = LauncherSettings.defaults
+            ensureSystemToolsFolderHidden(&defaults)
+            return defaults
         }
     }
 
@@ -257,7 +279,9 @@ enum LauncherSettingsPersistence {
         userDefaults: UserDefaults = .standard,
         notify: Bool = true
     ) {
-        guard let data = try? JSONEncoder().encode(settings) else { return }
+        var sanitized = settings
+        ensureSystemToolsFolderHidden(&sanitized)
+        guard let data = try? JSONEncoder().encode(sanitized) else { return }
         userDefaults.set(data, forKey: Keys.settingsPayload)
         if notify {
             notifyChange()
@@ -272,6 +296,7 @@ enum LauncherSettingsPersistence {
         var mutableSettings = loadSettings(userDefaults: userDefaults)
         mutate(&mutableSettings)
         enforceLauncherReachability(&mutableSettings)
+        ensureSystemToolsFolderHidden(&mutableSettings)
         saveSettings(mutableSettings, userDefaults: userDefaults)
     }
 
@@ -281,6 +306,12 @@ enum LauncherSettingsPersistence {
         if settings.launcherHotkey == nil {
             settings.launcherHotkey = .toggleLauncher
         }
+    }
+
+    private static func ensureSystemToolsFolderHidden(_ settings: inout LauncherSettings) {
+        guard settings.hiddenSpecialEntryIDs.contains(HiddenSpecialEntryIdentifiers.systemToolsFolder) == false else { return }
+        settings.hiddenSpecialEntryIDs.append(HiddenSpecialEntryIdentifiers.systemToolsFolder)
+        settings.hiddenSpecialEntryIDs.sort()
     }
 }
 

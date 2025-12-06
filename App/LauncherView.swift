@@ -10,6 +10,8 @@ extension Notification.Name {
     static let launcherDidShow = Notification.Name("launchyLauncherDidShow")
     /// Indicates the launcher window was fully hidden.
     static let launcherDidHide = Notification.Name("launchyLauncherDidHide")
+    /// Requests a lightweight visual cache purge under memory pressure.
+    static let launcherShouldPurgeVisualCaches = Notification.Name("launchyLauncherShouldPurgeVisualCaches")
 }
 
 private struct FolderDragContext {
@@ -70,6 +72,8 @@ struct LauncherView: View {
     var onAppInfoRequested: (() -> Void)?
     /// Callback fired whenever the user changes the arrangement.
     var onItemOrderChange: (([LauncherItem], [Int]) -> Void)?
+    /// Callback fired when the visible pages change so icons can be preheated.
+    var onVisiblePagesChanged: (([AppItem]) -> Void)?
     /// Provides the icon that should be used for a specific app.
     var iconProvider: @Sendable (AppItem, CGFloat, IconRenderQuality) -> NSImage? = { app, _, _ in app.iconImage }
 
@@ -439,6 +443,7 @@ struct LauncherView: View {
         onSettingsRequested: (() -> Void)? = nil,
         onAppInfoRequested: (() -> Void)? = nil,
         onItemOrderChange: (([LauncherItem], [Int]) -> Void)? = nil,
+        onVisiblePagesChanged: (([AppItem]) -> Void)? = nil,
         iconProvider: @escaping @Sendable (AppItem, CGFloat, IconRenderQuality) -> NSImage? = { app, _, _ in app.iconImage }
     ) {
         self.itemCatalog = itemCatalog
@@ -450,6 +455,7 @@ struct LauncherView: View {
         self.onSettingsRequested = onSettingsRequested
         self.onAppInfoRequested = onAppInfoRequested
         self.onItemOrderChange = onItemOrderChange
+        self.onVisiblePagesChanged = onVisiblePagesChanged
         self.iconProvider = iconProvider
         _orderedItems = State(initialValue: itemCatalog)
         _pageSizes = State(initialValue: initialPageSizes)
@@ -474,6 +480,7 @@ struct LauncherView: View {
             currentPage = 0
             pageDirection = .forward
             pagerDragOffset = 0
+            notifyVisiblePagesChanged()
         }
         .onChange(of: initialPageSizes) { newValue in
             if fillsGapsAutomatically {
@@ -484,6 +491,7 @@ struct LauncherView: View {
             currentPage = 0
             pageDirection = .forward
             pagerDragOffset = 0
+            notifyVisiblePagesChanged()
         }
         .onReceive(NotificationCenter.default.publisher(for: .launcherDidHide)) { _ in
             isLauncherVisible = false
@@ -491,6 +499,10 @@ struct LauncherView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .launcherDidShow)) { _ in
             isLauncherVisible = true
+            cancelPendingHighQualityRequests()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .launcherShouldPurgeVisualCaches)) { _ in
+            purgeHighQualityOverrides()
             cancelPendingHighQualityRequests()
         }
         .onChange(of: activeFolder) { newValue in
@@ -532,6 +544,7 @@ struct LauncherView: View {
                 updateSearchControlsExpansion(to: false)
                 cancelExpansionAutoCollapse()
             }
+            notifyVisiblePagesChanged()
         }
         .onChange(of: draggedItem) { newItem in
             if newItem == nil {
@@ -571,11 +584,15 @@ struct LauncherView: View {
                 }
             let validIDs = Set(newItems.map(\.id))
             multiSelectedItemIDs.formIntersection(validIDs)
+            notifyVisiblePagesChanged()
         }
         .onChange(of: isEditingFolderName) { isEditing in
             if isEditing == false {
                 focusSearchFieldIfAppropriate()
             }
+        }
+        .onChange(of: currentPage) { _ in
+            notifyVisiblePagesChanged()
         }
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { notification in
             guard let window = notification.object as? NSWindow,
@@ -584,6 +601,7 @@ struct LauncherView: View {
         }
         .onAppear {
             focusSearchFieldIfAppropriate()
+            notifyVisiblePagesChanged()
         }
     }
 
@@ -1085,6 +1103,29 @@ struct LauncherView: View {
         guard total > 0 else { return [] }
         let current = clampPageIndex(currentPage)
         return [current - 1, current, current + 1].filter { $0 >= 0 && $0 < total }
+    }
+
+    private func notifyVisiblePagesChanged() {
+        guard let onVisiblePagesChanged else { return }
+        let sizes = displayPageSizes
+        let pages = visiblePageIndices(total: pageCount)
+        var seen = Set<UUID>()
+        var apps: [AppItem] = []
+        for page in pages {
+            for item in itemsForPage(page, sizes: sizes) {
+                switch item {
+                case .app(let app):
+                    if seen.insert(app.id).inserted {
+                        apps.append(app)
+                    }
+                case .folder(let folder):
+                    for app in folder.apps where seen.insert(app.id).inserted {
+                        apps.append(app)
+                    }
+                }
+            }
+        }
+        onVisiblePagesChanged(apps)
     }
 
     /// Detects modifier keys that disable live reordering during a drag.

@@ -47,6 +47,7 @@ final class AppDiscoveryService {
     private let metadataLock = NSLock()
     private var iconModificationDates: [String: Date] = [:]
     private var iconGenerations: [String: Int] = [:]
+    private var lastIconValidationDates: [String: Date] = [:]
     private var preparedIconKeysByBundleID: [String: Set<String>] = [:]
     private let iconPreparationQueue = DispatchQueue(label: "com.launchy.icon-prep", qos: .userInitiated)
     private let cacheReleaseQueue = DispatchQueue(label: "com.launchy.cache-release", qos: .utility)
@@ -68,6 +69,7 @@ final class AppDiscoveryService {
     private static let preparedIconCacheCostLimit = 16_000_000
     private static let preparedIconCacheIdleReleaseInterval: TimeInterval = 65
     private static let iconCacheIdleReleaseInterval: TimeInterval = 300
+    private static let iconValidationInterval: TimeInterval = 900
 
     /// Configures the service with dependencies mainly to aid testing.
     init(
@@ -122,7 +124,7 @@ final class AppDiscoveryService {
         let bundleIDs = Set(apps.map(\.bundleIdentifier))
         evictMissingBundleCaches(keeping: bundleIDs)
         for app in apps {
-            invalidateIfBundleUpdated(app)
+            invalidateIfBundleUpdated(app, force: true)
         }
     }
 
@@ -151,6 +153,7 @@ final class AppDiscoveryService {
         metadataLock.lock()
         iconModificationDates.removeAll()
         iconGenerations.removeAll()
+        lastIconValidationDates.removeAll()
         metadataLock.unlock()
     }
 
@@ -162,6 +165,7 @@ final class AppDiscoveryService {
         metadataLock.lock()
         iconModificationDates.removeAll()
         iconGenerations.removeAll()
+        lastIconValidationDates.removeAll()
         metadataLock.unlock()
     }
 
@@ -351,11 +355,13 @@ final class AppDiscoveryService {
         return generation
     }
 
-    private func invalidateIfBundleUpdated(_ app: AppItem) {
+    private func invalidateIfBundleUpdated(_ app: AppItem, force: Bool = false) {
         guard let bundleURL = app.bundleURL else { return }
         let bundleID = app.bundleIdentifier
+        guard shouldValidateBundle(bundleID: bundleID, force: force) else { return }
         let modificationDate = bundleModificationDate(bundleURL)
         metadataLock.lock()
+        lastIconValidationDates[bundleID] = Date()
         let previous = iconModificationDates[bundleID]
         if let modificationDate {
             iconModificationDates[bundleID] = modificationDate
@@ -370,6 +376,18 @@ final class AppDiscoveryService {
         metadataLock.unlock()
     }
 
+    private func shouldValidateBundle(bundleID: String, force: Bool) -> Bool {
+        guard force == false else { return true }
+        let now = Date()
+        metadataLock.lock()
+        defer { metadataLock.unlock() }
+        if let lastCheck = lastIconValidationDates[bundleID],
+           now.timeIntervalSince(lastCheck) < Self.iconValidationInterval {
+            return false
+        }
+        return true
+    }
+
     private func evictMissingBundleCaches(keeping bundleIDs: Set<String>) {
         metadataLock.lock()
         let tracked = Set(iconModificationDates.keys).union(preparedIconKeysByBundleID.keys)
@@ -378,6 +396,7 @@ final class AppDiscoveryService {
             removeCachedIconsLocked(for: bundleID)
             iconModificationDates.removeValue(forKey: bundleID)
             iconGenerations.removeValue(forKey: bundleID)
+            lastIconValidationDates.removeValue(forKey: bundleID)
         }
         metadataLock.unlock()
     }

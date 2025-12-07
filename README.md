@@ -97,6 +97,7 @@ Here are a few improvements planned for upcoming releases:
 - Floaty mode visual overhaul - refinements to spacing, layout, and HUD elements to better match modern macOS design.
 - Dock menu enhancements - icons inside the Dock right-click menu for quicker recognition and a more polished feel.
 - more performance - less stuttering from user input while shrinking memory usage
+- plugin support
 - Localization languages: 🇵🇭 Filipino / Tagalog, 🇵🇱 Polski, 🇮🇷 Farsi, 🇬🇷 Ελληνικά, 🇳🇱 Nederlands, 🇸🇪 Svenska
 
 Made with ❤️

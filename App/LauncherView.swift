@@ -1808,16 +1808,19 @@ struct LauncherView: View {
         let request = baseIconRequest(for: layout)
         let baseIcon = iconProvider(app, request.dimension, request.quality) ?? app.iconImage
         let highIcon = shouldUseHighQualityIcons ? highQualityIconOverrides[app.id] : nil
+        let baseScale: CGFloat = request.quality == .low ? 0.995 : 1
 
         ZStack {
             if let icon = baseIcon {
                 Image(nsImage: icon)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
+                    .scaleEffect(baseScale) // Slightly shrinken low-res placeholders to reduce visible size jump
             } else {
                 Image(systemName: "app.fill")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
+                    .scaleEffect(baseScale)
             }
 
             if let detailedIcon = highIcon {

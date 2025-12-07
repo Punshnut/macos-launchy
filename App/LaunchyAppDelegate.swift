@@ -43,6 +43,10 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var isAnimatingLauncherHide = false
     private var visiblePageWarmupTask: Task<Void, Never>?
     private var memoryPressureSource: DispatchSourceMemoryPressure?
+    private var pendingRemovalDeadlines: [String: Date] = [:]
+    private var pendingRemovalApps: [String: AppItem] = [:]
+    private var removalConfirmationTimer: DispatchSourceTimer?
+    private let removalGracePeriod: TimeInterval = 6
 
     /// Finishes bootstrapping the app by loading settings, refreshing apps, and preparing the window.
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -116,6 +120,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         memoryPressureSource = nil
         visiblePageWarmupTask?.cancel()
         visiblePageWarmupTask = nil
+        removalConfirmationTimer?.cancel()
+        removalConfirmationTimer = nil
     }
 
     /// Allows menu items to kick off a manual Sparkle check.
@@ -402,7 +408,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
 
         applicationDirectoryMonitor = ApplicationDirectoryMonitor(
-            directories: directories
+            directories: directories,
+            pollingInterval: 12
         ) { [weak self] in
             Task { @MainActor in
                 self?.refreshLauncherItems()
@@ -720,6 +727,47 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return unique
     }
 
+    private func appsByBundleID(from items: [LauncherItem]) -> [String: AppItem] {
+        var lookup: [String: AppItem] = [:]
+        for item in items {
+            switch item {
+            case .app(let app):
+                lookup[app.bundleIdentifier] = app
+            case .folder(let folder):
+                for app in folder.apps {
+                    lookup[app.bundleIdentifier] = app
+                }
+            }
+        }
+        return lookup
+    }
+
+    private func purgeExpiredPendingRemovals(referenceDate: Date) -> Set<String> {
+        let expired = pendingRemovalDeadlines.filter { $0.value <= referenceDate }.map(\.key)
+        for bundleID in expired {
+            pendingRemovalDeadlines[bundleID] = nil
+            pendingRemovalApps[bundleID] = nil
+        }
+        return Set(expired)
+    }
+
+    private func scheduleRemovalConfirmationTimer() {
+        removalConfirmationTimer?.cancel()
+        removalConfirmationTimer = nil
+        guard let soonestDeadline = pendingRemovalDeadlines.values.min() else { return }
+        let delay = max(soonestDeadline.timeIntervalSinceNow, 0)
+        let timer = DispatchSource.makeTimerSource(queue: .main)
+        timer.schedule(deadline: .now() + delay + 0.05, repeating: .never)
+        timer.setEventHandler { [weak self] in
+            guard let self else { return }
+            self.removalConfirmationTimer?.cancel()
+            self.removalConfirmationTimer = nil
+            self.refreshLauncherItems()
+        }
+        timer.resume()
+        removalConfirmationTimer = timer
+    }
+
     /// Opens the settings window regardless of activation policy.
     func showSettingsWindow(selecting tab: SettingsTab = .visuals) {
         settingsWindowPresenter.showWindowAndActivate(selecting: tab)
@@ -748,15 +796,52 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Rebuilds the visible items list using the current hidden settings.
     private func refreshLauncherItems(preservingCustomNames names: [String: String] = [:]) {
         LaunchyLogger.log("refreshLauncherItems: preserving names=\(names.count)")
+        let now = Date()
+        let expiredPendingRemovals = purgeExpiredPendingRemovals(referenceDate: now)
+        var previouslyVisibleApps = appsByBundleID(from: orderedItems)
+        for bundleID in expiredPendingRemovals {
+            previouslyVisibleApps.removeValue(forKey: bundleID)
+        }
         let hiddenBundleIDs = Set(currentSettings.hiddenBundleIDs)
+        for bundleID in hiddenBundleIDs {
+            pendingRemovalDeadlines[bundleID] = nil
+            pendingRemovalApps[bundleID] = nil
+        }
         let includeUserApplications = currentSettings.shouldScanUserApplicationsFolder
         let (baseApps, userApps) = applicationDiscovery.reloadApps(
             includeUserApplicationsFolder: includeUserApplications,
             hiddenBundleIDs: hiddenBundleIDs
         )
+        let discoveredApps = baseApps + userApps
+        let discoveredBundleIDs = Set(discoveredApps.map(\.bundleIdentifier))
+
+        for bundleID in discoveredBundleIDs {
+            pendingRemovalDeadlines[bundleID] = nil
+            pendingRemovalApps[bundleID] = nil
+        }
+
+        let missingBundleIDs = Set(previouslyVisibleApps.keys)
+            .subtracting(discoveredBundleIDs)
+            .subtracting(hiddenBundleIDs)
+        for bundleID in missingBundleIDs {
+            if includeUserApplications == false,
+               previouslyVisibleApps[bundleID]?.isUserApplication == true {
+                continue
+            }
+            guard pendingRemovalDeadlines[bundleID] == nil else { continue }
+            pendingRemovalDeadlines[bundleID] = now.addingTimeInterval(removalGracePeriod)
+            pendingRemovalApps[bundleID] = previouslyVisibleApps[bundleID]
+        }
+
+        let graceApps = pendingRemovalApps.compactMap { entry -> AppItem? in
+            let (bundleID, app) = entry
+            guard discoveredBundleIDs.contains(bundleID) == false else { return nil }
+            guard let deadline = pendingRemovalDeadlines[bundleID], deadline > now else { return nil }
+            return app
+        }
         LaunchyLogger.log("app discovery results: base=\(baseApps.count), user=\(userApps.count)")
-        let decoratedBaseApps = baseApps
-        let decoratedUserApps = userApps.map { app -> AppItem in
+        let decoratedBaseApps = baseApps + graceApps.filter { $0.isUserApplication == false }
+        let decoratedUserApps = (userApps + graceApps.filter(\.isUserApplication)).map { app -> AppItem in
             var modified = app
             if let custom = names[app.bundleIdentifier] {
                 modified.customName = custom
@@ -816,6 +901,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         pageSizes = arrangedSizes
         LaunchyLogger.log("refreshLauncherItems: totalLauncherItems=\(orderedItems.count), pages=\(pageSizes.count)")
         preheatIconsForCurrentLayout()
+        scheduleRemovalConfirmationTimer()
     }
 
     private func preheatIconsForCurrentLayout() {

@@ -11,20 +11,25 @@ final class ApplicationDirectoryMonitor {
 
     private let queue: DispatchQueue
     private let debounceInterval: TimeInterval
+    private let pollingInterval: TimeInterval?
     private let changeHandler: () -> Void
     private var observations: [Observation] = []
     private var pendingWorkItem: DispatchWorkItem?
+    private var pollingSource: DispatchSourceTimer?
 
     init(
         directories: [URL],
         debounceInterval: TimeInterval = 1.25,
+        pollingInterval: TimeInterval? = nil,
         queue: DispatchQueue = DispatchQueue(label: "launchy.app-directory-monitor", qos: .utility),
         changeHandler: @escaping () -> Void
     ) {
         self.queue = queue
         self.debounceInterval = debounceInterval
+        self.pollingInterval = pollingInterval
         self.changeHandler = changeHandler
         observe(directories: directories)
+        startPollingIfNeeded()
     }
 
     deinit {
@@ -39,6 +44,8 @@ final class ApplicationDirectoryMonitor {
             observation.source.cancel()
         }
         observations.removeAll()
+        pollingSource?.cancel()
+        pollingSource = nil
     }
 
     private func observe(directories: [URL]) {
@@ -90,6 +97,17 @@ final class ApplicationDirectoryMonitor {
         let descriptor = open(path, O_EVTONLY)
         guard descriptor >= 0 else { return nil }
         return descriptor
+    }
+
+    private func startPollingIfNeeded() {
+        guard let pollingInterval, pollingInterval > 0 else { return }
+        let timer = DispatchSource.makeTimerSource(queue: queue)
+        timer.schedule(deadline: .now() + pollingInterval, repeating: pollingInterval)
+        timer.setEventHandler { [weak self] in
+            self?.scheduleChange()
+        }
+        timer.resume()
+        pollingSource = timer
     }
 
     private func scheduleChange() {

@@ -1808,7 +1808,7 @@ struct LauncherView: View {
         let request = baseIconRequest(for: layout)
         let baseIcon = iconProvider(app, request.dimension, request.quality) ?? app.iconImage
         let highIcon = shouldUseHighQualityIcons ? highQualityIconOverrides[app.id] : nil
-        let baseScale: CGFloat = request.quality == .low ? 0.995 : 1
+        let baseScale: CGFloat = request.quality == .low ? 0.994 : 1
 
         ZStack {
             if let icon = baseIcon {

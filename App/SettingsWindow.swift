@@ -671,7 +671,7 @@ struct SettingsWindow: View {
             aboutLinkRow(
                 icon: "link",
                 title: String(localized: "Project Website"),
-                urlString: "https://github.com/Punshnut/macos-launchy"
+                urlString: "https://www.launchy.space"
             )
 
             aboutLinkRow(

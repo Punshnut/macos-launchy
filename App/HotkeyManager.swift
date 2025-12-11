@@ -76,9 +76,6 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
     /// Creates a descriptor from a key event, filtering unsupported modifiers.
     init?(event: NSEvent) {
         let sanitizedModifiers = HotkeyDescriptor.filtered(event.modifierFlags)
-        guard sanitizedModifiers.intersection(Self.relevantModifiers).isEmpty == false else {
-            return nil
-        }
         self.init(
             keyCode: UInt32(event.keyCode),
             modifierFlags: sanitizedModifiers,

@@ -11,7 +11,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 <p align="center">
     <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
-    <img src="https://img.shields.io/badge/Download-Beta%200.3.2-blueviolet?style=for-the-badge" alt="Download Beta 0.3.2">
+    <img src="https://img.shields.io/badge/Download-Beta%200.3.3-blueviolet?style=for-the-badge" alt="Download Beta 0.3.3">
   </a>
 </p>
 
@@ -64,7 +64,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 ## Keyboard shortcuts
 
-- **Show / hide Launchy:** configurable in Settings (defaults to `Cmd` + `Shift` + `Space`) - switch it to `Control` + `Space` for a comfortable, launchpad-style trigger if that combo isn’t already taken.
+- **Show / hide Launchy:** configurable in Settings (defaults to `Cmd` + `Shift` + `Space`) - switch it to `Control` + `X` for a comfortable, launchpad-style trigger if that combo isn’t already taken.
 - **Toggle fullscreen ⇄ floaty palette:** configurable in Settings (no default)
 - **Launch search result:** `Return` fires the first match without leaving the search field
 - **Page with arrows:** left/right arrows flip between pages

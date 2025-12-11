@@ -100,7 +100,7 @@ Here are a few improvements planned for upcoming releases:
 - Plugin support
 - Localization languages: 🇵🇭 Filipino / Tagalog, 🇵🇱 Polski, 🇮🇷 Farsi, 🇬🇷 Ελληνικά, 🇳🇱 Nederlands, 🇸🇪 Svenska
 
-[Ko-Fi](https://ko-fi.com/janfeuerbacher)
+[Donate (Ko-Fi)](https://ko-fi.com/janfeuerbacher)
 
 Made with ❤️
 

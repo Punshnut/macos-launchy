@@ -53,6 +53,9 @@ final class AppDiscoveryService {
     private let cacheReleaseQueue = DispatchQueue(label: "com.launchy.cache-release", qos: .utility)
     private var preparedCacheReleaseTask: Task<Void, Never>?
     private var iconCacheReleaseTask: Task<Void, Never>?
+    private let appCachePersistenceQueue = DispatchQueue(label: "com.launchy.app-cache-persistence", qos: .utility)
+    private let appCacheURL: URL
+    private var cachedAppsByBundleID: [String: CachedAppRecord]
     private lazy var defaultApplicationIconData: Data? = {
         let icon: NSImage
         if #available(macOS 12.0, *) {
@@ -70,6 +73,7 @@ final class AppDiscoveryService {
     private static let preparedIconCacheIdleReleaseInterval: TimeInterval = 65
     private static let iconCacheIdleReleaseInterval: TimeInterval = 300
     private static let iconValidationInterval: TimeInterval = 900
+    private static let missingAppRetentionInterval: TimeInterval = 70
 
     /// Configures the service with dependencies mainly to aid testing.
     init(
@@ -83,6 +87,9 @@ final class AppDiscoveryService {
         self.userApplicationsDirectory = fileSystem
             .homeDirectoryForCurrentUser
             .appendingPathComponent("Applications", isDirectory: true)
+        let supportDirectory = Self.applicationSupportDirectory(fileManager: fileSystem)
+        self.appCacheURL = supportDirectory.appendingPathComponent("app-catalog.json")
+        self.cachedAppsByBundleID = Self.loadCachedApps(from: appCacheURL)
 
         preferredLanguageCodes = Self.buildPreferredLanguageCodes()
         configureIconCacheLimits()
@@ -94,6 +101,7 @@ final class AppDiscoveryService {
         hiddenBundleIDs: Set<String> = []
     ) -> (main: [AppItem], userApplications: [AppItem]) {
         var appsByBundleID: [String: AppItem] = [:]
+        let now = Date()
 
         LaunchyLogger.log("AppDiscovery: reload apps (includeUserApplicationsFolder=\(includeUserApplicationsFolder), hiddenCount=\(hiddenBundleIDs.count))")
 
@@ -107,6 +115,19 @@ final class AppDiscoveryService {
                 appsByBundleID[app.bundleIdentifier] = app
             }
         }
+
+        let restoredApps = restoredAppsFromCache(
+            existingApps: appsByBundleID,
+            referenceDate: now,
+            includeUserApplicationsFolder: includeUserApplicationsFolder
+        )
+        if restoredApps.isEmpty == false {
+            LaunchyLogger.log("AppDiscovery: restoring \(restoredApps.count) cached apps missing from scan")
+            for app in restoredApps {
+                appsByBundleID[app.bundleIdentifier] = app
+            }
+        }
+        updateCachedApps(with: appsByBundleID, seenAt: now)
 
         let sortedApps = appsByBundleID.values
             .sorted { $0.sortingName.localizedCaseInsensitiveCompare($1.sortingName) == .orderedAscending }
@@ -489,6 +510,123 @@ final class AppDiscoveryService {
         return target.tiffRepresentation
     }
 
+    private func restoredAppsFromCache(
+        existingApps: [String: AppItem],
+        referenceDate: Date,
+        includeUserApplicationsFolder: Bool
+    ) -> [AppItem] {
+        guard cachedAppsByBundleID.isEmpty == false else { return [] }
+        let installed = Set(existingApps.keys)
+        var restored: [AppItem] = []
+        for record in cachedAppsByBundleID.values {
+            guard installed.contains(record.bundleIdentifier) == false else { continue }
+            if includeUserApplicationsFolder == false, record.isUserApplication {
+                continue
+            }
+            guard shouldRestore(record: record, now: referenceDate) else { continue }
+            if let rebuilt = rebuildApp(from: record) {
+                restored.append(rebuilt)
+            } else {
+                restored.append(appItem(from: record))
+            }
+        }
+        return restored
+    }
+
+    private func shouldRestore(record: CachedAppRecord, now: Date) -> Bool {
+        let age = now.timeIntervalSince(record.lastSeen)
+        if age <= Self.missingAppRetentionInterval {
+            return true
+        }
+        return fileSystem.fileExists(atPath: record.bundlePath)
+    }
+
+    private func updateCachedApps(with apps: [String: AppItem], seenAt: Date) {
+        var updated: [String: CachedAppRecord] = [:]
+        for app in apps.values {
+            guard let record = cachedRecord(from: app, seenAt: seenAt) else { continue }
+            updated[app.bundleIdentifier] = record
+        }
+        cachedAppsByBundleID = updated
+        persistCachedApps()
+    }
+
+    private func cachedRecord(from app: AppItem, seenAt: Date) -> CachedAppRecord? {
+        guard let bundleURL = app.bundleURL else { return nil }
+        return CachedAppRecord(
+            id: app.id,
+            displayName: app.displayName,
+            localizedDisplayName: app.localizedDisplayName,
+            bundleIdentifier: app.bundleIdentifier,
+            bundlePath: bundleURL.path,
+            isUserApplication: app.isUserApplication,
+            isCoreServiceApplication: app.isCoreServiceApplication,
+            hasCustomIcon: app.hasCustomIcon,
+            lastSeen: seenAt
+        )
+    }
+
+    private func appItem(from record: CachedAppRecord) -> AppItem {
+        AppItem(
+            id: record.id,
+            displayName: record.displayName,
+            localizedDisplayName: record.localizedDisplayName,
+            customName: nil,
+            bundleIdentifier: record.bundleIdentifier,
+            iconImage: nil,
+            bundleURL: URL(fileURLWithPath: record.bundlePath, isDirectory: true),
+            isUserApplication: record.isUserApplication,
+            isCoreServiceApplication: record.isCoreServiceApplication,
+            hasCustomIcon: record.hasCustomIcon
+        )
+    }
+
+    private func rebuildApp(from record: CachedAppRecord) -> AppItem? {
+        let bundleURL = URL(fileURLWithPath: record.bundlePath, isDirectory: true)
+        guard fileSystem.fileExists(atPath: bundleURL.path) else { return nil }
+        guard let rebuilt = buildAppItem(from: bundleURL, isCoreService: record.isCoreServiceApplication) else {
+            return nil
+        }
+        return AppItem(
+            id: record.id,
+            displayName: rebuilt.displayName,
+            localizedDisplayName: rebuilt.localizedDisplayName,
+            customName: rebuilt.customName,
+            bundleIdentifier: rebuilt.bundleIdentifier,
+            iconImage: rebuilt.iconImage,
+            bundleURL: rebuilt.bundleURL,
+            isUserApplication: rebuilt.isUserApplication,
+            isCoreServiceApplication: rebuilt.isCoreServiceApplication,
+            hasCustomIcon: rebuilt.hasCustomIcon
+        )
+    }
+
+    private func persistCachedApps() {
+        let records = cachedAppsByBundleID
+        appCachePersistenceQueue.async { [records, appCacheURL] in
+            guard let data = try? JSONEncoder().encode(records) else { return }
+            try? data.write(to: appCacheURL, options: .atomic)
+        }
+    }
+
+    private static func loadCachedApps(from url: URL) -> [String: CachedAppRecord] {
+        guard let data = try? Data(contentsOf: url) else { return [:] }
+        guard let records = try? JSONDecoder().decode([String: CachedAppRecord].self, from: data) else {
+            return [:]
+        }
+        return records
+    }
+
+    private static func applicationSupportDirectory(fileManager: FileManager) -> URL {
+        let baseDirectory = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+        let appDirectory = baseDirectory.appendingPathComponent("Launchy", isDirectory: true)
+        if fileManager.fileExists(atPath: appDirectory.path) == false {
+            try? fileManager.createDirectory(at: appDirectory, withIntermediateDirectories: true)
+        }
+        return appDirectory
+    }
+
     /// Converts a bundle on disk into an `AppItem`, extracting the display name and identifier.
     private func buildAppItem(from bundleURL: URL, isCoreService: Bool) -> AppItem? {
         guard let bundle = Bundle(url: bundleURL) else {
@@ -662,6 +800,18 @@ final class AppDiscoveryService {
             }
         }
     }
+}
+
+private struct CachedAppRecord: Codable {
+    var id: UUID
+    var displayName: String
+    var localizedDisplayName: String?
+    var bundleIdentifier: String
+    var bundlePath: String
+    var isUserApplication: Bool
+    var isCoreServiceApplication: Bool
+    var hasCustomIcon: Bool
+    var lastSeen: Date
 }
 
 extension AppDiscoveryService: @unchecked Sendable {}

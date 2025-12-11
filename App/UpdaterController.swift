@@ -40,6 +40,7 @@ final class UpdaterController: NSObject, SPUStandardUserDriverDelegate, SPUUpdat
     // MARK: - Private
 
     private func bringUpdateUIToFront() {
+        NotificationCenter.default.post(name: .sparkleWillPresentUpdateUI, object: nil)
         NSApp.activate(ignoringOtherApps: true)
         elevateSparkleWindowsIfNeeded()
         DispatchQueue.main.async { [weak self] in
@@ -48,13 +49,14 @@ final class UpdaterController: NSObject, SPUStandardUserDriverDelegate, SPUUpdat
     }
 
     private func elevateSparkleWindowsIfNeeded() {
-        let targetLevel = NSWindow.Level.statusBar
+        let targetLevel = NSWindow.Level.screenSaver
         let behaviors: NSWindow.CollectionBehavior = [.moveToActiveSpace, .fullScreenAuxiliary]
 
         for window in NSApp.windows where isSparkleWindow(window) {
             window.level = targetLevel
             window.collectionBehavior.insert(behaviors)
             window.makeKeyAndOrderFront(nil)
+            window.orderFrontRegardless()
         }
     }
 
@@ -86,4 +88,8 @@ final class UpdaterController: NSObject, SPUStandardUserDriverDelegate, SPUUpdat
             }
         }
     }
+}
+
+extension Notification.Name {
+    static let sparkleWillPresentUpdateUI = Notification.Name("LaunchySparkleWillPresentUpdateUI")
 }

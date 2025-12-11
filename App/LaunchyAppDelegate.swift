@@ -22,6 +22,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var pendingLaunchedApplication: NSRunningApplication?
     private var pendingLaunchBundleIdentifier: String?
     private var mainMenuUpdateObserver: NSObjectProtocol?
+    private var sparkleUpdateObserver: NSObjectProtocol?
     private var isTrimmingMainMenu = false
     private var applicationDirectoryMonitor: ApplicationDirectoryMonitor?
     private let coreServicesFolderID = UUID(uuidString: "E5F3D7F7-CCE6-4A3E-9EA1-357C39B58F9A")!
@@ -116,6 +117,10 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             NotificationCenter.default.removeObserver(observer)
             mainMenuUpdateObserver = nil
         }
+        if let observer = sparkleUpdateObserver {
+            NotificationCenter.default.removeObserver(observer)
+            sparkleUpdateObserver = nil
+        }
         memoryPressureSource?.cancel()
         memoryPressureSource = nil
         visiblePageWarmupTask?.cancel()
@@ -186,6 +191,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         observeArrangementResetRequests()
         showIntroductionIfNeeded()
         observeMainMenuChanges()
+        observeSparkleUpdateNotifications()
         setupMemoryPressureMonitoring()
     }
 
@@ -211,6 +217,27 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                 self.removeDefaultMainMenuItems()
             }
         }
+    }
+
+    private func observeSparkleUpdateNotifications() {
+        sparkleUpdateObserver = NotificationCenter.default.addObserver(
+            forName: .sparkleWillPresentUpdateUI,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.handleSparkleWillPresentUpdateUI()
+            }
+        }
+    }
+
+    private func handleSparkleWillPresentUpdateUI() {
+        guard currentSettings.selectedLauncherMode == .fullscreen,
+              let window = launcherWindowManager?.window,
+              window.isVisible else {
+            return
+        }
+        hideLauncherWindow(restoreFocus: false)
     }
 
     /// Keeps only the application menu so no extra menus appear.

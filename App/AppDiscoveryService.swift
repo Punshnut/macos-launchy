@@ -49,6 +49,7 @@ final class AppDiscoveryService {
     private var iconGenerations: [String: Int] = [:]
     private var lastIconValidationDates: [String: Date] = [:]
     private var preparedIconKeysByBundleID: [String: Set<String>] = [:]
+    private var appearanceCacheToken: String
     private let iconPreparationQueue = DispatchQueue(label: "com.launchy.icon-prep", qos: .userInitiated)
     private let cacheReleaseQueue = DispatchQueue(label: "com.launchy.cache-release", qos: .utility)
     private var preparedCacheReleaseTask: Task<Void, Never>?
@@ -90,6 +91,7 @@ final class AppDiscoveryService {
         let supportDirectory = Self.applicationSupportDirectory(fileManager: fileSystem)
         self.appCacheURL = supportDirectory.appendingPathComponent("app-catalog.json")
         self.cachedAppsByBundleID = Self.loadCachedApps(from: appCacheURL)
+        self.appearanceCacheToken = Self.appearanceToken(for: nil)
 
         preferredLanguageCodes = Self.buildPreferredLanguageCodes()
         configureIconCacheLimits()
@@ -178,6 +180,22 @@ final class AppDiscoveryService {
         metadataLock.unlock()
     }
 
+    /// Rebuilds appearance-sensitive icon caches when the system toggles light/dark mode.
+    func handleAppearanceChange(_ appearance: NSAppearance?) {
+        let newToken = Self.appearanceToken(for: appearance)
+        var didChange = false
+
+        metadataLock.lock()
+        if appearanceCacheToken != newToken {
+            appearanceCacheToken = newToken
+            didChange = true
+        }
+        metadataLock.unlock()
+
+        guard didChange else { return }
+        clearPreparedIconCaches()
+    }
+
     /// Drops prepared and base icon bitmaps to minimize memory while the launcher is hidden.
     func shrinkCachesForHiddenLauncher() {
         cancelIdleCacheRelease()
@@ -201,11 +219,13 @@ final class AppDiscoveryService {
         invalidateIfBundleUpdated(app)
         let pixelDimension = pixelDimension(for: targetDimension, quality: quality, screenScale: screenScale)
         let generation = iconGeneration(for: app.bundleIdentifier)
+        let appearanceToken = currentAppearanceCacheToken()
         let cacheKey = preparedIconCacheKey(
             for: app.bundleIdentifier,
             dimension: pixelDimension,
             quality: quality,
-            generation: generation
+            generation: generation,
+            appearanceToken: appearanceToken
         )
         if let cached = preparedIconCache.object(forKey: cacheKey as NSString) {
             return cached
@@ -464,9 +484,10 @@ final class AppDiscoveryService {
         for bundleIdentifier: String,
         dimension: Int,
         quality: IconRenderQuality,
-        generation: Int
+        generation: Int,
+        appearanceToken: String
     ) -> String {
-        "\(bundleIdentifier)-\(dimension)-\(quality.cacheSuffix)-\(generation)"
+        "\(bundleIdentifier)-\(dimension)-\(quality.cacheSuffix)-\(generation)-\(appearanceToken)"
     }
 
     private func imageCost(_ image: NSImage) -> Int {
@@ -799,6 +820,23 @@ final class AppDiscoveryService {
                 unique.append(code)
             }
         }
+    }
+
+    private func currentAppearanceCacheToken() -> String {
+        metadataLock.lock()
+        let token = appearanceCacheToken
+        metadataLock.unlock()
+        return token
+    }
+
+    private static func appearanceToken(for appearance: NSAppearance?) -> String {
+        if let match = appearance?.bestMatch(from: [.darkAqua, .aqua]) {
+            return match.rawValue
+        }
+        if let name = appearance?.name.rawValue {
+            return name
+        }
+        return "unspecified"
     }
 }
 

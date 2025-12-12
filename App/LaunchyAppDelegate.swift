@@ -23,6 +23,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var pendingLaunchBundleIdentifier: String?
     private var mainMenuUpdateObserver: NSObjectProtocol?
     private var sparkleUpdateObserver: NSObjectProtocol?
+    private var appearanceChangeObserver: NSObjectProtocol?
+    private var appearanceObservation: NSKeyValueObservation?
     private var isTrimmingMainMenu = false
     private var applicationDirectoryMonitor: ApplicationDirectoryMonitor?
     private let coreServicesFolderID = UUID(uuidString: "E5F3D7F7-CCE6-4A3E-9EA1-357C39B58F9A")!
@@ -121,6 +123,12 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             NotificationCenter.default.removeObserver(observer)
             sparkleUpdateObserver = nil
         }
+        if let observer = appearanceChangeObserver {
+            NotificationCenter.default.removeObserver(observer)
+            appearanceChangeObserver = nil
+        }
+        appearanceObservation?.invalidate()
+        appearanceObservation = nil
         memoryPressureSource?.cancel()
         memoryPressureSource = nil
         visiblePageWarmupTask?.cancel()
@@ -168,6 +176,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         LauncherSettingsPersistence.registerDefaults()
         currentSettings = LauncherSettingsPersistence.loadSettings()
         configureApplicationDirectoryMonitoring()
+        applicationDiscovery.handleAppearanceChange(NSApp.effectiveAppearance)
         LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
 
         LaunchyLogger.log("bootstrap: loading apps (hidden=\(currentSettings.hiddenBundleIDs.count) scanUser=\(currentSettings.shouldScanUserApplicationsFolder))")
@@ -189,6 +198,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         updateHotCornerMonitoring()
         observeSettingsChanges()
         observeArrangementResetRequests()
+        observeAppearanceChanges()
         showIntroductionIfNeeded()
         observeMainMenuChanges()
         observeSparkleUpdateNotifications()
@@ -227,6 +237,22 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         ) { [weak self] _ in
             Task { @MainActor in
                 self?.handleSparkleWillPresentUpdateUI()
+            }
+        }
+    }
+
+    private func observeAppearanceChanges() {
+        appearanceObservation?.invalidate()
+        appearanceObservation = NSApp.observe(
+            \.effectiveAppearance,
+            options: [.new]
+        ) { [weak self] _, change in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                applicationDiscovery.handleAppearanceChange(NSApp.effectiveAppearance)
+                if launcherWindowManager?.window?.isVisible == true {
+                    prefetchMinimalIconsForVisibleLauncher()
+                }
             }
         }
     }

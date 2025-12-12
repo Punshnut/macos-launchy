@@ -11,7 +11,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 <p align="center">
     <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
-    <img src="https://img.shields.io/badge/Download-Beta%200.3.3-blueviolet?style=for-the-badge" alt="Download Beta 0.3.3">
+    <img src="https://img.shields.io/badge/Download-Beta%200.3.4-blueviolet?style=for-the-badge" alt="Download Beta 0.3.4">
   </a>
 </p>
 
@@ -97,7 +97,7 @@ Here are a few improvements planned for upcoming releases:
 - Floaty mode visual overhaul - refinements to spacing, layout, and HUD elements to better match modern macOS design.
 - Dock menu enhancements - icons inside the Dock right-click menu for quicker recognition and a more polished feel.
 - More performance - less stuttering from user input while shrinking memory usage
-- Plugin support
+- Plugin support - support for feature extensions and visual overlays through plugins
 - Localization languages: 🇵🇭 Filipino / Tagalog, 🇵🇱 Polski, 🇮🇷 Farsi, 🇬🇷 Ελληνικά, 🇳🇱 Nederlands, 🇸🇪 Svenska
 
 [Donate (Ko-Fi)](https://ko-fi.com/janfeuerbacher)

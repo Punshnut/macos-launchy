@@ -225,10 +225,12 @@ struct LauncherView: View {
             alignment: .center,
             spacing: layout.iconSpacing
         ) {
-            ForEach(Array(pageItems.enumerated()), id: \.element.id) { _, item in
+            ForEach(Array(pageItems.enumerated()), id: \.element.id) { localIndex, item in
+                let globalIndex = pageStart + localIndex
                 let isLaunching = launchingItemID == item.id
                 let isFolderBeingOpened = activeFolder?.id == item.id
                 let isRenamingApp = renamingAppID == item.id
+                let shouldShowSearchSelection = isRenamingApp == false && isSearchResultSelected(item: item, globalIndex: globalIndex)
 
                 let cell: AnyView = {
                     if isRenamingApp, case let .app(app) = item {
@@ -269,11 +271,20 @@ struct LauncherView: View {
                     )
                 }()
 
-                let decoratedCell = cell
-                    .contentShape(Rectangle())
-                    .contextMenu {
-                        itemContextMenu(for: item)
-                    }
+                let decoratedCell = AnyView(
+                    cell
+                        .background(alignment: .center) {
+                            if shouldShowSearchSelection {
+                                searchSelectionTile(layout: layout)
+                                    .allowsHitTesting(false)
+                                    .transition(.opacity)
+                            }
+                        }
+                )
+                .contentShape(Rectangle())
+                .contextMenu {
+                    itemContextMenu(for: item)
+                }
 
                 if canReorder && isRenamingApp == false {
                     if shouldStartMultiSelectionDrag(for: item) {
@@ -388,6 +399,7 @@ struct LauncherView: View {
     @State private var currentPage: Int = 0
     @State private var isClosingLauncher = false
     @State private var searchText = ""
+    @State private var searchSelectionIndex: Int?
     @State private var searchControlsExpanded = false
     @State private var isMultiSelectModeActive = false
     @State private var multiSelectedItemIDs: Set<UUID> = []
@@ -543,6 +555,7 @@ struct LauncherView: View {
             currentPage = 0
             pageDirection = .forward
             pagerDragOffset = 0
+            searchSelectionIndex = nil
             if newValue.isEmpty == false {
                 exitMultiSelectMode()
                 updateSearchControlsExpansion(to: false)
@@ -588,6 +601,7 @@ struct LauncherView: View {
                 }
             let validIDs = Set(newItems.map(\.id))
             multiSelectedItemIDs.formIntersection(validIDs)
+            clampSearchSelectionIfNeeded()
             notifyVisiblePagesChanged()
         }
         .onChange(of: isEditingFolderName) { isEditing in
@@ -596,6 +610,7 @@ struct LauncherView: View {
             }
         }
         .onChange(of: currentPage) { _ in
+            alignSearchSelectionWithCurrentPageIfNeeded()
             notifyVisiblePagesChanged()
         }
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { notification in
@@ -1758,6 +1773,23 @@ struct LauncherView: View {
         normalizedSearchText.isEmpty == false
     }
 
+    private var isSearchModeActive: Bool {
+        hasActiveSearchQuery && filteredItemList.isEmpty == false
+    }
+
+    private var activeSearchSelectionIndex: Int? {
+        guard isSearchModeActive else { return nil }
+        guard let preferred = searchSelectionIndex else { return nil }
+        let bounded = min(max(preferred, 0), filteredItemList.count - 1)
+        return bounded
+    }
+
+    private var activeSearchSelectionItem: LauncherItem? {
+        guard let index = activeSearchSelectionIndex else { return nil }
+        guard filteredItemList.indices.contains(index) else { return nil }
+        return filteredItemList[index]
+    }
+
     /// Filters the full list of apps based on the current search query.
     private var filteredItemList: [LauncherItem] {
         let trimmedQuery = normalizedSearchText
@@ -1789,6 +1821,29 @@ struct LauncherView: View {
         }
 
         return results
+    }
+
+    private func clampSearchSelectionIfNeeded() {
+        guard isSearchModeActive else {
+            searchSelectionIndex = nil
+            return
+        }
+        guard let index = activeSearchSelectionIndex else { return }
+        selectSearchResult(at: index, animated: false)
+    }
+
+    private func alignSearchSelectionWithCurrentPageIfNeeded() {
+        guard isSearchModeActive else { return }
+        let sizes = displayPageSizes
+        guard sizes.indices.contains(currentPage) else { return }
+        let startIndex = pageStartIndex(for: currentPage, sizes: sizes)
+        let endIndex = min(startIndex + sizes[currentPage], filteredItemList.count)
+
+        guard let selection = activeSearchSelectionIndex else { return }
+
+        if selection < startIndex || selection >= endIndex {
+            searchSelectionIndex = startIndex
+        }
     }
 
     private func pageHasSpace(_ page: Int) -> Bool {
@@ -1864,6 +1919,53 @@ struct LauncherView: View {
             RoundedRectangle(cornerRadius: max(layout.iconDimension * 0.32, 14), style: .continuous)
                 .strokeBorder(Color.accentColor.opacity(opacity), lineWidth: lineWidth)
         }
+    }
+
+    private func searchSelectionTile(layout: LauncherLayoutMetrics) -> some View {
+        let size = searchSelectionTileSize(for: layout)
+        let cornerRadius = searchSelectionCornerRadius(for: layout)
+        return VisualEffectBackground(
+            material: .hudWindow,
+            blendingMode: .withinWindow,
+            appearance: NSAppearance(named: .vibrantDark)
+        )
+        .overlay(
+            LinearGradient(
+                colors: [
+                    Color.accentColor.opacity(0.22),
+                    Color.black.opacity(0.26)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .stroke(Color.white.opacity(0.06), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+        .frame(width: size.width, height: size.height)
+        .shadow(color: Color.black.opacity(0.32), radius: 18, y: 10)
+        .animation(.easeInOut(duration: 0.18), value: activeSearchSelectionIndex)
+    }
+
+    private func searchSelectionTileSize(for layout: LauncherLayoutMetrics) -> CGSize {
+        let widthPadding = max(layout.iconDimension * 0.42, 32)
+        let heightPadding = max(layout.iconDimension * 0.62, 48)
+        return CGSize(
+            width: layout.iconDimension + widthPadding,
+            height: layout.iconDimension + heightPadding
+        )
+    }
+
+    private func searchSelectionCornerRadius(for layout: LauncherLayoutMetrics) -> CGFloat {
+        max(layout.iconDimension * 0.34, 18)
+    }
+
+    private func isSearchResultSelected(item: LauncherItem, globalIndex: Int) -> Bool {
+        guard isSearchModeActive else { return false }
+        guard case .app = item else { return false }
+        return activeSearchSelectionIndex == globalIndex
     }
 
     /// Monochrome drag preview to keep the in-grid placeholder untouched.
@@ -2914,11 +3016,59 @@ struct LauncherView: View {
             return
         }
 
+        if isSearchModeActive {
+            navigateSearchResults(direction)
+            return
+        }
+
         switch direction {
         case .backward:
             pageBackward()
         case .forward:
             pageForward()
+        }
+    }
+
+    private func navigateSearchResults(_ direction: PageShiftDirection) {
+        guard filteredItemList.isEmpty == false else { return }
+        if activeSearchSelectionIndex == nil {
+            let seed = direction == .forward ? 1 : 0
+            searchSelectionIndex = min(max(seed, 0), filteredItemList.count - 1)
+            if let index = activeSearchSelectionIndex {
+                selectSearchResult(at: index)
+            }
+            return
+        }
+        guard let currentIndex = activeSearchSelectionIndex else { return }
+        let delta = direction == .forward ? 1 : -1
+        let nextIndex = min(max(currentIndex + delta, 0), filteredItemList.count - 1)
+        guard nextIndex != currentIndex else { return }
+        selectSearchResult(at: nextIndex)
+    }
+
+    private func selectSearchResult(at index: Int, animated: Bool = true) {
+        guard isSearchModeActive else { return }
+        let bounded = min(max(index, 0), filteredItemList.count - 1)
+        guard bounded >= 0 else { return }
+        let previousPage = currentPage
+        searchSelectionIndex = bounded
+        guard let targetPage = pageIndex(forLinearIndex: bounded, sizes: displayPageSizes) else { return }
+        guard targetPage != currentPage else { return }
+
+        let applyPageChange = {
+            pageDirection = targetPage >= previousPage ? .forward : .backward
+            currentPage = targetPage
+            pagerDragOffset = 0
+            markPageSwitch()
+        }
+
+        if animated {
+            enterPerformanceShedding()
+            withAnimation(pageSwitchAnimation) {
+                applyPageChange()
+            }
+        } else {
+            applyPageChange()
         }
     }
 
@@ -3550,8 +3700,8 @@ struct LauncherView: View {
     private func launchSearchResultIfPossible() {
         let trimmedQuery = normalizedSearchText
         guard trimmedQuery.isEmpty == false else { return }
-        guard let firstMatch = filteredItemList.first else { return }
-        openItem(firstMatch)
+        guard let selection = activeSearchSelectionItem ?? filteredItemList.first else { return }
+        openItem(selection)
     }
 
     /// Context menu shown for each grid item.

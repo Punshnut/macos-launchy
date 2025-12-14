@@ -19,6 +19,8 @@ Packages/
 /sparkle_signature.txt
 /Package.resolved
 /.sparkle-keys
+.venv/
+tmp.iconset
 
 # Local development tooling metadata
 .vscode/

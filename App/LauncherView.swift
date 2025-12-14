@@ -135,7 +135,8 @@ struct LauncherView: View {
                 onPreviousPage: { handleKeyboardPager(.backward) },
                 onNextPage: { handleKeyboardPager(.forward) },
                 onEscape: { handleEscapeKeyPress() },
-                onPageShortcut: { handlePageShortcutRequest($0) }
+                onPageShortcut: { handlePageShortcutRequest($0) },
+                onVerticalNavigation: { handleVerticalArrowNavigation($0) }
             )
             .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
             .allowsHitTesting(false)
@@ -3029,14 +3030,16 @@ struct LauncherView: View {
         }
     }
 
+    private func handleVerticalArrowNavigation(_ direction: KeyPressPagerOverlay.VerticalArrowDirection) {
+        guard isSearchModeActive else { return }
+        navigateSearchResultsVertically(direction)
+    }
+
     private func navigateSearchResults(_ direction: PageShiftDirection) {
         guard filteredItemList.isEmpty == false else { return }
         if activeSearchSelectionIndex == nil {
             let seed = direction == .forward ? 1 : 0
-            searchSelectionIndex = min(max(seed, 0), filteredItemList.count - 1)
-            if let index = activeSearchSelectionIndex {
-                selectSearchResult(at: index)
-            }
+            createSearchSelectionIfNeeded(seedIndex: seed)
             return
         }
         guard let currentIndex = activeSearchSelectionIndex else { return }
@@ -3044,6 +3047,32 @@ struct LauncherView: View {
         let nextIndex = min(max(currentIndex + delta, 0), filteredItemList.count - 1)
         guard nextIndex != currentIndex else { return }
         selectSearchResult(at: nextIndex)
+    }
+
+    private func navigateSearchResultsVertically(_ direction: KeyPressPagerOverlay.VerticalArrowDirection) {
+        guard filteredItemList.isEmpty == false else { return }
+        let columns = LauncherGridConfiguration.columnsPerPage
+
+        if activeSearchSelectionIndex == nil {
+            let seed = direction == .down ? columns : 0
+            createSearchSelectionIfNeeded(seedIndex: seed)
+            return
+        }
+
+        guard let currentIndex = activeSearchSelectionIndex else { return }
+        let delta = direction == .down ? columns : -columns
+        let nextIndex = min(max(currentIndex + delta, 0), filteredItemList.count - 1)
+        guard nextIndex != currentIndex else { return }
+        selectSearchResult(at: nextIndex)
+    }
+
+    private func createSearchSelectionIfNeeded(seedIndex: Int) {
+        guard isSearchModeActive else { return }
+        guard filteredItemList.isEmpty == false else { return }
+        guard activeSearchSelectionIndex == nil else { return }
+        let bounded = min(max(seedIndex, 0), filteredItemList.count - 1)
+        searchSelectionIndex = bounded
+        selectSearchResult(at: bounded)
     }
 
     private func selectSearchResult(at index: Int, animated: Bool = true) {

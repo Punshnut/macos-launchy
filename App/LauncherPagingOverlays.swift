@@ -240,6 +240,12 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
     var onNextPage: () -> Void
     var onEscape: () -> Void = {}
     var onPageShortcut: ((Int) -> Void)?
+    var onVerticalNavigation: ((VerticalArrowDirection) -> Void)?
+
+    enum VerticalArrowDirection {
+        case up
+        case down
+    }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(
@@ -248,7 +254,8 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             onPreviousPage: onPreviousPage,
             onNextPage: onNextPage,
             onEscape: onEscape,
-            onPageShortcut: onPageShortcut
+            onPageShortcut: onPageShortcut,
+            onVerticalNavigation: onVerticalNavigation
         )
     }
 
@@ -290,6 +297,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
         private let shouldHandleEscape: () -> Bool
         private let onEscape: () -> Void
         private let onPageShortcut: ((Int) -> Void)?
+        private let onVerticalNavigation: ((VerticalArrowDirection) -> Void)?
         private let repeatInterval: TimeInterval = 0.5 // Hold-to-repeat cadence.
         private var keyDownMonitor: EventMonitorToken?
         private var keyUpMonitor: EventMonitorToken?
@@ -302,7 +310,8 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             onPreviousPage: @escaping () -> Void,
             onNextPage: @escaping () -> Void,
             onEscape: @escaping () -> Void,
-            onPageShortcut: ((Int) -> Void)?
+            onPageShortcut: ((Int) -> Void)?,
+            onVerticalNavigation: ((VerticalArrowDirection) -> Void)?
         ) {
             self.shouldCaptureArrowKeys = shouldCaptureArrowKeys
             self.shouldHandleEscape = shouldHandleEscape
@@ -310,6 +319,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             self.onNextPage = onNextPage
             self.onEscape = onEscape
             self.onPageShortcut = onPageShortcut
+            self.onVerticalNavigation = onVerticalNavigation
         }
 
         func startMonitoringIfNeeded() {
@@ -361,6 +371,9 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             }
 
             guard let direction = ArrowDirection(keyCode: event.keyCode) else { return event }
+            if direction.isVertical && onVerticalNavigation == nil {
+                return event
+            }
             guard shouldCaptureArrowKeys() else { return event }
 
             if event.isARepeat {
@@ -379,6 +392,9 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             }
 
             guard let direction = ArrowDirection(keyCode: event.keyCode) else { return event }
+            if direction.isVertical && onVerticalNavigation == nil {
+                return event
+            }
             guard shouldCaptureArrowKeys() else { return event }
             stopRepeating(for: direction)
             return nil
@@ -397,6 +413,10 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
                 onPreviousPage()
             case .next:
                 onNextPage()
+            case .up:
+                onVerticalNavigation?(.up)
+            case .down:
+                onVerticalNavigation?(.down)
             }
         }
 
@@ -430,6 +450,8 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
         private enum ArrowDirection {
             case previous
             case next
+            case up
+            case down
 
             init?(keyCode: UInt16) {
                 switch keyCode {
@@ -437,8 +459,21 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
                     self = .previous
                 case 124:
                     self = .next
+                case 125:
+                    self = .down
+                case 126:
+                    self = .up
                 default:
                     return nil
+                }
+            }
+
+            var isVertical: Bool {
+                switch self {
+                case .up, .down:
+                    return true
+                default:
+                    return false
                 }
             }
         }

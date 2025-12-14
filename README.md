@@ -47,13 +47,14 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 ## Highlights
 
-- **Launchpad-level fullscreen** - A fluid, edge-to-edge canvas that behaves just like the stock Launchpad you miss, plus right-click menus for faster sorting, folder creation, and precise arrangement.
-- **Fully featured grid** - Scans /Applications, /System/Applications, and user apps, caches icons, and fills 7x5 pages instantly while respecting your custom labels and hidden items.
-- **Context-aware controls** - Right click on any app, folder, or Dock/menu bar icon to rename, hide, move, add to folders, show in Finder, reset gaps, or create new folders without switching views.
-- **Floaty mode & fast toggles** - Switch between fullscreen and HUD styles instantly; floaty keeps a new macOS feel while preserving Launchpad behavior.
-- **Hot corner activation** - Assign Launchy to a corner and moving your cursor there will open or close the launcher without touching the keyboard (macOS may ask for Input Monitoring permission; if it doesn’t, add Launchy under System Settings → Privacy & Security → Input Monitoring).
-- **Open source, free forever** - Launchy remains MIT-licensed, unbundled from paid tiers, and the #1 launchpad alternative you can trust.
-- **Auto-updating comfort** - Sparkle-powered updates keep you on the latest fixes and features automatically, so you just keep launching.
+- **Launchpad-level fullscreen** - A fluid, edge-to-edge canvas with blur or solid backgrounds plus right-click menus for fast sorting, folder creation, and precise arrangement.
+- **Floaty mode & HUD toggle** - Lightweight palette for quick launches; flip between floaty and fullscreen with a shortcut without losing your layout.
+- **Search-first launching** - Type to filter instantly; `Return` opens the top match, arrows move selection, and the grid stays responsive.
+- **Fully featured grid** - Scans /Applications, /System/Applications, and optional ~/Applications, caches icons, and keeps 7x5 pages ready while respecting custom names and hidden items.
+- **Context-aware controls** - Right click any tile, folder, Dock, or menu bar icon to rename, hide, move, add/remove folders, show in Finder, or reset gaps without switching views.
+- **Hot corners & shortcuts** - Global toggle hotkey, optional layout-switch shortcut, plus a hot corner trigger if you prefer mouse-only activation.
+- **Startup & presence controls** - Launch at login, hide or show Dock and menu bar icons independently, and keep a menu bar status item for updates and settings.
+- **Auto-updating & MIT** - Sparkle keeps releases notarized and current; open source and free forever.
 
 ## Gestures (touchpad or mouse)
 
@@ -74,10 +75,12 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 ## Quick tips
 
 - Right-click any icon for rename, move, hide, Finder reveal, or folder shortcuts.
-- Drag apps together while holding Shift or Option as you release to create a folder or drop into one without disturbing the grid; skip the modifiers and use the right-click menu on the icon to add/remove apps instead.
-- Floaty mode keeps the quick palette feel and fast toggles; assign a hotkey for instant fullscreen/HUD switching instead of mouse-only taps.wa
-- Dock and menu bar icons mirror your layout for repeat launches plus instant access to auto-updater, settings, and Quit.
-- Reset the grid from Settings whenever you want, hide apps safely, and choose whether icons auto-fill gaps for a clean layout.
+- Drag apps together while holding Shift or Option as you release to create a folder or drop into one without disturbing the grid; or use right-click to place apps exactly where you want.
+- Floaty mode keeps the quick palette feel; assign a hotkey to jump between fullscreen and HUD instantly instead of mouse-only taps.
+- Use the Visuals tab to pick standard, light blur, transparent, or solid color backgrounds (with a color palette) and decide if icons auto-fill gaps.
+- Hidden Apps tab lets you include ~/Applications, mute noisy tools, or pin hidden entries to the top for quick toggling.
+- Shortcuts tab sets the launcher hotkey, fullscreen ⇄ floaty toggle, and hot corner; Launchy still opens even if both Dock and menu bar icons are hidden.
+- Reset the grid from Settings when you want a clean slate - custom names and hidden states stay intact - and enable Launch at Login so it’s ready after a reboot.
 
 ## License & support
 

@@ -10,6 +10,7 @@ final class EventMonitorToken {
         self.removalHandler = removalHandler
     }
 
+    /// Removes the underlying monitor once and clears the stored token.
     func invalidate() {
         guard let token else { return }
         removalHandler(token)

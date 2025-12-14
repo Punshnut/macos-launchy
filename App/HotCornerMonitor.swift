@@ -51,6 +51,7 @@ final class HotCornerMonitor {
         isMonitoringEnabled = false
     }
 
+    /// Starts global and local mouse move monitors if they are not already active.
     private func startMonitoringIfNeeded() {
         guard globalMouseMonitor == nil else { return }
         let globalToken = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] _ in
@@ -74,6 +75,7 @@ final class HotCornerMonitor {
         }
     }
 
+    /// Prompts for accessibility input monitoring when the feature is enabled.
     private func requestInputMonitoringPermissionIfNeeded() {
         guard hasPromptedForInputMonitoring == false else { return }
         hasPromptedForInputMonitoring = true
@@ -88,6 +90,7 @@ final class HotCornerMonitor {
         AXIsProcessTrustedWithOptions(options)
     }
 
+    /// Detects whether the cursor sits inside the configured corner and debounces triggers.
     private func evaluateCursorLocation() {
         let currentLocation = NSEvent.mouseLocation
         guard let screen = NSScreen.screens.first(where: { $0.frame.contains(currentLocation) }) else {

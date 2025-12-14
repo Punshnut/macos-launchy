@@ -25,12 +25,14 @@ final class UpdaterController: NSObject, SPUStandardUserDriverDelegate, SPUUpdat
 
     // MARK: - SPUStandardUserDriverDelegate
 
+    /// Ensures Sparkle alerts appear above the launcher when a modal is shown.
     nonisolated func standardUserDriverWillShowModalAlert() {
         Task { @MainActor [weak self] in
             self?.bringUpdateUIToFront()
         }
     }
 
+    /// Surfaces a fallback download hint if Sparkle aborts due to validation issues.
     nonisolated func updater(_ updater: SPUUpdater, didAbortWithError error: Error) {
         Task { @MainActor [weak self] in
             self?.presentFallbackDownloadHintIfNeeded(for: error)
@@ -39,6 +41,7 @@ final class UpdaterController: NSObject, SPUStandardUserDriverDelegate, SPUUpdat
 
     // MARK: - Private
 
+    /// Activates the app and elevates Sparkle windows so update UI is not hidden.
     private func bringUpdateUIToFront() {
         NotificationCenter.default.post(name: .sparkleWillPresentUpdateUI, object: nil)
         NSApp.activate(ignoringOtherApps: true)
@@ -48,6 +51,7 @@ final class UpdaterController: NSObject, SPUStandardUserDriverDelegate, SPUUpdat
         }
     }
 
+    /// Raises Sparkle windows above other app windows and keeps them on the active space.
     private func elevateSparkleWindowsIfNeeded() {
         let targetLevel = NSWindow.Level.screenSaver
         let behaviors: NSWindow.CollectionBehavior = [.moveToActiveSpace, .fullScreenAuxiliary]
@@ -65,6 +69,7 @@ final class UpdaterController: NSObject, SPUStandardUserDriverDelegate, SPUUpdat
         return className.hasPrefix("SPU") || className.hasPrefix("SU")
     }
 
+    /// Shows a friendly GitHub download prompt when Sparkle detects signature/validation errors.
     private func presentFallbackDownloadHintIfNeeded(for error: Error) {
         let nsError = error as NSError
         guard nsError.domain == SUSparkleErrorDomain,

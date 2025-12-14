@@ -6,7 +6,7 @@ struct LaunchyApp: App {
     /// Keeps the legacy `NSApplicationDelegate` alive so AppKit-specific features work.
     @NSApplicationDelegateAdaptor(LaunchyAppDelegate.self) private var appDelegate
 
-    /// Builds the settings scene that macOS shows from the menu bar.
+    /// Declares the macOS settings scene and wires custom commands for Launchy.
     var body: some Scene {
         Settings {
             SettingsWindow()

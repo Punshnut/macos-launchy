@@ -9,6 +9,7 @@ struct LauncherLayoutMetrics {
     let columnsPerPage: Int
     let rowsPerPage: Int
 
+    /// Left/right padding surrounding the grid.
     var horizontalPadding: CGFloat {
         switch launcherMode {
         case .floaty:
@@ -18,6 +19,7 @@ struct LauncherLayoutMetrics {
         }
     }
 
+    /// Bottom inset that leaves space for pager controls and shadows.
     var bottomPadding: CGFloat {
         switch launcherMode {
         case .floaty:
@@ -27,6 +29,7 @@ struct LauncherLayoutMetrics {
         }
     }
 
+    /// Space between individual icons.
     var iconSpacing: CGFloat {
         switch launcherMode {
         case .floaty:
@@ -37,6 +40,7 @@ struct LauncherLayoutMetrics {
         }
     }
 
+    /// Gap between the search bar and the grid.
     var searchToGridSpacing: CGFloat {
         switch launcherMode {
         case .floaty:
@@ -46,6 +50,7 @@ struct LauncherLayoutMetrics {
         }
     }
 
+    /// Gap between grid and pager controls.
     var gridToPagerSpacing: CGFloat {
         switch launcherMode {
         case .floaty:
@@ -55,6 +60,7 @@ struct LauncherLayoutMetrics {
         }
     }
 
+    /// Vertical offset applied to fine-tune balance of the grid in each mode.
     var gridVerticalOffset: CGFloat {
         switch launcherMode {
         case .floaty:
@@ -64,32 +70,39 @@ struct LauncherLayoutMetrics {
         }
     }
 
+    /// Max width of the search bar given surrounding padding.
     var searchBarWidth: CGFloat {
         let cap: CGFloat = launcherMode == .floaty ? 520 : 620
         let available = max(containerSize.width - horizontalPadding * 2, 320)
         return min(cap, available)
     }
 
+    /// Height of the search bar container.
     var searchBarHeight: CGFloat {
         launcherMode == .floaty ? 46 : 52
     }
 
+    /// Rounded corners for the search bar background.
     var searchBarCornerRadius: CGFloat {
         launcherMode == .floaty ? 18 : 22
     }
 
+    /// Font size used inside the search field.
     var searchBarFontSize: CGFloat {
         launcherMode == .floaty ? 17 : 18
     }
 
+    /// Corner radius of the outer floaty container.
     var floatyCornerRadius: CGFloat {
         launcherMode == .floaty ? 32 : 0
     }
 
+    /// Top padding applied above the search bar in floaty mode.
     var floatySearchBarTopPadding: CGFloat {
         launcherMode == .floaty ? 20 : 0
     }
 
+    /// Grid definition for SwiftUI's LazyVGrid.
     var gridColumns: [GridItem] {
         Array(
             repeating: GridItem(.flexible(), spacing: iconSpacing, alignment: .top),
@@ -97,6 +110,7 @@ struct LauncherLayoutMetrics {
         )
     }
 
+    /// Calculated icon dimension based on available space and target rows/columns.
     var iconDimension: CGFloat {
         let widthAllowance = (gridContentWidth - horizontalSpacingTotal) / CGFloat(columnsPerPage)
         let chromeAllowance = cellVerticalChrome * CGFloat(rowsPerPage)
@@ -125,28 +139,34 @@ struct LauncherLayoutMetrics {
         return max(height, 0)
     }
 
+    /// Width available to the grid after applying horizontal padding.
     private var gridContentWidth: CGFloat {
         max(containerSize.width - horizontalPadding * 2, 0)
     }
 
+    /// Remaining vertical space once chrome/search/pager are accounted for.
     private var availableGridHeight: CGFloat {
         let consumed = topInset + bottomPadding + searchBarHeight + pagerHeightEstimate + searchToGridSpacing + gridToPagerSpacing
         let remaining = containerSize.height - consumed
         return max(remaining, 0)
     }
 
+    /// Total vertical spacing for the configured row count.
     private var verticalSpacingTotal: CGFloat {
         iconSpacing * CGFloat(rowsPerPage - 1)
     }
 
+    /// Total horizontal spacing for the configured column count.
     private var horizontalSpacingTotal: CGFloat {
         iconSpacing * CGFloat(columnsPerPage - 1)
     }
 
+    /// Rough estimate of pager height used for layout calculations.
     private var pagerHeightEstimate: CGFloat {
         40
     }
 
+    /// Extra vertical chrome per cell (labels, padding, spacing).
     private var cellVerticalChrome: CGFloat {
         let labelHeight = labelLineHeight * 2 // up to two lines of text
         let padding: CGFloat = 8 // .padding(.vertical, 4)
@@ -154,10 +174,12 @@ struct LauncherLayoutMetrics {
         return labelHeight + padding + spacing
     }
 
+    /// Calculated single-line height of the icon label font.
     private var labelLineHeight: CGFloat {
         labelFont.ascender - labelFont.descender + labelFont.leading
     }
 
+    /// Font used for icon labels; kept here for reuse in sizing.
     private var labelFont: NSFont {
         .systemFont(ofSize: 13, weight: .medium)
     }

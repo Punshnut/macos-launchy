@@ -1,5 +1,6 @@
 import AppKit
 
+/// Convenience helpers for inspecting AppKit view hierarchies.
 extension NSView {
     /// Walks superviews to determine whether the hierarchy includes the target view type.
     func hasAncestor(ofType type: NSView.Type) -> Bool {

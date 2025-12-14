@@ -316,6 +316,7 @@ final class AppDiscoveryService {
         metadataLock.unlock()
     }
 
+    /// Sets cache limits tuned for icon sizes Launchy requests.
     private func configureIconCacheLimits() {
         iconCache.countLimit = Self.iconCacheCountLimit
         iconCache.totalCostLimit = Self.iconCacheCostLimit
@@ -380,6 +381,7 @@ final class AppDiscoveryService {
         }
     }
 
+    /// Resolves the pixel size for a requested icon based on target dimension, scale, and quality.
     private func pixelDimension(
         for targetDimension: CGFloat,
         quality: IconRenderQuality,
@@ -389,6 +391,7 @@ final class AppDiscoveryService {
         return min(max(scaled, 1), quality.pixelCap)
     }
 
+    /// Returns the current generation counter for a bundle so prepared icons can be invalidated.
     private func iconGeneration(for bundleIdentifier: String) -> Int {
         metadataLock.lock()
         let generation = iconGenerations[bundleIdentifier] ?? 0
@@ -429,6 +432,7 @@ final class AppDiscoveryService {
         return true
     }
 
+    /// Removes cache entries for bundles no longer present in the current scan.
     private func evictMissingBundleCaches(keeping bundleIDs: Set<String>) {
         metadataLock.lock()
         let tracked = Set(iconModificationDates.keys).union(preparedIconKeysByBundleID.keys)
@@ -442,12 +446,14 @@ final class AppDiscoveryService {
         metadataLock.unlock()
     }
 
+    /// Clears caches for a specific bundle identifier, thread-safe.
     private func removeCachedIcons(for bundleIdentifier: String) {
         metadataLock.lock()
         removeCachedIconsLocked(for: bundleIdentifier)
         metadataLock.unlock()
     }
 
+    /// Internal helper that removes cached icons and prepared variants for a bundle.
     private func removeCachedIconsLocked(for bundleIdentifier: String) {
         iconCache.removeObject(forKey: bundleIdentifier as NSString)
         if let keys = preparedIconKeysByBundleID[bundleIdentifier] {
@@ -458,6 +464,7 @@ final class AppDiscoveryService {
         preparedIconKeysByBundleID[bundleIdentifier] = nil
     }
 
+    /// Returns the modification date of the app bundle if available.
     private func bundleModificationDate(_ bundleURL: URL) -> Date? {
         guard let values = try? bundleURL.resourceValues(forKeys: [.contentModificationDateKey]) else {
             return nil
@@ -465,6 +472,7 @@ final class AppDiscoveryService {
         return values.contentModificationDate
     }
 
+    /// Directories scanned when discovering applications, optionally including ~/Applications.
     private func defaultApplicationDirectories(includeUserApplicationsFolder: Bool) -> [URL] {
         var directories: [URL] = [
             URL(fileURLWithPath: "/Applications", isDirectory: true),
@@ -490,6 +498,7 @@ final class AppDiscoveryService {
         "\(bundleIdentifier)-\(dimension)-\(quality.cacheSuffix)-\(generation)-\(appearanceToken)"
     }
 
+    /// Rough cost estimate used to bound NSCache memory usage for icons.
     private func imageCost(_ image: NSImage) -> Int {
         let size = image.size
         let pixels = Int(size.width * size.height)
@@ -510,6 +519,7 @@ final class AppDiscoveryService {
         return renderIcon(icon, targetSize: targetSize, quality: quality)
     }
 
+    /// Renders an icon bitmap at a precise size with the requested interpolation quality.
     private func renderIcon(_ icon: NSImage, targetSize: NSSize, quality: IconRenderQuality) -> NSImage {
         let rendered = NSImage(size: targetSize)
         rendered.lockFocus()
@@ -531,6 +541,7 @@ final class AppDiscoveryService {
         return target.tiffRepresentation
     }
 
+    /// Restores apps from the last cache when they disappear briefly (e.g., external drives).
     private func restoredAppsFromCache(
         existingApps: [String: AppItem],
         referenceDate: Date,
@@ -562,6 +573,7 @@ final class AppDiscoveryService {
         return fileSystem.fileExists(atPath: record.bundlePath)
     }
 
+    /// Updates and persists the on-disk cache with the latest discovered apps.
     private func updateCachedApps(with apps: [String: AppItem], seenAt: Date) {
         var updated: [String: CachedAppRecord] = [:]
         for app in apps.values {
@@ -622,6 +634,7 @@ final class AppDiscoveryService {
         )
     }
 
+    /// Persists the cached app map asynchronously to disk.
     private func persistCachedApps() {
         let records = cachedAppsByBundleID
         appCachePersistenceQueue.async { [records, appCacheURL] in

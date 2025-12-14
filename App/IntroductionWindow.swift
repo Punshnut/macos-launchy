@@ -22,6 +22,7 @@ struct IntroductionWindow: View {
     var initialStep: Int = 0
     var onFinish: (() -> Void)?
     var onSkip: (() -> Void)?
+    var resetToken: UUID = UUID()
 
     @State private var currentStep: Int = 0
 
@@ -131,6 +132,9 @@ struct IntroductionWindow: View {
             .padding(.vertical, 10)
         }
         .onAppear {
+            currentStep = max(0, min(initialStep, steps.count - 1))
+        }
+        .onChange(of: resetToken) { _ in
             currentStep = max(0, min(initialStep, steps.count - 1))
         }
     }
@@ -316,6 +320,7 @@ struct IntroductionWindow: View {
         : String(localized: "Next")
     }
 
+    /// Advances the intro carousel or finishes when on the last step.
     private func advance() {
         if currentStep >= steps.count - 1 {
             finish()
@@ -326,6 +331,7 @@ struct IntroductionWindow: View {
         }
     }
 
+    /// Exits the intro early, honoring the skip callback when provided.
     private func finishEarly() {
         if let onSkip {
             onSkip()
@@ -334,6 +340,7 @@ struct IntroductionWindow: View {
         }
     }
 
+    /// Runs the completion callback to mark onboarding done.
     private func finish() {
         onFinish?()
     }
@@ -350,27 +357,31 @@ final class IntroductionWindowController: NSWindowController {
     static let shared = IntroductionWindowController()
     private var hostingController: NSHostingController<IntroductionWindow>?
 
+    private let defaultWindowSize = NSSize(width: 760, height: 580)
+
     /// Builds (or rebuilds) the introduction window and presents it.
     func present(
         startingAt step: Int = 0,
         markCompletionOnFinish: Bool = true
     ) {
+        let resetToken = UUID()
         let buildView: () -> IntroductionWindow = { [weak self] in
-            IntroductionWindow(initialStep: step) { [weak self] in
+            IntroductionWindow(initialStep: step, onFinish: { [weak self] in
                 if markCompletionOnFinish {
                     LauncherSettingsPersistence.setHasCompletedIntroduction(true)
                 }
                 self?.close()
-            } onSkip: { [weak self] in
+            }, onSkip: { [weak self] in
                 if markCompletionOnFinish {
                     LauncherSettingsPersistence.setHasCompletedIntroduction(true)
                 }
                 self?.close()
-            }
+            }, resetToken: resetToken)
         }
 
         if let host = hostingController, let window {
             host.rootView = buildView()
+            center(window: window)
             showWindow(nil)
             window.makeKeyAndOrderFront(nil)
             NSApp.activate(ignoringOtherApps: true)
@@ -378,8 +389,9 @@ final class IntroductionWindowController: NSWindowController {
         }
 
         let host = hostingController ?? NSHostingController(rootView: buildView())
+        let windowFrame = centeredFrame(for: defaultWindowSize)
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 760, height: 580),
+            contentRect: windowFrame,
             styleMask: [
                 .titled,
                 .fullSizeContentView,
@@ -402,7 +414,6 @@ final class IntroductionWindowController: NSWindowController {
         window.standardWindowButton(.miniaturizeButton)?.isHidden = true
         window.standardWindowButton(.zoomButton)?.isHidden = true
         window.contentViewController = host
-        window.center()
 
         hostingController = host
         self.window = window
@@ -410,5 +421,20 @@ final class IntroductionWindowController: NSWindowController {
         showWindow(nil)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    private func center(window: NSWindow) {
+        let frame = centeredFrame(for: window.frame.size)
+        window.setFrame(frame, display: false)
+    }
+
+    private func centeredFrame(for size: NSSize) -> NSRect {
+        guard let screen = ScreenProvider.screenUnderMouseOrMain() ?? NSScreen.main else {
+            return NSRect(origin: .zero, size: size)
+        }
+        let visibleFrame = screen.visibleFrame
+        let x = max(visibleFrame.midX - size.width / 2, visibleFrame.minX)
+        let y = max(visibleFrame.midY - size.height / 2, visibleFrame.minY)
+        return NSRect(origin: NSPoint(x: x, y: y), size: size)
     }
 }

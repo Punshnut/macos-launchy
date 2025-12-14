@@ -269,6 +269,7 @@ final class HotkeyManager {
         isHotkeyActive = false
     }
 
+    /// Stops and immediately re-registers the hotkey after a descriptor change.
     private func restart() {
         deactivate()
         activate()
@@ -324,6 +325,7 @@ final class CarbonHotkeyRegistrar: HotkeyRegistering {
         return true
     }
 
+    /// Unregisters any active hotkey and drops the stored handler.
     func endListening() {
         if let registeredHotKey {
             UnregisterEventHotKey(registeredHotKey)

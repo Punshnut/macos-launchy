@@ -2,6 +2,7 @@ import SwiftUI
 
 /// Simple placeholder view used by previews to sanity-check the project template.
 struct ContentView: View {
+    /// Tracks how many times the sample button has been tapped.
     @State private var tapCount = 0
 
     /// Shows a tiny counter demo so the preview canvas has meaningful content.

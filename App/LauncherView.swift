@@ -84,6 +84,7 @@ struct LauncherView: View {
         return 0.92 + 0.08 * CGFloat(fullscreenGridEntranceProgress)
     }
 
+    /// Calculates the folder overlay's horizontal translation, clamping it within the available pages.
     private func folderGridTranslation(pageWidth: CGFloat, totalPages: Int, basePageOffset: CGFloat) -> CGFloat {
         guard totalPages > 0 else { return basePageOffset }
         let maxScroll = CGFloat(max(totalPages - 1, 0)) * pageWidth
@@ -92,6 +93,7 @@ struct LauncherView: View {
         return min(max(rawTranslation, minTranslation), 0)
     }
 
+    /// Builds the grid layer including empty state, the paged grid, and invisible gesture overlays.
     @ViewBuilder
     private func launcherGridLayer(layout: LauncherLayoutMetrics, canReorder: Bool) -> some View {
         ZStack {
@@ -144,6 +146,7 @@ struct LauncherView: View {
         .padding(.top, layout.gridVerticalOffset)
     }
 
+    /// Renders the lazy grid pages and wires drag gestures used for swiping between them.
     @ViewBuilder
     private func launcherGridPages(
         layout: LauncherLayoutMetrics,
@@ -205,6 +208,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Displays a single paged grid of items with drag-and-drop reordering and context menus.
     @ViewBuilder
     private func launcherGridPage(
         layout: LauncherLayoutMetrics,
@@ -638,6 +642,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Lays out the gradient background, search controls, and grid stack sized for the current mode.
     @ViewBuilder
     private func launcherContentBody(
         layout: LauncherLayoutMetrics,
@@ -870,6 +875,7 @@ struct LauncherView: View {
         bumpHighQualityRequestEpoch(resetPending: true)
     }
 
+    /// Temporarily backs off heavy work (like hi-res icon loads) while the user is interacting.
     private func enterPerformanceShedding(duration: TimeInterval = 0.9, cancelHeavyWork: Bool = true) {
         interactionPressureEpoch &+= 1
         interactionPressureUntil = Date().addingTimeInterval(duration)
@@ -2646,7 +2652,6 @@ struct LauncherView: View {
             }
         }
         .frame(height: overlayLayout.gridHeight)
-        .clipped()
     }
 
     /// Displays a blurred overlay showing a folder's contents with Launchpad-inspired styling.
@@ -2902,6 +2907,7 @@ struct LauncherView: View {
         return window.contentView is NSHostingView<LauncherView>
     }
 
+    /// Routes keyboard paging commands to either the folder overlay or root grid.
     private func handleKeyboardPager(_ direction: PageShiftDirection) {
         if activeFolder != nil {
             changeFolderPage(direction)
@@ -2916,6 +2922,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Routes numeric shortcuts (⌘1, ⌘2, etc.) to either the folder pager or the main grid pager.
     private func handlePageShortcutRequest(_ targetPage: Int) {
         if activeFolder != nil {
             jumpToActiveFolderPage(targetPage)
@@ -2935,6 +2942,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Moves the active folder pager one step in the specified direction, if possible.
     private func changeFolderPage(_ direction: PageShiftDirection) {
         guard activeFolder != nil else { return }
         let totalPages = max(activeFolderPageCount, 1)
@@ -2958,6 +2966,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Handles Escape across rename, multi-select, folder overlays, search, and finally hides the launcher.
     private func handleEscapeKeyPress() {
         if isRenamingItem {
             cancelActiveRename()
@@ -3042,6 +3051,7 @@ struct LauncherView: View {
         animateAndDismissLauncher()
     }
 
+    /// Programmatically hides the launcher without needing a background tap.
     private func hideLauncher() {
         guard launcherMode == .fullscreen || launcherMode == .floaty else { return }
         guard isClosingLauncher == false else { return }

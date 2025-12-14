@@ -137,7 +137,7 @@ final class LauncherWindowController: NSWindowController {
         launcherContentHost.rootView = rootView
     }
 
-    /// Keeps the window anchored to the screen under the cursor before presenting it.
+    /// Keeps the window anchored to the screen under the cursor before presenting it so the launcher feels tied to context.
     private func updateFrameForPreferredScreenIfNeeded() {
         guard let window else { return }
         let targetScreen = ScreenProvider.screenUnderMouseOrMain()

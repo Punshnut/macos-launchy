@@ -3,6 +3,7 @@ import Combine
 import SwiftUI
 import UniformTypeIdentifiers
 
+/// Row model representing an app in the Hidden Apps preferences list.
 struct HiddenAppsListEntry: Identifiable {
     let id: String
     let icon: NSImage?
@@ -320,6 +321,7 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         NSWorkspace.shared.icon(for: UTType.folder)
     }
 
+    /// Ensures a hotkey is always set when both Dock and menu bar affordances are hidden.
     private func resolvedLauncherHotkey(
         forDockHidden dockHidden: Bool? = nil,
         menuHidden: Bool? = nil,

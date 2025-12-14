@@ -147,6 +147,7 @@ struct GridReorderDropDelegate: DropDelegate {
         onFolderHoverExit()
     }
 
+    /// Performs non-destructive live reordering while hovering over occupied cells.
     private func applyLiveReorder(_ info: DropInfo) {
         guard let draggedItem else { return }
         guard shouldSuppressReorder() == false else {
@@ -163,6 +164,7 @@ struct GridReorderDropDelegate: DropDelegate {
         _ = performLiveReorder(draggedItem, targetIndex)
     }
 
+    /// Shows a folder snap hint when modifier keys indicate we should merge instead of reorder.
     private func updateFolderSnapPreview(for info: DropInfo) {
         guard draggedItem != nil else {
             onFolderSnapPreviewChange(nil)
@@ -184,6 +186,7 @@ struct GridReorderDropDelegate: DropDelegate {
         onFolderSnapPreviewChange(items[targetIndex].id)
     }
 
+    /// Maps a drop location to a linear index within the current page.
     private func linearIndex(for location: CGPoint) -> Int {
         let location = adjustedLocation(location)
         let columns = LauncherGridConfiguration.columnsPerPage

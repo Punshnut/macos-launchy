@@ -1,9 +1,11 @@
 import SwiftUI
 
+/// Coordinates tab selection and keeps SwiftUI state in sync with AppKit's window lifecycle.
 @MainActor
 final class SettingsWindowCoordinator: ObservableObject {
     @Published var activeTab: SettingsTab = .visuals
 
+    /// Keeps the active tab binding in sync with sidebar selections.
     func selectTab(_ tab: SettingsTab) {
         activeTab = tab
     }
@@ -830,10 +832,12 @@ struct SettingsWindow: View {
             )
     }
 
+    /// Launches the onboarding flow from the About tab without marking completion.
     private func openIntroduction() {
         IntroductionWindowController.shared.present(startingAt: 0, markCompletionOnFinish: false)
     }
 
+    /// Shows a confirmation dialog requiring "RESET" before clearing the saved arrangement.
     private func confirmArrangementReset() {
         SettingsWindowAlertPresenter.confirmArrangementReset(
             hostingWindow: hostingWindow,
@@ -845,6 +849,7 @@ struct SettingsWindow: View {
 
     // MARK: - Window Configuration
 
+    /// Applies one-time window styling and initial sizing when the NSWindow becomes available.
     private func applyWindowConfiguration(for window: AnyObject?) {
         SettingsWindowHostManager.applyConfiguration(to: window)
         guard hasAppliedInitialWindowSizing == false else { return }

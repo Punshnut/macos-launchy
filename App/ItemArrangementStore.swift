@@ -74,6 +74,7 @@ final class ItemArrangementStore {
     private var cachedItems: [PersistedItem]
     private(set) var cachedPageSizes: [Int]
 
+    /// Loads persisted arrangement data and prepares the Application Support directory.
     init(fileManager: FileManager = .default) {
         self.fileManager = fileManager
 

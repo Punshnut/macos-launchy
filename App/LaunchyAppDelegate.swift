@@ -75,6 +75,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         showLauncherWindowAfterActivation()
     }
 
+    /// Captures the previously focused app so focus can be restored after showing Launchy.
     func applicationWillBecomeActive(_ notification: Notification) {
         guard let frontmost = NSWorkspace.shared.frontmostApplication,
               frontmost.isTerminated == false,
@@ -86,6 +87,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         lastFocusedApplication = frontmost
     }
 
+    /// Hides the launcher when Launchy loses focus (e.g., user clicks away).
     func applicationDidResignActive(_ notification: Notification) {
         hideLauncherWindow(restoreFocus: false)
     }
@@ -172,7 +174,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Performs the ordered initialization steps required before the UI appears.
     private func bootstrapApplication() {
         LaunchyLogger.log("bootstrap: initializing launcher")
-        // 2) Initialize launcher settings persisted from prior sessions.
+        // Prime defaults and load persisted settings before wiring anything else.
         LauncherSettingsPersistence.registerDefaults()
         currentSettings = LauncherSettingsPersistence.loadSettings()
         configureApplicationDirectoryMonitoring()
@@ -180,17 +182,15 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
 
         LaunchyLogger.log("bootstrap: loading apps (hidden=\(currentSettings.hiddenBundleIDs.count) scanUser=\(currentSettings.shouldScanUserApplicationsFolder))")
-        // 1 & 6) Load apps and immediately apply hidden/background style choices.
+        // Discover apps using the latest hidden/background choices so the first render is accurate.
         refreshLauncherItems()
 
         LaunchyLogger.log("bootstrap: applying launcher mode")
-        // 3) Build the launcher window so the UI is ready for the hotkey without surfacing it yet.
+        // Prepare the launcher window in the background so the hotkey can surface it instantly.
         applyLauncherMode(shouldPresentWindow: false)
 
         LaunchyLogger.log("bootstrap: configuring hotkeys")
-        // 4) `LaunchyApp` declares the SwiftUI `SettingsWindow` scene, so nothing else is needed here.
-
-        // 5) Wire the global hotkey so it toggles the launcher window on demand.
+        // Wire global hotkeys after settings are loaded so they reflect the latest bindings.
         configureHotkeyManagers()
 
         LaunchyLogger.log("bootstrap: refreshing UI chrome and monitoring")
@@ -229,6 +229,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// Listens for Sparkle UI presentation so we can gracefully hide the launcher first.
     private func observeSparkleUpdateNotifications() {
         sparkleUpdateObserver = NotificationCenter.default.addObserver(
             forName: .sparkleWillPresentUpdateUI,
@@ -241,6 +242,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// Rebuilds appearance-sensitive caches when macOS toggles light/dark mode.
     private func observeAppearanceChanges() {
         appearanceObservation?.invalidate()
         appearanceObservation = NSApp.observe(
@@ -257,6 +259,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// Closes the launcher before Sparkle presents a modal to avoid overlapping windows.
     private func handleSparkleWillPresentUpdateUI() {
         guard currentSettings.selectedLauncherMode == .fullscreen,
               let window = launcherWindowManager?.window,
@@ -285,6 +288,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         NSApp.mainMenu = trimmedMenu
     }
 
+    /// Responds to system memory pressure by trimming caches and canceling warmups.
     private func setupMemoryPressureMonitoring() {
         memoryPressureSource?.cancel()
         let source = DispatchSource.makeMemoryPressureSource(eventMask: [.warning, .critical], queue: .main)
@@ -296,6 +300,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         memoryPressureSource = source
     }
 
+    /// Clears expensive caches and cancels in-flight warmups when the system signals low memory.
     private func handleMemoryPressure(event: DispatchSource.MemoryPressureEvent) {
         LaunchyLogger.log("memory pressure event: \(event.rawValue)")
         visiblePageWarmupTask?.cancel()
@@ -339,6 +344,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// Returns a cached launcher controller when available, reusing window instances per mode.
     private func launcherWindowController(for mode: LauncherMode, rootView: LauncherView) -> LauncherWindowController {
         if let existing = launcherWindowControllersByMode[mode] {
             existing.update(rootView: rootView)
@@ -519,6 +525,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         layoutHotkeyManager.activate()
     }
 
+    /// Enables or disables the hot-corner trigger using the latest settings payload.
     private func updateHotCornerMonitoring() {
         hotCornerMonitor.update(
             enabled: currentSettings.hotCornerEnabled,
@@ -750,6 +757,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         )
     }
 
+    /// Warms icons for the currently visible pages to avoid visual pop-in while paging.
     private func warmVisiblePageIcons(_ apps: [AppItem]) {
         visiblePageWarmupTask?.cancel()
         let uniqueApps = uniqueAppsByBundleID(apps)
@@ -769,6 +777,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// Deduplicates apps by bundle identifier while preserving the first occurrence order.
     private func uniqueAppsByBundleID(_ apps: [AppItem]) -> [AppItem] {
         var seen = Set<String>()
         var unique: [AppItem] = []
@@ -780,6 +789,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return unique
     }
 
+    /// Flattens folders and root items into a bundle-ID keyed dictionary.
     private func appsByBundleID(from items: [LauncherItem]) -> [String: AppItem] {
         var lookup: [String: AppItem] = [:]
         for item in items {
@@ -795,6 +805,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return lookup
     }
 
+    /// Discards temporary grace-period entries whose deadlines have elapsed.
     private func purgeExpiredPendingRemovals(referenceDate: Date) -> Set<String> {
         let expired = pendingRemovalDeadlines.filter { $0.value <= referenceDate }.map(\.key)
         for bundleID in expired {
@@ -804,6 +815,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return Set(expired)
     }
 
+    /// Schedules a timer to re-run discovery once pending removals are past their grace window.
     private func scheduleRemovalConfirmationTimer() {
         removalConfirmationTimer?.cancel()
         removalConfirmationTimer = nil

@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 
+/// Maps modifier+key combinations to page indices so keyboard shortcuts can jump between pages.
 enum LauncherPageShortcuts {
     static func pageIndex(for event: NSEvent) -> Int? {
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
@@ -81,6 +82,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
 
     /// Keeps track of the AppKit event monitor and translates deltas into paging requests.
     @MainActor
+    /// Keeps track of the AppKit event monitor and translates deltas into paging requests.
     final class Coordinator {
         var isEnabled: Bool = true {
             didSet {
@@ -128,6 +130,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             resetState()
         }
 
+        /// Filters scroll events to the hosting window and translates them into paging actions.
         private func handleScrollEvent(_ event: NSEvent) {
             guard isEnabled,
                   let view = hostView,
@@ -168,6 +171,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             }
         }
 
+        /// Maps discrete vertical scrolls (e.g. mouse wheel) to next/previous page triggers.
         private func processDiscreteVerticalScroll(delta: CGFloat) {
             guard abs(delta) >= 1 else { return }
             if delta <= -1 {

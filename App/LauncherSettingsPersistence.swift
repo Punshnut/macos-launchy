@@ -308,6 +308,7 @@ enum LauncherSettingsPersistence {
         }
     }
 
+    /// Auto-hides the generated system tools folder to avoid cluttering the grid by default.
     private static func ensureSystemToolsFolderHidden(_ settings: inout LauncherSettings) {
         guard settings.hiddenSpecialEntryIDs.contains(HiddenSpecialEntryIdentifiers.systemToolsFolder) == false else { return }
         settings.hiddenSpecialEntryIDs.append(HiddenSpecialEntryIdentifiers.systemToolsFolder)

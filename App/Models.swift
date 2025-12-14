@@ -2,6 +2,7 @@ import Foundation
 import AppKit
 
 /// Identifiers used for special entries that don’t correspond to individual apps.
+/// IDs used to represent auto-generated folders (core services and tools) in settings and persistence.
 enum HiddenSpecialEntryIdentifiers {
     static let coreServicesFolder = "launchy.hidden.core-services-folder"
     static let systemToolsFolder = "launchy.hidden.system-tools-folder"
@@ -118,6 +119,7 @@ struct AppItem: Identifiable, Hashable {
         return trimmed.isEmpty ? nil : trimmed
     }
 
+    /// Trims the base display name while keeping the original when empty.
     private var normalizedDisplayName: String {
         let trimmed = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? displayName : trimmed

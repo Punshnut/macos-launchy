@@ -4,18 +4,22 @@ import SwiftUI
 
 // MARK: - Window Hosting Helpers
 
+/// Bridges SwiftUI's settings window into AppKit so we can resize and control the host window directly.
 @MainActor
 enum SettingsWindowHostManager {
+    /// Applies shared chrome customizations (transparency/opacity) to the hosting window.
     static func applyConfiguration(to hostingWindow: AnyObject?) {
         guard let window = hostingWindow as? NSWindow else { return }
         updateWindowChrome(for: window)
     }
 
+    /// Resizes the settings window to the target tab height while keeping the title bar anchored.
     static func resize(window hostingWindow: AnyObject?, for tab: SettingsTab, animated: Bool) {
         guard let window = hostingWindow as? NSWindow else { return }
         resizeWindow(for: tab, in: window, animated: animated)
     }
 
+    /// Mirrors the close/minimize/zoom controls inside SwiftUI buttons.
     static func performWindowAction(_ kind: WindowControlKind, on hostingWindow: AnyObject?) {
         guard let window = hostingWindow as? NSWindow else { return }
         switch kind {
@@ -58,6 +62,7 @@ enum SettingsWindowHostManager {
     }
 }
 
+/// Tiny shim that exposes AppKit-only helpers back to SwiftUI.
 @MainActor
 enum SettingsWindowAppKitBridge {
     static func applicationIconImage() -> Image? {

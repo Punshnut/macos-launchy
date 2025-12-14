@@ -48,6 +48,7 @@ final class ApplicationDirectoryMonitor {
         pollingSource = nil
     }
 
+    /// Registers file system watchers for the provided application directories.
     private func observe(directories: [URL]) {
         let directoriesToWatch = uniqueDirectories(from: directories)
         for directory in directoriesToWatch {
@@ -82,6 +83,7 @@ final class ApplicationDirectoryMonitor {
         }
     }
 
+    /// Deduplicates directory paths so we do not double-register observers.
     private func uniqueDirectories(from directories: [URL]) -> [URL] {
         var seen: Set<String> = []
         var unique: [URL] = []
@@ -93,6 +95,7 @@ final class ApplicationDirectoryMonitor {
         return unique
     }
 
+    /// Opens a directory descriptor suitable for monitoring file system events.
     private func openDirectoryDescriptor(at path: String) -> Int32? {
         let descriptor = open(path, O_EVTONLY)
         guard descriptor >= 0 else { return nil }
@@ -110,6 +113,7 @@ final class ApplicationDirectoryMonitor {
         pollingSource = timer
     }
 
+    /// Debounces rapid file system signals before invoking the caller's handler.
     private func scheduleChange() {
         pendingWorkItem?.cancel()
         let work = DispatchWorkItem { [weak self] in

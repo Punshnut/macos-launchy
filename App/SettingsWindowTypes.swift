@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Tabs available in the settings window sidebar.
 enum SettingsTab: Int, CaseIterable, Identifiable {
     case visuals
     case shortcuts
@@ -8,6 +9,7 @@ enum SettingsTab: Int, CaseIterable, Identifiable {
 
     var id: Int { rawValue }
 
+    /// SF Symbol used in the sidebar for the tab.
     var iconName: String {
         switch self {
         case .visuals:
@@ -21,6 +23,7 @@ enum SettingsTab: Int, CaseIterable, Identifiable {
         }
     }
 
+    /// Localized title shown next to the tab icon.
     var title: String {
         switch self {
         case .visuals:
@@ -35,6 +38,7 @@ enum SettingsTab: Int, CaseIterable, Identifiable {
     }
 }
 
+/// Centralizes sizing constants for the settings window so both SwiftUI and AppKit code agree.
 struct SettingsWindowMetrics {
     static let defaultContentWidth: CGFloat = 720
     static let visualsHeight: CGFloat = 650
@@ -47,6 +51,7 @@ struct SettingsWindowMetrics {
         CGSize(width: defaultContentWidth, height: visualsHeight)
     }
 
+    /// Returns the preferred height for each tab, letting us resize when the selection changes.
     static func preferredContentHeight(for tab: SettingsTab) -> CGFloat {
         switch tab {
         case .visuals:

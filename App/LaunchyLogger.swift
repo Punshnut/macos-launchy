@@ -1,6 +1,7 @@
 import Foundation
 import OSLog
 
+/// Lightweight logging facade that mirrors messages to both `os_log` and a rolling file for support.
 enum LaunchyLogger {
     private static let subsystem = Bundle.main.bundleIdentifier ?? "com.launchy"
     private static let logger = Logger(subsystem: subsystem, category: "runtime")
@@ -19,10 +20,12 @@ enum LaunchyLogger {
         }
     }
 
+    /// Writes an informational log entry to both the unified logger and the rolling file.
     static func log(_ message: String) {
         record(entry: "[Launchy] \(message)", level: .info)
     }
 
+    /// Writes an error log entry to both the unified logger and the rolling file.
     static func error(_ message: String) {
         record(entry: "[Launchy][ERROR] \(message)", level: .error)
     }

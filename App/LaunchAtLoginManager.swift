@@ -22,6 +22,7 @@ enum LaunchAtLoginManager {
                 loginItemLogger.error("Failed to update login item state: \(error.localizedDescription, privacy: .public)")
             }
         } else {
+            // Pre-macOS 13 fallback relying on the legacy SMLoginItem API.
             guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
                 loginItemLogger.error("Missing bundle identifier; cannot toggle login item.")
                 return

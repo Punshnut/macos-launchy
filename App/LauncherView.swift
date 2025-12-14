@@ -52,6 +52,13 @@ private struct FolderOverlayLayout {
     var pageCapacity: Int { max(columns, 1) * max(maxRows, 1) }
 }
 
+private struct PageInsertionOption: Identifiable {
+    let insertionIndex: Int
+    let title: String
+
+    var id: Int { insertionIndex }
+}
+
 /// Displays the grid of discovered items (apps and folders) and handles pagination/launch events.
 struct LauncherView: View {
     /// Data source backing the grid.
@@ -3833,6 +3840,27 @@ struct LauncherView: View {
         }
     }
 
+    private func newPageInsertionOptions(totalPages: Int) -> [PageInsertionOption] {
+        let pageCount = max(totalPages, 1)
+        var options: [PageInsertionOption] = [
+            PageInsertionOption(insertionIndex: 0, title: "Insert at Beginning")
+        ]
+        if pageCount > 1 {
+            for gap in 1..<pageCount {
+                let start = gap
+                let end = gap + 1
+                options.append(
+                    PageInsertionOption(
+                        insertionIndex: gap,
+                        title: "Insert between Page \(start) and \(end)"
+                    )
+                )
+            }
+        }
+        options.append(PageInsertionOption(insertionIndex: pageCount, title: "Insert at End"))
+        return options
+    }
+
     /// Nested menu listing pages for quick jumps.
     @ViewBuilder
     private func pageMoveMenu(for item: LauncherItem) -> some View {
@@ -3845,6 +3873,7 @@ struct LauncherView: View {
             }
             return multiSelectTargets(for: item)
         }()
+        let insertionOptions = newPageInsertionOptions(totalPages: totalPages)
 
         ForEach(pageIndices, id: \.self) { targetPage in
             let pageIsFull = pageHasSpace(targetPage) == false
@@ -3861,6 +3890,21 @@ struct LauncherView: View {
                 }
             }
             .disabled(shouldDisable)
+        }
+
+        Divider()
+
+        Menu("Create New Page") {
+            ForEach(insertionOptions) { option in
+                Button(option.title) {
+                    if usesFolderOverlay, let first = targets.first {
+                        moveItemsToNewPage([first], atInsertionIndex: option.insertionIndex)
+                    } else {
+                        moveItemsToNewPage(targets, atInsertionIndex: option.insertionIndex)
+                        finalizeBulkSelectionAction()
+                    }
+                }
+            }
         }
     }
 
@@ -4178,6 +4222,105 @@ struct LauncherView: View {
         }
     }
 
+    private func moveItemsToNewPage(_ targets: [LauncherItem], atInsertionIndex insertionIndex: Int) {
+        guard targets.isEmpty == false else { return }
+
+        var workingItems = orderedItems
+        var workingSizes = activePageSizes(for: workingItems.count)
+        var removedItems: [LauncherItem] = []
+
+        for target in targets {
+            switch target {
+            case .app(let app):
+                guard let location = locateApp(app, in: workingItems) else { continue }
+                switch location {
+                case .root(let index):
+                    let previousCount = workingItems.count
+                    guard case let .app(existing) = workingItems.remove(at: index) else { continue }
+                    workingSizes = pageSizesAfterRemoval(
+                        workingSizes,
+                        removingIndex: index,
+                        currentCount: previousCount,
+                        normalize: false
+                    )
+                    removedItems.append(.app(existing))
+                case .folder(let folderIndex, let appIndex):
+                    guard case var .folder(folder) = workingItems[folderIndex] else { continue }
+                    guard folder.apps.indices.contains(appIndex) else { continue }
+                    let removedApp = folder.apps.remove(at: appIndex)
+                    if folder.apps.isEmpty {
+                        let previousCount = workingItems.count
+                        workingItems.remove(at: folderIndex)
+                        workingSizes = pageSizesAfterRemoval(
+                            workingSizes,
+                            removingIndex: folderIndex,
+                            currentCount: previousCount,
+                            normalize: false
+                        )
+                        if activeFolder?.id == folder.id {
+                            closeActiveFolder()
+                        }
+                    } else {
+                        workingItems[folderIndex] = .folder(folder)
+                        if activeFolder?.id == folder.id {
+                            activeFolder = folder
+                        }
+                    }
+                    removedItems.append(.app(removedApp))
+                }
+            case .folder(let folder):
+                guard let index = workingItems.firstIndex(where: { item in
+                    if case let .folder(existing) = item {
+                        return existing.id == folder.id
+                    }
+                    return false
+                }) else { continue }
+                let previousCount = workingItems.count
+                let removed = workingItems.remove(at: index)
+                workingSizes = pageSizesAfterRemoval(
+                    workingSizes,
+                    removingIndex: index,
+                    currentCount: previousCount,
+                    normalize: false
+                )
+                removedItems.append(removed)
+                if activeFolder?.id == folder.id {
+                    closeActiveFolder()
+                }
+            }
+        }
+
+        guard removedItems.isEmpty == false else { return }
+
+        let boundedInsertion = max(0, min(insertionIndex, workingSizes.count))
+        let chunkSize = pageCapacity > 0 ? pageCapacity : removedItems.count
+        let chunks: [[LauncherItem]] = stride(from: 0, to: removedItems.count, by: chunkSize).map { start in
+            Array(removedItems[start..<min(start + chunkSize, removedItems.count)])
+        }
+
+        var updatedSizes = workingSizes
+        var workingInsertionIndex = boundedInsertion
+        var workingInsertionPosition = pageStartIndex(for: workingInsertionIndex, sizes: updatedSizes)
+
+        for chunk in chunks {
+            workingItems.insert(contentsOf: chunk, at: workingInsertionPosition)
+            updatedSizes.insert(chunk.count, at: workingInsertionIndex)
+            workingInsertionIndex += 1
+            workingInsertionPosition = pageStartIndex(for: workingInsertionIndex, sizes: updatedSizes)
+        }
+
+        let finalSizes = fillsGapsAutomatically
+            ? densePageSizes(for: workingItems.count)
+            : trimTrailingEmptyPages(updatedSizes)
+
+        withAnimation(gridSpringAnimation) {
+            orderedItems = workingItems
+        }
+        pageSizes = finalSizes
+        ensureCurrentPageWithinBounds()
+        persistOrderChange(using: finalSizes)
+    }
+
     private func moveAppOutOfFolderToPage(_ item: LauncherItem, targetPage: Int) {
         guard case .app(let app) = item else { return }
         guard let removal = removeAppFromHierarchy(
@@ -4308,7 +4451,11 @@ struct LauncherView: View {
 
     /// Returns the location of an app in the overall arrangement.
     private func locateApp(_ app: AppItem) -> AppLocation? {
-        for (index, item) in orderedItems.enumerated() {
+        locateApp(app, in: orderedItems)
+    }
+
+    private func locateApp(_ app: AppItem, in items: [LauncherItem]) -> AppLocation? {
+        for (index, item) in items.enumerated() {
             switch item {
             case .app(let candidate) where candidate.id == app.id:
                 return .root(index: index)

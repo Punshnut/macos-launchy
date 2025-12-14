@@ -54,7 +54,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 - **Context-aware controls** - Right click any tile, folder, Dock, or menu bar icon to rename, hide, move, add/remove folders, show in Finder, or reset gaps without switching views.
 - **Hot corners & shortcuts** - Global toggle hotkey, optional layout-switch shortcut, plus a hot corner trigger if you prefer mouse-only activation.
 - **Startup & presence controls** - Launch at login, hide or show Dock and menu bar icons independently, and keep a menu bar status item for updates and settings.
-- **Auto-updating & MIT** - Sparkle keeps releases notarized and current; open source and free forever.
+- **Auto-updating & MIT licensed** - Every build will be notarized, and the project will remain open source and free forever.
 
 ## Gestures (touchpad or mouse)
 

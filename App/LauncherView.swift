@@ -59,6 +59,11 @@ private struct PageInsertionOption: Identifiable {
     var id: Int { insertionIndex }
 }
 
+private struct SearchableAppEntry {
+    let normalizedNames: [String]
+    let normalizedBundleIdentifier: String
+}
+
 /// Displays the grid of discovered items (apps and folders) and handles pagination/launch events.
 struct LauncherView: View {
     /// Data source backing the grid.
@@ -407,6 +412,8 @@ struct LauncherView: View {
     @State private var currentPage: Int = 0
     @State private var isClosingLauncher = false
     @State private var searchText = ""
+    @State private var cachedFilteredItems: [LauncherItem]
+    @State private var searchMetadataByAppID: [UUID: SearchableAppEntry]
     @State private var searchSelectionIndex: Int?
     @State private var searchControlsExpanded = false
     @State private var isMultiSelectModeActive = false
@@ -482,6 +489,8 @@ struct LauncherView: View {
         self.onVisiblePagesChanged = onVisiblePagesChanged
         self.iconProvider = iconProvider
         _orderedItems = State(initialValue: itemCatalog)
+        _cachedFilteredItems = State(initialValue: itemCatalog)
+        _searchMetadataByAppID = State(initialValue: Self.buildSearchMetadata(from: itemCatalog))
         _pageSizes = State(initialValue: initialPageSizes)
     }
 
@@ -496,6 +505,7 @@ struct LauncherView: View {
         }
         .onChange(of: itemCatalog) { newValue in
             orderedItems = newValue
+            rebuildSearchMetadata(for: newValue)
             if fillsGapsAutomatically {
                 pageSizes = densePageSizes(for: newValue.count)
             } else {
@@ -504,7 +514,7 @@ struct LauncherView: View {
             currentPage = 0
             pageDirection = .forward
             pagerDragOffset = 0
-            notifyVisiblePagesChanged()
+            updateFilteredItems(using: newValue)
         }
         .onChange(of: initialPageSizes) { newValue in
             if fillsGapsAutomatically {
@@ -569,7 +579,7 @@ struct LauncherView: View {
                 updateSearchControlsExpansion(to: false)
                 cancelExpansionAutoCollapse()
             }
-            notifyVisiblePagesChanged()
+            updateFilteredItems()
         }
         .onChange(of: draggedItem) { newItem in
             if newItem == nil {
@@ -584,33 +594,33 @@ struct LauncherView: View {
             }
         }
         .onChange(of: orderedItems) { newItems in
+            rebuildSearchMetadata(for: newItems)
             if fillsGapsAutomatically {
                 pageSizes = densePageSizes(for: newItems.count)
             } else {
                 pageSizes = normalizePageSizes(pageSizes, itemCount: newItems.count)
             }
+            updateFilteredItems(using: newItems)
             let maxPage = max(pageCount - 1, 0)
             currentPage = min(currentPage, maxPage)
             pageDirection = .forward
             pagerDragOffset = 0
-                if let currentFolder = activeFolder {
-                    if let updatedFolder = folderItem(withID: currentFolder.id, in: newItems) {
-                        if updatedFolder != currentFolder {
-                            if isEditingFolderName == false {
-                                folderNameDraft = updatedFolder.name
-                            }
-                            shouldSkipActiveFolderChangeEffects = true
-                            activeFolder = updatedFolder
+            if let currentFolder = activeFolder {
+                if let updatedFolder = folderItem(withID: currentFolder.id, in: newItems) {
+                    if updatedFolder != currentFolder {
+                        if isEditingFolderName == false {
+                            folderNameDraft = updatedFolder.name
                         }
-                    } else {
-                        closeActiveFolder(animated: false)
-                        enterPerformanceShedding(duration: 0.6, cancelHeavyWork: false)
+                        shouldSkipActiveFolderChangeEffects = true
+                        activeFolder = updatedFolder
                     }
+                } else {
+                    closeActiveFolder(animated: false)
+                    enterPerformanceShedding(duration: 0.6, cancelHeavyWork: false)
                 }
+            }
             let validIDs = Set(newItems.map(\.id))
             multiSelectedItemIDs.formIntersection(validIDs)
-            clampSearchSelectionIfNeeded()
-            notifyVisiblePagesChanged()
         }
         .onChange(of: isEditingFolderName) { isEditing in
             if isEditing == false {
@@ -1798,37 +1808,116 @@ struct LauncherView: View {
         return filteredItemList[index]
     }
 
-    /// Filters the full list of apps based on the current search query.
     private var filteredItemList: [LauncherItem] {
-        let trimmedQuery = normalizedSearchText
-        guard trimmedQuery.isEmpty == false else { return orderedItems }
+        cachedFilteredItems
+    }
 
+    private func rebuildSearchMetadata(for items: [LauncherItem]) {
+        searchMetadataByAppID = Self.buildSearchMetadata(from: items)
+    }
+
+    private func updateFilteredItems(using itemsOverride: [LauncherItem]? = nil) {
+        let items = itemsOverride ?? orderedItems
+        let query = normalizedSearchText
+        let results = Self.filterItems(items: items, query: query, metadata: searchMetadataByAppID)
+        cachedFilteredItems = results
+        clampSearchSelectionIfNeeded()
+        alignSearchSelectionWithCurrentPageIfNeeded()
+        notifyVisiblePagesChanged()
+    }
+
+    nonisolated private static func filterItems(
+        items: [LauncherItem],
+        query: String,
+        metadata: [UUID: SearchableAppEntry]
+    ) -> [LauncherItem] {
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmedQuery.isEmpty == false else { return items }
+
+        let normalizedQuery = normalizeSearchValue(trimmedQuery)
         var results: [LauncherItem] = []
         var seenAppIDs = Set<UUID>()
 
-        let appendAppIfNeeded: (AppItem) -> Void = { app in
-            if seenAppIDs.insert(app.id).inserted {
-                results.append(.app(app))
-            }
-        }
-
-        for item in orderedItems {
+        for item in items {
             switch item {
             case .app(let app):
-                if app.matches(query: trimmedQuery) {
-                    appendAppIfNeeded(app)
+                if appMatches(
+                    app,
+                    normalizedQuery: normalizedQuery,
+                    fallbackQuery: trimmedQuery,
+                    metadata: metadata
+                ),
+                   seenAppIDs.insert(app.id).inserted {
+                    results.append(.app(app))
                 }
             case .folder(let folder):
-                let folderNameMatches = folder.name.localizedCaseInsensitiveContains(trimmedQuery)
-                for app in folder.apps {
-                    if folderNameMatches || app.matches(query: trimmedQuery) {
-                        appendAppIfNeeded(app)
+                let folderNameMatches = normalizeSearchValue(folder.name).contains(normalizedQuery)
+                for app in folder.apps where folderNameMatches
+                    || appMatches(
+                        app,
+                        normalizedQuery: normalizedQuery,
+                        fallbackQuery: trimmedQuery,
+                        metadata: metadata
+                    ) {
+                    if seenAppIDs.insert(app.id).inserted {
+                        results.append(.app(app))
                     }
                 }
             }
         }
 
         return results
+    }
+
+    nonisolated private static func appMatches(
+        _ app: AppItem,
+        normalizedQuery: String,
+        fallbackQuery: String,
+        metadata: [UUID: SearchableAppEntry]
+    ) -> Bool {
+        if let entry = metadata[app.id] {
+            if entry.normalizedNames.contains(where: { $0.contains(normalizedQuery) }) {
+                return true
+            }
+            return entry.normalizedBundleIdentifier.contains(normalizedQuery)
+        }
+        return app.matches(query: fallbackQuery)
+    }
+
+    nonisolated private static func buildSearchMetadata(from items: [LauncherItem]) -> [UUID: SearchableAppEntry] {
+        var metadata: [UUID: SearchableAppEntry] = [:]
+
+        let record: (AppItem) -> Void = { app in
+            metadata[app.id] = buildSearchEntry(for: app)
+        }
+
+        for item in items {
+            switch item {
+            case .app(let app):
+                record(app)
+            case .folder(let folder):
+                for app in folder.apps {
+                    record(app)
+                }
+            }
+        }
+
+        return metadata
+    }
+
+    nonisolated private static func buildSearchEntry(for app: AppItem) -> SearchableAppEntry {
+        let normalizedNames = app.searchableNames
+            .map { normalizeSearchValue($0) }
+            .filter { $0.isEmpty == false }
+        let normalizedBundle = normalizeSearchValue(app.bundleIdentifier)
+        return SearchableAppEntry(
+            normalizedNames: normalizedNames,
+            normalizedBundleIdentifier: normalizedBundle
+        )
+    }
+
+    nonisolated private static func normalizeSearchValue(_ value: String) -> String {
+        value.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
     }
 
     private func clampSearchSelectionIfNeeded() {

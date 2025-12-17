@@ -45,10 +45,12 @@ final class AppDiscoveryService {
     private let iconCache = NSCache<NSString, NSImage>()
     private let preparedIconCache = NSCache<NSString, NSImage>()
     private let metadataLock = NSLock()
+    private var iconCacheKeys: Set<String> = []
     private var iconModificationDates: [String: Date] = [:]
     private var iconGenerations: [String: Int] = [:]
     private var lastIconValidationDates: [String: Date] = [:]
     private var preparedIconKeysByBundleID: [String: Set<String>] = [:]
+    private var lastIconAccessDate = Date()
     private var appearanceCacheToken: String
     private let iconPreparationQueue = DispatchQueue(label: "com.launchy.icon-prep", qos: .userInitiated)
     private let cacheReleaseQueue = DispatchQueue(label: "com.launchy.cache-release", qos: .utility)
@@ -177,6 +179,7 @@ final class AppDiscoveryService {
         iconModificationDates.removeAll()
         iconGenerations.removeAll()
         lastIconValidationDates.removeAll()
+        iconCacheKeys.removeAll()
         metadataLock.unlock()
     }
 
@@ -205,6 +208,47 @@ final class AppDiscoveryService {
         iconModificationDates.removeAll()
         iconGenerations.removeAll()
         lastIconValidationDates.removeAll()
+        iconCacheKeys.removeAll()
+        metadataLock.unlock()
+    }
+
+    /// Releases cached icons that are not part of the preferred keep set, respecting recent activity.
+    func trimCaches(
+        keeping bundleIdentifiersToKeep: Set<String>,
+        aggressively: Bool = false,
+        idleOnlyAfter idleInterval: TimeInterval = 90
+    ) {
+        let now = Date()
+        metadataLock.lock()
+        let lastAccess = lastIconAccessDate
+        metadataLock.unlock()
+
+        if aggressively == false && now.timeIntervalSince(lastAccess) < idleInterval {
+            return
+        }
+
+        let trackedBundles: Set<String>
+        metadataLock.lock()
+        trackedBundles = iconCacheKeys.union(preparedIconKeysByBundleID.keys)
+        metadataLock.unlock()
+
+        if aggressively {
+            clearPreparedIconCaches()
+        }
+
+        let removable = trackedBundles.subtracting(bundleIdentifiersToKeep)
+        guard removable.isEmpty == false else { return }
+
+        for bundleID in removable {
+            removeCachedIcons(for: bundleID)
+        }
+
+        metadataLock.lock()
+        for bundleID in removable {
+            iconModificationDates.removeValue(forKey: bundleID)
+            iconGenerations.removeValue(forKey: bundleID)
+            lastIconValidationDates.removeValue(forKey: bundleID)
+        }
         metadataLock.unlock()
     }
 
@@ -306,6 +350,9 @@ final class AppDiscoveryService {
     private func cacheIcon(_ icon: NSImage, for bundleIdentifier: String) {
         let cost = imageCost(icon)
         iconCache.setObject(icon, forKey: bundleIdentifier as NSString, cost: cost)
+        metadataLock.lock()
+        iconCacheKeys.insert(bundleIdentifier)
+        metadataLock.unlock()
     }
 
     private func cachePreparedIcon(_ icon: NSImage, forKey key: String, bundleIdentifier: String) {
@@ -332,6 +379,9 @@ final class AppDiscoveryService {
     }
 
     private func recordIconAccess() {
+        metadataLock.lock()
+        lastIconAccessDate = Date()
+        metadataLock.unlock()
         scheduleIdleCacheRelease()
     }
 
@@ -435,7 +485,9 @@ final class AppDiscoveryService {
     /// Removes cache entries for bundles no longer present in the current scan.
     private func evictMissingBundleCaches(keeping bundleIDs: Set<String>) {
         metadataLock.lock()
-        let tracked = Set(iconModificationDates.keys).union(preparedIconKeysByBundleID.keys)
+        let tracked = Set(iconModificationDates.keys)
+            .union(preparedIconKeysByBundleID.keys)
+            .union(iconCacheKeys)
         let stale = tracked.subtracting(bundleIDs)
         for bundleID in stale {
             removeCachedIconsLocked(for: bundleID)
@@ -456,6 +508,7 @@ final class AppDiscoveryService {
     /// Internal helper that removes cached icons and prepared variants for a bundle.
     private func removeCachedIconsLocked(for bundleIdentifier: String) {
         iconCache.removeObject(forKey: bundleIdentifier as NSString)
+        iconCacheKeys.remove(bundleIdentifier)
         if let keys = preparedIconKeysByBundleID[bundleIdentifier] {
             for key in keys {
                 preparedIconCache.removeObject(forKey: key as NSString)

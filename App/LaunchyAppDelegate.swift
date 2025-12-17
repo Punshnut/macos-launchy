@@ -50,6 +50,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var pendingRemovalApps: [String: AppItem] = [:]
     private var removalConfirmationTimer: DispatchSourceTimer?
     private let removalGracePeriod: TimeInterval = 6
+    private var memoryMaintenanceTimer: DispatchSourceTimer?
+    private let memoryMaintenanceInterval: TimeInterval = 240
+    private let idleTrimGracePeriod: TimeInterval = 80
+    private let visibleTrimGracePeriod: TimeInterval = 140
+    private let elevatedMemoryThreshold: UInt64 = 700 * 1024 * 1024
+    private let criticalMemoryThreshold: UInt64 = 900 * 1024 * 1024
+    private var lastLauncherVisibilityChange = Date()
 
     /// Finishes bootstrapping the app by loading settings, refreshing apps, and preparing the window.
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -133,6 +140,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         appearanceObservation = nil
         memoryPressureSource?.cancel()
         memoryPressureSource = nil
+        memoryMaintenanceTimer?.cancel()
+        memoryMaintenanceTimer = nil
         visiblePageWarmupTask?.cancel()
         visiblePageWarmupTask = nil
         removalConfirmationTimer?.cancel()
@@ -203,6 +212,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         observeMainMenuChanges()
         observeSparkleUpdateNotifications()
         setupMemoryPressureMonitoring()
+        setupMemoryMaintenanceTimer()
     }
 
     /// Double-checks that unused menu bar items are stripped even if AppKit rebuilds the menu.
@@ -308,6 +318,52 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         NotificationCenter.default.post(name: .launcherShouldPurgeVisualCaches, object: nil)
     }
 
+    /// Periodically trims caches while the launcher is idle so the footprint stays bounded over time.
+    private func setupMemoryMaintenanceTimer() {
+        memoryMaintenanceTimer?.cancel()
+        let timer = DispatchSource.makeTimerSource(queue: .main)
+        timer.schedule(deadline: .now() + idleTrimGracePeriod, repeating: memoryMaintenanceInterval)
+        timer.setEventHandler { [weak self] in
+            self?.performScheduledMemoryMaintenance()
+        }
+        timer.resume()
+        memoryMaintenanceTimer = timer
+    }
+
+    /// Applies gentle or aggressive cache trimming based on visibility and current footprint.
+    private func performScheduledMemoryMaintenance() {
+        let now = Date()
+        let footprint = MemoryFootprint.currentResidentSize()
+        let isLauncherVisible = launcherWindowManager?.window?.isVisible == true
+        let idleDuration = now.timeIntervalSince(lastLauncherVisibilityChange)
+        let aggressive = (footprint ?? 0) >= criticalMemoryThreshold
+        let aboveTarget = (footprint ?? 0) >= elevatedMemoryThreshold
+
+        let shouldTrimWhileVisible = aggressive || (aboveTarget && idleDuration >= visibleTrimGracePeriod)
+        let shouldTrimWhileHidden = isLauncherVisible == false && idleDuration >= idleTrimGracePeriod
+        let shouldTrim = shouldTrimWhileVisible || shouldTrimWhileHidden
+
+        guard shouldTrim else { return }
+
+        let keepApps = prioritizedAppsForPrefetch(limit: LauncherGridConfiguration.pageCapacity)
+        let keepBundleIDs = Set(keepApps.map(\.bundleIdentifier))
+        let idleInterval = isLauncherVisible ? visibleTrimGracePeriod : idleTrimGracePeriod
+
+        applicationDiscovery.trimCaches(
+            keeping: keepBundleIDs,
+            aggressively: aggressive,
+            idleOnlyAfter: idleInterval
+        )
+
+        if aggressive {
+            visiblePageWarmupTask?.cancel()
+            NotificationCenter.default.post(name: .launcherShouldPurgeVisualCaches, object: nil)
+        }
+
+        let footprintInMB = footprint.map { $0 / 1_048_576 } ?? 0
+        LaunchyLogger.log("memory maintenance trimmed caches (aggressive=\(aggressive) footprintMB=\(footprintInMB) keep=\(keepBundleIDs.count))")
+    }
+
     /// Applies the current launcher mode, rebuilding the window when the persisted value changes.
     func applyLauncherMode(shouldPresentWindow: Bool = true) {
         LaunchyLogger.log("applyLauncherMode: mode=\(currentSettings.selectedLauncherMode) shouldPresentWindow=\(shouldPresentWindow)")
@@ -340,6 +396,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             controller.presentWindow(skipEntranceAnimation: skipAnimation)
             prefetchMinimalIconsForVisibleLauncher()
             NotificationCenter.default.post(name: .launcherDidShow, object: nil)
+            markLauncherDidShow()
             previousController?.window?.orderOut(nil)
         }
     }
@@ -595,6 +652,14 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         app.activate(options: [.activateAllWindows, .activateIgnoringOtherApps])
     }
 
+    private func markLauncherDidShow() {
+        lastLauncherVisibilityChange = Date()
+    }
+
+    private func markLauncherDidHide() {
+        lastLauncherVisibilityChange = Date()
+    }
+
     /// Shows or hides the launcher window whenever the hotkey fires.
     private func toggleLauncherVisibility() {
         if launcherWindowManager == nil {
@@ -607,6 +672,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             recordFrontmostApplicationForRestoration()
             launcherWindowManager.presentWindow()
             prefetchMinimalIconsForVisibleLauncher()
+            markLauncherDidShow()
             return
         }
 
@@ -618,6 +684,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             launcherWindowManager.presentWindow()
             prefetchMinimalIconsForVisibleLauncher()
             NotificationCenter.default.post(name: .launcherDidShow, object: nil)
+            markLauncherDidShow()
         }
     }
 
@@ -647,6 +714,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             guard let self else { return }
             isAnimatingLauncherHide = false
             shrinkIconCachesForHiddenLauncher()
+            markLauncherDidHide()
             NotificationCenter.default.post(name: .launcherDidHide, object: nil)
             if restoreFocus {
                 focusPreferredApplicationAfterLauncherHides()
@@ -672,6 +740,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         controller.presentWindow()
         prefetchMinimalIconsForVisibleLauncher()
         NotificationCenter.default.post(name: .launcherDidShow, object: nil)
+        markLauncherDidShow()
     }
 
     /// Activates the app when the current launcher mode expects a regular foreground experience.
@@ -721,6 +790,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         launcherWindowManager?.presentWindow()
         prefetchMinimalIconsForVisibleLauncher()
         NotificationCenter.default.post(name: .launcherDidShow, object: nil)
+        markLauncherDidShow()
     }
 
     /// Supplies the Dock's context menu with the arranged launcher items.

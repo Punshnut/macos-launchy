@@ -80,6 +80,10 @@
 "Background style" = "背景スタイル";
 "Solid color" = "単色";
 "Icons move up when there's space" = "余白があればアイコンが上にスライドします";
+"Enable hot corner toggle" = "ホットコーナー切り替えを有効にする";
+"Move the cursor into the selected corner to show or hide Launchy." = "選択したコーナーにカーソルを動かすと、Launchy を表示/非表示にします。";
+"Corner" = "コーナー";
+"macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring." = "初回は macOS から入力監視の許可を求められる場合があります。表示されない場合は、システム設定 → プライバシーとセキュリティ → 入力監視で Launchy を追加してください。";
 "Toggle Launchy" = "Launchy を切り替え";
 "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space." = "どこでも機能します。Delete を押してクリア、Reset で Cmd+Shift+Space を復元できます。";
 "Click to record" = "クリックして記録";
@@ -141,6 +145,10 @@
 "Show in Finder" = "Finder で表示";
 "Move to Folder" = "フォルダに移動";
 "Move to Page" = "ページに移動";
+"Create New Page" = "新しいページを作成";
+"Insert at Beginning" = "先頭に挿入";
+"Insert between Page %lld and %lld" = "ページ%lldと%lldの間に挿入";
+"Insert at End" = "末尾に挿入";
 "Hide App" = "アプリを非表示";
 "Create Folder with App" = "アプリでフォルダを作成";
 "Folder Details" = "フォルダの詳細";

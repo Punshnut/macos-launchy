@@ -305,7 +305,7 @@ struct SettingsWindow: View {
     }
 
     private var launchAtLoginToggle: some View {
-        Toggle("Launch at login", isOn: Binding(
+        Toggle(String(localized: "Launch at login"), isOn: Binding(
             get: { settingsStore.settingsSnapshot.launchesAtLogin },
             set: { settingsStore.setLaunchAtLogin($0) }
         ))
@@ -314,7 +314,7 @@ struct SettingsWindow: View {
 
     private var launcherLayoutPicker: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Launcher layout")
+            Text(String(localized: "Launcher layout"))
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
@@ -329,7 +329,7 @@ struct SettingsWindow: View {
             .labelsHidden()
             .pickerStyle(.segmented)
 
-            Text("Add a layout toggle shortcut below to flip modes instantly from anywhere.")
+            Text(String(localized: "Add a layout toggle shortcut below to flip modes instantly from anywhere."))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -337,17 +337,17 @@ struct SettingsWindow: View {
 
     private var iconVisibilitySection: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Toggle("Hide Dock icon", isOn: Binding(
+            Toggle(String(localized: "Hide Dock icon"), isOn: Binding(
                 get: { settingsStore.settingsSnapshot.isDockIconHidden },
                 set: { settingsStore.setDockIconHidden($0) }
             ))
 
-            Toggle("Hide menu bar icon", isOn: Binding(
+            Toggle(String(localized: "Hide menu bar icon"), isOn: Binding(
                 get: { settingsStore.settingsSnapshot.isMenuBarIconHidden },
                 set: { settingsStore.setMenuBarIconHidden($0) }
             ))
 
-            Text("If both icons are hidden, Launchy keeps the toggle shortcut enabled so you can still open it.")
+            Text(String(localized: "If both icons are hidden, Launchy keeps the toggle shortcut enabled so you can still open it."))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -355,7 +355,7 @@ struct SettingsWindow: View {
 
     private var backgroundStyleSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Background style")
+            Text(String(localized: "Background style"))
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
@@ -378,7 +378,7 @@ struct SettingsWindow: View {
 
     private var solidColorPalette: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Solid color")
+            Text(String(localized: "Solid color"))
                 .font(.caption)
                 .foregroundColor(.secondary)
             HStack(spacing: 12) {
@@ -403,7 +403,7 @@ struct SettingsWindow: View {
     }
 
     private var autoGapToggle: some View {
-        Toggle("Icons move up when there's space", isOn: Binding(
+        Toggle(String(localized: "Icons move up when there's space"), isOn: Binding(
             get: { settingsStore.settingsSnapshot.fillsGapsAutomatically },
             set: { settingsStore.setFillsGapsAutomatically($0) }
         ))
@@ -434,19 +434,19 @@ struct SettingsWindow: View {
 
     private var hotCornerSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Toggle("Enable hot corner toggle", isOn: Binding(
+            Toggle(String(localized: "Enable hot corner toggle"), isOn: Binding(
                 get: { settingsStore.settingsSnapshot.hotCornerEnabled },
                 set: { settingsStore.setHotCornerEnabled($0) }
             ))
             .toggleStyle(.switch)
 
-            Text("Move the cursor into the selected corner to show or hide Launchy.")
+            Text(String(localized: "Move the cursor into the selected corner to show or hide Launchy."))
                 .font(.caption)
                 .foregroundColor(.secondary)
 
             if settingsStore.settingsSnapshot.hotCornerEnabled {
                 HStack {
-                    Text("Corner")
+                    Text(String(localized: "Corner"))
                         .font(.subheadline)
                         .fontWeight(.semibold)
                     Spacer()
@@ -462,7 +462,7 @@ struct SettingsWindow: View {
                     .pickerStyle(.menu)
                 }
 
-                Text("macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring.")
+                Text(String(localized: "macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring."))
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -474,12 +474,12 @@ struct SettingsWindow: View {
             Button {
                 confirmArrangementReset()
             } label: {
-                Label("Reset icon arrangement...", systemImage: "arrow.counterclockwise.circle")
+                Label(String(localized: "Reset icon arrangement..."), systemImage: "arrow.counterclockwise.circle")
             }
             .buttonStyle(.borderedProminent)
             .tint(.red)
 
-            Text("Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm.")
+            Text(String(localized: "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm."))
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -488,9 +488,9 @@ struct SettingsWindow: View {
     private var hiddenAppsList: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Application")
+                Text(String(localized: "Application"))
                 Spacer(minLength: 0)
-                Text("Hidden")
+                Text(String(localized: "Hidden"))
             }
             .font(.system(size: 11, weight: .semibold, design: .rounded))
             .textCase(.uppercase)
@@ -570,7 +570,7 @@ struct SettingsWindow: View {
             Image(systemName: "app")
                 .font(.system(size: 30, weight: .medium))
                 .foregroundColor(.secondary)
-            Text("Scanning for applications...")
+            Text(String(localized: "Scanning for applications..."))
                 .multilineTextAlignment(.center)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -719,7 +719,7 @@ struct SettingsWindow: View {
             Button {
                 openIntroduction()
             } label: {
-                Label("Revisit Introduction...", systemImage: "sparkles")
+                Label(String(localized: "Revisit Introduction..."), systemImage: "sparkles")
             }
             .buttonStyle(.bordered)
 
@@ -730,7 +730,7 @@ struct SettingsWindow: View {
                     SettingsWindowAppKitBridge.openURL(url)
                 }
             } label: {
-                Label("View on GitHub", systemImage: "chevron.right.circle")
+                Label(String(localized: "View on GitHub"), systemImage: "chevron.right.circle")
             }
             .buttonStyle(.borderedProminent)
         }
@@ -926,12 +926,12 @@ private struct HotkeyRecorderRow: View {
                     .frame(width: 220, height: 30)
 
                 if showResetButton, let onReset {
-                    Button("Reset") {
+                    Button(String(localized: "Reset")) {
                         onReset()
                     }
                 }
 
-                Button("Clear") {
+                Button(String(localized: "Clear")) {
                     onChange(nil)
                 }
                 .disabled(hotkey == nil)

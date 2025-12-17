@@ -80,6 +80,10 @@
 "Background style" = "背景样式";
 "Solid color" = "纯色";
 "Icons move up when there's space" = "有空间时图标会自动上移";
+"Enable hot corner toggle" = "启用热角切换";
+"Move the cursor into the selected corner to show or hide Launchy." = "将光标移到选定角落以显示或隐藏 Launchy。";
+"Corner" = "角落";
+"macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring." = "首次启用时，macOS 可能会请求输入监控；如果没有，请在系统设置 → 隐私与安全性 → 输入监控中添加 Launchy。";
 "Toggle Launchy" = "切换 Launchy";
 "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space." = "适用于所有位置。按 Delete 清除，或按 Reset 恢复 Cmd+Shift+Space。";
 "Click to record" = "点击以记录";
@@ -141,6 +145,10 @@
 "Show in Finder" = "在 Finder 中显示";
 "Move to Folder" = "移到文件夹";
 "Move to Page" = "移到页面";
+"Create New Page" = "新建页面";
+"Insert at Beginning" = "插入到开头";
+"Insert between Page %lld and %lld" = "插入到第 %lld 和第 %lld 页之间";
+"Insert at End" = "插入到末尾";
 "Hide App" = "隐藏应用";
 "Create Folder with App" = "创建包含应用的文件夹";
 "Folder Details" = "文件夹详情";

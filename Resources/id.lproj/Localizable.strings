@@ -80,6 +80,10 @@
 "Background style" = "Gaya latar";
 "Solid color" = "Warna padat";
 "Icons move up when there's space" = "Ikon naik saat ada ruang";
+"Enable hot corner toggle" = "Aktifkan toggle hot corner";
+"Move the cursor into the selected corner to show or hide Launchy." = "Gerakkan kursor ke sudut yang dipilih untuk menampilkan atau menyembunyikan Launchy.";
+"Corner" = "Sudut";
+"macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring." = "Saat pertama kali mengaktifkan, macOS mungkin meminta Pemantauan Input; jika tidak, tambahkan Launchy di Pengaturan Sistem → Privasi & Keamanan → Pemantauan Input.";
 "Toggle Launchy" = "Toggle Launchy";
 "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space." = "Bekerja di mana saja. Tekan Delete untuk mengosongkan atau Reset untuk mengembalikan Cmd+Shift+Space.";
 "Click to record" = "Klik untuk merekam";
@@ -141,6 +145,10 @@
 "Show in Finder" = "Tampilkan di Finder";
 "Move to Folder" = "Pindahkan ke folder";
 "Move to Page" = "Pindahkan ke halaman";
+"Create New Page" = "Buat Halaman Baru";
+"Insert at Beginning" = "Sisipkan di awal";
+"Insert between Page %lld and %lld" = "Sisipkan di antara halaman %lld dan %lld";
+"Insert at End" = "Sisipkan di akhir";
 "Hide App" = "Sembunyikan aplikasi";
 "Create Folder with App" = "Buat folder dengan aplikasi";
 "Folder Details" = "Detail folder";

@@ -3832,30 +3832,30 @@ struct LauncherView: View {
     /// Context menu shown for each grid item.
     @ViewBuilder
     private func itemContextMenu(for item: LauncherItem) -> some View {
-        Button("Open") {
+        Button(String(localized: "Open")) {
             openItem(item)
         }
 
         switch item {
         case .app(let app):
-            Button("Rename App") {
+            Button(String(localized: "Rename App")) {
                 beginAppRename(app)
             }
 
-            Button("Show in Finder") {
+            Button(String(localized: "Show in Finder")) {
                 showInFinder(app)
             }
             .disabled(app.bundleURL == nil)
 
-            Menu("Move to Folder") {
+            Menu(String(localized: "Move to Folder")) {
                 folderMoveMenu(for: multiSelectAppTargets(for: item))
             }
 
-            Menu("Move to Page") {
+            Menu(String(localized: "Move to Page")) {
                 pageMoveMenu(for: item)
             }
 
-            Button("Hide App") {
+            Button(String(localized: "Hide App")) {
                 hideApp(app)
                 finalizeBulkSelectionAction()
             }
@@ -3864,33 +3864,33 @@ struct LauncherView: View {
                multiSelectedItemIDs.contains(app.id),
                canCreateFolderFromSelection
             {
-                Button("Create Folder with Selection") {
+                Button(String(localized: "Create Folder with Selection")) {
                     createFolderFromSelection(promptForName: true)
                 }
             }
 
             if isMultiSelectModeActive == false || multiSelectedItemIDs.contains(app.id) == false {
-                Button("Create Folder with App") {
+                Button(String(localized: "Create Folder with App")) {
                     createFolder(from: app, promptForName: true)
                 }
             }
         case .folder(let folder):
-            Button("Folder Details") {
+            Button(String(localized: "Folder Details")) {
                 showItemDetails(item)
             }
 
-            Button("Rename Folder") {
+            Button(String(localized: "Rename Folder")) {
                 beginFolderRename(folder)
             }
 
             if isMultiSelectModeActive {
-                Button("Add Selection to Folder") {
+                Button(String(localized: "Add Selection to Folder")) {
                     mergeMultiSelection(into: .folder(folder))
                 }
                 .disabled(canAddSelection(to: folder) == false)
             }
 
-            Menu("Move to Page") {
+            Menu(String(localized: "Move to Page")) {
                 pageMoveMenu(for: item)
             }
         }
@@ -3932,7 +3932,10 @@ struct LauncherView: View {
     private func newPageInsertionOptions(totalPages: Int) -> [PageInsertionOption] {
         let pageCount = max(totalPages, 1)
         var options: [PageInsertionOption] = [
-            PageInsertionOption(insertionIndex: 0, title: "Insert at Beginning")
+            PageInsertionOption(
+                insertionIndex: 0,
+                title: String(localized: "Insert at Beginning")
+            )
         ]
         if pageCount > 1 {
             for gap in 1..<pageCount {
@@ -3941,12 +3944,21 @@ struct LauncherView: View {
                 options.append(
                     PageInsertionOption(
                         insertionIndex: gap,
-                        title: "Insert between Page \(start) and \(end)"
+                        title: String.localizedStringWithFormat(
+                            String(localized: "Insert between Page %lld and %lld"),
+                            start,
+                            end
+                        )
                     )
                 )
             }
         }
-        options.append(PageInsertionOption(insertionIndex: pageCount, title: "Insert at End"))
+        options.append(
+            PageInsertionOption(
+                insertionIndex: pageCount,
+                title: String(localized: "Insert at End")
+            )
+        )
         return options
     }
 
@@ -3970,7 +3982,12 @@ struct LauncherView: View {
                 pageIndex(for: $0) == targetPage
             }
             let shouldDisable = usesFolderOverlay ? pageIsFull : onPage
-            Button("Page \(targetPage + 1)") {
+            Button(
+                String.localizedStringWithFormat(
+                    String(localized: "Page %lld"),
+                    targetPage + 1
+                )
+            ) {
                 if usesFolderOverlay, let first = targets.first {
                     moveAppOutOfFolderToPage(first, targetPage: targetPage)
                 } else {
@@ -3983,7 +4000,7 @@ struct LauncherView: View {
 
         Divider()
 
-        Menu("Create New Page") {
+        Menu(String(localized: "Create New Page")) {
             ForEach(insertionOptions) { option in
                 Button(option.title) {
                     if usesFolderOverlay, let first = targets.first {
@@ -4001,16 +4018,16 @@ struct LauncherView: View {
     @ViewBuilder
     private func backgroundContextMenu() -> some View {
         if isMultiSelectModeActive && canCreateFolderFromSelection {
-            Button("Create Folder with Selection") {
+            Button(String(localized: "Create Folder with Selection")) {
                 createFolderFromSelection(promptForName: true)
             }
         }
 
-        Button("Create Folder") {
+        Button(String(localized: "Create Folder")) {
             createEmptyFolder(onPage: currentPage, promptForName: true)
         }
 
-        Button("Settings...") {
+        Button(String(localized: "Settings...")) {
             Task { @MainActor in
                 onSettingsRequested?()
             }

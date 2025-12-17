@@ -80,6 +80,10 @@
 "Background style" = "Background style";
 "Solid color" = "Solid color";
 "Icons move up when there's space" = "Icons move up when there's space";
+"Enable hot corner toggle" = "Enable hot corner toggle";
+"Move the cursor into the selected corner to show or hide Launchy." = "Move the cursor into the selected corner to show or hide Launchy.";
+"Corner" = "Corner";
+"macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring." = "macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring.";
 "Toggle Launchy" = "Toggle Launchy";
 "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space." = "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space.";
 "Click to record" = "Click to record";
@@ -141,6 +145,10 @@
 "Show in Finder" = "Show in Finder";
 "Move to Folder" = "Move to Folder";
 "Move to Page" = "Move to Page";
+"Create New Page" = "Create New Page";
+"Insert at Beginning" = "Insert at Beginning";
+"Insert between Page %lld and %lld" = "Insert between Page %lld and %lld";
+"Insert at End" = "Insert at End";
 "Hide App" = "Hide App";
 "Create Folder with App" = "Create Folder with App";
 "Folder Details" = "Folder Details";

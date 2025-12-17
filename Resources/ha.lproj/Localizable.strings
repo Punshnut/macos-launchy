@@ -80,6 +80,10 @@
 "Background style" = "Salon bango";
 "Solid color" = "Launi mai ƙarfi";
 "Icons move up when there's space" = "Gumaka suna hawa sama idan sarari ya samu";
+"Enable hot corner toggle" = "Kunna sauyawa ta kusurwa mai zafi";
+"Move the cursor into the selected corner to show or hide Launchy." = "Matsa madauwari zuwa kusurwar da aka zaɓa don nuna ko ɓoye Launchy.";
+"Corner" = "Kusurwa";
+"macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring." = "macOS na iya neman Izinin Kula da Shigarwa a karon farko; idan ba haka ba, ƙara Launchy a Saitunan Tsarin → Sirri & Tsaro → Kula da Shigarwa.";
 "Toggle Launchy" = "Canza Launchy";
 "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space." = "Yana aiki ko'ina. Danna Delete don share ko Reset don dawo da Cmd+Shift+Space.";
 "Click to record" = "Danna don rikodin";
@@ -141,6 +145,10 @@
 "Show in Finder" = "Nuna a Finder";
 "Move to Folder" = "Matsar zuwa fayil";
 "Move to Page" = "Matsar zuwa shafi";
+"Create New Page" = "Ƙirƙiri Sabuwar Shafi";
+"Insert at Beginning" = "Saka a farko";
+"Insert between Page %lld and %lld" = "Saka tsakanin Shafi na %lld da %lld";
+"Insert at End" = "Saka a ƙarshe";
 "Hide App" = "Boye manhaja";
 "Create Folder with App" = "Ƙirƙiri fayil tare da manhaja";
 "Folder Details" = "Bayanan fayil";

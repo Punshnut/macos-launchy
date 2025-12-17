@@ -13,20 +13,20 @@ struct LaunchyApp: App {
         }
         .commands {
             CommandGroup(replacing: .appSettings) {
-                Button("Settings...") {
+                Button(String(localized: "Settings...")) {
                     appDelegate.showSettingsWindow()
                 }
                 .keyboardShortcut(",", modifiers: [.command])
             }
 
             CommandGroup(after: .appInfo) {
-                Button("Check for Updates...") {
+                Button(String(localized: "Check for Updates...")) {
                     appDelegate.checkForUpdatesFromMenu()
                 }
             }
 
             CommandGroup(after: .appSettings) {
-                Button("Toggle Floaty Panel") {
+                Button(String(localized: "Toggle Floaty Panel")) {
                     appDelegate.toggleLauncherModeShortcut()
                 }
             }

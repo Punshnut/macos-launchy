@@ -80,6 +80,10 @@
 "Background style" = "สไตล์พื้นหลัง";
 "Solid color" = "สีเรียบ";
 "Icons move up when there's space" = "ไอคอนเลื่อนขึ้นเมื่อมีช่องว่าง";
+"Enable hot corner toggle" = "เปิดการสลับมุมลัด";
+"Move the cursor into the selected corner to show or hide Launchy." = "เลื่อนเคอร์เซอร์ไปยังมุมที่เลือกเพื่อแสดงหรือซ่อน Launchy";
+"Corner" = "มุม";
+"macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring." = "ครั้งแรกที่เปิดใช้งาน macOS อาจขอการตรวจสอบการป้อนข้อมูล ถ้าไม่ ให้เพิ่ม Launchy ในการตั้งค่าระบบ → ความเป็นส่วนตัวและความปลอดภัย → การตรวจสอบการป้อนข้อมูล";
 "Toggle Launchy" = "สลับ Launchy";
 "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space." = "ใช้งานได้ทุกที่ กด Delete เพื่อล้าง หรือ Reset เพื่อคืน Cmd+Shift+Space";
 "Click to record" = "คลิกเพื่อบันทึก";
@@ -141,6 +145,10 @@
 "Show in Finder" = "แสดงใน Finder";
 "Move to Folder" = "ย้ายไปโฟลเดอร์";
 "Move to Page" = "ย้ายไปหน้า";
+"Create New Page" = "สร้างหน้าใหม่";
+"Insert at Beginning" = "แทรกที่จุดเริ่มต้น";
+"Insert between Page %lld and %lld" = "แทรกระหว่างหน้า %lld และ %lld";
+"Insert at End" = "แทรกที่ท้าย";
 "Hide App" = "ซ่อนแอป";
 "Create Folder with App" = "สร้างโฟลเดอร์พร้อมแอป";
 "Folder Details" = "รายละเอียดโฟลเดอร์";

@@ -80,6 +80,10 @@
 "Background style" = "Стиль фону";
 "Solid color" = "Суцільний колір";
 "Icons move up when there's space" = "Іконки піднімаються, коли є місце";
+"Enable hot corner toggle" = "Увімкнути перемикання гарячим кутом";
+"Move the cursor into the selected corner to show or hide Launchy." = "Перемістіть курсор у вибраний кут, щоб показати або сховати Launchy.";
+"Corner" = "Кут";
+"macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring." = "Під час першого ввімкнення macOS може запросити моніторинг введення; якщо ні — додайте Launchy у Системні налаштування → Конфіденційність і безпека → Моніторинг введення.";
 "Toggle Launchy" = "Перемикач Launchy";
 "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space." = "Працює всюди. Натисніть Delete, щоб очистити, або Reset, щоб повернути Cmd+Shift+Space.";
 "Click to record" = "Клікніть, щоб записати";
@@ -141,6 +145,10 @@
 "Show in Finder" = "Показати у Finder";
 "Move to Folder" = "Перемістити до папки";
 "Move to Page" = "Перемістити на сторінку";
+"Create New Page" = "Створити нову сторінку";
+"Insert at Beginning" = "Вставити на початку";
+"Insert between Page %lld and %lld" = "Вставити між сторінками %lld і %lld";
+"Insert at End" = "Вставити в кінці";
 "Hide App" = "Сховати додаток";
 "Create Folder with App" = "Створити папку з цим додатком";
 "Folder Details" = "Деталі папки";

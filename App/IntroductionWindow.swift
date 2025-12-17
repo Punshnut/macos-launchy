@@ -164,9 +164,9 @@ struct IntroductionWindow: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                     .shadow(color: .black.opacity(0.25), radius: 6, y: 3)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Meet Launchy")
+                    Text(String(localized: "Meet Launchy"))
                         .font(.system(size: 16, weight: .heavy, design: .rounded))
-                    Text("A quick tour of the essentials")
+                    Text(String(localized: "A quick tour of the essentials"))
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
                         .foregroundColor(.secondary)
                 }
@@ -286,7 +286,7 @@ struct IntroductionWindow: View {
             Button {
                 finishEarly()
             } label: {
-                Label("Skip intro", systemImage: "forward.end")
+                Label(String(localized: "Skip intro"), systemImage: "forward.end")
             }
             .buttonStyle(.plain)
             .foregroundColor(.secondary)
@@ -294,7 +294,7 @@ struct IntroductionWindow: View {
             Spacer()
 
             if currentStep > 0 {
-                Button("Back") {
+                Button(String(localized: "Back")) {
                     currentStep = max(currentStep - 1, 0)
                 }
                 .buttonStyle(.bordered)

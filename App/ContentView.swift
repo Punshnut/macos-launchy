@@ -8,15 +8,20 @@ struct ContentView: View {
     /// Shows a tiny counter demo so the preview canvas has meaningful content.
     var body: some View {
         VStack(spacing: 16) {
-            Text("Welcome to Launchy")
+            Text(String(localized: "Welcome to Launchy"))
                 .font(.largeTitle)
                 .bold()
-            Text("This SwiftUI scaffold is ready for your ideas.")
+            Text(String(localized: "This SwiftUI scaffold is ready for your ideas."))
                 .foregroundStyle(.secondary)
             Button(action: { tapCount += 1 }) {
-                Label("Increase Counter", systemImage: "plus")
+                Label(String(localized: "Increase Counter"), systemImage: "plus")
             }
-            Text("Counter: \(tapCount)")
+            Text(
+                String.localizedStringWithFormat(
+                    String(localized: "Counter: %lld"),
+                    tapCount
+                )
+            )
                 .monospaced()
         }
         .frame(minWidth: 360, minHeight: 240)

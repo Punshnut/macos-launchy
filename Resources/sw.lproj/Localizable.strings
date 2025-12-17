@@ -80,6 +80,10 @@
 "Background style" = "Mtindo wa mandhari";
 "Solid color" = "Rangi imara";
 "Icons move up when there's space" = "Alama zinapanda juu wakati nafasi ipo";
+"Enable hot corner toggle" = "Wezesha kubadilisha kona moto";
+"Move the cursor into the selected corner to show or hide Launchy." = "Sogeza kishale kwenye kona uliochagua ili kuonyesha au kuficha Launchy.";
+"Corner" = "Kona";
+"macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring." = "Mara ya kwanza kuwezesha, macOS inaweza kuomba Ufuatiliaji wa Uingizaji; ikiwa haijaomba, ongeza Launchy kwenye Mipangilio ya Mfumo → Faragha na Usalama → Ufuatiliaji wa Uingizaji.";
 "Toggle Launchy" = "Badilisha Launchy";
 "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space." = "Inafanya kazi kila mahali. Bonyeza Delete kufuta au Reset kurejesha Cmd+Shift+Space.";
 "Click to record" = "Bonyeza kurekodi";
@@ -141,6 +145,10 @@
 "Show in Finder" = "Onyesha katika Finder";
 "Move to Folder" = "Hamisha kwenda folda";
 "Move to Page" = "Hamisha kwenda ukurasa";
+"Create New Page" = "Unda Ukurasa Mpya";
+"Insert at Beginning" = "Weka mwanzoni";
+"Insert between Page %lld and %lld" = "Ingiza kati ya Ukurasa %lld na %lld";
+"Insert at End" = "Ingiza mwisho";
 "Hide App" = "Ficha programu";
 "Create Folder with App" = "Tengeneza folda na programu";
 "Folder Details" = "Maelezo ya folda";

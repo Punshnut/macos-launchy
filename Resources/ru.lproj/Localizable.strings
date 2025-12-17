@@ -80,6 +80,10 @@
 "Background style" = "Стиль фона";
 "Solid color" = "Сплошной цвет";
 "Icons move up when there's space" = "Иконки поднимаются вверх при наличии места";
+"Enable hot corner toggle" = "Включить переключение через горячий угол";
+"Move the cursor into the selected corner to show or hide Launchy." = "Переместите курсор в выбранный угол, чтобы показать или скрыть Launchy.";
+"Corner" = "Угол";
+"macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring." = "При первом включении macOS может запросить контроль ввода; если нет — добавьте Launchy в Настройки системы → Конфиденциальность и безопасность → Контроль ввода.";
 "Toggle Launchy" = "Переключить Launchy";
 "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space." = "Работает везде. Нажмите Delete, чтобы очистить, или Reset, чтобы вернуть Cmd+Shift+Space.";
 "Click to record" = "Нажмите, чтобы записать";
@@ -141,6 +145,10 @@
 "Show in Finder" = "Показать в Finder";
 "Move to Folder" = "Переместить в папку";
 "Move to Page" = "Переместить на страницу";
+"Create New Page" = "Создать новую страницу";
+"Insert at Beginning" = "Вставить в начало";
+"Insert between Page %lld and %lld" = "Вставить между страницами %lld и %lld";
+"Insert at End" = "Вставить в конец";
 "Hide App" = "Скрыть приложение";
 "Create Folder with App" = "Создать папку с приложением";
 "Folder Details" = "Сведения о папке";

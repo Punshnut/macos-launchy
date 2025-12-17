@@ -80,6 +80,10 @@
 "Background style" = "Arka plan stili";
 "Solid color" = "Düz renk";
 "Icons move up when there's space" = "Yer açıldığında simgeler yukarı çıkar";
+"Enable hot corner toggle" = "Sıcak köşe geçişini etkinleştir";
+"Move the cursor into the selected corner to show or hide Launchy." = "İmleci seçilen köşeye taşıyarak Launchy’yi gösterin veya gizleyin.";
+"Corner" = "Köşe";
+"macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring." = "İlk kez etkinleştirdiğinizde macOS Girdi İzleme isteyebilir; istemezse Sistem Ayarları → Gizlilik ve Güvenlik → Girdi İzleme bölümüne Launchy’yi ekleyin.";
 "Toggle Launchy" = "Launchy’yi aç/kapat";
 "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space." = "Her yerde çalışır. Sil ile temizle veya Sıfırla ile Cmd+Shift+Boşluk’a dön.";
 "Click to record" = "Kaydetmek için tıkla";
@@ -141,6 +145,10 @@
 "Show in Finder" = "Finder’da göster";
 "Move to Folder" = "Klasöre taşı";
 "Move to Page" = "Sayfaya taşı";
+"Create New Page" = "Yeni Sayfa Oluştur";
+"Insert at Beginning" = "Başa ekle";
+"Insert between Page %lld and %lld" = "Sayfa %lld ile %lld arasına ekle";
+"Insert at End" = "Sona ekle";
 "Hide App" = "Uygulamayı gizle";
 "Create Folder with App" = "Uygulamayla klasör oluştur";
 "Folder Details" = "Klasör ayrıntıları";

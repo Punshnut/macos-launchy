@@ -80,6 +80,10 @@
 "Background style" = "पृष्ठभूमि शैली";
 "Solid color" = "ठोस रंग";
 "Icons move up when there's space" = "जब जगह मिलती है तो आइकन ऊपर की ओर चले जाते हैं";
+"Enable hot corner toggle" = "हॉट कॉर्नर टॉगल सक्षम करें";
+"Move the cursor into the selected corner to show or hide Launchy." = "लॉन्ची को दिखाने या छुपाने के लिए कर्सर को चुने हुए कोने में ले जाएँ।";
+"Corner" = "कोना";
+"macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring." = "पहली बार सक्षम करने पर macOS इनपुट मॉनिटरिंग मांग सकता है; अगर नहीं, तो सिस्टम सेटिंग्स → गोपनीयता व सुरक्षा → इनपुट मॉनिटरिंग में Launchy जोड़ें।";
 "Toggle Launchy" = "Launchy टॉगल करें";
 "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space." = "यह सभी जगह काम करता है। साफ़ करने के लिए Delete दबाएँ या Cmd+Shift+Space बहाल करने के लिए Reset।";
 "Click to record" = "रिकॉर्ड करने के लिए क्लिक करें";
@@ -141,6 +145,10 @@
 "Show in Finder" = "Finder में दिखाएँ";
 "Move to Folder" = "फ़ोल्डर में ले जाएँ";
 "Move to Page" = "पृष्ठ पर ले जाएँ";
+"Create New Page" = "नया पेज बनाएँ";
+"Insert at Beginning" = "शुरुआत में जोड़ें";
+"Insert between Page %lld and %lld" = "पेज %lld और %lld के बीच जोड़ें";
+"Insert at End" = "अंत में जोड़ें";
 "Hide App" = "ऐप छुपाएँ";
 "Create Folder with App" = "ऐप के साथ फ़ोल्डर बनाएं";
 "Folder Details" = "फ़ोल्डर विवरण";

@@ -80,6 +80,10 @@
 "Background style" = "Kiểu nền";
 "Solid color" = "Màu rắn";
 "Icons move up when there's space" = "Biểu tượng di chuyển lên khi có khoảng trống";
+"Enable hot corner toggle" = "Bật chuyển đổi góc nóng";
+"Move the cursor into the selected corner to show or hide Launchy." = "Di chuyển con trỏ vào góc đã chọn để hiện hoặc ẩn Launchy.";
+"Corner" = "Góc";
+"macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring." = "Lần đầu bật, macOS có thể yêu cầu Giám sát nhập; nếu không, hãy thêm Launchy trong Cài đặt hệ thống → Quyền riêng tư & Bảo mật → Giám sát nhập.";
 "Toggle Launchy" = "Chuyển đổi Launchy";
 "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space." = "Hoạt động ở mọi nơi. Nhấn Delete để xóa hoặc Reset để khôi phục Cmd+Shift+Space.";
 "Click to record" = "Nhấn để ghi";
@@ -141,6 +145,10 @@
 "Show in Finder" = "Hiển thị trong Finder";
 "Move to Folder" = "Chuyển vào thư mục";
 "Move to Page" = "Chuyển sang trang";
+"Create New Page" = "Tạo trang mới";
+"Insert at Beginning" = "Chèn ở đầu";
+"Insert between Page %lld and %lld" = "Chèn giữa trang %lld và %lld";
+"Insert at End" = "Chèn vào cuối";
 "Hide App" = "Ẩn ứng dụng";
 "Create Folder with App" = "Tạo thư mục với ứng dụng";
 "Folder Details" = "Chi tiết thư mục";

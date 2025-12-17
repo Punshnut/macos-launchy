@@ -51,11 +51,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var removalConfirmationTimer: DispatchSourceTimer?
     private let removalGracePeriod: TimeInterval = 6
     private var memoryMaintenanceTimer: DispatchSourceTimer?
-    private let memoryMaintenanceInterval: TimeInterval = 240
-    private let idleTrimGracePeriod: TimeInterval = 80
-    private let visibleTrimGracePeriod: TimeInterval = 140
-    private let elevatedMemoryThreshold: UInt64 = 700 * 1024 * 1024
-    private let criticalMemoryThreshold: UInt64 = 900 * 1024 * 1024
+    private let memoryMaintenanceInterval: TimeInterval = 180
+    private let idleTrimGracePeriod: TimeInterval = 70
+    private let visibleTrimGracePeriod: TimeInterval = 120
+    private let elevatedMemoryThreshold: UInt64 = 650 * 1024 * 1024
+    private let criticalMemoryThreshold: UInt64 = 850 * 1024 * 1024
     private var lastLauncherVisibilityChange = Date()
 
     /// Finishes bootstrapping the app by loading settings, refreshing apps, and preparing the window.
@@ -345,7 +345,20 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         guard shouldTrim else { return }
 
-        let keepApps = prioritizedAppsForPrefetch(limit: LauncherGridConfiguration.pageCapacity)
+        let cacheLimitScale: Double
+        if aggressive {
+            cacheLimitScale = isLauncherVisible ? 0.38 : 0.3
+        } else if aboveTarget {
+            cacheLimitScale = isLauncherVisible ? 0.55 : 0.42
+        } else {
+            cacheLimitScale = isLauncherVisible ? 0.8 : 0.6
+        }
+        applicationDiscovery.applyCacheLimitScaling(cacheLimitScale)
+
+        let keepLimit = isLauncherVisible
+            ? LauncherGridConfiguration.pageCapacity
+            : max(LauncherGridConfiguration.pageCapacity / 2, 8)
+        let keepApps = prioritizedAppsForPrefetch(limit: keepLimit)
         let keepBundleIDs = Set(keepApps.map(\.bundleIdentifier))
         let idleInterval = isLauncherVisible ? visibleTrimGracePeriod : idleTrimGracePeriod
 
@@ -361,7 +374,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
 
         let footprintInMB = footprint.map { $0 / 1_048_576 } ?? 0
-        LaunchyLogger.log("memory maintenance trimmed caches (aggressive=\(aggressive) footprintMB=\(footprintInMB) keep=\(keepBundleIDs.count))")
+        let scaleLabel = String(format: "%.2f", cacheLimitScale)
+        LaunchyLogger.log("memory maintenance trimmed caches (aggressive=\(aggressive) footprintMB=\(footprintInMB) keep=\(keepBundleIDs.count) limitScale=\(scaleLabel))")
     }
 
     /// Applies the current launcher mode, rebuilding the window when the persisted value changes.

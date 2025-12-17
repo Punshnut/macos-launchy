@@ -1,4 +1,6 @@
 import AppKit
+import Accelerate
+import ImageIO
 import UniformTypeIdentifiers
 
 enum IconRenderQuality: String {
@@ -365,10 +367,17 @@ final class AppDiscoveryService {
 
     /// Sets cache limits tuned for icon sizes Launchy requests.
     private func configureIconCacheLimits() {
-        iconCache.countLimit = Self.iconCacheCountLimit
-        iconCache.totalCostLimit = Self.iconCacheCostLimit
-        preparedIconCache.countLimit = Self.preparedIconCacheCountLimit
-        preparedIconCache.totalCostLimit = Self.preparedIconCacheCostLimit
+        applyCacheLimitScaling(1)
+    }
+
+    /// Dynamically scales the cache limits without fully clearing caches.
+    func applyCacheLimitScaling(_ scale: Double) {
+        let clamped = max(0.25, min(scale, 1.0))
+        let preparedScale = max(0.35, min(scale, 1.0))
+        iconCache.countLimit = Int(Double(Self.iconCacheCountLimit) * clamped)
+        iconCache.totalCostLimit = Int(Double(Self.iconCacheCostLimit) * clamped)
+        preparedIconCache.countLimit = Int(Double(Self.preparedIconCacheCountLimit) * preparedScale)
+        preparedIconCache.totalCostLimit = Int(Double(Self.preparedIconCacheCostLimit) * preparedScale)
     }
 
     private func clearPreparedIconCaches() {
@@ -568,6 +577,9 @@ final class AppDiscoveryService {
 
     private func resizedIcon(_ icon: NSImage, pixelDimension: Int, quality: IconRenderQuality) -> NSImage {
         guard pixelDimension > 0 else { return icon }
+        if let downsampled = downsampledIcon(icon, pixelDimension: pixelDimension) {
+            return downsampled
+        }
         let targetSize = NSSize(width: pixelDimension, height: pixelDimension)
         return renderIcon(icon, targetSize: targetSize, quality: quality)
     }
@@ -587,6 +599,80 @@ final class AppDiscoveryService {
         rendered.size = targetSize
         rendered.isTemplate = icon.isTemplate
         return rendered
+    }
+
+    /// Uses vImage to generate a pre-sized icon without inflating large bitmaps.
+    private func downsampledIcon(_ icon: NSImage, pixelDimension: Int) -> NSImage? {
+        guard pixelDimension > 0 else { return nil }
+        let targetSize = NSSize(width: pixelDimension, height: pixelDimension)
+        guard let cgImage = icon.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            return nil
+        }
+
+        // When the source is already close to the target size, defer to the standard renderer to avoid blur.
+        if cgImage.width <= pixelDimension * 2 && cgImage.height <= pixelDimension * 2 {
+            return nil
+        }
+
+        var format = vImage_CGImageFormat(cgImage: cgImage)
+            ?? vImage_CGImageFormat(
+                bitsPerComponent: UInt32(cgImage.bitsPerComponent),
+                bitsPerPixel: UInt32(cgImage.bitsPerPixel),
+                colorSpace: Unmanaged.passUnretained(cgImage.colorSpace ?? CGColorSpaceCreateDeviceRGB()),
+                bitmapInfo: cgImage.bitmapInfo,
+                version: 0,
+                decode: nil,
+                renderingIntent: cgImage.renderingIntent
+            )
+
+        var sourceBuffer = vImage_Buffer()
+        defer { free(sourceBuffer.data) }
+
+        var initError = vImageBuffer_InitWithCGImage(
+            &sourceBuffer,
+            &format,
+            nil,
+            cgImage,
+            vImage_Flags(kvImageNoFlags)
+        )
+        guard initError == kvImageNoError else { return nil }
+
+        var destinationBuffer = vImage_Buffer()
+        destinationBuffer.width = vImagePixelCount(pixelDimension)
+        destinationBuffer.height = vImagePixelCount(pixelDimension)
+        destinationBuffer.rowBytes = pixelDimension * 4
+        destinationBuffer.data = malloc(Int(destinationBuffer.rowBytes) * Int(destinationBuffer.height))
+        guard destinationBuffer.data != nil else { return nil }
+        var shouldFreeDestination = true
+        defer {
+            if shouldFreeDestination {
+                free(destinationBuffer.data)
+            }
+        }
+
+        let scaleError = vImageScale_ARGB8888(
+            &sourceBuffer,
+            &destinationBuffer,
+            /* tempBuffer: */ nil,
+            vImage_Flags(kvImageHighQualityResampling)
+        )
+        guard scaleError == kvImageNoError else { return nil }
+
+        guard let scaledImage = vImageCreateCGImageFromBuffer(
+            &destinationBuffer,
+            &format,
+            nil,
+            nil,
+            vImage_Flags(kvImageNoFlags),
+            nil
+        )?.takeRetainedValue() else {
+            return nil
+        }
+        shouldFreeDestination = false
+
+        let downsampled = NSImage(cgImage: scaledImage, size: targetSize)
+        downsampled.isTemplate = icon.isTemplate
+        return downsampled
     }
 
     private func normalizedIconData(for icon: NSImage) -> Data? {

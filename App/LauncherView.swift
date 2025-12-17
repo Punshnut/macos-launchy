@@ -853,7 +853,7 @@ struct LauncherView: View {
 
     private var isHighQualityCoolingDown: Bool {
         guard let lastPageChangeDate else { return false }
-        return Date().timeIntervalSince(lastPageChangeDate) < 0.6
+        return Date().timeIntervalSince(lastPageChangeDate) < 0.42
     }
 
     private var isUnderInteractionPressure: Bool {
@@ -865,14 +865,15 @@ struct LauncherView: View {
         if shouldUseHighQualityIcons {
             return (layout.iconDimension, .medium)
         }
-        let reduced = max(layout.iconDimension * 0.55, 48)
-        return (reduced, .low)
+        let reduced = max(layout.iconDimension * 0.7, 52)
+        let quality: IconRenderQuality = launcherMode == .floaty ? .low : .medium
+        return (reduced, quality)
     }
 
     private func folderTileIconRequest(for layout: LauncherLayoutMetrics) -> (dimension: CGFloat, quality: IconRenderQuality) {
         let base = baseIconRequest(for: layout)
-        let scaledDimension = max(base.dimension * 0.72, 40)
-        return (scaledDimension, base.quality)
+        let scaledDimension = max(base.dimension * 0.6, 34)
+        return (scaledDimension, .low)
     }
 
     private func highQualityRequestDimension(for layout: LauncherLayoutMetrics) -> CGFloat {
@@ -883,7 +884,7 @@ struct LauncherView: View {
     private func markPageSwitch() {
         lastPageChangeDate = Date()
         bumpHighQualityRequestEpoch(resetPending: true)
-        enterPerformanceShedding()
+        enterPerformanceShedding(duration: 0.45)
     }
 
     private func bumpHighQualityRequestEpoch(resetPending: Bool = false) {
@@ -941,7 +942,7 @@ struct LauncherView: View {
         guard width > 0 else { return }
         beginPagerInteraction(pageWidth: width)
 
-        let scale: CGFloat = isPrecise ? 1.0 : 12.0
+        let scale: CGFloat = isPrecise ? 1.0 : 13.0
         pagerDragOffset = clampPagerOffset(pagerDragOffset + deltaX * scale, pageWidth: width)
         lastPagerDragDate = Date()
         if phase.isEmpty && momentumPhase.isEmpty && isPrecise == false {
@@ -965,13 +966,13 @@ struct LauncherView: View {
         let totalOffset = pagerDragOffset + projectedDelta
         let progress = totalOffset / normalizedWidth
         let snapThreshold: CGFloat = 0.07
-        let fastThreshold: CGFloat = 0.22
-        let doubleProgressThreshold: CGFloat = 1.65
-        let highVelocityThreshold: CGFloat = 1.15
+        let fastThreshold: CGFloat = 0.18
+        let doubleProgressThreshold: CGFloat = 1.35
+        let highVelocityThreshold: CGFloat = 0.9
         let velocity = projectedDelta / normalizedWidth
         let absVelocity = abs(velocity)
         let absProgress = abs(progress)
-        let recentDrag = (lastPagerDragDate.map { Date().timeIntervalSince($0) < 0.12 }) ?? false
+        let recentDrag = (lastPagerDragDate.map { Date().timeIntervalSince($0) < 0.2 }) ?? false
         let directionSign: Int = {
             if absVelocity > 0.15 {
                 return velocity > 0 ? 1 : -1
@@ -2102,9 +2103,9 @@ struct LauncherView: View {
     /// Composes a 3x3 grid of the first nine app icons to mimic the macOS folder style.
     private func folderIcon(for folder: FolderItem, layout: LauncherLayoutMetrics) -> some View {
         let previews = Array(folder.apps.prefix(9))
-        let spacing = max(layout.iconDimension * 0.04, 2)
-        let padding = spacing
-        let tileSize = max((layout.iconDimension - padding * 2 - spacing * 2) / 3, 10)
+        let spacing = max(layout.iconDimension * 0.035, 2)
+        let padding = spacing * 1.05
+        let tileSize = max(((layout.iconDimension * 0.9) - padding * 2 - spacing * 2) / 3, 9)
         let columns = Array(repeating: GridItem(.fixed(tileSize), spacing: spacing, alignment: .center), count: 3)
         let isSnapPreviewTarget = folder.id == folderSnapPreviewTargetID
 

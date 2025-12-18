@@ -39,17 +39,13 @@ final class SettingsWindowStore: NSObject, ObservableObject {
 
     /// Reloads the list of apps on a background queue.
     func reloadApps() {
-        let discoveryEngine = appDiscoveryService
+        // AppDiscoveryService leans on AppKit types and shared caches, so keep calls on the main
+        // actor to avoid thread-hopping crashes that happen when the settings window reloads.
         let includeUserApplications = settingsSnapshot.shouldScanUserApplicationsFolder
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            let (mainApps, userApps) = discoveryEngine.reloadApps(
-                includeUserApplicationsFolder: includeUserApplications
-            )
-            let discoveredApps = mainApps + userApps
-            Task { @MainActor [weak self] in
-                self?.discoveredApps = discoveredApps
-            }
-        }
+        let (mainApps, userApps) = appDiscoveryService.reloadApps(
+            includeUserApplicationsFolder: includeUserApplications
+        )
+        discoveredApps = mainApps + userApps
     }
 
     /// Resolves the cached icon for the given app without storing it permanently.

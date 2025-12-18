@@ -667,6 +667,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func markLauncherDidShow() {
+        applicationDiscovery.applyCacheLimitScaling(1)
         lastLauncherVisibilityChange = Date()
     }
 

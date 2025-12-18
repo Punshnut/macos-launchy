@@ -64,6 +64,56 @@ private struct SearchableAppEntry {
     let normalizedBundleIdentifier: String
 }
 
+private final class FolderPreviewCache: @unchecked Sendable {
+    private let cache: NSCache<NSString, NSImage>
+    private let lock = NSLock()
+    private var warmupTokens: Set<String> = []
+
+    init() {
+        let cache = NSCache<NSString, NSImage>()
+        cache.countLimit = 120
+        cache.totalCostLimit = 18 * 1024 * 1024
+        self.cache = cache
+    }
+
+    func cacheKey(for app: AppItem, dimension: CGFloat, quality: IconRenderQuality) -> String {
+        let rounded = Int(dimension.rounded())
+        return "\(app.bundleIdentifier)|\(rounded)|\(quality.rawValue)"
+    }
+
+    func cachedIcon(for key: String) -> NSImage? {
+        cache.object(forKey: key as NSString)
+    }
+
+    func store(_ icon: NSImage, for key: String) {
+        let cost = Int(icon.size.width * icon.size.height)
+        cache.setObject(icon, forKey: key as NSString, cost: cost)
+    }
+
+    func beginWarmupIfNeeded(token: String) -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        if warmupTokens.contains(token) {
+            return false
+        }
+        warmupTokens.insert(token)
+        return true
+    }
+
+    func finishWarmup(token: String) {
+        lock.lock()
+        warmupTokens.remove(token)
+        lock.unlock()
+    }
+
+    func purge() {
+        cache.removeAllObjects()
+        lock.lock()
+        warmupTokens.removeAll()
+        lock.unlock()
+    }
+}
+
 /// Displays the grid of discovered items (apps and folders) and handles pagination/launch events.
 struct LauncherView: View {
     /// Data source backing the grid.
@@ -452,6 +502,8 @@ struct LauncherView: View {
     @State private var shouldSkipActiveFolderChangeEffects = false
     @Namespace private var folderIconAnimationNamespace
     private let highQualityRenderQueue = DispatchQueue(label: "com.launchy.icon.high", qos: .utility)
+    private static let folderPreviewWarmupQueue = DispatchQueue(label: "com.launchy.icon.folder-preview", qos: .utility)
+    private static let folderPreviewCache = FolderPreviewCache()
     @State private var pagerDragOffset: CGFloat = 0
     @State private var pagerViewportWidth: CGFloat = 1
     @State private var lastPagerDragDate: Date?
@@ -538,6 +590,7 @@ struct LauncherView: View {
         .onReceive(NotificationCenter.default.publisher(for: .launcherShouldPurgeVisualCaches)) { _ in
             purgeHighQualityOverrides()
             cancelPendingHighQualityRequests()
+            purgeFolderPreviewCache()
         }
         .onChange(of: activeFolder) { newValue in
             if shouldSkipActiveFolderChangeEffects {
@@ -876,6 +929,54 @@ struct LauncherView: View {
         return (scaledDimension, .low)
     }
 
+    private func folderPreviewIcon(for app: AppItem, layout: LauncherLayoutMetrics) -> NSImage? {
+        let request = folderTileIconRequest(for: layout)
+        let cache = Self.folderPreviewCache
+        let key = cache.cacheKey(for: app, dimension: request.dimension, quality: request.quality)
+        if let cached = cache.cachedIcon(for: key) {
+            return cached
+        }
+        let resolved = iconProvider(app, request.dimension, request.quality) ?? app.iconImage
+        if let resolved {
+            cache.store(resolved, for: key)
+        }
+        return resolved
+    }
+
+    private func warmFolderPreviewIcons(for folder: FolderItem, layout: LauncherLayoutMetrics) {
+        let request = folderTileIconRequest(for: layout)
+        let apps = Array(folder.apps.prefix(9))
+        guard apps.isEmpty == false else { return }
+        let cache = Self.folderPreviewCache
+        let keys = apps.map { cache.cacheKey(for: $0, dimension: request.dimension, quality: request.quality) }
+        let missing = keys.contains { cache.cachedIcon(for: $0) == nil }
+        guard missing else { return }
+
+        let token = "\(folder.id.uuidString)|\(Int(request.dimension.rounded()))|\(apps.map(\.id).hashValue)"
+        guard cache.beginWarmupIfNeeded(token: token) else { return }
+
+        let provider: @Sendable (AppItem, CGFloat, IconRenderQuality) -> NSImage? = iconProvider
+        let dimension = request.dimension
+        let quality = request.quality
+        let queue = Self.folderPreviewWarmupQueue
+        queue.async {
+            for (app, key) in zip(apps, keys) {
+                if cache.cachedIcon(for: key) != nil {
+                    continue
+                }
+                let resolved = provider(app, dimension, quality) ?? app.iconImage
+                if let resolved {
+                    cache.store(resolved, for: key)
+                }
+            }
+            cache.finishWarmup(token: token)
+        }
+    }
+
+    private func purgeFolderPreviewCache() {
+        Self.folderPreviewCache.purge()
+    }
+
     private func highQualityRequestDimension(for layout: LauncherLayoutMetrics) -> CGFloat {
         let boosted = max(layout.iconDimension * 1.2, layout.iconDimension)
         return min(boosted, 200)
@@ -941,6 +1042,9 @@ struct LauncherView: View {
         let width = pagerViewportWidth
         guard width > 0 else { return }
         beginPagerInteraction(pageWidth: width)
+        if isUnderInteractionPressure == false {
+            enterPerformanceShedding(duration: 0.55, cancelHeavyWork: false)
+        }
 
         let scale: CGFloat = isPrecise ? 1.0 : 13.0
         pagerDragOffset = clampPagerOffset(pagerDragOffset + deltaX * scale, pageWidth: width)
@@ -1026,6 +1130,9 @@ struct LauncherView: View {
         let width = folderPagerViewportWidth
         guard width > 0 else { return }
         folderBeginPagerInteraction(pageWidth: width)
+        if isUnderInteractionPressure == false {
+            enterPerformanceShedding(duration: 0.55, cancelHeavyWork: false)
+        }
 
         let scale: CGFloat = isPrecise ? 1.0 : 12.0
         folderPagerDragOffset = folderClampPagerOffset(folderPagerDragOffset + deltaX * scale, pageWidth: width)
@@ -2153,13 +2260,18 @@ struct LauncherView: View {
         .animation(.easeInOut(duration: 0.25), value: isSnapPreviewTarget)
         .environment(\.colorScheme, colorScheme)
         .animation(nil, value: searchControlsExpanded)
+        .onAppear {
+            warmFolderPreviewIcons(for: folder, layout: layout)
+        }
+        .onChange(of: folder.apps.map(\.id)) { _ in
+            warmFolderPreviewIcons(for: folder, layout: layout)
+        }
     }
 
     /// Shows a single tiny app icon inside the folder preview grid.
     @ViewBuilder
     private func folderTile(for app: AppItem, layout: LauncherLayoutMetrics) -> some View {
-        let request = folderTileIconRequest(for: layout)
-        let resolvedIcon = iconProvider(app, request.dimension, request.quality) ?? app.iconImage
+        let resolvedIcon = folderPreviewIcon(for: app, layout: layout)
         Group {
             if let icon = resolvedIcon {
                 Image(nsImage: icon)
@@ -2954,6 +3066,7 @@ struct LauncherView: View {
             )
             .transition(.opacity)
             .onAppear {
+                warmFolderPreviewIcons(for: folder, layout: layout)
                 updateActiveFolderPageCount(pageCount)
             }
             .onChange(of: pageCount) { newCount in

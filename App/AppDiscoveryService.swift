@@ -628,7 +628,7 @@ final class AppDiscoveryService {
         var sourceBuffer = vImage_Buffer()
         defer { free(sourceBuffer.data) }
 
-        var initError = vImageBuffer_InitWithCGImage(
+        let initError = vImageBuffer_InitWithCGImage(
             &sourceBuffer,
             &format,
             nil,

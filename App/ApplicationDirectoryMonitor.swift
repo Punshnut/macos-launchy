@@ -13,6 +13,9 @@ final class ApplicationDirectoryMonitor {
     private let debounceInterval: TimeInterval
     private let pollingInterval: TimeInterval?
     private let changeHandler: () -> Void
+    private let fileManager: FileManager = .default
+    private var directories: [URL] = []
+    private var directorySnapshots: [String: Date] = [:]
     private var observations: [Observation] = []
     private var pendingWorkItem: DispatchWorkItem?
     private var pollingSource: DispatchSourceTimer?
@@ -29,6 +32,7 @@ final class ApplicationDirectoryMonitor {
         self.pollingInterval = pollingInterval
         self.changeHandler = changeHandler
         observe(directories: directories)
+        recordDirectorySnapshots()
         startPollingIfNeeded()
     }
 
@@ -51,6 +55,7 @@ final class ApplicationDirectoryMonitor {
     /// Registers file system watchers for the provided application directories.
     private func observe(directories: [URL]) {
         let directoriesToWatch = uniqueDirectories(from: directories)
+        self.directories = directoriesToWatch
         for directory in directoriesToWatch {
             guard FileManager.default.fileExists(atPath: directory.path) else {
                 continue
@@ -107,7 +112,11 @@ final class ApplicationDirectoryMonitor {
         let timer = DispatchSource.makeTimerSource(queue: queue)
         timer.schedule(deadline: .now() + pollingInterval, repeating: pollingInterval)
         timer.setEventHandler { [weak self] in
-            self?.scheduleChange()
+            guard let self else { return }
+            if self.hasDirectoryChangesSinceLastSnapshot() {
+                self.recordDirectorySnapshots()
+                self.scheduleChange()
+            }
         }
         timer.resume()
         pollingSource = timer
@@ -116,6 +125,7 @@ final class ApplicationDirectoryMonitor {
     /// Debounces rapid file system signals before invoking the caller's handler.
     private func scheduleChange() {
         pendingWorkItem?.cancel()
+        recordDirectorySnapshots()
         let work = DispatchWorkItem { [weak self] in
             guard let self else { return }
             self.pendingWorkItem = nil
@@ -123,5 +133,33 @@ final class ApplicationDirectoryMonitor {
         }
         pendingWorkItem = work
         queue.asyncAfter(deadline: .now() + debounceInterval, execute: work)
+    }
+
+    private func recordDirectorySnapshots() {
+        for directory in directories {
+            guard let attributes = try? fileManager.attributesOfItem(atPath: directory.path),
+                  let modified = attributes[.modificationDate] as? Date else {
+                continue
+            }
+            directorySnapshots[directory.path] = modified
+        }
+    }
+
+    private func hasDirectoryChangesSinceLastSnapshot() -> Bool {
+        for directory in directories {
+            guard let attributes = try? fileManager.attributesOfItem(atPath: directory.path),
+                  let modified = attributes[.modificationDate] as? Date else {
+                // If we cannot read attributes, err on the side of triggering a refresh.
+                return true
+            }
+            if let previous = directorySnapshots[directory.path] {
+                if modified > previous {
+                    return true
+                }
+            } else {
+                return true
+            }
+        }
+        return false
     }
 }

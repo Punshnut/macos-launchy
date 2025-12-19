@@ -50,9 +50,16 @@
 "Floaty Panel" = "浮层面板";
 "System" = "系统";
 "Graphite" = "石墨";
+"Indigo" = "靛蓝";
 "Blue" = "蓝色";
+"Cyan" = "青色";
+"Teal" = "青绿色";
 "Green" = "绿色";
+"Mint" = "薄荷绿";
+"Yellow" = "黄色";
 "Orange" = "橙色";
+"Pink" = "粉色";
+"Purple" = "紫色";
 "Standard" = "标准";
 "Light Blur" = "轻模糊";
 "Transparent" = "透明";
@@ -97,6 +104,7 @@
 "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "删除已保存的排序和文件夹，然后从头重建页面。自定义应用名保留，隐藏应用继续隐藏。输入 RESET 以确认。";
 "Application" = "应用";
 "Hidden" = "隐藏";
+"Show hidden apps first" = "优先显示隐藏的应用";
 "Scanning for applications..." = "正在扫描应用...";
 "About Launchy" = "关于 Launchy";
 "Version details, credits, and useful links." = "版本详情、致谢与有用链接。";

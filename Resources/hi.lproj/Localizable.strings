@@ -50,9 +50,16 @@
 "Floaty Panel" = "फ़्लोटी पैनल";
 "System" = "सिस्टम";
 "Graphite" = "ग्रेफ़ाइट";
+"Indigo" = "नील";
 "Blue" = "नीला";
+"Cyan" = "सियान";
+"Teal" = "टील";
 "Green" = "हरा";
+"Mint" = "मिंट";
+"Yellow" = "पीला";
 "Orange" = "नारंगी";
+"Pink" = "गुलाबी";
+"Purple" = "बैंगनी";
 "Standard" = "मानक";
 "Light Blur" = "हल्का ब्लर";
 "Transparent" = "पारदर्शी";
@@ -97,6 +104,7 @@
 "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "यह आपकी सेव किए गए क्रम और फ़ोल्डरों को हटाता है, फिर पृष्ठों को फिर से बनाता है। कस्टम ऐप नाम रहे, छिपी ऐप्स छिपी रहें। पुष्टि के लिए RESET टाइप करें।";
 "Application" = "एप्लिकेशन";
 "Hidden" = "छिपा हुआ";
+"Show hidden apps first" = "छिपी हुई ऐप्स पहले दिखाएँ";
 "Scanning for applications..." = "एप्लिकेशन की स्कैनिंग जारी है...";
 "About Launchy" = "Launchy के बारे में";
 "Version details, credits, and useful links." = "संस्करण विवरण, श्रेय, और उपयोगी लिंक।";

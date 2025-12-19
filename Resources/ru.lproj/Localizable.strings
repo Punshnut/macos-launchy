@@ -50,9 +50,16 @@
 "Floaty Panel" = "Панель Floaty";
 "System" = "Система";
 "Graphite" = "Графит";
+"Indigo" = "Индиго";
 "Blue" = "Синий";
+"Cyan" = "Циан";
+"Teal" = "Бирюзовый";
 "Green" = "Зелёный";
+"Mint" = "Мята";
+"Yellow" = "Жёлтый";
 "Orange" = "Оранжевый";
+"Pink" = "Розовый";
+"Purple" = "Фиолетовый";
 "Standard" = "Стандартный";
 "Light Blur" = "Лёгкое размытие";
 "Transparent" = "Прозрачный";
@@ -97,6 +104,7 @@
 "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Удаляет сохранённый порядок и папки, затем перестраивает страницы заново. Переименованные приложения и скрытые остаются. Введите RESET для подтверждения.";
 "Application" = "Приложение";
 "Hidden" = "Скрыто";
+"Show hidden apps first" = "Показывать скрытые приложения первыми";
 "Scanning for applications..." = "Сканирование приложений...";
 "About Launchy" = "О Launchy";
 "Version details, credits, and useful links." = "Детали версии, благодарности и полезные ссылки.";

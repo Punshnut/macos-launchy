@@ -50,9 +50,16 @@
 "Floaty Panel" = "لوحة Floaty";
 "System" = "النظام";
 "Graphite" = "الجرافيت";
+"Indigo" = "نيلي";
 "Blue" = "أزرق";
+"Cyan" = "سماوي";
+"Teal" = "تركوازي";
 "Green" = "أخضر";
+"Mint" = "نعناع";
+"Yellow" = "أصفر";
 "Orange" = "برتقالي";
+"Pink" = "وردي";
+"Purple" = "أرجواني";
 "Standard" = "قياسي";
 "Light Blur" = "تعتيم خفيف";
 "Transparent" = "شفاف";
@@ -97,6 +104,7 @@
 "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "يحذف ترتيبك والمجلدات المحفوظة، ثم يعيد بناء الصفحات من الصفر. تظل الأسماء المخصصة والمخفيّة كما هي. اكتب RESET للتأكيد.";
 "Application" = "تطبيق";
 "Hidden" = "مخفي";
+"Show hidden apps first" = "إظهار التطبيقات المخفية أولاً";
 "Scanning for applications..." = "جارٍ فحص التطبيقات...";
 "About Launchy" = "حول Launchy";
 "Version details, credits, and useful links." = "تفاصيل الإصدار، الشكر، وروابط مفيدة.";

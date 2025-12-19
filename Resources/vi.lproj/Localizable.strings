@@ -50,9 +50,16 @@
 "Floaty Panel" = "Bảng Floaty";
 "System" = "Hệ thống";
 "Graphite" = "Graphite";
+"Indigo" = "Chàm";
 "Blue" = "Xanh lam";
+"Cyan" = "Xanh lơ";
+"Teal" = "Xanh ngọc";
 "Green" = "Xanh lá";
+"Mint" = "Bạc hà";
+"Yellow" = "Vàng";
 "Orange" = "Cam";
+"Pink" = "Hồng";
+"Purple" = "Tím";
 "Standard" = "Chuẩn";
 "Light Blur" = "Mờ nhẹ";
 "Transparent" = "Trong suốt";
@@ -97,6 +104,7 @@
 "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Xóa thứ tự và thư mục đã lưu của bạn, sau đó khôi phục trang từ đầu. Tên ứng dụng tùy chỉnh giữ nguyên, ứng dụng ẩn vẫn ẩn. Gõ RESET để xác nhận.";
 "Application" = "Ứng dụng";
 "Hidden" = "Đã ẩn";
+"Show hidden apps first" = "Hiển thị ứng dụng ẩn lên trước";
 "Scanning for applications..." = "Đang quét ứng dụng...";
 "About Launchy" = "Về Launchy";
 "Version details, credits, and useful links." = "Thông tin phiên bản, ghi nhận và liên kết hữu ích.";

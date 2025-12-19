@@ -3964,7 +3964,7 @@ struct LauncherView: View {
         case .light:
             return false
         case .solid:
-            return solidBackgroundColor.nsColor.launchy_perceivedBrightness < 0.6
+            return solidBackgroundColor.nsColor.launchy_perceivedBrightness < 0.75
         case .transparent:
             return colorScheme == .dark
         }

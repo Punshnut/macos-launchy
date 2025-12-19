@@ -387,7 +387,7 @@ struct SettingsWindow: View {
             Text(String(localized: "Solid color"))
                 .font(.caption)
                 .foregroundColor(.secondary)
-            HStack(spacing: 12) {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 32), spacing: 12)], spacing: 12) {
                 ForEach(LauncherSettings.SolidBackgroundColor.allCases, id: \.self) { colorOption in
                     let isSelected = settingsStore.settingsSnapshot.solidBackgroundColor == colorOption
                     Button {

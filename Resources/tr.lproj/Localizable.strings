@@ -50,9 +50,16 @@
 "Floaty Panel" = "Kayan panel";
 "System" = "Sistem";
 "Graphite" = "Grafit";
+"Indigo" = "Çivit";
 "Blue" = "Mavi";
+"Cyan" = "Camgöbeği";
+"Teal" = "Turkuaz";
 "Green" = "Yeşil";
+"Mint" = "Nane";
+"Yellow" = "Sarı";
 "Orange" = "Turuncu";
+"Pink" = "Pembe";
+"Purple" = "Mor";
 "Standard" = "Standart";
 "Light Blur" = "Hafif bulanıklık";
 "Transparent" = "Şeffaf";
@@ -97,6 +104,7 @@
 "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Kaydedilen sıralamayı ve klasörleri siler, sayfaları baştan kurar. Özel adlar kalır, gizli uygulamalar gizli kalır. Onaylamak için RESET yaz.";
 "Application" = "Uygulama";
 "Hidden" = "Gizli";
+"Show hidden apps first" = "Gizli uygulamaları önce göster";
 "Scanning for applications..." = "Uygulamalar taranıyor...";
 "About Launchy" = "Launchy hakkında";
 "Version details, credits, and useful links." = "Sürüm bilgileri, teşekkürler ve faydalı bağlantılar.";

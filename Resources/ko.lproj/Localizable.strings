@@ -50,9 +50,16 @@
 "Floaty Panel" = "Floaty 패널";
 "System" = "시스템";
 "Graphite" = "흑연";
+"Indigo" = "인디고";
 "Blue" = "파랑";
+"Cyan" = "시안";
+"Teal" = "청록색";
 "Green" = "녹색";
+"Mint" = "민트";
+"Yellow" = "노랑";
 "Orange" = "주황";
+"Pink" = "분홍색";
+"Purple" = "보라색";
 "Standard" = "표준";
 "Light Blur" = "라이트 블러";
 "Transparent" = "투명";
@@ -97,6 +104,7 @@
 "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "저장된 순서와 폴더를 삭제하고 페이지를 처음부터 다시 만듭니다. 맞춤 앱 이름과 숨김 앱은 유지됩니다. 확인하려면 RESET을 입력하세요.";
 "Application" = "애플리케이션";
 "Hidden" = "숨김";
+"Show hidden apps first" = "숨김 앱을 먼저 표시";
 "Scanning for applications..." = "애플리케이션 스캔 중...";
 "About Launchy" = "Launchy 정보";
 "Version details, credits, and useful links." = "버전 정보, 크레딧, 유용한 링크.";

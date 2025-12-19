@@ -71,7 +71,7 @@ final class AppDiscoveryService {
         return normalizedIconData(for: icon)
     }()
     /// Global scale applied to icon bitmaps to reduce peak memory usage without changing layout sizes.
-    private static let iconResolutionScale: CGFloat = 0.75
+    private static let iconResolutionScale: CGFloat = 0.65
     private static let maximumIconDimension: CGFloat = CGFloat(256) * iconResolutionScale
     private static let iconCacheCountLimit = 200
     private static let preparedIconCacheCountLimit = 260

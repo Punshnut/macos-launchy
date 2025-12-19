@@ -50,9 +50,16 @@
 "Floaty Panel" = "Floaty Panel";
 "System" = "System";
 "Graphite" = "Graphite";
+"Indigo" = "Indigo";
 "Blue" = "Blue";
+"Cyan" = "Cyan";
+"Teal" = "Teal";
 "Green" = "Green";
+"Mint" = "Mint";
+"Yellow" = "Yellow";
 "Orange" = "Orange";
+"Pink" = "Pink";
+"Purple" = "Purple";
 "Standard" = "Standard";
 "Light Blur" = "Light Blur";
 "Transparent" = "Transparent";
@@ -97,6 +104,7 @@
 "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm.";
 "Application" = "Application";
 "Hidden" = "Hidden";
+"Show hidden apps first" = "Show hidden apps first";
 "Scanning for applications..." = "Scanning for applications...";
 "About Launchy" = "About Launchy";
 "Version details, credits, and useful links." = "Version details, credits, and useful links.";

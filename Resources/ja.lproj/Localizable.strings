@@ -50,9 +50,16 @@
 "Floaty Panel" = "Floaty パネル";
 "System" = "システム";
 "Graphite" = "グラファイト";
+"Indigo" = "インディゴ";
 "Blue" = "ブルー";
+"Cyan" = "シアン";
+"Teal" = "ティール";
 "Green" = "グリーン";
+"Mint" = "ミント";
+"Yellow" = "イエロー";
 "Orange" = "オレンジ";
+"Pink" = "ピンク";
+"Purple" = "パープル";
 "Standard" = "スタンダード";
 "Light Blur" = "ライトブラー";
 "Transparent" = "透明";
@@ -97,6 +104,7 @@
 "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "保存された順序とフォルダを削除し、ページを一から再構築します。カスタムアプリ名と非表示アプリはそのままです。確認するには RESET を入力してください。";
 "Application" = "アプリ";
 "Hidden" = "非表示";
+"Show hidden apps first" = "非表示のアプリを先頭に表示";
 "Scanning for applications..." = "アプリをスキャン中...";
 "About Launchy" = "Launchy について";
 "Version details, credits, and useful links." = "バージョン詳細、クレジット、便利なリンク。";

@@ -254,18 +254,32 @@ struct LauncherSettings: Hashable, Codable {
     enum SolidBackgroundColor: String, CaseIterable, Hashable, Codable {
         case system
         case graphite
+        case indigo
         case blue
+        case cyan
+        case teal
         case green
+        case mint
+        case yellow
         case orange
+        case pink
+        case purple
 
         /// User-facing label.
         var displayName: String {
             switch self {
             case .system: return String(localized: "System")
             case .graphite: return String(localized: "Graphite")
+            case .indigo: return String(localized: "Indigo")
             case .blue: return String(localized: "Blue")
+            case .cyan: return String(localized: "Cyan")
+            case .teal: return String(localized: "Teal")
             case .green: return String(localized: "Green")
+            case .mint: return String(localized: "Mint")
+            case .yellow: return String(localized: "Yellow")
             case .orange: return String(localized: "Orange")
+            case .purple: return String(localized: "Purple")
+            case .pink: return String(localized: "Pink")
             }
         }
 
@@ -275,13 +289,27 @@ struct LauncherSettings: Hashable, Codable {
             case .system:
                 return .windowBackgroundColor
             case .graphite:
-                return NSColor(calibratedWhite: 0.16, alpha: 1.0)
+                return NSColor(calibratedRed: 0.12, green: 0.13, blue: 0.15, alpha: 1.0)
+            case .indigo:
+                return NSColor(calibratedRed: 0.36, green: 0.38, blue: 0.82, alpha: 1.0)
             case .blue:
-                return NSColor(calibratedRed: 0.12, green: 0.26, blue: 0.54, alpha: 1.0)
+                return NSColor(calibratedRed: 0.16, green: 0.38, blue: 0.93, alpha: 1.0)
+            case .cyan:
+                return NSColor(calibratedRed: 0.16, green: 0.68, blue: 0.86, alpha: 1.0)
+            case .teal:
+                return NSColor(calibratedRed: 0.04, green: 0.62, blue: 0.60, alpha: 1.0)
             case .green:
-                return NSColor(calibratedRed: 0.13, green: 0.42, blue: 0.24, alpha: 1.0)
+                return NSColor(calibratedRed: 0.10, green: 0.55, blue: 0.46, alpha: 1.0)
+            case .mint:
+                return NSColor(calibratedRed: 0.52, green: 0.82, blue: 0.60, alpha: 1.0)
+            case .yellow:
+                return NSColor(calibratedRed: 0.98, green: 0.82, blue: 0.32, alpha: 1.0)
             case .orange:
-                return NSColor(calibratedRed: 0.72, green: 0.39, blue: 0.07, alpha: 1.0)
+                return NSColor(calibratedRed: 0.90, green: 0.42, blue: 0.17, alpha: 1.0)
+            case .purple:
+                return NSColor(calibratedRed: 0.52, green: 0.38, blue: 0.89, alpha: 1.0)
+            case .pink:
+                return NSColor(calibratedRed: 0.94, green: 0.36, blue: 0.62, alpha: 1.0)
             }
         }
     }

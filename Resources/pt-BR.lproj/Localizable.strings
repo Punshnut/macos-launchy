@@ -50,9 +50,16 @@
 "Floaty Panel" = "Painel flutuante";
 "System" = "Sistema";
 "Graphite" = "Grafite";
+"Indigo" = "Índigo";
 "Blue" = "Azul";
+"Cyan" = "Ciano";
+"Teal" = "Verde-azulado";
 "Green" = "Verde";
+"Mint" = "Menta";
+"Yellow" = "Amarelo";
 "Orange" = "Laranja";
+"Pink" = "Rosa";
+"Purple" = "Roxo";
 "Standard" = "Padrão";
 "Light Blur" = "Desfoque suave";
 "Transparent" = "Transparente";
@@ -97,6 +104,7 @@
 "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Apaga a ordem e as pastas salvas e recria as páginas do zero. Os nomes personalizados ficam e os apps ocultos continuam ocultos. Digite RESET para confirmar.";
 "Application" = "Aplicativo";
 "Hidden" = "Oculto";
+"Show hidden apps first" = "Mostrar apps ocultos primeiro";
 "Scanning for applications..." = "Procurando aplicativos...";
 "About Launchy" = "Sobre o Launchy";
 "Version details, credits, and useful links." = "Detalhes da versão, créditos e links úteis.";

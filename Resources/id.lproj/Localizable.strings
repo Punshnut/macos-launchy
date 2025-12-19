@@ -50,9 +50,16 @@
 "Floaty Panel" = "Panel Floaty";
 "System" = "Sistem";
 "Graphite" = "Grafit";
+"Indigo" = "Indigo";
 "Blue" = "Biru";
+"Cyan" = "Sian";
+"Teal" = "Hijau toska";
 "Green" = "Hijau";
+"Mint" = "Mint";
+"Yellow" = "Kuning";
 "Orange" = "Oranye";
+"Pink" = "Merah Muda";
+"Purple" = "Ungu";
 "Standard" = "Standar";
 "Light Blur" = "Kabur ringan";
 "Transparent" = "Transparan";
@@ -97,6 +104,7 @@
 "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Menghapus urutan dan folder yang tersimpan, lalu membangun ulang halaman dari awal. Nama kustom dan aplikasi tersembunyi tetap utuh. Ketik RESET untuk konfirmasi.";
 "Application" = "Aplikasi";
 "Hidden" = "Tersembunyi";
+"Show hidden apps first" = "Tampilkan aplikasi tersembunyi terlebih dahulu";
 "Scanning for applications..." = "Memindai aplikasi...";
 "About Launchy" = "Tentang Launchy";
 "Version details, credits, and useful links." = "Detail versi, kredit, dan tautan berguna.";

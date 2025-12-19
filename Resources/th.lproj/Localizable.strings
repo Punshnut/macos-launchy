@@ -50,9 +50,16 @@
 "Floaty Panel" = "แผง Floaty";
 "System" = "ระบบ";
 "Graphite" = "กราไฟท์";
+"Indigo" = "สีน้ำเงินคราม";
 "Blue" = "น้ำเงิน";
+"Cyan" = "สีฟ้าอมเขียว";
+"Teal" = "สีเขียวเป็ดน้ำ";
 "Green" = "เขียว";
+"Mint" = "สีเขียวมิ้นต์";
+"Yellow" = "สีเหลือง";
 "Orange" = "ส้ม";
+"Pink" = "สีชมพู";
+"Purple" = "สีม่วง";
 "Standard" = "มาตรฐาน";
 "Light Blur" = "เบลอแบบอ่อน";
 "Transparent" = "โปร่งใส";
@@ -97,6 +104,7 @@
 "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "ลบการจัดเรียงและโฟลเดอร์ที่บันทึกไว้ แล้วสร้างหน้าใหม่ตั้งแต่ต้น ชื่อแอปที่กำหนดเองและแอปที่ซ่อนอยู่ยังอยู่เหมือนเดิม พิมพ์ RESET เพื่อยืนยัน";
 "Application" = "แอปพลิเคชัน";
 "Hidden" = "ซ่อน";
+"Show hidden apps first" = "แสดงแอปที่ซ่อนก่อน";
 "Scanning for applications..." = "กำลังสแกนแอปพลิเคชัน...";
 "About Launchy" = "เกี่ยวกับ Launchy";
 "Version details, credits, and useful links." = "รายละเอียดเวอร์ชัน เครดิต และลิงก์ที่เป็นประโยชน์";

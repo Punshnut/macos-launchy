@@ -11,7 +11,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 <p align="center">
     <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
-    <img src="https://img.shields.io/badge/Download-Beta%200.3.4-blueviolet?style=for-the-badge" alt="Download Beta 0.3.4">
+    <img src="https://img.shields.io/badge/Download-Beta%200.3.5-blueviolet?style=for-the-badge" alt="Download Beta 0.3.5">
   </a>
 </p>
 
@@ -55,6 +55,12 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 - **Hot corners & shortcuts** - Global toggle hotkey, optional layout-switch shortcut, plus a hot corner trigger if you prefer mouse-only activation.
 - **Startup & presence controls** - Launch at login, hide or show Dock and menu bar icons independently, and keep a menu bar status item for updates and settings.
 - **Auto-updating & MIT licensed** - Every build will be notarized, and the project will remain open source and free forever.
+
+## Search that just works
+
+- **Bilingual smart match** - Searches English and your system language at once; whichever name you remember just works.
+- **Normalized substring matching** - Folds case/diacritics across names and bundle IDs, so `"cafe"` hits `"Café"` and `"face"` hits `"FaceTime"`.
+- **Instant feedback** - Light debounce + cached metadata for live results; hit `Return` for the top hit or arrows to pick another without leaving the field.
 
 ## Gestures (touchpad or mouse)
 

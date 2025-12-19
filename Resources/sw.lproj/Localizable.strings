@@ -50,9 +50,16 @@
 "Floaty Panel" = "Paneli ya Floaty";
 "System" = "Mfumo";
 "Graphite" = "Graphite";
+"Indigo" = "Indigo";
 "Blue" = "Bluu";
+"Cyan" = "Cyan";
+"Teal" = "Teal";
 "Green" = "Kijani";
+"Mint" = "Mint";
+"Yellow" = "Njano";
 "Orange" = "Machungwa";
+"Pink" = "Waridi";
+"Purple" = "Zambarau";
 "Standard" = "Kawaida";
 "Light Blur" = "Blur nyepesi";
 "Transparent" = "Uwazi";
@@ -97,6 +104,7 @@
 "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Inafuta upangaji wako uliohifadhiwa na folda, kisha inaunda kurasa tena kutoka mwanzoni. Majina ya programu yaliyobadilishwa na zilizofichwa hubaki. Andika RESET kuthibitisha.";
 "Application" = "Programu";
 "Hidden" = "Imefichwa";
+"Show hidden apps first" = "Onyesha programu zilizofichwa kwanza";
 "Scanning for applications..." = "Inatafsiri programu...";
 "About Launchy" = "Kuhusu Launchy";
 "Version details, credits, and useful links." = "Maelezo ya toleo, mikopo, na viungo muhimu.";

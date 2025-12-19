@@ -79,6 +79,12 @@ struct SettingsWindow: View {
         .onChange(of: coordinator.activeTab) { newValue in
             resizeWindow(for: newValue, animated: true)
         }
+        .onAppear {
+            settingsStore.resumeIfDormant()
+        }
+        .onDisappear {
+            settingsStore.prepareForDormancy()
+        }
     }
 
     // MARK: - Top Bar

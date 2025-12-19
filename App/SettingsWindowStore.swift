@@ -23,22 +23,22 @@ final class SettingsWindowStore: NSObject, ObservableObject {
 
     private let appDiscoveryService: AppDiscoveryService
     private var settingsStreamTask: Task<Void, Never>?
+    private var isDormant = true
 
     /// Configures the store with dependencies (mainly useful for previews/tests) and preloads data.
     init(discoveryService: AppDiscoveryService = AppDiscoveryService()) {
         self.appDiscoveryService = discoveryService
         self.settingsSnapshot = LauncherSettingsPersistence.loadSettings()
         super.init()
-        reloadApps()
-        observeSettingsChanges()
     }
 
-    deinit {
-        settingsStreamTask?.cancel()
+    @MainActor deinit {
+        prepareForDormancy()
     }
 
     /// Reloads the list of apps on a background queue.
     func reloadApps() {
+        guard isDormant == false else { return }
         // AppDiscoveryService leans on AppKit types and shared caches, so keep calls on the main
         // actor to avoid thread-hopping crashes that happen when the settings window reloads.
         let includeUserApplications = settingsSnapshot.shouldScanUserApplicationsFolder
@@ -250,6 +250,25 @@ final class SettingsWindowStore: NSObject, ObservableObject {
                 await self.reloadSettingsFromDisk()
             }
         }
+    }
+
+    /// Releases discovery caches and observers while the settings window is closed.
+    func prepareForDormancy() {
+        guard isDormant == false else { return }
+        isDormant = true
+        settingsStreamTask?.cancel()
+        settingsStreamTask = nil
+        discoveredApps = []
+        appDiscoveryService.shrinkCachesForHiddenLauncher()
+    }
+
+    /// Restores observers and data when the settings window is reopened.
+    func resumeIfDormant() {
+        guard isDormant else { return }
+        isDormant = false
+        settingsSnapshot = LauncherSettingsPersistence.loadSettings()
+        observeSettingsChanges()
+        reloadApps()
     }
 
     /// Reloads the latest settings payload from persistence.

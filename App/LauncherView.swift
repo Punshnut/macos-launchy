@@ -453,6 +453,7 @@ struct LauncherView: View {
     private let pagerButtonHitExpansion: CGFloat = 12
     private let highQualityIconCacheLimit = 90
     private let highQualityRequestDelay: TimeInterval = 0.28
+    private let searchInputDebounceNanoseconds: UInt64 = 35_000_000
 
     @State private var orderedItems: [LauncherItem]
     @State private var draggedItem: LauncherItem?
@@ -465,6 +466,10 @@ struct LauncherView: View {
     @State private var cachedFilteredItems: [LauncherItem]
     @State private var searchMetadataByAppID: [UUID: SearchableAppEntry]
     @State private var searchSelectionIndex: Int?
+    @State private var searchTask: Task<Void, Never>?
+    @State private var searchRequestID: UInt = 0
+    @State private var isSearchLoading = false
+    @State private var searchDebounceTask: Task<Void, Never>?
     @State private var searchControlsExpanded = false
     @State private var isMultiSelectModeActive = false
     @State private var multiSelectedItemIDs: Set<UUID> = []
@@ -632,7 +637,7 @@ struct LauncherView: View {
                 updateSearchControlsExpansion(to: false)
                 cancelExpansionAutoCollapse()
             }
-            updateFilteredItems()
+            scheduleSearchUpdate()
         }
         .onChange(of: draggedItem) { newItem in
             if newItem == nil {
@@ -1903,6 +1908,10 @@ struct LauncherView: View {
         hasActiveSearchQuery && filteredItemList.isEmpty == false
     }
 
+    private var showSearchLoadingIndicator: Bool {
+        hasActiveSearchQuery && isSearchLoading
+    }
+
     private var activeSearchSelectionIndex: Int? {
         guard isSearchModeActive else { return nil }
         guard let preferred = searchSelectionIndex else { return nil }
@@ -1924,14 +1933,62 @@ struct LauncherView: View {
         searchMetadataByAppID = Self.buildSearchMetadata(from: items)
     }
 
-    private func updateFilteredItems(using itemsOverride: [LauncherItem]? = nil) {
-        let items = itemsOverride ?? orderedItems
-        let query = normalizedSearchText
-        let results = Self.filterItems(items: items, query: query, metadata: searchMetadataByAppID)
+    private func applySearchResults(_ results: [LauncherItem]) {
         cachedFilteredItems = results
         clampSearchSelectionIfNeeded()
         alignSearchSelectionWithCurrentPageIfNeeded()
         notifyVisiblePagesChanged()
+    }
+
+    private func scheduleSearchUpdate() {
+        isSearchLoading = hasActiveSearchQuery
+        searchDebounceTask?.cancel()
+        searchDebounceTask = Task {
+            try? await Task.sleep(nanoseconds: searchInputDebounceNanoseconds)
+            guard Task.isCancelled == false else { return }
+            await MainActor.run {
+                updateFilteredItems()
+            }
+        }
+    }
+
+    private func updateFilteredItems(using itemsOverride: [LauncherItem]? = nil) {
+        searchDebounceTask?.cancel()
+        searchDebounceTask = nil
+        let items = itemsOverride ?? orderedItems
+        let query = normalizedSearchText
+        searchTask?.cancel()
+        searchTask = nil
+
+        guard hasActiveSearchQuery else {
+            isSearchLoading = false
+            applySearchResults(items)
+            return
+        }
+
+        isSearchLoading = true
+        searchRequestID &+= 1
+        let requestID = searchRequestID
+        let metadata = searchMetadataByAppID
+
+        searchTask = Task(priority: .userInitiated) {
+            let results = await Task.detached(priority: .userInitiated) {
+                Self.filterItems(items: items, query: query, metadata: metadata)
+            }.value
+
+            do {
+                try Task.checkCancellation()
+            } catch {
+                return
+            }
+
+            await MainActor.run {
+                guard requestID == searchRequestID else { return }
+                isSearchLoading = false
+                searchTask = nil
+                applySearchResults(results)
+            }
+        }
     }
 
     nonisolated private static func filterItems(
@@ -1947,6 +2004,9 @@ struct LauncherView: View {
         var seenAppIDs = Set<UUID>()
 
         for item in items {
+            if Task.isCancelled {
+                break
+            }
             switch item {
             case .app(let app):
                 if appMatches(
@@ -3690,13 +3750,26 @@ struct LauncherView: View {
             Image(systemName: "ellipsis.circle")
                 .scaleEffect(isEmpty ? 1 : 0.03)
                 .opacity(isEmpty ? 1 : 0)
-            Image(systemName: "xmark.circle.fill")
-                .scaleEffect(isEmpty ? 0.03 : 1)
-                .opacity(isEmpty ? 0 : 1)
+            HStack(spacing: 6) {
+                if showSearchLoadingIndicator && isEmpty == false {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .controlSize(.small)
+                        .scaleEffect(0.78)
+                        .tint(searchBarForegroundColor().opacity(0.7))
+                        .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                }
+                Image(systemName: "xmark.circle.fill")
+                    .opacity(isEmpty ? 0 : 1)
+            }
+            .scaleEffect(isEmpty ? 0.03 : 1)
+            .opacity(isEmpty ? 0 : 1)
         }
         .font(.system(size: 16, weight: .semibold))
         .foregroundColor(searchBarForegroundColor().opacity(0.58))
+        .frame(width: showSearchLoadingIndicator && isEmpty == false ? 32 : 18, height: 18, alignment: .trailing)
         .animation(searchBarIconTransition, value: isEmpty)
+        .animation(searchBarIconTransition, value: showSearchLoadingIndicator)
     }
 
     private func multiSelectToggleControl() -> some View {

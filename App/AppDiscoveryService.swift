@@ -70,7 +70,9 @@ final class AppDiscoveryService {
         }
         return normalizedIconData(for: icon)
     }()
-    private static let maximumIconDimension: CGFloat = 256
+    /// Global scale applied to icon bitmaps to reduce peak memory usage without changing layout sizes.
+    private static let iconResolutionScale: CGFloat = 0.75
+    private static let maximumIconDimension: CGFloat = CGFloat(256) * iconResolutionScale
     private static let iconCacheCountLimit = 200
     private static let preparedIconCacheCountLimit = 260
     private static let iconCacheCostLimit = 12_000_000
@@ -367,7 +369,7 @@ final class AppDiscoveryService {
 
     /// Sets cache limits tuned for icon sizes Launchy requests.
     private func configureIconCacheLimits() {
-        applyCacheLimitScaling(1)
+        applyCacheLimitScaling(Self.iconResolutionScale)
     }
 
     /// Dynamically scales the cache limits without fully clearing caches.
@@ -446,8 +448,14 @@ final class AppDiscoveryService {
         quality: IconRenderQuality,
         screenScale: CGFloat
     ) -> Int {
-        let scaled = Int(ceil(max(targetDimension, 1) * max(screenScale, 1)))
-        return min(max(scaled, 1), quality.pixelCap)
+        let scaledTarget = max(targetDimension, 1) * max(screenScale, 1) * Self.iconResolutionScale
+        let scaled = Int(ceil(scaledTarget))
+        return min(max(scaled, 1), Self.scaledPixelCap(for: quality))
+    }
+
+    private static func scaledPixelCap(for quality: IconRenderQuality) -> Int {
+        let scaledCap = Int((Double(quality.pixelCap) * Double(iconResolutionScale)).rounded(.toNearestOrAwayFromZero))
+        return max(scaledCap, 1)
     }
 
     /// Returns the current generation counter for a bundle so prepared icons can be invalidated.

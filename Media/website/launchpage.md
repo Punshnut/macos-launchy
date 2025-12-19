@@ -23,6 +23,7 @@ Launchy brings a fast, Launchpad-like fullscreen experience plus a compact Float
 - **Visual flexibility**: Blur, transparent, or solid backgrounds with a color palette.
 - **Presence settings**: Launch at login, toggle Dock and menu bar icons independently.
 - **Keyboard flow**: Arrow paging, `Return` to launch, `Cmd` + `,` for settings, and `Control` + number for direct page jumps.
+- **Localization built-in**: Ships with English plus packs for Spanish (ES/LatAm), Italian, German, French, Portuguese (EU/BR), Ukrainian, Russian, Hindi, Bahasa Indonesia, Vietnamese, Turkish, Simplified Chinese, Japanese, Korean, Thai, Hausa, Kiswahili, and Arabic.
 
 ## Get started in seconds
 
@@ -31,9 +32,10 @@ Launchy brings a fast, Launchpad-like fullscreen experience plus a compact Float
 3. Set your show/hide shortcut (defaults to `Cmd` + `Shift` + `Space`) and, if you like, a fullscreen ⇄ Floaty toggle.
 4. Optional: enable Launch at Login so Launchy is ready on every reboot.
 
-## Open source and support
+## Project & support
 
-- Code: <a href="https://github.com/Punshnut/macos-launchy">github.com/Punshnut/macos-launchy</a>
-- Issues & feedback: open an issue on GitHub.
-- Donations: <a href="https://ko-fi.com/janfeuerbacher">Ko-Fi</a> to support ongoing development.
-- Website: <a href="https://launchy.space">launchy.space</a>
+- <a href="https://github.com/Punshnut/macos-launchy">Source on GitHub</a> (MIT).
+- <a href="https://github.com/Punshnut/macos-launchy/releases/latest">Latest release</a> (auto-updating, notarized).
+- Feedback or bugs? <a href="https://github.com/Punshnut/macos-launchy/issues">Open an issue</a>.
+- Follow updates at <a href="https://launchy.space">launchy.space</a>.
+- Want to support development? <a href="https://ko-fi.com/janfeuerbacher">Ko-Fi</a>.

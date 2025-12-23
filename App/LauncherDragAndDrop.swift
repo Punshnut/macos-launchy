@@ -315,6 +315,7 @@ struct FolderReorderDropDelegate: DropDelegate {
     var performLiveReorder: (AppItem, Int) -> Void
     var insertApp: (AppItem, Int) -> Void
     var onDropEnded: (() -> Void)?
+    var lastLiveReorderTargetIndex: Binding<Int?>
 
     func dropEntered(info: DropInfo) {
         handleDropUpdate(info)
@@ -325,7 +326,12 @@ struct FolderReorderDropDelegate: DropDelegate {
         return DropProposal(operation: .move)
     }
 
+    func dropExited(info: DropInfo) {
+        lastLiveReorderTargetIndex.wrappedValue = nil
+    }
+
     func performDrop(info: DropInfo) -> Bool {
+        defer { lastLiveReorderTargetIndex.wrappedValue = nil }
         let app = draggedApp ?? resolveDraggedApp()
         let target = targetIndex(for: info.location)
 
@@ -343,6 +349,7 @@ struct FolderReorderDropDelegate: DropDelegate {
     }
 
     private func handleDropUpdate(_ info: DropInfo) {
+        lastLiveReorderTargetIndex.wrappedValue = targetIndex(for: info.location)
         guard let draggedApp = draggedApp ?? resolveDraggedApp() else { return }
         guard isAppInFolder(draggedApp) else { return }
         let target = targetIndex(for: info.location)

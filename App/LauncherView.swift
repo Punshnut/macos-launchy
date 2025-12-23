@@ -152,6 +152,14 @@ private struct WiggleMotion: ViewModifier {
     }
 }
 
+private struct ArrangementEffect: Equatable {
+    let scale: CGFloat
+    let offset: CGFloat
+    let shadowOpacity: Double
+    let shadowRadius: CGFloat
+    let shadowYOffset: CGFloat
+}
+
 /// Displays the grid of discovered items (apps and folders) and handles pagination/launch events.
 struct LauncherView: View {
     /// Data source backing the grid.
@@ -305,7 +313,7 @@ struct LauncherView: View {
         }
         .frame(width: pageWidth, height: layout.gridHeight, alignment: .leading)
         .gesture(dragGesture)
-        .animation(suppressGridAnimation ? nil : gridSpringAnimation, value: orderedItems)
+        .animation(activeGridAnimation, value: orderedItems)
         .onAppear {
             pagerViewportWidth = pageWidth
         }
@@ -392,9 +400,22 @@ struct LauncherView: View {
                     itemContextMenu(for: item)
                 }
 
+                let liftEffect = gridArrangementEffect(for: item)
+                let animatedCell = AnyView(
+                    decoratedCell
+                        .scaleEffect(liftEffect.scale)
+                        .offset(y: liftEffect.offset)
+                        .shadow(
+                            color: Color.black.opacity(liftEffect.shadowOpacity),
+                            radius: liftEffect.shadowRadius,
+                            y: liftEffect.shadowYOffset
+                        )
+                        .animation(reorderLiftAnimation, value: liftEffect)
+                )
+
                 if canReorder && isRenamingApp == false {
                     if shouldStartMultiSelectionDrag(for: item) {
-                        decoratedCell
+                        animatedCell
                             .onDrag {
                                 enterPerformanceShedding(duration: 0.6)
                                 draggedItem = item
@@ -405,7 +426,7 @@ struct LauncherView: View {
                                 multiSelectionDragPreview(layout: layout)
                             }
                     } else {
-                        decoratedCell
+                        animatedCell
                             .onDrag {
                                 enterPerformanceShedding(duration: 0.6)
                                 draggedItem = item
@@ -416,9 +437,12 @@ struct LauncherView: View {
                             }
                     }
                 } else {
-                    decoratedCell
+                    animatedCell
                 }
             }
+        }
+        .transaction { transaction in
+            transaction.animation = activeGridAnimation
         }
         .frame(width: pageWidth, height: layout.gridHeight, alignment: .top)
         .contentShape(Rectangle())
@@ -463,7 +487,8 @@ struct LauncherView: View {
                     reorderItem(
                         item,
                         to: targetIndex,
-                        animated: false
+                        animated: true,
+                        animation: liveReorderSpringAnimation
                     )
                 },
                 onModifierStateChange: handleDragModifierChange
@@ -482,13 +507,16 @@ struct LauncherView: View {
         return (1 - CGFloat(fullscreenGridEntranceProgress)) * fullscreenGridEntranceTranslation
     }
     private let gridSpringAnimation = Animation.spring(response: 0.42, dampingFraction: 0.86, blendDuration: 0.12)
+    private let liveReorderSpringAnimation = Animation.interactiveSpring(response: 0.2, dampingFraction: 0.78, blendDuration: 0.12)
+    private let folderReorderAnimation = Animation.interactiveSpring(response: 0.23, dampingFraction: 0.8, blendDuration: 0.12)
+    private let reorderLiftAnimation = Animation.spring(response: 0.26, dampingFraction: 0.82, blendDuration: 0.1)
     private let fullscreenGridEntranceAnimation = Animation.spring(
         response: 0.45,
         dampingFraction: 0.78,
         blendDuration: 0.08
     )
     private let fullscreenGridEntranceTranslation: CGFloat = 48
-    private let pageSwitchAnimation = Animation.interactiveSpring(response: 0.12, dampingFraction: 0.9, blendDuration: 0.04)
+    private let pageSwitchAnimation = Animation.easeInOut(duration: 0.18)
     private let gestureSettleAnimation = Animation.interactiveSpring(response: 0.12, dampingFraction: 0.88, blendDuration: 0.04)
     private let folderOpenAnimation = Animation.spring(response: 0.36, dampingFraction: 0.82, blendDuration: 0.08)
     private let pagerButtonHitPadding: CGFloat = 12
@@ -559,6 +587,7 @@ struct LauncherView: View {
     @State private var folderPagerViewportWidth: CGFloat = 1
     @State private var folderLastPagerDragDate: Date?
     @State private var pendingDropPage: Int?
+    @State private var folderLiveReorderTargetIndex: Int?
     @State private var folderPreviewMatchingDisabled = false
     @FocusState private var isFolderNameFieldFocused: Bool
     @FocusState private var isAppNameFieldFocused: Bool
@@ -654,13 +683,14 @@ struct LauncherView: View {
                 isEditingFolderName = false
                 folderNameDraft = ""
                 isFolderNameFieldFocused = false
-                withAnimation(.easeOut(duration: 0.18)) {
+                withAnimation(folderOpenAnimation) {
                     folderIconWaveToggle = false
                 }
                 folderPreviewMatchingDisabled = false
                 launchingItemID = nil
                 activeFolderPage = 0
                 activeFolderPageCount = 0
+                folderLiveReorderTargetIndex = nil
             } else if let folder = newValue {
                 folderNameDraft = folder.name
                 isEditingFolderName = false
@@ -691,6 +721,8 @@ struct LauncherView: View {
                 dragOriginIndex = nil
                 isDragModifierSnapActive = false
                 isPerformingMultiSelectionDrag = false
+                lastLiveReorderTargetIndex = nil
+                folderLiveReorderTargetIndex = nil
             }
             suppressGridAnimation = newItem != nil
             if newItem != nil {
@@ -909,6 +941,10 @@ struct LauncherView: View {
         isMultiSelectModeActive || draggedItem != nil || isRenamingItem || isEditingFolderName
     }
 
+    private var isReorderDragActive: Bool {
+        draggedItem != nil || draggedFolderApp != nil
+    }
+
     private var shouldCaptureArrowKeys: Bool {
         if isRenamingItem {
             return false
@@ -950,7 +986,15 @@ struct LauncherView: View {
         return CGFloat(page - current) * pageWidth + pagerDragOffset
     }
 
+    private var activeGridAnimation: Animation? {
+        if draggedItem != nil {
+            return liveReorderSpringAnimation
+        }
+        return suppressGridAnimation ? nil : gridSpringAnimation
+    }
+
     private var shouldUseHighQualityIcons: Bool {
+        guard isArrangementEditingActive == false else { return false }
         guard suppressGridAnimation == false else { return false }
         guard abs(pagerDragOffset) < 1 else { return false }
         guard isClosingLauncher == false else { return false }
@@ -973,8 +1017,26 @@ struct LauncherView: View {
         if shouldUseHighQualityIcons {
             return (layout.iconDimension, .medium)
         }
-        let reduced = max(layout.iconDimension * 0.7, 52)
-        let quality: IconRenderQuality = launcherMode == .floaty ? .low : .medium
+        let scale = currentBackingScale()
+
+        // Keep drag-time downgrade subtle and avoid over-blurring on low-DPI displays.
+        let reduction: CGFloat = {
+            if isArrangementEditingActive {
+                return 1.0 // keep size stable during drag to avoid popping
+            }
+            return scale <= 1.2 ? 0.9 : 0.7
+        }()
+
+        let reduced = max(layout.iconDimension * reduction, scale <= 1.2 ? 58 : 52)
+        let quality: IconRenderQuality = {
+            if isArrangementEditingActive {
+                return .medium // avoid quality swap on drag start
+            }
+            if scale <= 1.2 {
+                return .medium
+            }
+            return launcherMode == .floaty ? .low : .medium
+        }()
         return (reduced, quality)
     }
 
@@ -1390,7 +1452,8 @@ struct LauncherView: View {
         to targetIndex: Int,
         preferSwap: Bool = false,
         animated: Bool = true,
-        targetPageHint: Int? = nil
+        targetPageHint: Int? = nil,
+        animation: Animation? = nil
     ) -> Int? {
         guard let originalIndex = orderedItems.firstIndex(of: item) else { return nil }
         enterPerformanceShedding(duration: 0.6, cancelHeavyWork: false)
@@ -1402,7 +1465,7 @@ struct LauncherView: View {
            targetIndex != originalIndex {
             updated.swapAt(originalIndex, targetIndex)
             if animated {
-                withAnimation(gridSpringAnimation) {
+                withAnimation(animation ?? gridSpringAnimation) {
                     orderedItems = updated
                 }
             } else {
@@ -1427,7 +1490,7 @@ struct LauncherView: View {
                 targetPageHint: targetPageHint
             )
             if animated {
-                withAnimation(gridSpringAnimation) {
+                withAnimation(animation ?? gridSpringAnimation) {
                     orderedItems = updated
                 }
             } else {
@@ -1445,7 +1508,13 @@ struct LauncherView: View {
     }
 
     /// Reorders an app within a folder, keeping the active overlay in sync.
-    private func reorderApp(_ app: AppItem, inFolderWithID folderID: UUID, to targetIndex: Int, animated: Bool = true) {
+    private func reorderApp(
+        _ app: AppItem,
+        inFolderWithID folderID: UUID,
+        to targetIndex: Int,
+        animated: Bool = true,
+        animation: Animation? = nil
+    ) {
         guard let folderIndex = orderedItems.firstIndex(where: { item in
             if case let .folder(folder) = item {
                 return folder.id == folderID
@@ -1464,7 +1533,7 @@ struct LauncherView: View {
         apps.insert(app, at: boundedIndex)
 
         folder.apps = apps
-        updateFolder(folder, at: folderIndex, animated: animated)
+        updateFolder(folder, at: folderIndex, animated: animated, animation: animation)
     }
 
     /// Places an app inside a folder at the desired index, removing it from its previous location first.
@@ -1496,7 +1565,12 @@ struct LauncherView: View {
     }
 
     /// Updates a folder in the ordered list and propagates the change outward.
-    private func updateFolder(_ folder: FolderItem, at index: Int? = nil, animated: Bool = true) {
+    private func updateFolder(
+        _ folder: FolderItem,
+        at index: Int? = nil,
+        animated: Bool = true,
+        animation: Animation? = nil
+    ) {
         guard let idx = index ?? orderedItems.firstIndex(where: { item in
             if case let .folder(existing) = item {
                 return existing.id == folder.id
@@ -1507,7 +1581,7 @@ struct LauncherView: View {
         var updated = orderedItems
         updated[idx] = .folder(folder)
         if animated {
-            withAnimation(gridSpringAnimation) {
+            withAnimation(animation ?? gridSpringAnimation) {
                 orderedItems = updated
                 activeFolder = folder
             }
@@ -2188,14 +2262,16 @@ struct LauncherView: View {
 
     private func wiggleMotion(for id: UUID, layout: LauncherLayoutMetrics, isActive: Bool) -> WiggleMotion {
         let seed = Self.wiggleSeed(for: id)
-        let sway = max(layout.iconDimension * wiggleHorizontalSwayFactor, 0.7)
-        let bob = max(layout.iconDimension * wiggleVerticalBobFactor, 0.35)
+        let dragAttenuation: CGFloat = isReorderDragActive ? 0.6 : 1.0
+        let sway = max(layout.iconDimension * wiggleHorizontalSwayFactor * dragAttenuation, 0.7 * dragAttenuation)
+        let bob = max(layout.iconDimension * wiggleVerticalBobFactor * dragAttenuation, 0.35 * dragAttenuation)
+        let rotation = wiggleRotationDegrees * dragAttenuation
 
         return WiggleMotion(
             seed: seed,
             isActive: isActive,
             cycle: wiggleCycleDuration,
-            rotationDegrees: wiggleRotationDegrees,
+            rotationDegrees: rotation,
             sway: sway,
             bob: bob,
             anchor: wiggleAnchor
@@ -2225,6 +2301,88 @@ struct LauncherView: View {
             }
             return hash
         }
+    }
+
+    private func gridArrangementEffect(for item: LauncherItem) -> ArrangementEffect {
+        arrangementEffect(
+            isDragged: draggedItem?.id == item.id,
+            neighborDistance: gridNeighborDistance(for: item.id)
+        )
+    }
+
+    private func folderArrangementEffect(for app: AppItem, in folder: FolderItem) -> ArrangementEffect {
+        arrangementEffect(
+            isDragged: draggedFolderApp?.id == app.id || currentDraggedApp()?.id == app.id,
+            neighborDistance: folderNeighborDistance(for: app, in: folder)
+        )
+    }
+
+    private func arrangementEffect(isDragged: Bool, neighborDistance: Int?) -> ArrangementEffect {
+        if isDragged {
+            return ArrangementEffect(
+                scale: 1.08,
+                offset: -2.0,
+                shadowOpacity: 0.22,
+                shadowRadius: 12,
+                shadowYOffset: 8
+            )
+        }
+
+        return ArrangementEffect(
+            scale: 1.0,
+            offset: 0,
+            shadowOpacity: 0,
+            shadowRadius: 0,
+            shadowYOffset: 0
+        )
+    }
+
+    private func gridNeighborDistance(for id: UUID) -> Int? {
+        neighborDistance(
+            for: id,
+            in: orderedItems,
+            targetIndex: currentGridReorderTargetIndex()
+        )
+    }
+
+    private func folderNeighborDistance(for app: AppItem, in folder: FolderItem) -> Int? {
+        neighborDistance(
+            for: app.id,
+            in: folder.apps,
+            targetIndex: currentFolderReorderTargetIndex(for: folder)
+        )
+    }
+
+    private func currentGridReorderTargetIndex() -> Int? {
+        if let live = lastLiveReorderTargetIndex {
+            return live
+        }
+        if let dragged = draggedItem, let index = orderedItems.firstIndex(of: dragged) {
+            return index
+        }
+        return dragOriginIndex
+    }
+
+    private func currentFolderReorderTargetIndex(for folder: FolderItem) -> Int? {
+        if let live = folderLiveReorderTargetIndex {
+            return live
+        }
+        if let dragged = draggedFolderApp ?? currentDraggedApp(),
+           folder.apps.contains(dragged),
+           let index = folder.apps.firstIndex(of: dragged) {
+            return index
+        }
+        return nil
+    }
+
+    private func neighborDistance<T: Identifiable & Equatable>(
+        for id: T.ID,
+        in items: [T],
+        targetIndex: Int?
+    ) -> Int? where T.ID: Equatable {
+        guard let targetIndex else { return nil }
+        guard let currentIndex = items.firstIndex(where: { $0.id == id }) else { return nil }
+        return abs(currentIndex - targetIndex)
     }
 
     /// Picks either the discovered icon or the fallback system glyph.
@@ -2480,7 +2638,8 @@ struct LauncherView: View {
     }
 
     private func displayIcon(for app: AppItem, layout: LauncherLayoutMetrics) -> NSImage? {
-        if shouldUseHighQualityIcons, let detailed = highQualityIconOverrides[app.id] {
+        // Prefer any cached high-quality icon to avoid visible swaps when entering wiggle/drag.
+        if let detailed = highQualityIconOverrides[app.id] {
             return detailed
         }
         let request = baseIconRequest(for: layout)
@@ -3043,8 +3202,19 @@ struct LauncherView: View {
                             itemContextMenu(for: .app(app))
                         }
 
+                    let liftEffect = folderArrangementEffect(for: app, in: folder)
+                    let animatedCell = decoratedCell
+                        .scaleEffect(liftEffect.scale)
+                        .offset(y: liftEffect.offset)
+                        .shadow(
+                            color: Color.black.opacity(liftEffect.shadowOpacity),
+                            radius: liftEffect.shadowRadius,
+                            y: liftEffect.shadowYOffset
+                        )
+                        .animation(reorderLiftAnimation, value: liftEffect)
+
                     if isRenaming == false {
-                        decoratedCell
+                        animatedCell
                             .onDrag {
                                 enterPerformanceShedding(duration: 0.6)
                                 folderDragContext = FolderDragContext(folderID: folder.id, app: app)
@@ -3056,9 +3226,12 @@ struct LauncherView: View {
                                 dragPreview(for: .app(app), layout: layout)
                             }
                     } else {
-                        decoratedCell
+                        animatedCell
                     }
                 }
+            }
+            .transaction { transaction in
+                transaction.animation = folderReorderAnimation
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.leading, gridInsets.leading)
@@ -3079,14 +3252,15 @@ struct LauncherView: View {
                         folder.apps.contains(app)
                     },
                     performReorder: { app, target in
-                        reorderApp(app, inFolderWithID: folder.id, to: target, animated: false)
+                        reorderApp(app, inFolderWithID: folder.id, to: target, animated: true, animation: folderReorderAnimation)
                     },
                     performLiveReorder: { app, target in
                         reorderApp(
                             app,
                             inFolderWithID: folder.id,
                             to: target,
-                            animated: false
+                            animated: true,
+                            animation: folderReorderAnimation
                         )
                     },
                     insertApp: { app, target in
@@ -3097,12 +3271,16 @@ struct LauncherView: View {
                         draggedFolderApp = nil
                         draggedItem = nil
                         folderPreviewMatchingDisabled = true
-                    }
+                        folderLiveReorderTargetIndex = nil
+                    },
+                    lastLiveReorderTargetIndex: $folderLiveReorderTargetIndex
                 )
             )
+            .animation(folderReorderAnimation, value: folder.apps)
+            .animation(folderReorderAnimation, value: folderLiveReorderTargetIndex)
         }
-            .frame(maxWidth: .infinity)
-            .frame(height: overlayLayout.gridHeight)
+        .frame(maxWidth: .infinity)
+        .frame(height: overlayLayout.gridHeight)
     }
 
     @ViewBuilder
@@ -3391,6 +3569,12 @@ struct LauncherView: View {
         }
 
         return nil
+    }
+
+    private func currentBackingScale() -> CGFloat {
+        hostingWindow()?.backingScaleFactor
+        ?? NSScreen.main?.backingScaleFactor
+        ?? 2.0
     }
 
     /// Identifies windows that are rendering the launcher content.

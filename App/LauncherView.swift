@@ -114,6 +114,44 @@ private final class FolderPreviewCache: @unchecked Sendable {
     }
 }
 
+private struct WiggleSeed {
+    let phase: Double
+    let intensity: Double
+    let rate: Double
+}
+
+private struct WiggleMotion: ViewModifier {
+    let seed: WiggleSeed
+    let isActive: Bool
+    let cycle: TimeInterval
+    let rotationDegrees: Double
+    let sway: CGFloat
+    let bob: CGFloat
+    let anchor: UnitPoint
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if isActive, reduceMotion == false {
+            TimelineView(.periodic(from: .now, by: 1.0 / 60.0)) { context in
+                let time = context.date.timeIntervalSinceReferenceDate
+                let normalized = time * seed.rate / cycle
+                let basePhase = normalized * 2 * .pi + seed.phase
+                let rotation = sin(basePhase) * rotationDegrees * seed.intensity
+                let horizontal = sin(basePhase + .pi / 5) * Double(sway) * seed.intensity
+                let vertical = cos(basePhase * 1.32 + .pi / 4) * Double(bob) * (0.7 + 0.3 * seed.intensity)
+
+                content
+                    .rotationEffect(.degrees(rotation), anchor: anchor)
+                    .offset(x: CGFloat(horizontal), y: CGFloat(vertical))
+            }
+        } else {
+            content
+        }
+    }
+}
+
 /// Displays the grid of discovered items (apps and folders) and handles pagination/launch events.
 struct LauncherView: View {
     /// Data source backing the grid.
@@ -141,6 +179,11 @@ struct LauncherView: View {
 
     private var pageCapacity: Int { LauncherGridConfiguration.pageCapacity }
     private let closeAnimationDuration: TimeInterval = 0.25
+    private let wiggleCycleDuration: TimeInterval = 0.58
+    private let wiggleRotationDegrees: Double = 1.65
+    private let wiggleHorizontalSwayFactor: CGFloat = 0.018
+    private let wiggleVerticalBobFactor: CGFloat = 0.0085
+    private let wiggleAnchor = UnitPoint(x: 0.5, y: 0.2)
     private var fullscreenGridEntranceScale: CGFloat {
         guard launcherMode == .fullscreen else { return 1 }
         return 0.92 + 0.08 * CGFloat(fullscreenGridEntranceProgress)
@@ -516,6 +559,7 @@ struct LauncherView: View {
     @State private var folderPagerViewportWidth: CGFloat = 1
     @State private var folderLastPagerDragDate: Date?
     @State private var pendingDropPage: Int?
+    @State private var folderPreviewMatchingDisabled = false
     @FocusState private var isFolderNameFieldFocused: Bool
     @FocusState private var isAppNameFieldFocused: Bool
     @FocusState private var isSearchFieldFocused: Bool
@@ -613,6 +657,7 @@ struct LauncherView: View {
                 withAnimation(.easeOut(duration: 0.18)) {
                     folderIconWaveToggle = false
                 }
+                folderPreviewMatchingDisabled = false
                 launchingItemID = nil
                 activeFolderPage = 0
                 activeFolderPageCount = 0
@@ -622,6 +667,7 @@ struct LauncherView: View {
                 withAnimation(folderOpenAnimation) {
                     folderIconWaveToggle = true
                 }
+                folderPreviewMatchingDisabled = false
                 launchingItemID = nil
                 activeFolderPage = 0
                 activeFolderPageCount = 1
@@ -857,6 +903,10 @@ struct LauncherView: View {
 
     private var isRenamingItem: Bool {
         isEditingFolderName || renamingAppID != nil
+    }
+
+    private var isArrangementEditingActive: Bool {
+        isMultiSelectModeActive || draggedItem != nil || isRenamingItem || isEditingFolderName
     }
 
     private var shouldCaptureArrowKeys: Bool {
@@ -2118,6 +2168,65 @@ struct LauncherView: View {
         return sizes[page] < pageCapacity
     }
 
+    private func shouldAllowWiggle(id: UUID) -> Bool {
+        guard isArrangementEditingActive else { return false }
+        guard hasActiveSearchQuery == false else { return false }
+        guard isClosingLauncher == false else { return false }
+        guard launchingItemID != id else { return false }
+        guard draggedItem?.id != id else { return false }
+        return true
+    }
+
+    private func shouldWiggle(item: LauncherItem) -> Bool {
+        switch item {
+        case .app(let app):
+            return shouldAllowWiggle(id: app.id)
+        case .folder(let folder):
+            return shouldAllowWiggle(id: folder.id)
+        }
+    }
+
+    private func wiggleMotion(for id: UUID, layout: LauncherLayoutMetrics, isActive: Bool) -> WiggleMotion {
+        let seed = Self.wiggleSeed(for: id)
+        let sway = max(layout.iconDimension * wiggleHorizontalSwayFactor, 0.7)
+        let bob = max(layout.iconDimension * wiggleVerticalBobFactor, 0.35)
+
+        return WiggleMotion(
+            seed: seed,
+            isActive: isActive,
+            cycle: wiggleCycleDuration,
+            rotationDegrees: wiggleRotationDegrees,
+            sway: sway,
+            bob: bob,
+            anchor: wiggleAnchor
+        )
+    }
+
+    nonisolated private static func wiggleSeed(for id: UUID) -> WiggleSeed {
+        let hash = wiggleHash(for: id)
+        let phase = wiggleComponent(from: hash, lower: 0, upper: 2 * .pi)
+        let intensity = wiggleComponent(from: hash >> 16, lower: 0.9, upper: 1.1)
+        let rate = wiggleComponent(from: hash >> 32, lower: 0.92, upper: 1.08)
+        return WiggleSeed(phase: phase, intensity: intensity, rate: rate)
+    }
+
+    nonisolated private static func wiggleComponent(from value: UInt64, lower: Double, upper: Double) -> Double {
+        let normalized = Double(value & 0xFFFF) / Double(UInt16.max)
+        return lower + (upper - lower) * normalized
+    }
+
+    nonisolated private static func wiggleHash(for id: UUID) -> UInt64 {
+        withUnsafeBytes(of: id.uuid) { raw -> UInt64 in
+            let bytes = raw.bindMemory(to: UInt8.self)
+            var hash: UInt64 = 0xcbf29ce484222325
+            for byte in bytes {
+                hash ^= UInt64(byte)
+                hash &*= 0x100000001b3
+            }
+            return hash
+        }
+    }
+
     /// Picks either the discovered icon or the fallback system glyph.
     @ViewBuilder
     private func iconView(for item: LauncherItem, layout: LauncherLayoutMetrics) -> some View {
@@ -2167,6 +2276,7 @@ struct LauncherView: View {
         return iconView(for: item, layout: layout)
             .frame(width: layout.iconDimension, height: layout.iconDimension)
             .overlay(selectionHighlight(for: item, layout: layout, isSelected: isSelected))
+            .modifier(wiggleMotion(for: item.id, layout: layout, isActive: shouldWiggle(item: item)))
             .shadow(color: Color.accentColor.opacity(isSelected ? 0.28 : 0), radius: isSelected ? 10 : 0, y: isSelected ? 2 : 0)
             .blendMode(isSelected ? .screen : .normal)
             .animation(.easeInOut(duration: 0.18), value: isSelected)
@@ -2237,6 +2347,7 @@ struct LauncherView: View {
     private func dragPreview(for item: LauncherItem, layout: LauncherLayoutMetrics) -> some View {
         iconView(for: item, layout: layout)
             .frame(width: layout.iconDimension, height: layout.iconDimension)
+            .modifier(wiggleMotion(for: item.id, layout: layout, isActive: true))
             .grayscale(1.0)
             .saturation(0)
             .opacity(0.72)
@@ -2248,6 +2359,7 @@ struct LauncherView: View {
         let offsetStep: CGFloat = layout.iconDimension * 0.06
         let verticalStep: CGFloat = layout.iconDimension * 0.03
         let scaleStep: CGFloat = 0.02
+        let seedID = stackItems.first?.id ?? draggedItem?.id ?? UUID()
 
         return ZStack {
             ForEach(Array(stackItems.enumerated()), id: \.element.id) { index, item in
@@ -2261,6 +2373,7 @@ struct LauncherView: View {
             }
         }
         .frame(width: layout.iconDimension + offsetStep * 3, height: layout.iconDimension + verticalStep * 3)
+        .modifier(wiggleMotion(for: seedID, layout: layout, isActive: true))
         .grayscale(1.0)
         .saturation(0)
         .opacity(0.8)
@@ -2276,7 +2389,9 @@ struct LauncherView: View {
         let columns = Array(repeating: GridItem(.fixed(tileSize), spacing: spacing, alignment: .center), count: 3)
         let isSnapPreviewTarget = folder.id == folderSnapPreviewTargetID
 
-        let shouldAnimatePreview = folderIconWaveToggle && activeFolder?.id == folder.id
+        let shouldAnimatePreview = folderIconWaveToggle
+            && activeFolder?.id == folder.id
+            && folderPreviewMatchingDisabled == false
 
         return ZStack {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -2873,6 +2988,10 @@ struct LauncherView: View {
                 ForEach(Array(pageApps.enumerated()), id: \.element.id) { _, app in
                     let isLaunching = launchingItemID == app.id
                     let isRenaming = renamingAppID == app.id
+                    let allowPreviewMatch = folderIconWaveToggle
+                        && activeFolder?.id == folder.id
+                        && isArrangementEditingActive == false
+                        && folderPreviewMatchingDisabled == false
                     let cell: AnyView = {
                         if isRenaming {
                             return AnyView(
@@ -2886,6 +3005,7 @@ struct LauncherView: View {
                             .opacity(isLaunching ? 0.4 : 1.0)
                             .animation(.easeInOut(duration: 0.18), value: launchingItemID)
                             .opacity(folderIconWaveToggle ? 1 : 0)
+                            .modifier(wiggleMotion(for: app.id, layout: layout, isActive: shouldAllowWiggle(id: app.id)))
                             .environment(\.colorScheme, colorScheme)
 
                         return AnyView(
@@ -2893,7 +3013,7 @@ struct LauncherView: View {
                                 openItem(.app(app))
                             } label: {
                                 VStack(spacing: 10) {
-                                    if isPreviewApp(app, in: folder) {
+                                    if isPreviewApp(app, in: folder), allowPreviewMatch {
                                         iconBase
                                             .matchedGeometryEffect(
                                                 id: folderPreviewAnimationID(for: folder, app: app),
@@ -2930,6 +3050,7 @@ struct LauncherView: View {
                                 folderDragContext = FolderDragContext(folderID: folder.id, app: app)
                                 draggedFolderApp = app
                                 draggedItem = .app(app)
+                                folderPreviewMatchingDisabled = true
                                 return NSItemProvider(object: NSString(string: app.bundleIdentifier))
                             } preview: {
                                 dragPreview(for: .app(app), layout: layout)
@@ -2975,6 +3096,7 @@ struct LauncherView: View {
                         folderDragContext = nil
                         draggedFolderApp = nil
                         draggedItem = nil
+                        folderPreviewMatchingDisabled = true
                     }
                 )
             )

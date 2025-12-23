@@ -349,10 +349,11 @@ struct FolderReorderDropDelegate: DropDelegate {
     }
 
     private func handleDropUpdate(_ info: DropInfo) {
-        lastLiveReorderTargetIndex.wrappedValue = targetIndex(for: info.location)
+        let target = targetIndex(for: info.location)
+        guard lastLiveReorderTargetIndex.wrappedValue != target else { return }
+        lastLiveReorderTargetIndex.wrappedValue = target
         guard let draggedApp = draggedApp ?? resolveDraggedApp() else { return }
         guard isAppInFolder(draggedApp) else { return }
-        let target = targetIndex(for: info.location)
         performLiveReorder(draggedApp, target)
     }
 

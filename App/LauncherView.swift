@@ -519,6 +519,7 @@ struct LauncherView: View {
     private let pageSwitchAnimation = Animation.easeInOut(duration: 0.18)
     private let gestureSettleAnimation = Animation.interactiveSpring(response: 0.12, dampingFraction: 0.88, blendDuration: 0.04)
     private let folderOpenAnimation = Animation.spring(response: 0.36, dampingFraction: 0.82, blendDuration: 0.08)
+    private let folderPreviewMatchReleaseDelay: TimeInterval = 0.42
     private let pagerButtonHitPadding: CGFloat = 12
     private let pagerButtonHitSize: CGFloat = 44
     private let pagerButtonHitExpansion: CGFloat = 12
@@ -575,6 +576,9 @@ struct LauncherView: View {
     @State private var launchingItemID: UUID?
     @State private var pageDirection: PageShiftDirection = .forward
     @State private var folderIconWaveToggle = false
+    @State private var folderPreviewMatchID: UUID?
+    @State private var folderPreviewReleaseWorkItem: DispatchWorkItem?
+    @State private var lastActiveFolderID: UUID?
     @State private var shouldSkipActiveFolderChangeEffects = false
     @Namespace private var folderIconAnimationNamespace
     private let highQualityRenderQueue = DispatchQueue(label: "com.launchy.icon.high", qos: .utility)
@@ -686,12 +690,20 @@ struct LauncherView: View {
                 withAnimation(folderOpenAnimation) {
                     folderIconWaveToggle = false
                 }
+                let closingID = lastActiveFolderID
+                if let closingID {
+                    folderPreviewMatchID = closingID
+                }
+                scheduleFolderPreviewMatchRelease(for: closingID)
                 folderPreviewMatchingDisabled = false
                 launchingItemID = nil
                 activeFolderPage = 0
                 activeFolderPageCount = 0
                 folderLiveReorderTargetIndex = nil
             } else if let folder = newValue {
+                lastActiveFolderID = folder.id
+                folderPreviewMatchID = folder.id
+                cancelFolderPreviewMatchRelease()
                 folderNameDraft = folder.name
                 isEditingFolderName = false
                 withAnimation(folderOpenAnimation) {
@@ -1524,6 +1536,7 @@ struct LauncherView: View {
 
         guard case var .folder(folder) = orderedItems[folderIndex] else { return }
         guard let originalIndex = folder.apps.firstIndex(of: app) else { return }
+        guard targetIndex != originalIndex else { return }
         enterPerformanceShedding(duration: 0.6, cancelHeavyWork: false)
 
         var apps = folder.apps
@@ -2547,8 +2560,7 @@ struct LauncherView: View {
         let columns = Array(repeating: GridItem(.fixed(tileSize), spacing: spacing, alignment: .center), count: 3)
         let isSnapPreviewTarget = folder.id == folderSnapPreviewTargetID
 
-        let shouldAnimatePreview = folderIconWaveToggle
-            && activeFolder?.id == folder.id
+        let shouldAnimatePreview = folderPreviewMatchID == folder.id
             && folderPreviewMatchingDisabled == false
 
         return ZStack {
@@ -2577,6 +2589,7 @@ struct LauncherView: View {
                 }
             }
             .padding(padding)
+            .animation(folderOpenAnimation, value: folderIconWaveToggle)
 
             if isSnapPreviewTarget {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -2591,6 +2604,7 @@ struct LauncherView: View {
         .frame(width: layout.iconDimension, height: layout.iconDimension)
         .scaleEffect(isSnapPreviewTarget ? 1.01 : 1.0)
         .animation(.easeInOut(duration: 0.25), value: isSnapPreviewTarget)
+        .animation(folderOpenAnimation, value: folderIconWaveToggle)
         .environment(\.colorScheme, colorScheme)
         .animation(nil, value: searchControlsExpanded)
         .onAppear {
@@ -3147,8 +3161,7 @@ struct LauncherView: View {
                 ForEach(Array(pageApps.enumerated()), id: \.element.id) { _, app in
                     let isLaunching = launchingItemID == app.id
                     let isRenaming = renamingAppID == app.id
-                    let allowPreviewMatch = folderIconWaveToggle
-                        && activeFolder?.id == folder.id
+                    let allowPreviewMatch = folderPreviewMatchID == folder.id
                         && isArrangementEditingActive == false
                         && folderPreviewMatchingDisabled == false
                     let cell: AnyView = {
@@ -3164,6 +3177,7 @@ struct LauncherView: View {
                             .opacity(isLaunching ? 0.4 : 1.0)
                             .animation(.easeInOut(duration: 0.18), value: launchingItemID)
                             .opacity(folderIconWaveToggle ? 1 : 0)
+                            .animation(folderOpenAnimation, value: folderIconWaveToggle)
                             .modifier(wiggleMotion(for: app.id, layout: layout, isActive: shouldAllowWiggle(id: app.id)))
                             .environment(\.colorScheme, colorScheme)
 
@@ -3188,10 +3202,12 @@ struct LauncherView: View {
                                         .lineLimit(2)
                                         .multilineTextAlignment(.center)
                                         .opacity(folderIconWaveToggle ? 1 : 0)
+                                        .animation(folderOpenAnimation, value: folderIconWaveToggle)
                                 }
                                 .padding(.vertical, 6)
                                 .frame(maxWidth: .infinity)
                                 .opacity(folderIconWaveToggle ? 1 : 0)
+                                .animation(folderOpenAnimation, value: folderIconWaveToggle)
                             }
                             .buttonStyle(.plain)
                         )
@@ -3402,6 +3418,7 @@ struct LauncherView: View {
                 )
                 .shadow(color: .black.opacity(0.3), radius: 24, y: 14)
                 .opacity(folderIconWaveToggle ? 1 : 0)
+                .animation(folderOpenAnimation, value: folderIconWaveToggle)
                 .anchorPreference(key: FolderFramePreference.self, value: .bounds) { anchor in
                     proxy[anchor]
                 }
@@ -3471,6 +3488,9 @@ struct LauncherView: View {
         switch item {
         case .folder(let folder):
             enterPerformanceShedding(duration: 1.1)
+            lastActiveFolderID = folder.id
+            folderPreviewMatchID = folder.id
+            cancelFolderPreviewMatchRelease()
             withAnimation(folderOpenAnimation) {
                 activeFolder = folder
                 folderIconWaveToggle = true
@@ -3757,6 +3777,30 @@ struct LauncherView: View {
         } else {
             activeFolder = nil
         }
+    }
+
+    private func scheduleFolderPreviewMatchRelease(for folderID: UUID?) {
+        folderPreviewReleaseWorkItem?.cancel()
+        folderPreviewReleaseWorkItem = nil
+        guard let folderID else {
+            folderPreviewMatchID = nil
+            return
+        }
+
+        let workItem = DispatchWorkItem { [folderID] in
+            guard activeFolder == nil, folderPreviewMatchID == folderID else { return }
+            folderPreviewMatchID = nil
+        }
+        folderPreviewReleaseWorkItem = workItem
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + folderPreviewMatchReleaseDelay,
+            execute: workItem
+        )
+    }
+
+    private func cancelFolderPreviewMatchRelease() {
+        folderPreviewReleaseWorkItem?.cancel()
+        folderPreviewReleaseWorkItem = nil
     }
 
     /// Moves to the previous page if possible.

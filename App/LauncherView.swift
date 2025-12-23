@@ -1102,6 +1102,20 @@ struct LauncherView: View {
         }
     }
 
+    private func hasCachedFolderPreviewIcons(for folder: FolderItem, layout: LauncherLayoutMetrics) -> Bool {
+        let request = folderTileIconRequest(for: layout)
+        let apps = folder.apps.prefix(9)
+        guard apps.isEmpty == false else { return false }
+        let cache = Self.folderPreviewCache
+        for app in apps {
+            let key = cache.cacheKey(for: app, dimension: request.dimension, quality: request.quality)
+            if cache.cachedIcon(for: key) == nil {
+                return false
+            }
+        }
+        return true
+    }
+
     private func purgeFolderPreviewCache() {
         Self.folderPreviewCache.purge()
     }
@@ -2562,6 +2576,7 @@ struct LauncherView: View {
 
         let shouldAnimatePreview = folderPreviewMatchID == folder.id
             && folderPreviewMatchingDisabled == false
+            && hasCachedFolderPreviewIcons(for: folder, layout: layout)
 
         return ZStack {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -3154,6 +3169,10 @@ struct LauncherView: View {
         let columnCount = max(1, overlayLayout.columns)
         let columns = Array(repeating: GridItem(.flexible(), spacing: overlayLayout.spacing, alignment: .center), count: columnCount)
         let tileSize = layout.iconDimension
+        let allowPreviewMatch = folderPreviewMatchID == folder.id
+            && isArrangementEditingActive == false
+            && folderPreviewMatchingDisabled == false
+            && hasCachedFolderPreviewIcons(for: folder, layout: layout)
         let gridInsets = overlayLayout.gridInsets
 
         GeometryReader { gridProxy in
@@ -3161,9 +3180,6 @@ struct LauncherView: View {
                 ForEach(Array(pageApps.enumerated()), id: \.element.id) { _, app in
                     let isLaunching = launchingItemID == app.id
                     let isRenaming = renamingAppID == app.id
-                    let allowPreviewMatch = folderPreviewMatchID == folder.id
-                        && isArrangementEditingActive == false
-                        && folderPreviewMatchingDisabled == false
                     let cell: AnyView = {
                         if isRenaming {
                             return AnyView(

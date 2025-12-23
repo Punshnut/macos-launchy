@@ -139,25 +139,46 @@ final class ItemArrangementStore {
             lhs.sortingName.localizedCaseInsensitiveCompare(rhs.sortingName) == .orderedAscending
         }
 
-        for app in remainingApps {
-            let insertIndex = firstAvailableInsertionIndex(
-                currentItems: orderedItems,
+        var workingPageSizes: [Int] = []
+        if fillsGapsAutomatically == false {
+            workingPageSizes = normalizePageSizes(
+                cachedPageSizes,
+                itemCount: orderedItems.count,
                 pageCapacity: pageCapacity
             )
+            if workingPageSizes.isEmpty, orderedItems.isEmpty == false {
+                workingPageSizes = densePageSizes(for: orderedItems.count, pageCapacity: pageCapacity)
+            }
+        }
+
+        for app in remainingApps {
             var renamed = app
             if let custom = preferredCustomNames[app.bundleIdentifier] {
                 renamed.customName = custom
             }
-            orderedItems.insert(.app(renamed), at: insertIndex)
+            if fillsGapsAutomatically {
+                let insertIndex = firstAvailableInsertionIndex(
+                    currentItems: orderedItems,
+                    pageCapacity: pageCapacity
+                )
+                orderedItems.insert(.app(renamed), at: insertIndex)
+            } else {
+                let insertIndex = orderedItems.count
+                orderedItems.insert(.app(renamed), at: insertIndex)
+                appendNewItem(atEndOf: &workingPageSizes, pageCapacity: pageCapacity)
+            }
         }
 
         cachedItems = orderedItems.map(persistedItem(from:))
-        cachedPageSizes = resolvedPageSizes(
-            storedSizes: cachedPageSizes,
-            itemCount: orderedItems.count,
-            pageCapacity: pageCapacity,
-            fillsGapsAutomatically: fillsGapsAutomatically
-        )
+        if fillsGapsAutomatically {
+            cachedPageSizes = densePageSizes(for: orderedItems.count, pageCapacity: pageCapacity)
+        } else {
+            cachedPageSizes = normalizePageSizes(
+                workingPageSizes,
+                itemCount: orderedItems.count,
+                pageCapacity: pageCapacity
+            )
+        }
         saveItems()
         return (orderedItems, cachedPageSizes)
     }
@@ -259,6 +280,25 @@ final class ItemArrangementStore {
             remaining -= count
         }
         return sizes
+    }
+
+    private func appendNewItem(atEndOf pageSizes: inout [Int], pageCapacity: Int) {
+        guard pageCapacity > 0 else {
+            if pageSizes.isEmpty {
+                pageSizes = [1]
+            } else {
+                pageSizes[pageSizes.count - 1] += 1
+            }
+            return
+        }
+
+        if pageSizes.isEmpty {
+            pageSizes = [1]
+        } else if let last = pageSizes.last, last < pageCapacity {
+            pageSizes[pageSizes.count - 1] = last + 1
+        } else {
+            pageSizes.append(1)
+        }
     }
 
     private func normalizePageSizes(_ sizes: [Int], itemCount: Int, pageCapacity: Int) -> [Int] {

@@ -824,9 +824,10 @@ final class AppDiscoveryService {
             ?? (infoDictionary["CFBundleName"] as? String)
             ?? bundleURL.deletingPathExtension().lastPathComponent
         let localizedName = localizedDisplayName(for: bundle, bundleURL: bundleURL, fallback: displayName)
+        let stableID = cachedAppsByBundleID[bundleIdentifier]?.id ?? UUID()
 
         return AppItem(
-            id: UUID(),
+            id: stableID,
             displayName: displayName,
             localizedDisplayName: localizedName,
             customName: nil,

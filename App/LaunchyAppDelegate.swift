@@ -542,7 +542,12 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             pollingInterval: 12
         ) { [weak self] in
             Task { @MainActor in
-                self?.refreshLauncherItems()
+                guard let self else { return }
+                let isVisible = self.launcherWindowManager?.window?.isVisible == true
+                let didChange = self.refreshLauncherItems(shouldPreheatIcons: isVisible)
+                if didChange {
+                    self.launcherWindowManager?.update(rootView: self.buildLauncherView())
+                }
             }
         }
     }
@@ -944,8 +949,14 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Rebuilds the visible items list using the current hidden settings.
-    private func refreshLauncherItems(preservingCustomNames names: [String: String] = [:]) {
+    @discardableResult
+    private func refreshLauncherItems(
+        preservingCustomNames names: [String: String] = [:],
+        shouldPreheatIcons: Bool = true
+    ) -> Bool {
         LaunchyLogger.log("refreshLauncherItems: preserving names=\(names.count)")
+        let previousItems = orderedItems
+        let previousPageSizes = pageSizes
         let now = Date()
         let expiredPendingRemovals = purgeExpiredPendingRemovals(referenceDate: now)
         var previouslyVisibleApps = appsByBundleID(from: orderedItems)
@@ -1049,9 +1060,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         orderedItems = arrangedItems
         pageSizes = arrangedSizes
+        let didChange = orderedItems != previousItems || pageSizes != previousPageSizes
         LaunchyLogger.log("refreshLauncherItems: totalLauncherItems=\(orderedItems.count), pages=\(pageSizes.count)")
-        preheatIconsForCurrentLayout()
+        if shouldPreheatIcons {
+            preheatIconsForCurrentLayout()
+        }
         scheduleRemovalConfirmationTimer()
+        return didChange
     }
 
     private func preheatIconsForCurrentLayout() {

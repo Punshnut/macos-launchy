@@ -349,6 +349,7 @@ struct IntroductionWindow: View {
         guard let window else { return }
         window.isOpaque = false
         window.backgroundColor = .clear
+        window.applyRoundedCorners(radius: 32)
     }
 }
 
@@ -381,6 +382,7 @@ final class IntroductionWindowController: NSWindowController {
 
         if let host = hostingController, let window {
             host.rootView = buildView()
+            window.applyRoundedCorners(radius: 32)
             center(window: window)
             showWindow(nil)
             window.makeKeyAndOrderFront(nil)
@@ -389,6 +391,8 @@ final class IntroductionWindowController: NSWindowController {
         }
 
         let host = hostingController ?? NSHostingController(rootView: buildView())
+        host.view.wantsLayer = true
+        host.view.layer?.backgroundColor = NSColor.clear.cgColor
         let windowFrame = centeredFrame(for: defaultWindowSize)
         let window = NSWindow(
             contentRect: windowFrame,
@@ -414,6 +418,7 @@ final class IntroductionWindowController: NSWindowController {
         window.standardWindowButton(.miniaturizeButton)?.isHidden = true
         window.standardWindowButton(.zoomButton)?.isHidden = true
         window.contentViewController = host
+        window.applyRoundedCorners(radius: 32)
 
         hostingController = host
         self.window = window

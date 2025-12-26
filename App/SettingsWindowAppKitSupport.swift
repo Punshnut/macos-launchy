@@ -2,6 +2,18 @@ import AppKit
 import Carbon
 import SwiftUI
 
+extension NSWindow {
+    func applyRoundedCorners(radius: CGFloat) {
+        guard let contentView else { return }
+        let targetView = contentView.superview ?? contentView
+        targetView.wantsLayer = true
+        targetView.layer?.backgroundColor = NSColor.clear.cgColor
+        targetView.layer?.cornerRadius = radius
+        targetView.layer?.cornerCurve = .continuous
+        targetView.layer?.masksToBounds = true
+    }
+}
+
 // MARK: - Window Hosting Helpers
 
 /// Bridges SwiftUI's settings window into AppKit so we can resize and control the host window directly.
@@ -59,6 +71,7 @@ enum SettingsWindowHostManager {
     private static func updateWindowChrome(for window: NSWindow) {
         window.isOpaque = false
         window.backgroundColor = .clear
+        window.applyRoundedCorners(radius: 32)
     }
 }
 
@@ -328,6 +341,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     init() {
         let view = SettingsWindow(coordinator: coordinator)
         hostingController = NSHostingController(rootView: view)
+        hostingController.view.wantsLayer = true
+        hostingController.view.layer?.backgroundColor = NSColor.clear.cgColor
         let defaultContentSize = SettingsWindowMetrics.defaultContentSize
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: defaultContentSize.width, height: defaultContentSize.height),
@@ -357,6 +372,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         window.contentMinSize = SettingsWindowMetrics.minimumContentSize
         window.center()
         window.contentViewController = hostingController
+        window.applyRoundedCorners(radius: 32)
         super.init(window: window)
         window.delegate = self
     }
@@ -405,5 +421,15 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         Task { @MainActor in
             onClose?()
         }
+    }
+
+    func windowDidMove(_ notification: Notification) {
+        guard let window = notification.object as? NSWindow else { return }
+        window.applyRoundedCorners(radius: 32)
+    }
+
+    func windowDidResize(_ notification: Notification) {
+        guard let window = notification.object as? NSWindow else { return }
+        window.applyRoundedCorners(radius: 32)
     }
 }

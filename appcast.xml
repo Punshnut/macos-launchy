@@ -9,15 +9,15 @@
     <language>en</language>
 
     <item>
-      <title>Launchy 0.3.6</title>
-      <pubDate>Tue, 23 Dec 2025 23:47:43 +0100</pubDate>
+      <title>Launchy 0.3.7</title>
+      <pubDate>Fri, 26 Dec 2025 18:41:58 +0100</pubDate>
       <enclosure
     url="https://github.com/Punshnut/macos-launchy/releases/latest/download/Launchy.dmg"
-    sparkle:shortVersionString="0.3.6"
-    sparkle:version="0.3.6"
-    length="3470263"
+    sparkle:shortVersionString="0.3.7"
+    sparkle:version="0.3.7"
+    length="4568369"
     type="application/octet-stream"
-    sparkle:edSignature="BSxpjakwpUirT/NBQMj4P0yhlhduLx7efLAweKkERUUywI0LARocgQgg/wPAKnL2zUV5grPxXS+Nq7Skss/EAA==" />
+    sparkle:edSignature="ikf7SdmBmw9uADSoN9grKFldbM7gqEToxDcRi9FIXQj6ZabmvVUsKhurqmvaX8kNEa/J1HWarpRW+2s0y9yCCg==" />
       <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
     </item>
   </channel>

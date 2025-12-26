@@ -14,6 +14,8 @@ final class LauncherWindowController: NSWindowController {
     /// Wraps the provided SwiftUI content inside either a panel or fullscreen window.
     init(rootView: LauncherView, launcherMode: LauncherMode) {
         launcherContentHost = NSHostingController(rootView: rootView)
+        launcherContentHost.view.wantsLayer = true
+        launcherContentHost.view.layer?.backgroundColor = NSColor.clear.cgColor
         self.launcherMode = launcherMode
         let window: NSWindow
         let presentationScreen = ScreenProvider.screenUnderMouseOrMain()
@@ -24,6 +26,7 @@ final class LauncherWindowController: NSWindowController {
             launcherContentHost.preferredContentSize = frame.size
             let floatyPanel = FloatyLauncherWindow(contentRect: frame)
             floatyPanel.contentViewController = launcherContentHost
+            floatyPanel.applyRoundedCorners(radius: 32)
             floatyPanel.setFrame(frame, display: false)
             window = floatyPanel
         case .fullscreen:
@@ -122,6 +125,9 @@ final class LauncherWindowController: NSWindowController {
 
         showWindow(nil)
         window.makeKeyAndOrderFront(nil)
+        if launcherMode == .floaty {
+            window.applyRoundedCorners(radius: 32)
+        }
         NotificationCenter.default.post(name: .launcherShouldRefocusSearch, object: nil)
         if shouldAnimateEntrance && launcherMode == .fullscreen {
             NotificationCenter.default.post(name: .launcherShouldAnimateGridEntrance, object: nil)

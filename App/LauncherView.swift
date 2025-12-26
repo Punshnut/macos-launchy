@@ -518,7 +518,7 @@ struct LauncherView: View {
     private let fullscreenGridEntranceTranslation: CGFloat = 48
     private let pageSwitchAnimation = Animation.easeInOut(duration: 0.18)
     private let gestureSettleAnimation = Animation.interactiveSpring(response: 0.12, dampingFraction: 0.88, blendDuration: 0.04)
-    private let folderOpenAnimation = Animation.spring(response: 0.36, dampingFraction: 0.82, blendDuration: 0.08)
+    private let folderOpenAnimation = Animation.easeInOut(duration: 0.2)
     private let folderPreviewMatchReleaseDelay: TimeInterval = 0.42
     private let pagerButtonHitPadding: CGFloat = 12
     private let pagerButtonHitSize: CGFloat = 44

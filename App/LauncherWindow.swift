@@ -281,6 +281,7 @@ final class FloatyLauncherWindow: NSPanel {
         animationBehavior = .utilityWindow
         isFloatingPanel = true
         worksWhenModal = true
+        becomesKeyOnlyIfNeeded = false
         standardWindowButton(.closeButton)?.isHidden = true
         standardWindowButton(.miniaturizeButton)?.isHidden = true
         standardWindowButton(.zoomButton)?.isHidden = true

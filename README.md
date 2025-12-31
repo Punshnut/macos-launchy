@@ -11,7 +11,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 <p align="center">
     <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
-    <img src="https://img.shields.io/badge/Download-Beta%200.3.7-blueviolet?style=for-the-badge" alt="Download Beta 0.3.7">
+    <img src="https://img.shields.io/badge/Download-Beta%200.4.0-blueviolet?style=for-the-badge" alt="Download Beta 0.4.0">
   </a>
 </p>
 
@@ -21,20 +21,20 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 <div align="center">
   <details>
-    <summary>🇪🇸 🇮🇹 🇩🇪 🇫🇷 🇵🇹 🇺🇦 🇷🇺 Europe (7)</summary>
-    <p>🇪🇸 Español (España)<br>🇮🇹 Italiano<br>🇩🇪 Deutsch<br>🇫🇷 Français<br>🇵🇹 Português (Portugal)<br>🇺🇦 Українська<br>🇷🇺 Русский</p>
+    <summary>🇪🇸 🇮🇹 🇩🇪 🇫🇷 🇵🇹 🇺🇦 🇷🇺 🇵🇱 🇬🇷 🇳🇱 🇸🇪 Europe (11)</summary>
+    <p>🇪🇸 Español (España)<br>🇮🇹 Italiano<br>🇩🇪 Deutsch<br>🇫🇷 Français<br>🇵🇹 Português (Portugal)<br>🇺🇦 Українська<br>🇷🇺 Русский<br>🇵🇱 Polski<br>🇬🇷 Ελληνικά<br>🇳🇱 Nederlands<br>🇸🇪 Svenska</p>
   </details>
   <details>
-    <summary>🇮🇳 🇮🇩 🇻🇳 🇹🇷 🇨🇳 🇯🇵 🇰🇷 🇹🇭 Asia (8)</summary>
-    <p>🇮🇳 हिन्दी<br>🇮🇩 Bahasa Indonesia<br>🇻🇳 Tiếng Việt<br>🇹🇷 Türkçe<br>🇨🇳 中文（简体）<br>🇯🇵 日本語<br>🇰🇷 한국어 (대한민국)<br>🇹🇭 ภาษาไทย</p>
+    <summary>🇵🇭 🇮🇳 🇮🇩 🇻🇳 🇹🇷 🇨🇳 🇯🇵 🇰🇷 🇹🇭 Asia (9)</summary>
+    <p>🇵🇭 Filipino / Tagalog<br>🇮🇳 हिन्दी<br>🇮🇩 Bahasa Indonesia<br>🇻🇳 Tiếng Việt<br>🇹🇷 Türkçe<br>🇨🇳 中文（简体）<br>🇯🇵 日本語<br>🇰🇷 한국어 (대한민국)<br>🇹🇭 ภาษาไทย</p>
   </details>
   <details>
     <summary>🇧🇷 🇲🇽 🇺🇸 Americas (3)</summary>
     <p>🇧🇷 Português (Brasil)<br>🇲🇽 Español (LatAm)<br>🇺🇸 English</p>
   </details>
   <details>
-    <summary>🇦🇪 🇹🇿 🇳🇬 Middle East & Africa (3)</summary>
-    <p>🇦🇪 العربية (الفصحى الحديثة)<br>🇹🇿 Kiswahili<br>🇳🇬 Hausa</p>
+    <summary>🇦🇪 🇮🇷 🇹🇿 🇳🇬 Middle East & Africa (4)</summary>
+    <p>🇦🇪 العربية (الفصحى الحديثة)<br>🇮🇷 فارسی<br>🇹🇿 Kiswahili<br>🇳🇬 Hausa</p>
   </details>
 </div>
 <p align="center">
@@ -102,12 +102,10 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 Here are a few improvements planned for upcoming releases:
 - Richer, but unobtrusive animations - smoother transitions and calmer motion across fullscreen and Floaty mode.
-- Enhanced folder styling - clearer folder icons, improved previews, and a cleaner visual hierarchy.
 - Floaty mode visual overhaul - refinements to spacing, layout, and HUD elements to better match modern macOS design.
 - Dock menu enhancements - icons inside the Dock right-click menu for quicker recognition and a more polished feel.
 - More performance - less stuttering from user input while shrinking memory usage
 - Plugin support - support for feature extensions and visual overlays through plugins
-- Localization languages: 🇵🇭 Filipino / Tagalog, 🇵🇱 Polski, 🇮🇷 Farsi, 🇬🇷 Ελληνικά, 🇳🇱 Nederlands, 🇸🇪 Svenska
 
 [Donate (Ko-Fi)](https://ko-fi.com/janfeuerbacher)
 

@@ -157,7 +157,7 @@ final class ItemArrangementStore {
                 renamed.customName = custom
             }
             if fillsGapsAutomatically {
-                let insertIndex = firstAvailableInsertionIndex(
+                let insertIndex = lastPageInsertionIndex(
                     currentItems: orderedItems,
                     pageCapacity: pageCapacity
                 )
@@ -190,18 +190,9 @@ final class ItemArrangementStore {
         saveItems()
     }
 
-    /// Returns the insertion index that keeps new apps on the earliest partially filled page.
-    private func firstAvailableInsertionIndex(currentItems: [LauncherItem], pageCapacity: Int) -> Int {
+    /// Returns the insertion index that keeps new apps on the last page (or creates a new page).
+    private func lastPageInsertionIndex(currentItems: [LauncherItem], pageCapacity: Int) -> Int {
         guard pageCapacity > 0 else { return currentItems.count }
-        var cursor = 0
-        while cursor < currentItems.count {
-            let pageEnd = min(currentItems.count, cursor + pageCapacity)
-            let itemsOnPage = pageEnd - cursor
-            if itemsOnPage < pageCapacity {
-                return pageEnd
-            }
-            cursor = pageEnd
-        }
         return currentItems.count
     }
 

@@ -103,9 +103,10 @@ struct AppItem: Identifiable, Hashable {
 
     /// Checks if the item matches the provided search query across names and bundle ID.
     func matches(query: String) -> Bool {
-        guard query.isEmpty == false else { return true }
-        return searchableNames.contains { $0.localizedCaseInsensitiveContains(query) }
-            || bundleIdentifier.localizedCaseInsensitiveContains(query)
+        let normalizedQuery = normalizedSearchValue(query)
+        guard normalizedQuery.isEmpty == false else { return true }
+        return searchableNames.contains { normalizedSearchValue($0).contains(normalizedQuery) }
+            || normalizedSearchValue(bundleIdentifier).contains(normalizedQuery)
     }
 
     private var normalizedCustomName: String? {
@@ -123,6 +124,10 @@ struct AppItem: Identifiable, Hashable {
     private var normalizedDisplayName: String {
         let trimmed = displayName.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? displayName : trimmed
+    }
+
+    private func normalizedSearchValue(_ value: String) -> String {
+        value.folding(options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive], locale: .current)
     }
 }
 

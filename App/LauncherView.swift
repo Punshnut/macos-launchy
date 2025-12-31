@@ -61,6 +61,8 @@ private struct PageInsertionOption: Identifiable {
 
 private struct SearchableAppEntry {
     let normalizedNames: [String]
+    let tokenizedNames: [[String]]
+    let initialisms: [String]
     let normalizedBundleIdentifier: String
 }
 
@@ -194,7 +196,7 @@ struct LauncherView: View {
     private let wiggleAnchor = UnitPoint(x: 0.5, y: 0.2)
     private var fullscreenGridEntranceScale: CGFloat {
         guard launcherMode == .fullscreen else { return 1 }
-        return 0.92 + 0.08 * CGFloat(fullscreenGridEntranceProgress)
+        return 0.97 + 0.03 * CGFloat(fullscreenGridEntranceProgress)
     }
 
     /// Calculates the folder overlay's horizontal translation, clamping it within the available pages.
@@ -256,6 +258,7 @@ struct LauncherView: View {
         }
         .scaleEffect(fullscreenGridEntranceScale, anchor: .center)
         .opacity(fullscreenGridEntranceOpacity)
+        .saturation(fullscreenGridEntranceSaturation)
         .offset(y: fullscreenGridEntranceOffset)
         .padding(.top, layout.gridVerticalOffset)
     }
@@ -499,7 +502,12 @@ struct LauncherView: View {
 
     private var fullscreenGridEntranceOpacity: Double {
         guard launcherMode == .fullscreen else { return 1 }
-        return 0.25 + 0.75 * fullscreenGridEntranceProgress
+        return 0.35 + 0.65 * fullscreenGridEntranceProgress
+    }
+
+    private var fullscreenGridEntranceSaturation: Double {
+        guard launcherMode == .fullscreen else { return 1 }
+        return 0.6 + 0.4 * fullscreenGridEntranceProgress
     }
 
     private var fullscreenGridEntranceOffset: CGFloat {
@@ -510,14 +518,10 @@ struct LauncherView: View {
     private let liveReorderSpringAnimation = Animation.interactiveSpring(response: 0.2, dampingFraction: 0.78, blendDuration: 0.12)
     private let folderReorderAnimation = Animation.interactiveSpring(response: 0.23, dampingFraction: 0.8, blendDuration: 0.12)
     private let reorderLiftAnimation = Animation.spring(response: 0.26, dampingFraction: 0.82, blendDuration: 0.1)
-    private let fullscreenGridEntranceAnimation = Animation.spring(
-        response: 0.45,
-        dampingFraction: 0.78,
-        blendDuration: 0.08
-    )
-    private let fullscreenGridEntranceTranslation: CGFloat = 48
-    private let pageSwitchAnimation = Animation.easeInOut(duration: 0.18)
-    private let gestureSettleAnimation = Animation.interactiveSpring(response: 0.12, dampingFraction: 0.88, blendDuration: 0.04)
+    private let fullscreenGridEntranceAnimation = Animation.easeOut(duration: 0.22)
+    private let fullscreenGridEntranceTranslation: CGFloat = 28
+    private let pageSwitchAnimation = Animation.easeOut(duration: 0.14)
+    private let gestureSettleAnimation = Animation.easeOut(duration: 0.14)
     private let folderOpenAnimation = Animation.easeInOut(duration: 0.2)
     private let folderPreviewMatchReleaseDelay: TimeInterval = 0.42
     private let pagerButtonHitPadding: CGFloat = 12
@@ -543,6 +547,7 @@ struct LauncherView: View {
     @State private var isSearchLoading = false
     @State private var searchDebounceTask: Task<Void, Never>?
     @State private var searchControlsExpanded = false
+    @State private var lastNormalizedSearchQuery = ""
     @State private var isMultiSelectModeActive = false
     @State private var multiSelectedItemIDs: Set<UUID> = []
     @State private var expansionAutoCollapseTask: Task<Void, Never>?
@@ -782,6 +787,10 @@ struct LauncherView: View {
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { notification in
             guard let window = notification.object as? NSWindow,
                   isLauncherHostingWindow(window) else { return }
+            focusSearchFieldIfAppropriate()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            guard let window = hostingWindow(), window.isVisible else { return }
             focusSearchFieldIfAppropriate()
         }
         .onAppear {
@@ -2092,8 +2101,18 @@ struct LauncherView: View {
     }
 
     private func scheduleSearchUpdate() {
-        isSearchLoading = hasActiveSearchQuery
         searchDebounceTask?.cancel()
+        searchDebounceTask = nil
+
+        guard hasActiveSearchQuery else {
+            cancelSearchTasks()
+            isSearchLoading = false
+            lastNormalizedSearchQuery = ""
+            applySearchResults(orderedItems)
+            return
+        }
+
+        isSearchLoading = true
         searchDebounceTask = Task {
             try? await Task.sleep(nanoseconds: searchInputDebounceNanoseconds)
             guard Task.isCancelled == false else { return }
@@ -2108,12 +2127,19 @@ struct LauncherView: View {
         searchDebounceTask = nil
         let items = itemsOverride ?? orderedItems
         let query = normalizedSearchText
+        let normalizedQuery = Self.primarySearchCacheKey(for: query)
         searchTask?.cancel()
         searchTask = nil
 
         guard hasActiveSearchQuery else {
             isSearchLoading = false
+            lastNormalizedSearchQuery = ""
             applySearchResults(items)
+            return
+        }
+
+        if normalizedQuery == lastNormalizedSearchQuery {
+            isSearchLoading = false
             return
         }
 
@@ -2121,10 +2147,15 @@ struct LauncherView: View {
         searchRequestID &+= 1
         let requestID = searchRequestID
         let metadata = searchMetadataByAppID
+        let shouldFilterFromCache = itemsOverride == nil
+            && lastNormalizedSearchQuery.isEmpty == false
+            && normalizedQuery.hasPrefix(lastNormalizedSearchQuery)
+            && cachedFilteredItems.isEmpty == false
+        let filterBaseItems = shouldFilterFromCache ? cachedFilteredItems : items
 
         searchTask = Task(priority: .userInitiated) {
             let results = await Task.detached(priority: .userInitiated) {
-                Self.filterItems(items: items, query: query, metadata: metadata)
+                Self.filterItems(items: filterBaseItems, query: query, metadata: metadata)
             }.value
 
             do {
@@ -2137,9 +2168,17 @@ struct LauncherView: View {
                 guard requestID == searchRequestID else { return }
                 isSearchLoading = false
                 searchTask = nil
+                lastNormalizedSearchQuery = normalizedQuery
                 applySearchResults(results)
             }
         }
+    }
+
+    private func cancelSearchTasks() {
+        searchDebounceTask?.cancel()
+        searchDebounceTask = nil
+        searchTask?.cancel()
+        searchTask = nil
     }
 
     nonisolated private static func filterItems(
@@ -2150,9 +2189,13 @@ struct LauncherView: View {
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard trimmedQuery.isEmpty == false else { return items }
 
-        let normalizedQuery = normalizeSearchValue(trimmedQuery)
-        var results: [LauncherItem] = []
+        let queryVariants = normalizedSearchVariants(for: trimmedQuery)
+        guard queryVariants.isEmpty == false else { return items }
+        let tokenVariants = queryVariants.map { tokenizeSearchValue($0) }
+        let normalizedQuery = primarySearchCacheKey(for: trimmedQuery)
+        var matches: [(score: Int, order: Int, item: LauncherItem)] = []
         var seenAppIDs = Set<UUID>()
+        var orderIndex = 0
 
         for item in items {
             if Task.isCancelled {
@@ -2160,47 +2203,78 @@ struct LauncherView: View {
             }
             switch item {
             case .app(let app):
-                if appMatches(
+                if let score = appMatchScore(
                     app,
                     normalizedQuery: normalizedQuery,
-                    fallbackQuery: trimmedQuery,
+                    queryVariants: queryVariants,
+                    tokenVariants: tokenVariants,
                     metadata: metadata
                 ),
                    seenAppIDs.insert(app.id).inserted {
-                    results.append(.app(app))
+                    matches.append((score: score, order: orderIndex, item: .app(app)))
+                    orderIndex += 1
+                } else {
+                    orderIndex += 1
                 }
             case .folder(let folder):
-                let folderNameMatches = normalizeSearchValue(folder.name).contains(normalizedQuery)
-                for app in folder.apps where folderNameMatches
-                    || appMatches(
+                let folderNameVariants = normalizedSearchVariants(for: folder.name)
+                let folderNameMatches = queryVariants.contains { query in
+                    folderNameVariants.contains { $0.contains(query) }
+                }
+                for app in folder.apps {
+                    if Task.isCancelled {
+                        break
+                    }
+                    let appScore = appMatchScore(
                         app,
                         normalizedQuery: normalizedQuery,
-                        fallbackQuery: trimmedQuery,
+                        queryVariants: queryVariants,
+                        tokenVariants: tokenVariants,
                         metadata: metadata
-                    ) {
-                    if seenAppIDs.insert(app.id).inserted {
-                        results.append(.app(app))
+                    )
+                    let score: Int? = {
+                        if folderNameMatches {
+                            return min(appScore ?? 2, 2)
+                        }
+                        return appScore
+                    }()
+                    if let score,
+                       seenAppIDs.insert(app.id).inserted {
+                        matches.append((score: score, order: orderIndex, item: .app(app)))
+                        orderIndex += 1
+                    } else {
+                        orderIndex += 1
                     }
                 }
             }
         }
 
-        return results
+        return matches
+            .sorted { lhs, rhs in
+                if lhs.score == rhs.score {
+                    return lhs.order < rhs.order
+                }
+                return lhs.score < rhs.score
+            }
+            .map(\.item)
     }
 
-    nonisolated private static func appMatches(
+    nonisolated private static func appMatchScore(
         _ app: AppItem,
         normalizedQuery: String,
-        fallbackQuery: String,
+        queryVariants: [String],
+        tokenVariants: [[String]],
         metadata: [UUID: SearchableAppEntry]
-    ) -> Bool {
+    ) -> Int? {
         if let entry = metadata[app.id] {
-            if entry.normalizedNames.contains(where: { $0.contains(normalizedQuery) }) {
-                return true
-            }
-            return entry.normalizedBundleIdentifier.contains(normalizedQuery)
+            return matchScore(
+                entry: entry,
+                queryVariants: queryVariants,
+                tokenVariants: tokenVariants,
+                fallbackQuery: normalizedQuery
+            )
         }
-        return app.matches(query: fallbackQuery)
+        return app.matches(query: normalizedQuery) ? 4 : nil
     }
 
     nonisolated private static func buildSearchMetadata(from items: [LauncherItem]) -> [UUID: SearchableAppEntry] {
@@ -2225,18 +2299,150 @@ struct LauncherView: View {
     }
 
     nonisolated private static func buildSearchEntry(for app: AppItem) -> SearchableAppEntry {
-        let normalizedNames = app.searchableNames
-            .map { normalizeSearchValue($0) }
+        let normalizedNames = uniqueSearchValues(from: app.searchableNames.flatMap { normalizedSearchVariants(for: $0) })
             .filter { $0.isEmpty == false }
-        let normalizedBundle = normalizeSearchValue(app.bundleIdentifier)
+        let tokenizedNames = normalizedNames
+            .map { tokenizeSearchValue($0) }
+            .filter { $0.isEmpty == false }
+        let initialisms = uniqueSearchValues(from: tokenizedNames.compactMap { tokens in
+            let initials = tokens.compactMap { $0.first }
+            return initials.isEmpty ? nil : String(initials)
+        })
+        let normalizedBundle = primarySearchCacheKey(for: app.bundleIdentifier)
         return SearchableAppEntry(
             normalizedNames: normalizedNames,
+            tokenizedNames: tokenizedNames,
+            initialisms: initialisms,
             normalizedBundleIdentifier: normalizedBundle
         )
     }
 
-    nonisolated private static func normalizeSearchValue(_ value: String) -> String {
-        value.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
+    nonisolated private static func matchScore(
+        entry: SearchableAppEntry,
+        queryVariants: [String],
+        tokenVariants: [[String]],
+        fallbackQuery: String
+    ) -> Int? {
+        var bestScore: Int?
+        for (index, query) in queryVariants.enumerated() {
+            let tokens = tokenVariants[index]
+            if let score = matchScore(entry: entry, query: query, tokens: tokens) {
+                if let current = bestScore {
+                    bestScore = min(current, score)
+                } else {
+                    bestScore = score
+                }
+                if bestScore == 0 {
+                    break
+                }
+            }
+        }
+
+        if bestScore == nil, fallbackQuery.isEmpty == false {
+            if entry.normalizedNames.contains(where: { $0.contains(fallbackQuery) }) {
+                bestScore = 4
+            } else if entry.normalizedBundleIdentifier.contains(fallbackQuery) {
+                bestScore = 5
+            }
+        }
+
+        return bestScore
+    }
+
+    nonisolated private static func matchScore(
+        entry: SearchableAppEntry,
+        query: String,
+        tokens: [String]
+    ) -> Int? {
+        guard query.isEmpty == false else { return nil }
+
+        if entry.normalizedNames.contains(where: { $0 == query }) {
+            return 0
+        }
+
+        if entry.normalizedNames.contains(where: { $0.hasPrefix(query) }) {
+            return 1
+        }
+
+        if tokens.isEmpty == false {
+            for nameTokens in entry.tokenizedNames {
+                if tokensMatch(nameTokens: nameTokens, queryTokens: tokens) {
+                    return 2
+                }
+            }
+        }
+
+        if entry.initialisms.contains(where: { $0.hasPrefix(query) }) {
+            return 3
+        }
+
+        if entry.normalizedNames.contains(where: { $0.contains(query) }) {
+            return 4
+        }
+
+        if entry.normalizedBundleIdentifier.contains(query) {
+            return 5
+        }
+
+        return nil
+    }
+
+    nonisolated private static func tokensMatch(nameTokens: [String], queryTokens: [String]) -> Bool {
+        guard queryTokens.isEmpty == false else { return false }
+        for queryToken in queryTokens {
+            let matches = nameTokens.contains { $0.hasPrefix(queryToken) }
+            if matches == false {
+                return false
+            }
+        }
+        return true
+    }
+
+    nonisolated private static func uniqueSearchValues(from values: [String]) -> [String] {
+        values.reduce(into: [String]()) { unique, value in
+            guard value.isEmpty == false else { return }
+            let exists = unique.contains { $0.caseInsensitiveCompare(value) == .orderedSame }
+            if exists == false {
+                unique.append(value)
+            }
+        }
+    }
+
+    nonisolated private static func tokenizeSearchValue(_ value: String) -> [String] {
+        let parts = value.components(separatedBy: CharacterSet.alphanumerics.inverted)
+        return parts.filter { $0.isEmpty == false }
+    }
+
+    nonisolated private static func normalizedSearchVariants(for value: String) -> [String] {
+        let locales = [Locale.current, Locale(identifier: "en_US_POSIX")]
+        var variants: [String] = []
+        for locale in locales {
+            let normalized = normalizeSearchValue(value, locale: locale)
+            if normalized.isEmpty == false {
+                variants.append(normalized)
+            }
+            if let latinized = latinizedSearchValue(value, locale: locale) {
+                variants.append(latinized)
+            }
+        }
+        return uniqueSearchValues(from: variants)
+    }
+
+    nonisolated private static func normalizeSearchValue(_ value: String, locale: Locale) -> String {
+        value.folding(options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive], locale: locale)
+    }
+
+    nonisolated private static func latinizedSearchValue(_ value: String, locale: Locale) -> String? {
+        guard let latin = value.applyingTransform(.toLatin, reverse: false) else { return nil }
+        let stripped = latin.applyingTransform(.stripCombiningMarks, reverse: false) ?? latin
+        let normalized = normalizeSearchValue(stripped, locale: locale)
+        return normalized.isEmpty ? nil : normalized
+    }
+
+    nonisolated private static func primarySearchCacheKey(for value: String) -> String {
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.isEmpty == false else { return "" }
+        return normalizeSearchValue(trimmed, locale: .current)
     }
 
     private func clampSearchSelectionIfNeeded() {
@@ -2592,7 +2798,8 @@ struct LauncherView: View {
                     if shouldAnimatePreview {
                         tile.matchedGeometryEffect(
                             id: folderPreviewAnimationID(for: folder, app: app),
-                            in: folderIconAnimationNamespace
+                            in: folderIconAnimationNamespace,
+                            isSource: true
                         )
                     } else {
                         tile
@@ -3206,7 +3413,8 @@ struct LauncherView: View {
                                         iconBase
                                             .matchedGeometryEffect(
                                                 id: folderPreviewAnimationID(for: folder, app: app),
-                                                in: folderIconAnimationNamespace
+                                                in: folderIconAnimationNamespace,
+                                                isSource: false
                                             )
                                     } else {
                                         iconBase

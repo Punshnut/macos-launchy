@@ -711,9 +711,6 @@ struct LauncherView: View {
                 cancelFolderPreviewMatchRelease()
                 folderNameDraft = folder.name
                 isEditingFolderName = false
-                withAnimation(folderOpenAnimation) {
-                    folderIconWaveToggle = true
-                }
                 folderPreviewMatchingDisabled = false
                 launchingItemID = nil
                 activeFolderPage = 0
@@ -1109,20 +1106,6 @@ struct LauncherView: View {
             }
             cache.finishWarmup(token: token)
         }
-    }
-
-    private func hasCachedFolderPreviewIcons(for folder: FolderItem, layout: LauncherLayoutMetrics) -> Bool {
-        let request = folderTileIconRequest(for: layout)
-        let apps = folder.apps.prefix(9)
-        guard apps.isEmpty == false else { return false }
-        let cache = Self.folderPreviewCache
-        for app in apps {
-            let key = cache.cacheKey(for: app, dimension: request.dimension, quality: request.quality)
-            if cache.cachedIcon(for: key) == nil {
-                return false
-            }
-        }
-        return true
     }
 
     private func purgeFolderPreviewCache() {
@@ -1674,6 +1657,7 @@ struct LauncherView: View {
     /// Opens a folder overlay mid-drag so the app can be dropped into a specific position.
     private func openFolderForDrag(_ folder: FolderItem, draggedItem: LauncherItem) {
         guard case .app = draggedItem else { return }
+        folderIconWaveToggle = false
         withAnimation(folderOpenAnimation) {
             activeFolder = folder
         }
@@ -2780,9 +2764,9 @@ struct LauncherView: View {
         let columns = Array(repeating: GridItem(.fixed(tileSize), spacing: spacing, alignment: .center), count: 3)
         let isSnapPreviewTarget = folder.id == folderSnapPreviewTargetID
 
+        let isActiveFolder = activeFolder?.id == folder.id
         let shouldAnimatePreview = folderPreviewMatchID == folder.id
             && folderPreviewMatchingDisabled == false
-            && hasCachedFolderPreviewIcons(for: folder, layout: layout)
 
         return ZStack {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -2798,7 +2782,8 @@ struct LauncherView: View {
                     if shouldAnimatePreview {
                         tile.matchedGeometryEffect(
                             id: folderPreviewAnimationID(for: folder, app: app),
-                            in: folderIconAnimationNamespace
+                            in: folderIconAnimationNamespace,
+                            isSource: isActiveFolder
                         )
                     } else {
                         tile
@@ -3378,7 +3363,6 @@ struct LauncherView: View {
         let allowPreviewMatch = folderPreviewMatchID == folder.id
             && isArrangementEditingActive == false
             && folderPreviewMatchingDisabled == false
-            && hasCachedFolderPreviewIcons(for: folder, layout: layout)
         let gridInsets = overlayLayout.gridInsets
 
         GeometryReader { gridProxy in
@@ -3412,7 +3396,8 @@ struct LauncherView: View {
                                         iconBase
                                             .matchedGeometryEffect(
                                                 id: folderPreviewAnimationID(for: folder, app: app),
-                                                in: folderIconAnimationNamespace
+                                                in: folderIconAnimationNamespace,
+                                                isSource: activeFolder?.id != folder.id
                                             )
                                     } else {
                                         iconBase
@@ -3667,6 +3652,11 @@ struct LauncherView: View {
             .onAppear {
                 warmFolderPreviewIcons(for: folder, layout: layout)
                 updateActiveFolderPageCount(pageCount)
+                if folderIconWaveToggle == false {
+                    withAnimation(folderOpenAnimation) {
+                        folderIconWaveToggle = true
+                    }
+                }
             }
             .onChange(of: pageCount) { newCount in
                 updateActiveFolderPageCount(newCount)
@@ -3713,9 +3703,9 @@ struct LauncherView: View {
             lastActiveFolderID = folder.id
             folderPreviewMatchID = folder.id
             cancelFolderPreviewMatchRelease()
+            folderIconWaveToggle = false
             withAnimation(folderOpenAnimation) {
                 activeFolder = folder
-                folderIconWaveToggle = true
             }
             return
         case .app(let app):
@@ -4852,9 +4842,9 @@ struct LauncherView: View {
 
     /// Starts inline folder renaming by opening and focusing the overlay title.
     private func beginFolderRename(_ folder: FolderItem) {
+        folderIconWaveToggle = false
         withAnimation(folderOpenAnimation) {
             activeFolder = folder
-            folderIconWaveToggle = true
         }
         beginFolderNameEdit(for: folder)
     }

@@ -2798,8 +2798,7 @@ struct LauncherView: View {
                     if shouldAnimatePreview {
                         tile.matchedGeometryEffect(
                             id: folderPreviewAnimationID(for: folder, app: app),
-                            in: folderIconAnimationNamespace,
-                            isSource: true
+                            in: folderIconAnimationNamespace
                         )
                     } else {
                         tile
@@ -3413,8 +3412,7 @@ struct LauncherView: View {
                                         iconBase
                                             .matchedGeometryEffect(
                                                 id: folderPreviewAnimationID(for: folder, app: app),
-                                                in: folderIconAnimationNamespace,
-                                                isSource: false
+                                                in: folderIconAnimationNamespace
                                             )
                                     } else {
                                         iconBase

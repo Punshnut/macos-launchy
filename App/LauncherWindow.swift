@@ -38,6 +38,7 @@ final class LauncherWindowController: NSWindowController {
             window = fullscreen
         }
 
+        window.initialFirstResponder = launcherContentHost.view
         super.init(window: window)
     }
 
@@ -128,7 +129,12 @@ final class LauncherWindowController: NSWindowController {
         if launcherMode == .floaty {
             window.applyRoundedCorners(radius: 32)
         }
+        window.makeFirstResponder(launcherContentHost.view)
         NotificationCenter.default.post(name: .launcherShouldRefocusSearch, object: nil)
+        DispatchQueue.main.async {
+            window.makeFirstResponder(self.launcherContentHost.view)
+            NotificationCenter.default.post(name: .launcherShouldRefocusSearch, object: nil)
+        }
         if shouldAnimateEntrance && launcherMode == .fullscreen {
             NotificationCenter.default.post(name: .launcherShouldAnimateGridEntrance, object: nil)
         }
@@ -286,7 +292,6 @@ final class FloatyLauncherWindow: NSPanel {
         standardWindowButton(.miniaturizeButton)?.isHidden = true
         standardWindowButton(.zoomButton)?.isHidden = true
         titlebarSeparatorStyle = .none
-        becomesKeyOnlyIfNeeded = true
     }
 
     /// Allow buttons inside the panel to receive focus when needed.

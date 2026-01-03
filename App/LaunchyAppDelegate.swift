@@ -44,6 +44,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private let updaterController = UpdaterController()
     private var hasHandledInitialActivation = false
     private var isAnimatingLauncherHide = false
+    private var suppressLauncherRevealOnNextActivation = false
     private var visiblePageWarmupTask: Task<Void, Never>?
     private var memoryPressureSource: DispatchSourceMemoryPressure?
     private var pendingRemovalDeadlines: [String: Date] = [:]
@@ -72,6 +73,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         if hasHandledInitialActivation == false {
             hasHandledInitialActivation = true
+            return
+        }
+
+        if suppressLauncherRevealOnNextActivation {
+            suppressLauncherRevealOnNextActivation = false
             return
         }
 
@@ -271,9 +277,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Closes the launcher before Sparkle presents a modal to avoid overlapping windows.
     private func handleSparkleWillPresentUpdateUI() {
-        guard currentSettings.selectedLauncherMode == .fullscreen,
-              let window = launcherWindowManager?.window,
-              window.isVisible else {
+        suppressLauncherRevealOnNextActivation = true
+
+        guard let window = launcherWindowManager?.window, window.isVisible else {
             return
         }
         hideLauncherWindow(restoreFocus: false)

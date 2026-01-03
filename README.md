@@ -21,20 +21,20 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 <div align="center">
   <details>
-    <summary>🇪🇸 🇮🇹 🇩🇪 🇫🇷 🇵🇹 🇺🇦 🇷🇺 🇵🇱 🇬🇷 🇳🇱 🇸🇪 Europe (11)</summary>
-    <p>🇪🇸 Español (España)<br>🇮🇹 Italiano<br>🇩🇪 Deutsch<br>🇫🇷 Français<br>🇵🇹 Português (Portugal)<br>🇺🇦 Українська<br>🇷🇺 Русский<br>🇵🇱 Polski<br>🇬🇷 Ελληνικά<br>🇳🇱 Nederlands<br>🇸🇪 Svenska</p>
+    <summary>🇪🇸 🇮🇹 🇩🇪 🇫🇷 🇵🇹 🇺🇦 🇷🇺 🇵🇱 🇬🇷 🇳🇱 🇸🇪 🇨🇿 🇭🇺 🇪🇸 🇫🇮 Europe (15)</summary>
+    <p>🇪🇸 Español (España)<br>🇮🇹 Italiano<br>🇩🇪 Deutsch<br>🇫🇷 Français<br>🇵🇹 Português (Portugal)<br>🇺🇦 Українська<br>🇷🇺 Русский<br>🇵🇱 Polski<br>🇬🇷 Ελληνικά<br>🇳🇱 Nederlands<br>🇸🇪 Svenska<br>🇨🇿 Čeština<br>🇭🇺 Magyar<br>🇪🇸 Català<br>🇫🇮 Suomi</p>
   </details>
   <details>
-    <summary>🇵🇭 🇮🇳 🇮🇩 🇻🇳 🇹🇷 🇨🇳 🇯🇵 🇰🇷 🇹🇭 Asia (9)</summary>
-    <p>🇵🇭 Filipino / Tagalog<br>🇮🇳 हिन्दी<br>🇮🇩 Bahasa Indonesia<br>🇻🇳 Tiếng Việt<br>🇹🇷 Türkçe<br>🇨🇳 中文（简体）<br>🇯🇵 日本語<br>🇰🇷 한국어 (대한민국)<br>🇹🇭 ภาษาไทย</p>
+    <summary>🇵🇭 🇮🇳 🇮🇩 🇻🇳 🇹🇷 🇨🇳 🇯🇵 🇰🇷 🇹🇭 🇧🇩 🇵🇰 🇮🇳 🇮🇳 🇲🇾 🇲🇲 Asia (15)</summary>
+    <p>🇵🇭 Filipino / Tagalog<br>🇮🇳 हिन्दी<br>🇮🇩 Bahasa Indonesia<br>🇻🇳 Tiếng Việt<br>🇹🇷 Türkçe<br>🇨🇳 中文（简体）<br>🇯🇵 日本語<br>🇰🇷 한국어 (대한민국)<br>🇹🇭 ภาษาไทย<br>🇧🇩 বাংলা<br>🇵🇰 اُردُو<br>🇮🇳 தமிழ்<br>🇮🇳 తెలుగు<br>🇲🇾 Bahasa Melayu<br>🇲🇲 မြန်မာ</p>
   </details>
   <details>
     <summary>🇧🇷 🇲🇽 🇺🇸 Americas (3)</summary>
     <p>🇧🇷 Português (Brasil)<br>🇲🇽 Español (LatAm)<br>🇺🇸 English</p>
   </details>
   <details>
-    <summary>🇦🇪 🇮🇷 🇹🇿 🇳🇬 Middle East & Africa (4)</summary>
-    <p>🇦🇪 العربية (الفصحى الحديثة)<br>🇮🇷 فارسی<br>🇹🇿 Kiswahili<br>🇳🇬 Hausa</p>
+    <summary>🇦🇪 🇮🇷 🇹🇿 🇳🇬 🇪🇹 🇳🇬 Middle East & Africa (6)</summary>
+    <p>🇦🇪 العربية (الفصحى الحديثة)<br>🇮🇷 فارسی<br>🇹🇿 Kiswahili<br>🇳🇬 Hausa<br>🇪🇹 አማርኛ<br>🇳🇬 Yorùbá</p>
   </details>
 </div>
 <p align="center">

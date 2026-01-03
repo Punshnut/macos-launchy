@@ -2159,9 +2159,14 @@ struct LauncherView: View {
         let filterBaseItems = shouldFilterFromCache ? cachedFilteredItems : items
 
         searchTask = Task(priority: .userInitiated) {
-            let results = await Task.detached(priority: .userInitiated) {
+            let detachedTask = Task.detached(priority: .userInitiated) {
                 Self.filterItems(items: filterBaseItems, query: query, metadata: metadata)
-            }.value
+            }
+            let results = await withTaskCancellationHandler {
+                await detachedTask.value
+            } onCancel: {
+                detachedTask.cancel()
+            }
 
             do {
                 try Task.checkCancellation()
@@ -2198,9 +2203,8 @@ struct LauncherView: View {
         guard queryVariants.isEmpty == false else { return items }
         let tokenVariants = queryVariants.map { tokenizeSearchValue($0) }
         let normalizedQuery = primarySearchCacheKey(for: trimmedQuery)
-        var matches: [(score: Int, order: Int, item: LauncherItem)] = []
+        var buckets = Array(repeating: [LauncherItem](), count: 6)
         var seenAppIDs = Set<UUID>()
-        var orderIndex = 0
 
         for item in items {
             if Task.isCancelled {
@@ -2215,11 +2219,9 @@ struct LauncherView: View {
                     tokenVariants: tokenVariants,
                     metadata: metadata
                 ),
-                   seenAppIDs.insert(app.id).inserted {
-                    matches.append((score: score, order: orderIndex, item: .app(app)))
-                    orderIndex += 1
-                } else {
-                    orderIndex += 1
+                   seenAppIDs.insert(app.id).inserted,
+                   buckets.indices.contains(score) {
+                    buckets[score].append(.app(app))
                 }
             case .folder(let folder):
                 let folderNameVariants = normalizedSearchVariants(for: folder.name)
@@ -2238,30 +2240,22 @@ struct LauncherView: View {
                         metadata: metadata
                     )
                     let score: Int? = {
+                        guard let appScore else { return nil }
                         if folderNameMatches {
-                            return min(appScore ?? 2, 2)
+                            return min(appScore, 2)
                         }
                         return appScore
                     }()
                     if let score,
-                       seenAppIDs.insert(app.id).inserted {
-                        matches.append((score: score, order: orderIndex, item: .app(app)))
-                        orderIndex += 1
-                    } else {
-                        orderIndex += 1
+                       seenAppIDs.insert(app.id).inserted,
+                       buckets.indices.contains(score) {
+                        buckets[score].append(.app(app))
                     }
                 }
             }
         }
 
-        return matches
-            .sorted { lhs, rhs in
-                if lhs.score == rhs.score {
-                    return lhs.order < rhs.order
-                }
-                return lhs.score < rhs.score
-            }
-            .map(\.item)
+        return buckets.flatMap { $0 }
     }
 
     nonisolated private static func appMatchScore(

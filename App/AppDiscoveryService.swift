@@ -43,7 +43,6 @@ final class AppDiscoveryService {
     private let customApplicationDirectories: [URL]?
     private let userApplicationsDirectory: URL
     private let coreServicesDirectory = URL(fileURLWithPath: "/System/Library/CoreServices", isDirectory: true)
-    private let preferredLanguageCodes: [String]
     private let iconCache = NSCache<NSString, NSImage>()
     private let preparedIconCache = NSCache<NSString, NSImage>()
     private let metadataLock = NSLock()
@@ -99,7 +98,6 @@ final class AppDiscoveryService {
         self.cachedAppsByBundleID = Self.loadCachedApps(from: appCacheURL)
         self.appearanceCacheToken = Self.appearanceToken(for: nil)
 
-        preferredLanguageCodes = Self.buildPreferredLanguageCodes()
         configureIconCacheLimits()
     }
 
@@ -841,11 +839,20 @@ final class AppDiscoveryService {
     }
 
     private func localizedDisplayName(for bundle: Bundle, bundleURL: URL, fallback: String) -> String? {
-        if let infoPlistName = localizedNameFromInfoPlist(bundle: bundle, fallback: fallback) {
+        let preferredCodes = preferredLocalizationCodes(for: bundle)
+        if let infoPlistName = localizedNameFromInfoPlist(
+            bundle: bundle,
+            fallback: fallback,
+            preferredLocalizationCodes: preferredCodes
+        ) {
             return infoPlistName
         }
 
-        if let loctableName = localizedNameFromLoctable(bundleURL: bundleURL, fallback: fallback) {
+        if let loctableName = localizedNameFromLoctable(
+            bundleURL: bundleURL,
+            fallback: fallback,
+            preferredLocalizationCodes: preferredCodes
+        ) {
             return loctableName
         }
 
@@ -878,7 +885,11 @@ final class AppDiscoveryService {
         return withoutAppSuffix
     }
 
-    private func localizedNameFromInfoPlist(bundle: Bundle, fallback: String) -> String? {
+    private func localizedNameFromInfoPlist(
+        bundle: Bundle,
+        fallback: String,
+        preferredLocalizationCodes: [String]
+    ) -> String? {
         if let localizedInfo = bundle.localizedInfoDictionary {
             if let name = localizedInfo["CFBundleDisplayName"] as? String,
                let resolved = sanitizedLocalizedName(name, fallback: fallback) {
@@ -891,7 +902,7 @@ final class AppDiscoveryService {
             }
         }
 
-        for language in preferredLanguageCodes {
+        for language in preferredLocalizationCodes {
             guard let stringsURL = bundle.url(
                 forResource: "InfoPlist",
                 withExtension: "strings",
@@ -917,7 +928,11 @@ final class AppDiscoveryService {
         return nil
     }
 
-    private func localizedNameFromLoctable(bundleURL: URL, fallback: String) -> String? {
+    private func localizedNameFromLoctable(
+        bundleURL: URL,
+        fallback: String,
+        preferredLocalizationCodes: [String]
+    ) -> String? {
         let loctableURL = bundleURL
             .appendingPathComponent("Contents", isDirectory: true)
             .appendingPathComponent("Resources", isDirectory: true)
@@ -933,7 +948,7 @@ final class AppDiscoveryService {
             return nil
         }
 
-        for language in preferredLanguageCodes {
+        for language in preferredLocalizationCodes {
             guard let entry = dictionary[language] as? [String: Any] else { continue }
             if let name = entry["CFBundleDisplayName"] as? String,
                let resolved = sanitizedLocalizedName(name, fallback: fallback) {
@@ -958,22 +973,13 @@ final class AppDiscoveryService {
             : bundleURL.path.dropFirst(folderPath.count).hasPrefix("/")
     }
 
-    private static func buildPreferredLanguageCodes() -> [String] {
+    private func preferredLocalizationCodes(for bundle: Bundle) -> [String] {
         var ordered: [String] = []
-
-        for language in Locale.preferredLanguages {
-            let underscored = language.replacingOccurrences(of: "-", with: "_")
-            let components = underscored.split(separator: "_")
-            if components.isEmpty { continue }
-
-            ordered.append(language)
-            ordered.append(underscored)
-
-            if let languageCode = components.first {
-                ordered.append(String(languageCode))
-            }
+        if let primary = bundle.preferredLocalizations.first {
+            ordered.append(primary)
+        } else if let development = bundle.developmentLocalization {
+            ordered.append(development)
         }
-
         ordered.append("Base")
 
         return ordered.reduce(into: [String]()) { unique, code in

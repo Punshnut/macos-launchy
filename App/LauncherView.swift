@@ -445,7 +445,9 @@ struct LauncherView: View {
             }
         }
         .transaction { transaction in
-            transaction.animation = activeGridAnimation
+            if transaction.animation == nil {
+                transaction.animation = activeGridAnimation
+            }
         }
         .frame(width: pageWidth, height: layout.gridHeight, alignment: .top)
         .contentShape(Rectangle())
@@ -520,9 +522,11 @@ struct LauncherView: View {
     private let reorderLiftAnimation = Animation.spring(response: 0.26, dampingFraction: 0.82, blendDuration: 0.1)
     private let fullscreenGridEntranceAnimation = Animation.easeOut(duration: 0.22)
     private let fullscreenGridEntranceTranslation: CGFloat = 28
-    private let pageSwitchAnimation = Animation.easeOut(duration: 0.14)
-    private let gestureSettleAnimation = Animation.easeOut(duration: 0.14)
-    private let folderOpenAnimation = Animation.easeInOut(duration: 0.2)
+    private static let pageSwitchDuration: TimeInterval = 0.12
+    private let pageSwitchAnimation = Animation.easeOut(duration: Self.pageSwitchDuration)
+    private let gestureSettleAnimation = Animation.easeOut(duration: Self.pageSwitchDuration)
+    private static let folderOpenDuration: TimeInterval = 0.2
+    private let folderOpenAnimation = Animation.easeInOut(duration: Self.folderOpenDuration)
     private let folderPreviewMatchReleaseDelay: TimeInterval = 0.42
     private let pagerButtonHitPadding: CGFloat = 12
     private let pagerButtonHitSize: CGFloat = 44
@@ -583,6 +587,9 @@ struct LauncherView: View {
     @State private var folderIconWaveToggle = false
     @State private var folderPreviewMatchID: UUID?
     @State private var folderPreviewReleaseWorkItem: DispatchWorkItem?
+    @State private var folderIconWaveWorkItem: DispatchWorkItem?
+    @State private var folderOverlayOpenProgress: Double = 1
+    @State private var pendingFolderRenameID: UUID?
     @State private var lastActiveFolderID: UUID?
     @State private var shouldSkipActiveFolderChangeEffects = false
     @Namespace private var folderIconAnimationNamespace
@@ -685,6 +692,7 @@ struct LauncherView: View {
                 return
             }
             if newValue == nil {
+                pendingFolderRenameID = nil
                 activeFolderFrame = .zero
                 folderDragContext = nil
                 draggedFolderApp = nil
@@ -692,8 +700,10 @@ struct LauncherView: View {
                 isEditingFolderName = false
                 folderNameDraft = ""
                 isFolderNameFieldFocused = false
-                withAnimation(folderOpenAnimation) {
-                    folderIconWaveToggle = false
+                if folderPreviewMatchID != nil {
+                    scheduleFolderIconWaveToggle(false, delay: Self.folderOpenDuration, animated: false)
+                } else {
+                    scheduleFolderIconWaveToggle(false, delay: 0, animated: true)
                 }
                 let closingID = lastActiveFolderID
                 if let closingID {
@@ -707,7 +717,7 @@ struct LauncherView: View {
                 folderLiveReorderTargetIndex = nil
             } else if let folder = newValue {
                 lastActiveFolderID = folder.id
-                folderPreviewMatchID = folder.id
+                scheduleFolderIconWaveToggle(false, delay: 0, animated: false)
                 cancelFolderPreviewMatchRelease()
                 folderNameDraft = folder.name
                 isEditingFolderName = false
@@ -1576,6 +1586,9 @@ struct LauncherView: View {
         removal.items[folderIndex] = .folder(folder)
         withAnimation(gridSpringAnimation) {
             orderedItems = removal.items
+            if activeFolder?.id == folder.id {
+                shouldSkipActiveFolderChangeEffects = true
+            }
             activeFolder = folder
         }
         currentPage = folderIndex / max(pageCapacity, 1)
@@ -1602,10 +1615,16 @@ struct LauncherView: View {
         if animated {
             withAnimation(animation ?? gridSpringAnimation) {
                 orderedItems = updated
+                if activeFolder?.id == folder.id {
+                    shouldSkipActiveFolderChangeEffects = true
+                }
                 activeFolder = folder
             }
         } else {
             orderedItems = updated
+            if activeFolder?.id == folder.id {
+                shouldSkipActiveFolderChangeEffects = true
+            }
             activeFolder = folder
         }
         persistOrderChange()
@@ -1657,6 +1676,8 @@ struct LauncherView: View {
     /// Opens a folder overlay mid-drag so the app can be dropped into a specific position.
     private func openFolderForDrag(_ folder: FolderItem, draggedItem: LauncherItem) {
         guard case .app = draggedItem else { return }
+        primeFolderOverlayOpenAnimation()
+        folderPreviewMatchID = nil
         folderIconWaveToggle = false
         withAnimation(folderOpenAnimation) {
             activeFolder = folder
@@ -2764,9 +2785,9 @@ struct LauncherView: View {
         let columns = Array(repeating: GridItem(.fixed(tileSize), spacing: spacing, alignment: .center), count: 3)
         let isSnapPreviewTarget = folder.id == folderSnapPreviewTargetID
 
-        let isActiveFolder = activeFolder?.id == folder.id
-        let shouldAnimatePreview = folderPreviewMatchID == folder.id
-            && folderPreviewMatchingDisabled == false
+        let shouldAnimatePreview = folderPreviewMatchingDisabled == false
+            && isArrangementEditingActive == false
+            && folderPreviewMatchID == folder.id
 
         return ZStack {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -2783,8 +2804,9 @@ struct LauncherView: View {
                         tile.matchedGeometryEffect(
                             id: folderPreviewAnimationID(for: folder, app: app),
                             in: folderIconAnimationNamespace,
-                            isSource: isActiveFolder
+                            isSource: activeFolder?.id != folder.id
                         )
+                        .animation(folderOpenAnimation, value: activeFolder?.id)
                     } else {
                         tile
                     }
@@ -3360,9 +3382,9 @@ struct LauncherView: View {
         let columnCount = max(1, overlayLayout.columns)
         let columns = Array(repeating: GridItem(.flexible(), spacing: overlayLayout.spacing, alignment: .center), count: columnCount)
         let tileSize = layout.iconDimension
-        let allowPreviewMatch = folderPreviewMatchID == folder.id
-            && isArrangementEditingActive == false
+        let allowPreviewMatch = isArrangementEditingActive == false
             && folderPreviewMatchingDisabled == false
+            && folderPreviewMatchID == folder.id
         let gridInsets = overlayLayout.gridInsets
 
         GeometryReader { gridProxy in
@@ -3397,8 +3419,9 @@ struct LauncherView: View {
                                             .matchedGeometryEffect(
                                                 id: folderPreviewAnimationID(for: folder, app: app),
                                                 in: folderIconAnimationNamespace,
-                                                isSource: activeFolder?.id != folder.id
+                                                isSource: activeFolder?.id == folder.id
                                             )
+                                            .animation(folderOpenAnimation, value: activeFolder?.id)
                                     } else {
                                         iconBase
                                     }
@@ -3442,7 +3465,6 @@ struct LauncherView: View {
                                 enterPerformanceShedding(duration: 0.6)
                                 folderDragContext = FolderDragContext(folderID: folder.id, app: app)
                                 draggedFolderApp = app
-                                draggedItem = .app(app)
                                 folderPreviewMatchingDisabled = true
                                 return NSItemProvider(object: NSString(string: app.bundleIdentifier))
                             } preview: {
@@ -3454,7 +3476,9 @@ struct LauncherView: View {
                 }
             }
             .transaction { transaction in
-                transaction.animation = folderReorderAnimation
+                if transaction.animation == nil {
+                    transaction.animation = folderReorderAnimation
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.leading, gridInsets.leading)
@@ -3615,6 +3639,8 @@ struct LauncherView: View {
                 .padding(.leading, overlayLayout.contentInsets.leading)
                 .padding(.trailing, overlayLayout.contentInsets.trailing)
                 .frame(maxWidth: overlayLayout.cardWidth)
+                .scaleEffect(0.96 + 0.04 * folderOverlayOpenProgress)
+                .offset(y: (1 - folderOverlayOpenProgress) * 10)
                 .background(
                     searchBarBackgroundMaterial()
                         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
@@ -3641,6 +3667,8 @@ struct LauncherView: View {
                 of: [.text],
                 delegate: FolderExitDropDelegate(
                     activeFrame: $activeFolderFrame,
+                    containerSize: proxy.size,
+                    edgeThreshold: 18,
                     onExitDrag: {
                         withAnimation(.easeInOut(duration: 0.12)) {
                             dragItemOutOfFolderIfNeeded()
@@ -3655,6 +3683,17 @@ struct LauncherView: View {
                 if folderIconWaveToggle == false {
                     withAnimation(folderOpenAnimation) {
                         folderIconWaveToggle = true
+                    }
+                }
+                if folderOverlayOpenProgress < 1 {
+                    withAnimation(.easeOut(duration: 0.18)) {
+                        folderOverlayOpenProgress = 1
+                    }
+                }
+                if pendingFolderRenameID == folder.id {
+                    pendingFolderRenameID = nil
+                    DispatchQueue.main.async {
+                        beginFolderNameEdit(for: folder)
                     }
                 }
             }
@@ -3701,8 +3740,9 @@ struct LauncherView: View {
         case .folder(let folder):
             enterPerformanceShedding(duration: 1.1)
             lastActiveFolderID = folder.id
-            folderPreviewMatchID = folder.id
             cancelFolderPreviewMatchRelease()
+            folderPreviewMatchID = nil
+            primeFolderOverlayOpenAnimation()
             folderIconWaveToggle = false
             withAnimation(folderOpenAnimation) {
                 activeFolder = folder
@@ -3981,13 +4021,39 @@ struct LauncherView: View {
 
     /// Animates closing the active folder overlay so the transition stays smooth.
     private func closeActiveFolder(animated: Bool = true) {
-        guard activeFolder != nil else { return }
+        guard let active = activeFolder else { return }
         if animated {
+            folderPreviewMatchID = active.id
             withAnimation(folderOpenAnimation) {
                 activeFolder = nil
             }
         } else {
             activeFolder = nil
+        }
+    }
+
+    private func scheduleFolderIconWaveToggle(_ value: Bool, delay: TimeInterval, animated: Bool) {
+        folderIconWaveWorkItem?.cancel()
+        let workItem = DispatchWorkItem { [self] in
+            if animated {
+                withAnimation(folderOpenAnimation) {
+                    folderIconWaveToggle = value
+                }
+            } else {
+                folderIconWaveToggle = value
+            }
+        }
+        folderIconWaveWorkItem = workItem
+        if delay <= 0 {
+            workItem.perform()
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
+        }
+    }
+
+    private func primeFolderOverlayOpenAnimation() {
+        withTransaction(Transaction(animation: nil)) {
+            folderOverlayOpenProgress = 0
         }
     }
 
@@ -4842,11 +4908,17 @@ struct LauncherView: View {
 
     /// Starts inline folder renaming by opening and focusing the overlay title.
     private func beginFolderRename(_ folder: FolderItem) {
+        if activeFolder?.id == folder.id {
+            beginFolderNameEdit(for: folder)
+            return
+        }
+        pendingFolderRenameID = folder.id
+        primeFolderOverlayOpenAnimation()
+        folderPreviewMatchID = nil
         folderIconWaveToggle = false
         withAnimation(folderOpenAnimation) {
             activeFolder = folder
         }
-        beginFolderNameEdit(for: folder)
     }
 
     /// Starts inline editing for the folder title displayed in the overlay.

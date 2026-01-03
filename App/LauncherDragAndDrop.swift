@@ -381,24 +381,34 @@ struct FolderReorderDropDelegate: DropDelegate {
 /// Detects when a drag leaves the folder card so the app can be moved back to the root grid.
 struct FolderExitDropDelegate: DropDelegate {
     @Binding var activeFrame: CGRect
+    var containerSize: CGSize
+    var edgeThreshold: CGFloat
     var onExitDrag: () -> Void
 
     func dropEntered(info: DropInfo) {
-        attemptExit(at: info.location)
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
-        attemptExit(at: info.location)
         return DropProposal(operation: .move)
     }
 
     func performDrop(info: DropInfo) -> Bool {
+        attemptExit(at: info.location)
         return true
     }
 
     private func attemptExit(at location: CGPoint) {
         guard activeFrame.isEmpty == false else { return }
         guard activeFrame.contains(location) == false else { return }
+        guard isNearEdge(location) else { return }
         onExitDrag()
+    }
+
+    private func isNearEdge(_ location: CGPoint) -> Bool {
+        let threshold = max(edgeThreshold, 0)
+        return location.x <= threshold
+            || location.y <= threshold
+            || location.x >= containerSize.width - threshold
+            || location.y >= containerSize.height - threshold
     }
 }

@@ -8,11 +8,13 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
     let keyCode: UInt32
     private let modifierFlagsRawValue: UInt
     private let keyRepresentation: String?
+    let mediaKey: MediaKey?
 
     private enum CodingKeys: String, CodingKey {
         case keyCode
         case modifierFlagsRawValue
         case keyRepresentation
+        case mediaKey
     }
 
     /// Modern modifier flags.
@@ -31,6 +33,14 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
         self.keyCode = keyCode
         self.modifierFlagsRawValue = HotkeyDescriptor.filtered(modifierFlags).rawValue
         self.keyRepresentation = keyRepresentation
+        self.mediaKey = nil
+    }
+
+    init(mediaKey: MediaKey, modifierFlags: NSEvent.ModifierFlags, keyRepresentation: String? = nil) {
+        self.keyCode = 0
+        self.modifierFlagsRawValue = HotkeyDescriptor.filtered(modifierFlags).rawValue
+        self.keyRepresentation = keyRepresentation
+        self.mediaKey = mediaKey
     }
 
     init(from decoder: Decoder) throws {
@@ -39,6 +49,7 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
         let rawFlags = try container.decode(UInt.self, forKey: .modifierFlagsRawValue)
         modifierFlagsRawValue = HotkeyDescriptor.filtered(NSEvent.ModifierFlags(rawValue: rawFlags)).rawValue
         keyRepresentation = try container.decodeIfPresent(String.self, forKey: .keyRepresentation)
+        mediaKey = try container.decodeIfPresent(MediaKey.self, forKey: .mediaKey)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -46,6 +57,7 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
         try container.encode(keyCode, forKey: .keyCode)
         try container.encode(modifierFlagsRawValue, forKey: .modifierFlagsRawValue)
         try container.encodeIfPresent(keyRepresentation, forKey: .keyRepresentation)
+        try container.encodeIfPresent(mediaKey, forKey: .mediaKey)
     }
 
     /// Converts modern `NSEvent` modifiers to the Carbon bitmask expected by `RegisterEventHotKey`.
@@ -76,11 +88,23 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
     /// Creates a descriptor from a key event, filtering unsupported modifiers.
     init?(event: NSEvent) {
         let sanitizedModifiers = HotkeyDescriptor.filtered(event.modifierFlags)
+        if let mediaKey = HotkeyDescriptor.mediaKey(from: event) {
+            self.init(
+                mediaKey: mediaKey,
+                modifierFlags: sanitizedModifiers,
+                keyRepresentation: mediaKey.displayName
+            )
+            return
+        }
         self.init(
             keyCode: UInt32(event.keyCode),
             modifierFlags: sanitizedModifiers,
             keyRepresentation: HotkeyDescriptor.displayNameForKey(event)
         )
+    }
+
+    static func sanitizedModifiers(for event: NSEvent) -> NSEvent.ModifierFlags {
+        filtered(event.modifierFlags)
     }
 
     private static func filtered(_ modifiers: NSEvent.ModifierFlags) -> NSEvent.ModifierFlags {
@@ -105,7 +129,10 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
     }
 
     private func keyDisplayText() -> String {
-        keyRepresentation ?? Self.displayName(for: keyCode)
+        if let mediaKey {
+            return mediaKey.displayName
+        }
+        return keyRepresentation ?? Self.displayName(for: keyCode)
     }
 
     private static func displayNameForKey(_ event: NSEvent) -> String {
@@ -132,13 +159,31 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
         return "Key \(keyCode)"
     }
 
+    static func mediaKey(from event: NSEvent) -> MediaKey? {
+        guard event.type == .systemDefined, event.subtype.rawValue == 8 else {
+            return nil
+        }
+        let data = UInt32(bitPattern: Int32(event.data1))
+        let keyCode = UInt16((data >> 16) & 0xFFFF)
+        let keyFlags = data & 0x0000FFFF
+        let keyState = (keyFlags & 0xFF00) >> 8
+        let isKeyDown = keyState == 0x0A
+        guard isKeyDown else {
+            return nil
+        }
+        return MediaKey(rawValue: keyCode)
+    }
+
     /// Basic lookup table for readable key names.
     private static let keyCodeLabels: [UInt32: String] = [
         UInt32(kVK_Return): "Return",
         UInt32(kVK_Tab): "Tab",
         UInt32(kVK_Space): "Space",
         UInt32(kVK_Delete): "Delete",
+        UInt32(kVK_ForwardDelete): "Forward Delete",
         UInt32(kVK_Escape): "Esc",
+        UInt32(kVK_Help): "Help",
+        UInt32(kVK_Function): "Fn",
         UInt32(kVK_Home): "Home",
         UInt32(kVK_End): "End",
         UInt32(kVK_PageUp): "Page Up",
@@ -215,6 +260,53 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
     ]
 }
 
+enum MediaKey: UInt16, Codable, CaseIterable {
+    case volumeUp = 0
+    case volumeDown = 1
+    case brightnessUp = 2
+    case brightnessDown = 3
+    case mute = 7
+    case playPause = 16
+    case nextTrack = 17
+    case previousTrack = 18
+    case fastForward = 19
+    case rewind = 20
+    case illuminationUp = 21
+    case illuminationDown = 22
+    case illuminationToggle = 23
+
+    var displayName: String {
+        switch self {
+        case .volumeUp:
+            return "Volume Up"
+        case .volumeDown:
+            return "Volume Down"
+        case .brightnessUp:
+            return "Brightness Up"
+        case .brightnessDown:
+            return "Brightness Down"
+        case .mute:
+            return "Mute"
+        case .playPause:
+            return "Play/Pause"
+        case .nextTrack:
+            return "Next Track"
+        case .previousTrack:
+            return "Previous Track"
+        case .fastForward:
+            return "Fast Forward"
+        case .rewind:
+            return "Rewind"
+        case .illuminationUp:
+            return "Keyboard Brightness Up"
+        case .illuminationDown:
+            return "Keyboard Brightness Down"
+        case .illuminationToggle:
+            return "Keyboard Brightness Toggle"
+        }
+    }
+}
+
 /// Abstraction describing something that can register/unregister a global hotkey.
 protocol HotkeyRegistering {
     func beginListening(descriptor: HotkeyDescriptor, handler: @escaping () -> Void) -> Bool
@@ -231,7 +323,7 @@ final class HotkeyManager {
     /// Invoked whenever the registered hotkey is pressed.
     var onHotkeyPressed: (() -> Void)?
 
-    init(descriptor: HotkeyDescriptor? = .toggleLauncher, registrar: HotkeyRegistering = CarbonHotkeyRegistrar()) {
+    init(descriptor: HotkeyDescriptor? = .toggleLauncher, registrar: HotkeyRegistering = CompositeHotkeyRegistrar()) {
         self.registeredHotkey = descriptor
         self.hotkeyRegistrar = registrar
     }
@@ -383,5 +475,89 @@ final class CarbonHotkeyRegistrar: HotkeyRegistering {
 
         registeredHandler?()
         return noErr
+    }
+}
+
+/// Registers media keys using a global/local event monitor instead of Carbon.
+final class MediaHotkeyRegistrar: HotkeyRegistering {
+    private var globalMonitor: Any?
+    private var localMonitor: Any?
+    private var registeredDescriptor: HotkeyDescriptor?
+    private var registeredHandler: (() -> Void)?
+
+    func beginListening(descriptor: HotkeyDescriptor, handler: @escaping () -> Void) -> Bool {
+        guard descriptor.mediaKey != nil else {
+            return false
+        }
+        endListening()
+        registeredDescriptor = descriptor
+        registeredHandler = handler
+        globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: .systemDefined) { [weak self] event in
+            self?.handle(event)
+        }
+        localMonitor = NSEvent.addLocalMonitorForEvents(matching: .systemDefined) { [weak self] event in
+            self?.handle(event)
+            return event
+        }
+        if globalMonitor == nil && localMonitor == nil {
+            endListening()
+            return false
+        }
+        return true
+    }
+
+    func endListening() {
+        if let globalMonitor {
+            NSEvent.removeMonitor(globalMonitor)
+        }
+        if let localMonitor {
+            NSEvent.removeMonitor(localMonitor)
+        }
+        globalMonitor = nil
+        localMonitor = nil
+        registeredDescriptor = nil
+        registeredHandler = nil
+    }
+
+    private func handle(_ event: NSEvent) {
+        guard let registeredDescriptor,
+              let expectedMediaKey = registeredDescriptor.mediaKey else {
+            return
+        }
+        guard let mediaKey = HotkeyDescriptor.mediaKey(from: event),
+              mediaKey == expectedMediaKey else {
+            return
+        }
+        let sanitizedModifiers = HotkeyDescriptor.sanitizedModifiers(for: event)
+        guard sanitizedModifiers == registeredDescriptor.modifierFlags else {
+            return
+        }
+        registeredHandler?()
+    }
+}
+
+/// Routes standard hotkeys to Carbon and media keys to a monitor-based registrar.
+final class CompositeHotkeyRegistrar: HotkeyRegistering {
+    private let carbonRegistrar = CarbonHotkeyRegistrar()
+    private let mediaRegistrar = MediaHotkeyRegistrar()
+    private var isUsingMediaRegistrar = false
+
+    func beginListening(descriptor: HotkeyDescriptor, handler: @escaping () -> Void) -> Bool {
+        endListening()
+        if descriptor.mediaKey != nil {
+            isUsingMediaRegistrar = true
+            return mediaRegistrar.beginListening(descriptor: descriptor, handler: handler)
+        }
+        isUsingMediaRegistrar = false
+        return carbonRegistrar.beginListening(descriptor: descriptor, handler: handler)
+    }
+
+    func endListening() {
+        if isUsingMediaRegistrar {
+            mediaRegistrar.endListening()
+        } else {
+            carbonRegistrar.endListening()
+        }
+        isUsingMediaRegistrar = false
     }
 }

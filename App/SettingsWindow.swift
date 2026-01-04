@@ -922,30 +922,72 @@ private struct HotkeyRecorderRow: View {
     let onChange: (HotkeyDescriptor?) -> Void
     var onReset: (() -> Void)?
     var showResetButton: Bool = true
+    @State private var cancelToken: Int = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
                 .font(.subheadline)
-            HStack(spacing: 8) {
-                HotkeyRecorderField(hotkey: hotkey, placeholder: placeholder, onChange: onChange)
-                    .frame(width: 220, height: 30)
+            HStack(spacing: 10) {
+                HotkeyRecorderField(
+                    hotkey: hotkey,
+                    placeholder: placeholder,
+                    cancelToken: cancelToken,
+                    onChange: onChange
+                )
+                .frame(width: 240, height: 34)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(Color.white.opacity(0.02))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .strokeBorder(Color.accentColor.opacity(0.55), lineWidth: 1.6)
+                )
+                .shadow(color: Color.accentColor.opacity(0.18), radius: 6, y: 1)
 
-                if showResetButton, let onReset {
-                    Button(String(localized: "Reset")) {
-                        onReset()
+                HStack(spacing: 6) {
+                    if showResetButton, let onReset {
+                        Button(String(localized: "Reset")) {
+                            cancelToken += 1
+                            onReset()
+                        }
+                        .controlSize(.small)
+                        .buttonStyle(.bordered)
                     }
-                }
 
-                Button(String(localized: "Clear")) {
-                    onChange(nil)
+                    Button(String(localized: "Clear")) {
+                        cancelToken += 1
+                        onChange(nil)
+                    }
+                    .disabled(hotkey == nil)
+                    .controlSize(.small)
+                    .buttonStyle(.bordered)
                 }
-                .disabled(hotkey == nil)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 4)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(Color.white.opacity(0.05))
+                )
             }
             Text(message)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(.ultraThinMaterial)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(LinearGradient(
+                    colors: [Color.white.opacity(0.25), Color.white.opacity(0.06)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ), lineWidth: 1)
+        )
     }
 }
 

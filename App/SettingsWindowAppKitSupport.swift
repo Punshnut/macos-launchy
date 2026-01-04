@@ -165,6 +165,7 @@ final class SettingsWindowAlertPresenter {
 struct HotkeyRecorderField: NSViewRepresentable {
     var hotkey: HotkeyDescriptor?
     var placeholder: String
+    var cancelToken: Int
     var onChange: (HotkeyDescriptor?) -> Void
 
     func makeNSView(context: Context) -> HotkeyRecorderTextField {
@@ -175,10 +176,26 @@ struct HotkeyRecorderField: NSViewRepresentable {
         return view
     }
 
+    func makeCoordinator() -> Coordinator {
+        Coordinator(cancelToken: cancelToken)
+    }
+
     func updateNSView(_ nsView: HotkeyRecorderTextField, context: Context) {
         nsView.placeholderText = placeholder
         nsView.hotkey = hotkey
         nsView.onHotkeyChange = onChange
+        if context.coordinator.cancelToken != cancelToken {
+            nsView.cancelRecording()
+            context.coordinator.cancelToken = cancelToken
+        }
+    }
+
+    final class Coordinator {
+        var cancelToken: Int
+
+        init(cancelToken: Int) {
+            self.cancelToken = cancelToken
+        }
     }
 }
 
@@ -194,15 +211,17 @@ final class HotkeyRecorderTextField: NSTextField {
     var onHotkeyChange: ((HotkeyDescriptor?) -> Void)?
 
     private var isRecording = false
+    private var systemDefinedMonitor: Any?
+    private var keyDownMonitor: Any?
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
-        isBordered = true
+        isBordered = false
         isEditable = false
         isSelectable = false
-        drawsBackground = true
-        backgroundColor = .controlBackgroundColor
-        focusRingType = .default
+        drawsBackground = false
+        backgroundColor = .clear
+        focusRingType = .none
         alignment = .center
         font = .systemFont(ofSize: NSFont.systemFontSize)
         cell?.wraps = false
@@ -217,26 +236,30 @@ final class HotkeyRecorderTextField: NSTextField {
 
     override var acceptsFirstResponder: Bool { true }
 
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        true
+    }
+
     override func becomeFirstResponder() -> Bool {
         let success = super.becomeFirstResponder()
-        isRecording = true
-        updateDisplay()
+        if success {
+            beginRecording()
+        }
         return success
     }
 
     override func resignFirstResponder() -> Bool {
-        isRecording = false
-        updateDisplay()
+        endRecording(resignFirstResponder: false)
         return super.resignFirstResponder()
     }
 
     override func mouseDown(with event: NSEvent) {
         window?.makeFirstResponder(self)
-        isRecording = true
-        updateDisplay()
+        beginRecording()
     }
 
     override func keyDown(with event: NSEvent) {
+        guard isRecording else { return }
         handleKeyEvent(event)
     }
 
@@ -245,20 +268,18 @@ final class HotkeyRecorderTextField: NSTextField {
             UInt16(kVK_Delete),
             UInt16(kVK_ForwardDelete)
         ]
+        let sanitizedModifiers = HotkeyDescriptor.sanitizedModifiers(for: event)
+        let hasModifiers = !sanitizedModifiers.isEmpty
 
-        if event.keyCode == UInt16(kVK_Escape) {
-            isRecording = false
-            window?.makeFirstResponder(nil)
-            updateDisplay()
+        if event.keyCode == UInt16(kVK_Escape), !hasModifiers {
+            endRecording(resignFirstResponder: true)
             return
         }
 
-        if deleteKeyCodes.contains(event.keyCode) {
+        if deleteKeyCodes.contains(event.keyCode), !hasModifiers {
             hotkey = nil
             onHotkeyChange?(nil)
-            isRecording = false
-            window?.makeFirstResponder(nil)
-            updateDisplay()
+            endRecording(resignFirstResponder: true)
             return
         }
 
@@ -269,9 +290,66 @@ final class HotkeyRecorderTextField: NSTextField {
 
         hotkey = descriptor
         onHotkeyChange?(descriptor)
-        isRecording = false
-        window?.makeFirstResponder(nil)
+        endRecording(resignFirstResponder: true)
+    }
+
+    func cancelRecording() {
+        guard isRecording else { return }
+        endRecording(resignFirstResponder: true)
+    }
+
+    private func beginRecording() {
+        isRecording = true
+        installKeyDownMonitorIfNeeded()
+        installSystemDefinedMonitorIfNeeded()
         updateDisplay()
+    }
+
+    private func endRecording(resignFirstResponder: Bool) {
+        isRecording = false
+        removeSystemDefinedMonitor()
+        removeKeyDownMonitor()
+        if resignFirstResponder {
+            window?.makeFirstResponder(nil)
+        }
+        updateDisplay()
+    }
+
+    private func installSystemDefinedMonitorIfNeeded() {
+        guard systemDefinedMonitor == nil else { return }
+        systemDefinedMonitor = NSEvent.addLocalMonitorForEvents(matching: .systemDefined) { [weak self] event in
+            guard let self, self.isRecording else { return event }
+            guard let descriptor = HotkeyDescriptor(event: event) else {
+                return event
+            }
+            self.hotkey = descriptor
+            self.onHotkeyChange?(descriptor)
+            self.endRecording(resignFirstResponder: true)
+            return event
+        }
+    }
+
+    private func removeSystemDefinedMonitor() {
+        if let systemDefinedMonitor {
+            NSEvent.removeMonitor(systemDefinedMonitor)
+            self.systemDefinedMonitor = nil
+        }
+    }
+
+    private func installKeyDownMonitorIfNeeded() {
+        guard keyDownMonitor == nil else { return }
+        keyDownMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            guard let self, self.isRecording else { return event }
+            self.handleKeyEvent(event)
+            return nil
+        }
+    }
+
+    private func removeKeyDownMonitor() {
+        if let keyDownMonitor {
+            NSEvent.removeMonitor(keyDownMonitor)
+            self.keyDownMonitor = nil
+        }
     }
 
     private func updateDisplay() {

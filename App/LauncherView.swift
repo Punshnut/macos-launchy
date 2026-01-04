@@ -325,6 +325,11 @@ struct LauncherView: View {
         }
     }
 
+    @ViewBuilder
+    private func pageRenderingWrapper<Content: View>(_ content: Content) -> some View {
+        content.compositingGroup()
+    }
+
     /// Displays a single paged grid of items with drag-and-drop reordering and context menus.
     @ViewBuilder
     private func launcherGridPage(
@@ -337,7 +342,7 @@ struct LauncherView: View {
         canReorder: Bool,
         gridProxy: GeometryProxy
     ) -> some View {
-        LazyVGrid(
+        let grid = LazyVGrid(
             columns: layout.gridColumns,
             alignment: .center,
             spacing: layout.iconSpacing
@@ -403,7 +408,9 @@ struct LauncherView: View {
                     itemContextMenu(for: item)
                 }
 
-                let liftEffect = gridArrangementEffect(for: item)
+                let liftEffect = shouldRasterizeGridPages
+                    ? ArrangementEffect(scale: 1, offset: 0, shadowOpacity: 0, shadowRadius: 0, shadowYOffset: 0)
+                    : gridArrangementEffect(for: item)
                 let animatedCell = AnyView(
                     decoratedCell
                         .scaleEffect(liftEffect.scale)
@@ -500,6 +507,7 @@ struct LauncherView: View {
             )
         )
 
+        pageRenderingWrapper(grid)
     }
 
     private var fullscreenGridEntranceOpacity: Double {
@@ -605,6 +613,8 @@ struct LauncherView: View {
     @State private var pendingDropPage: Int?
     @State private var folderLiveReorderTargetIndex: Int?
     @State private var folderPreviewMatchingDisabled = false
+    @State private var isPageSwitchAnimationActive = false
+    @State private var pageSwitchAnimationToken: UInt = 0
     @FocusState private var isFolderNameFieldFocused: Bool
     @FocusState private var isAppNameFieldFocused: Bool
     @FocusState private var isSearchFieldFocused: Bool
@@ -1131,6 +1141,7 @@ struct LauncherView: View {
         lastPageChangeDate = Date()
         bumpHighQualityRequestEpoch(resetPending: true)
         enterPerformanceShedding(duration: 0.45)
+        beginPageSwitchAnimation()
     }
 
     private func bumpHighQualityRequestEpoch(resetPending: Bool = false) {
@@ -1153,6 +1164,19 @@ struct LauncherView: View {
         pendingHighQualityIconIDs.removeAll()
         delayedHighQualityRequests.removeAll()
         bumpHighQualityRequestEpoch(resetPending: true)
+    }
+
+    private func beginPageSwitchAnimation() {
+        pageSwitchAnimationToken &+= 1
+        let token = pageSwitchAnimationToken
+        isPageSwitchAnimationActive = true
+        let cooldown = Self.pageSwitchDuration + 0.08
+        DispatchQueue.main.asyncAfter(deadline: .now() + cooldown) { [self] in
+            guard token == pageSwitchAnimationToken else { return }
+            if abs(pagerDragOffset) < 0.5 {
+                isPageSwitchAnimationActive = false
+            }
+        }
     }
 
     /// Temporarily backs off heavy work (like hi-res icon loads) while the user is interacting.
@@ -1388,6 +1412,10 @@ struct LauncherView: View {
         let distance = abs(CGFloat(page - currentPage) + dragProgress)
         let visibility = max(0, 1 - distance)
         return Double(min(1, visibility))
+    }
+
+    private var shouldRasterizeGridPages: Bool {
+        abs(pagerDragOffset) > 0.5 || isPageSwitchAnimationActive
     }
 
     /// Returns only the currently focused page and its immediate neighbors to keep gesture FPS high.
@@ -2656,6 +2684,10 @@ struct LauncherView: View {
                     .opacity(1)
             }
         }
+        .compositingGroup()
+        .transaction { transaction in
+            transaction.animation = nil
+        }
         .onAppear {
             requestHighQualityIconIfNeeded(for: app, layout: layout)
         }
@@ -2663,12 +2695,22 @@ struct LauncherView: View {
 
     private func iconCell(for item: LauncherItem, layout: LauncherLayoutMetrics) -> some View {
         let isSelected = isMultiSelectModeActive && multiSelectedItemIDs.contains(item.id)
+        let shouldWiggleIcon = shouldRasterizeGridPages ? false : shouldWiggle(item: item)
+        let selectionShadowOpacity = shouldRasterizeGridPages ? 0 : (isSelected ? 0.28 : 0)
+        let selectionShadowRadius: CGFloat = shouldRasterizeGridPages ? 0 : (isSelected ? 10 : 0)
+        let selectionShadowYOffset: CGFloat = shouldRasterizeGridPages ? 0 : (isSelected ? 2 : 0)
+        let selectionBlendMode: BlendMode = isSelected ? .screen : .normal
+
         return iconView(for: item, layout: layout)
             .frame(width: layout.iconDimension, height: layout.iconDimension)
             .overlay(selectionHighlight(for: item, layout: layout, isSelected: isSelected))
-            .modifier(wiggleMotion(for: item.id, layout: layout, isActive: shouldWiggle(item: item)))
-            .shadow(color: Color.accentColor.opacity(isSelected ? 0.28 : 0), radius: isSelected ? 10 : 0, y: isSelected ? 2 : 0)
-            .blendMode(isSelected ? .screen : .normal)
+            .modifier(wiggleMotion(for: item.id, layout: layout, isActive: shouldWiggleIcon))
+            .shadow(
+                color: Color.accentColor.opacity(selectionShadowOpacity),
+                radius: selectionShadowRadius,
+                y: selectionShadowYOffset
+            )
+            .blendMode(selectionBlendMode)
             .animation(.easeInOut(duration: 0.18), value: isSelected)
     }
 
@@ -2858,6 +2900,10 @@ struct LauncherView: View {
                         .foregroundColor(.primary.opacity(0.75))
                 }
             }
+        }
+        .compositingGroup()
+        .transaction { transaction in
+            transaction.animation = nil
         }
         .onAppear {
             requestHighQualityIconIfNeeded(for: app, layout: layout)

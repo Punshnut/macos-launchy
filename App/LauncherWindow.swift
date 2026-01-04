@@ -13,6 +13,7 @@ final class LauncherWindowController: NSWindowController {
 
     /// Wraps the provided SwiftUI content inside either a panel or fullscreen window.
     init(rootView: LauncherView, launcherMode: LauncherMode) {
+        LaunchyLogger.log("LauncherWindowController init: mode=\(launcherMode)")
         launcherContentHost = NSHostingController(rootView: rootView)
         launcherContentHost.view.wantsLayer = true
         launcherContentHost.view.layer?.backgroundColor = NSColor.clear.cgColor
@@ -22,6 +23,7 @@ final class LauncherWindowController: NSWindowController {
 
         switch launcherMode {
         case .floaty:
+            LaunchyLogger.log("LauncherWindowController init: building floaty window")
             let frame = Self.floatyFrame(for: Self.preferredFloatyContentSize, on: presentationScreen)
             launcherContentHost.preferredContentSize = frame.size
             let floatyPanel = FloatyLauncherWindow(contentRect: frame)
@@ -30,6 +32,7 @@ final class LauncherWindowController: NSWindowController {
             floatyPanel.setFrame(frame, display: false)
             window = floatyPanel
         case .fullscreen:
+            LaunchyLogger.log("LauncherWindowController init: building fullscreen window")
             let frame = Self.fullscreenFrame(on: presentationScreen)
             launcherContentHost.preferredContentSize = frame.size
             let fullscreen = FullscreenLauncherWindow(contentRect: frame)
@@ -40,6 +43,7 @@ final class LauncherWindowController: NSWindowController {
 
         window.initialFirstResponder = launcherContentHost.view
         super.init(window: window)
+        LaunchyLogger.log("LauncherWindowController init: done mode=\(launcherMode)")
     }
 
     @available(*, unavailable)
@@ -116,7 +120,12 @@ final class LauncherWindowController: NSWindowController {
     /// Presents the window using the right ordering semantics for panels vs regular windows.
     func presentWindow(skipEntranceAnimation: Bool = false) {
         guard let window else { return }
-        updateFrameForPreferredScreenIfNeeded()
+        LaunchyLogger.log("LauncherWindowController presentWindow: start mode=\(launcherMode) visible=\(window.isVisible) skip=\(skipEntranceAnimation)")
+        if launcherMode == .floaty && window.isVisible == false {
+            // Avoid touching screen/size logic before the panel is on-screen.
+        } else {
+            updateFrameForPreferredScreenIfNeeded()
+        }
         let originalFrame = window.frame
         let shouldAnimateEntrance = window.isVisible == false && skipEntranceAnimation == false
 
@@ -142,6 +151,7 @@ final class LauncherWindowController: NSWindowController {
         if shouldAnimateEntrance {
             runEntranceAnimation(window: window, originalFrame: originalFrame)
         }
+        LaunchyLogger.log("LauncherWindowController presentWindow: done mode=\(launcherMode)")
     }
 
     /// Replaces the hosted SwiftUI content while keeping the same window instance alive.
@@ -153,6 +163,7 @@ final class LauncherWindowController: NSWindowController {
     private func updateFrameForPreferredScreenIfNeeded() {
         guard let window else { return }
         let targetScreen = ScreenProvider.screenUnderMouseOrMain()
+        LaunchyLogger.log("LauncherWindowController updateFrameForPreferredScreenIfNeeded: mode=\(launcherMode)")
 
         switch launcherMode {
         case .floaty:
@@ -292,6 +303,7 @@ final class FloatyLauncherWindow: NSPanel {
         standardWindowButton(.miniaturizeButton)?.isHidden = true
         standardWindowButton(.zoomButton)?.isHidden = true
         titlebarSeparatorStyle = .none
+        LaunchyLogger.log("FloatyLauncherWindow setupWindow: configured")
     }
 
     /// Allow buttons inside the panel to receive focus when needed.

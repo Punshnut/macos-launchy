@@ -511,17 +511,22 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Handles work that needs to happen after settings mutate elsewhere.
+    @MainActor
     private func handleSettingsChange() {
         let previousHidden = Set(currentSettings.hiddenBundleIDs)
         let previousGapSetting = currentSettings.fillsGapsAutomatically
         let previousUserApplicationsScan = currentSettings.shouldScanUserApplicationsFolder
         let previousSpecialHiddenEntries = Set(currentSettings.hiddenSpecialEntryIDs)
+        let previousLauncherHotkey = currentSettings.launcherHotkey
+        let previousLayoutHotkey = currentSettings.layoutToggleHotkey
         currentSettings = LauncherSettingsPersistence.loadSettings()
         LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
         let hiddenChanged = previousHidden != Set(currentSettings.hiddenBundleIDs)
         let gapSettingChanged = previousGapSetting != currentSettings.fillsGapsAutomatically
         let scanSettingChanged = previousUserApplicationsScan != currentSettings.shouldScanUserApplicationsFolder
         let specialEntryChanged = previousSpecialHiddenEntries != Set(currentSettings.hiddenSpecialEntryIDs)
+        let hotkeysChanged = previousLauncherHotkey != currentSettings.launcherHotkey
+            || previousLayoutHotkey != currentSettings.layoutToggleHotkey
         if scanSettingChanged {
             configureApplicationDirectoryMonitoring()
         }
@@ -530,7 +535,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
         applyLauncherMode()
         updateStatusItemVisibility()
-        refreshHotkeyRegistrations()
+        if hotkeysChanged {
+            refreshHotkeyRegistrations()
+        }
         updateHotCornerMonitoring()
     }
 

@@ -324,12 +324,24 @@ final class AppDiscoveryService {
             return []
         }
 
+        var missingIdentifierCount = 0
         let discoveredApps = enumerator
             .compactMap { $0 as? URL }
             .filter { $0.pathExtension == "app" }
-            .compactMap { buildAppItem(from: $0, isCoreService: isCoreServicesDirectory) }
+            .compactMap { bundleURL in
+                buildAppItem(
+                    from: bundleURL,
+                    isCoreService: isCoreServicesDirectory,
+                    onMissingIdentifier: { _ in missingIdentifierCount += 1 }
+                )
+            }
 
-        LaunchyLogger.log("AppDiscovery: found \(discoveredApps.count) app bundles in \(searchDirectory.lastPathComponent)")
+        let directoryName = searchDirectory.lastPathComponent
+        if missingIdentifierCount > 0 {
+            LaunchyLogger.log("AppDiscovery: found \(discoveredApps.count) app bundles in \(directoryName) (missingIDs=\(missingIdentifierCount))")
+        } else {
+            LaunchyLogger.log("AppDiscovery: found \(discoveredApps.count) app bundles in \(directoryName)")
+        }
         return discoveredApps
     }
 
@@ -807,14 +819,18 @@ final class AppDiscoveryService {
     }
 
     /// Converts a bundle on disk into an `AppItem`, extracting the display name and identifier.
-    private func buildAppItem(from bundleURL: URL, isCoreService: Bool) -> AppItem? {
+    private func buildAppItem(
+        from bundleURL: URL,
+        isCoreService: Bool,
+        onMissingIdentifier: ((URL) -> Void)? = nil
+    ) -> AppItem? {
         guard let bundle = Bundle(url: bundleURL) else {
             LaunchyLogger.error("AppDiscovery: malformed bundle at \(bundleURL.path)")
             return nil
         }
         let bundleIdentifier = bundle.bundleIdentifier ?? bundleURL.path
         if bundle.bundleIdentifier == nil {
-            LaunchyLogger.log("AppDiscovery: bundle at \(bundleURL.lastPathComponent) missing identifier, using path fallback")
+            onMissingIdentifier?(bundleURL)
         }
 
         let infoDictionary = bundle.infoDictionary ?? [:]

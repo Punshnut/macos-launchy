@@ -572,6 +572,17 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             URL(fileURLWithPath: "/System/Applications", isDirectory: true)
         ]
 
+        let cryptexPaths = [
+            "/System/Volumes/Preboot/Cryptexes/App/System/Applications",
+            "/System/Cryptexes/App/System/Applications"
+        ]
+        for path in cryptexPaths {
+            let url = URL(fileURLWithPath: path, isDirectory: true)
+            if FileManager.default.fileExists(atPath: url.path) {
+                directories.append(url)
+            }
+        }
+
         if currentSettings.shouldScanUserApplicationsFolder {
             let userApps = FileManager.default.homeDirectoryForCurrentUser
                 .appendingPathComponent("Applications", isDirectory: true)
@@ -580,7 +591,18 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         directories.append(coreServicesDirectory)
 
-        return directories
+        return uniqueDirectories(from: directories)
+    }
+
+    private func uniqueDirectories(from directories: [URL]) -> [URL] {
+        var seen: Set<String> = []
+        var unique: [URL] = []
+        for directory in directories {
+            let standardized = directory.standardizedFileURL
+            guard seen.insert(standardized.path).inserted else { continue }
+            unique.append(standardized)
+        }
+        return unique
     }
 
     /// Clears saved arrangement data and reloads apps from disk.

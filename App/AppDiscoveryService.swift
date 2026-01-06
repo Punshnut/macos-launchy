@@ -559,13 +559,35 @@ final class AppDiscoveryService {
             URL(fileURLWithPath: "/System/Applications", isDirectory: true)
         ]
 
+        let cryptexPaths = [
+            "/System/Volumes/Preboot/Cryptexes/App/System/Applications",
+            "/System/Cryptexes/App/System/Applications"
+        ]
+        for path in cryptexPaths {
+            let url = URL(fileURLWithPath: path, isDirectory: true)
+            if fileSystem.fileExists(atPath: url.path) {
+                directories.append(url)
+            }
+        }
+
         directories.append(coreServicesDirectory)
 
         if includeUserApplicationsFolder {
             directories.append(userApplicationsDirectory)
         }
 
-        return directories
+        return uniqueDirectories(from: directories)
+    }
+
+    private func uniqueDirectories(from directories: [URL]) -> [URL] {
+        var seen: Set<String> = []
+        var unique: [URL] = []
+        for directory in directories {
+            let standardized = directory.standardizedFileURL
+            guard seen.insert(standardized.path).inserted else { continue }
+            unique.append(standardized)
+        }
+        return unique
     }
 
     private func preparedIconCacheKey(

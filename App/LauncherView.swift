@@ -1052,35 +1052,21 @@ struct LauncherView: View {
     }
 
     private func baseIconRequest(for layout: LauncherLayoutMetrics) -> (dimension: CGFloat, quality: IconRenderQuality) {
-        if shouldUseHighQualityIcons {
-            return (layout.iconDimension, .medium)
-        }
+        // Keep base icon sizing stable to avoid post-animation icon swaps.
         let scale = currentBackingScale()
-
-        // Keep drag-time downgrade subtle and avoid over-blurring on low-DPI displays.
-        let reduction: CGFloat = {
-            if isArrangementEditingActive {
-                return 1.0 // keep size stable during drag to avoid popping
-            }
-            return scale <= 1.2 ? 0.9 : 0.7
-        }()
-
-        let reduced = max(layout.iconDimension * reduction, scale <= 1.2 ? 58 : 52)
+        let dimension = layout.iconDimension
         let quality: IconRenderQuality = {
-            if isArrangementEditingActive {
-                return .medium // avoid quality swap on drag start
-            }
             if scale <= 1.2 {
                 return .medium
             }
             return launcherMode == .floaty ? .low : .medium
         }()
-        return (reduced, quality)
+        return (dimension, quality)
     }
 
     private func folderTileIconRequest(for layout: LauncherLayoutMetrics) -> (dimension: CGFloat, quality: IconRenderQuality) {
-        let base = baseIconRequest(for: layout)
-        let scaledDimension = max(base.dimension * 0.6, 34)
+        // Folder preview icons should not rescale after interactions.
+        let scaledDimension = max(layout.iconDimension * 0.6, 34)
         return (scaledDimension, .low)
     }
 
@@ -2660,10 +2646,10 @@ struct LauncherView: View {
     private func iconForApp(_ app: AppItem, layout: LauncherLayoutMetrics) -> some View {
         let request = baseIconRequest(for: layout)
         let baseIcon = iconProvider(app, request.dimension, request.quality) ?? app.iconImage
-        let highIcon = shouldUseHighQualityIcons ? highQualityIconOverrides[app.id] : nil
+        let highIcon = highQualityIconOverrides[app.id]
         let baseScale: CGFloat = request.quality == .low ? 0.994 : 1
 
-        ZStack {
+        let baseLayer = Group {
             if let icon = baseIcon {
                 Image(nsImage: icon)
                     .resizable()
@@ -2675,19 +2661,22 @@ struct LauncherView: View {
                     .aspectRatio(contentMode: .fit)
                     .scaleEffect(baseScale)
             }
+        }
+        .transaction { transaction in
+            transaction.animation = nil
+        }
 
+        ZStack {
+            baseLayer
             if let detailedIcon = highIcon {
                 Image(nsImage: detailedIcon)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .transition(.opacity)
-                    .opacity(1)
             }
         }
         .compositingGroup()
-        .transaction { transaction in
-            transaction.animation = nil
-        }
+        .animation(.easeInOut(duration: 0.12), value: highIcon != nil)
         .onAppear {
             requestHighQualityIconIfNeeded(for: app, layout: layout)
         }
@@ -2821,9 +2810,8 @@ struct LauncherView: View {
         let columns = Array(repeating: GridItem(.fixed(tileSize), spacing: spacing, alignment: .center), count: 3)
         let isSnapPreviewTarget = folder.id == folderSnapPreviewTargetID
 
-        let shouldAnimatePreview = folderPreviewMatchingDisabled == false
+        let shouldUseMatchedGeometry = folderPreviewMatchingDisabled == false
             && isArrangementEditingActive == false
-            && folderPreviewMatchID == folder.id
 
         return ZStack {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -2836,11 +2824,11 @@ struct LauncherView: View {
                     let tile = folderTile(for: app, layout: layout)
                         .frame(width: tileSize, height: tileSize)
 
-                    if shouldAnimatePreview {
+                    if shouldUseMatchedGeometry {
                         tile.matchedGeometryEffect(
-                            id: folderPreviewAnimationID(for: folder, app: app),
+                            id: folderPreviewMatchKey(for: folder, app: app, isOverlay: false),
                             in: folderIconAnimationNamespace,
-                            isSource: activeFolder?.id != folder.id
+                            isSource: false
                         )
                         .animation(folderOpenAnimation, value: activeFolder?.id)
                     } else {
@@ -2912,6 +2900,17 @@ struct LauncherView: View {
 
     private func folderPreviewAnimationID(for folder: FolderItem, app: AppItem) -> String {
         "\(folder.id.uuidString)-\(app.id.uuidString)"
+    }
+
+    private func folderPreviewMatchKey(for folder: FolderItem, app: AppItem, isOverlay: Bool) -> String {
+        let base = folderPreviewAnimationID(for: folder, app: app)
+        if isOverlay {
+            return base
+        }
+        if activeFolder?.id == folder.id && folderPreviewMatchID != folder.id {
+            return "\(base)-grid"
+        }
+        return base
     }
 
     private func isPreviewApp(_ app: AppItem, in folder: FolderItem) -> Bool {
@@ -3424,7 +3423,6 @@ struct LauncherView: View {
         let tileSize = layout.iconDimension
         let allowPreviewMatch = isArrangementEditingActive == false
             && folderPreviewMatchingDisabled == false
-            && folderPreviewMatchID == folder.id
         let gridInsets = overlayLayout.gridInsets
 
         GeometryReader { gridProxy in
@@ -3457,9 +3455,9 @@ struct LauncherView: View {
                                     if isPreviewApp(app, in: folder), allowPreviewMatch {
                                         iconBase
                                             .matchedGeometryEffect(
-                                                id: folderPreviewAnimationID(for: folder, app: app),
+                                                id: folderPreviewMatchKey(for: folder, app: app, isOverlay: true),
                                                 in: folderIconAnimationNamespace,
-                                                isSource: activeFolder?.id == folder.id
+                                                isSource: true
                                             )
                                             .animation(folderOpenAnimation, value: activeFolder?.id)
                                     } else {

@@ -64,6 +64,11 @@ enum LaunchyLogger {
                 let directoryURL = fileURL.deletingLastPathComponent()
                 try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
                 let payload = (text + "\n").data(using: .utf8) ?? Data()
+                if let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path),
+                   let size = attributes[.size] as? NSNumber,
+                   size.intValue > 1_000_000 {
+                    try? FileManager.default.removeItem(at: fileURL)
+                }
                 if FileManager.default.fileExists(atPath: fileURL.path) {
                     let handle = try FileHandle(forWritingTo: fileURL)
                     defer { try? handle.close() }

@@ -43,9 +43,14 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
     private let updaterController = UpdaterController()
     private var hasHandledInitialActivation = false
+    private var shouldAutoPresentOnFirstActivation = false
     private var isAnimatingLauncherHide = false
     private var suppressLauncherRevealOnNextActivation = false
     private var visiblePageWarmupTask: Task<Void, Never>?
+    private var pendingFloatyVisibilityCheckID: UUID?
+    private var hasUsedFloatyFallback = false
+    private var hasScheduledRunloopProbe = false
+    private var loggedHiddenWindowReasons: Set<String> = []
     private var memoryPressureSource: DispatchSourceMemoryPressure?
     private var pendingRemovalDeadlines: [String: Date] = [:]
     private var pendingRemovalApps: [String: AppItem] = [:]
@@ -65,6 +70,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         LaunchyLogger.log("applicationDidFinishLaunching")
         bootstrapApplication()
         enforceMinimalMainMenu()
+        scheduleFloatyStartupPresentationIfNeeded()
+        scheduleRunloopProbes(label: "post-launch")
     }
 
     /// Reapplies menu pruning after the app is foregrounded.
@@ -73,6 +80,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         if hasHandledInitialActivation == false {
             hasHandledInitialActivation = true
+            if shouldAutoPresentOnFirstActivation {
+                showLauncherWindowAfterActivation()
+            }
             return
         }
 
@@ -228,6 +238,27 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         Task { @MainActor [weak self] in
             await Task.yield()
             self?.removeDefaultMainMenuItems()
+        }
+    }
+
+    /// Presents the launcher shortly after launch when floaty is selected so the app does not feel hung.
+    private func scheduleFloatyStartupPresentationIfNeeded() {
+        guard currentSettings.selectedLauncherMode == .floaty else { return }
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            if self.launcherWindowManager == nil {
+                self.applyLauncherMode(shouldPresentWindow: false)
+            }
+            guard let controller = self.launcherWindowManager else { return }
+            if controller.window?.isVisible == true {
+                return
+            }
+            self.activateApplicationForCurrentModeIfNeeded()
+            self.presentLauncherWindow(reason: "startup-floaty")
+            self.prefetchMinimalIconsForVisibleLauncher()
+            NotificationCenter.default.post(name: .launcherDidShow, object: nil)
+            self.markLauncherDidShow()
         }
     }
 
@@ -390,6 +421,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let mode = currentSettings.selectedLauncherMode
         let modeChanged = currentLauncherMode != mode
         currentLauncherMode = mode
+        if modeChanged {
+            hasUsedFloatyFallback = false
+            pendingFloatyVisibilityCheckID = nil
+        }
+        shouldAutoPresentOnFirstActivation = mode == .floaty || (currentSettings.isDockIconHidden && currentSettings.isMenuBarIconHidden)
         let shouldActivateApp = shouldPresentWindow && (modeChanged || launcherWindowManager?.window?.isVisible == true)
         updateActivationPolicy(for: mode, shouldActivate: shouldActivateApp)
 
@@ -402,6 +438,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
 
         preheatIconsForCurrentLayout()
+        if shouldPresentWindow == false {
+            scheduleRunloopProbes(label: "post-apply-\(mode.rawValue)")
+        }
     }
 
     /// Creates a fresh `LauncherWindowController` using the provided mode.
@@ -413,7 +452,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         if shouldPresentWindow {
             let skipAnimation = previousController?.window?.isVisible == true
-            controller.presentWindow(skipEntranceAnimation: skipAnimation)
+            presentLauncherWindow(skipEntranceAnimation: skipAnimation, reason: "rebuildWindow")
             prefetchMinimalIconsForVisibleLauncher()
             NotificationCenter.default.post(name: .launcherDidShow, object: nil)
             markLauncherDidShow()
@@ -430,6 +469,77 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let controller = LauncherWindowController(rootView: rootView, launcherMode: mode)
         launcherWindowControllersByMode[mode] = controller
         return controller
+    }
+
+    /// Presents the launcher window and verifies floaty presentation so the app does not appear hung.
+    private func presentLauncherWindow(
+        skipEntranceAnimation: Bool = false,
+        reason: String
+    ) {
+        guard let controller = launcherWindowManager else { return }
+        controller.presentWindow(skipEntranceAnimation: skipEntranceAnimation)
+        verifyFloatyVisibilityIfNeeded(reason: reason, controller: controller)
+        scheduleRunloopProbes(label: "post-present-\(reason)")
+        if let window = controller.window {
+            logWindowIfHidden(window, reason: reason)
+        }
+    }
+
+    /// Checks whether the floaty panel actually became visible; falls back to fullscreen if not.
+    private func verifyFloatyVisibilityIfNeeded(
+        reason: String,
+        controller: LauncherWindowController
+    ) {
+        guard controller.mode == .floaty else {
+            pendingFloatyVisibilityCheckID = nil
+            return
+        }
+        guard hasUsedFloatyFallback == false else { return }
+
+        let checkID = UUID()
+        pendingFloatyVisibilityCheckID = checkID
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { [weak self, weak controller] in
+            guard let self else { return }
+            guard self.pendingFloatyVisibilityCheckID == checkID else { return }
+            guard let window = controller?.window else { return }
+
+            let isVisible = window.isVisible
+            let isOnscreen = window.occlusionState.contains(.visible)
+            let alpha = window.alphaValue
+
+            if isVisible && isOnscreen && alpha > 0.8 {
+                self.pendingFloatyVisibilityCheckID = nil
+                return
+            }
+
+            window.alphaValue = 1
+            window.makeKeyAndOrderFront(nil)
+            self.pendingFloatyVisibilityCheckID = nil
+            self.hasUsedFloatyFallback = true
+            LaunchyLogger.error("Floaty window did not appear after present (\(reason)); visible=\(isVisible) onscreen=\(isOnscreen) alpha=\(alpha)")
+            self.fallbackToFullscreenAfterFloatyFailure(trigger: reason, window: window)
+        }
+    }
+
+    /// Switches to fullscreen mode when floaty fails to surface so users are not stuck with no UI.
+    private func fallbackToFullscreenAfterFloatyFailure(trigger: String, window: NSWindow? = nil) {
+        guard currentSettings.selectedLauncherMode == .floaty else { return }
+
+        LaunchyLogger.error("Falling back to fullscreen because floaty presentation failed (\(trigger))")
+        currentSettings.selectedLauncherMode = .fullscreen
+        LauncherSettingsPersistence.setLauncherMode(.fullscreen)
+        applyLauncherMode()
+        ensureEscapeHatchUI(lastWindow: window)
+    }
+
+    /// Ensures at least one UI affordance remains reachable even when floaty fails.
+    private func ensureEscapeHatchUI(lastWindow: NSWindow?) {
+        updateStatusItemVisibility()
+        NSApp.setActivationPolicy(.regular)
+        if lastWindow?.isVisible != true {
+            NSApp.activate(ignoringOtherApps: true)
+        }
     }
 
     /// Adjusts the app's activation policy so the Dock and Spaces behave appropriately for each mode.
@@ -475,6 +585,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         statusBarMenu = buildStatusBarMenu()
         statusBarItem = item
+        LaunchyLogger.log("status item created")
+        if statusBarItem == nil || statusBarItem?.button == nil || statusBarItem?.button?.image == nil {
+            let button = statusBarItem?.button
+            let image = button?.image
+            let size = image?.size ?? .zero
+            LaunchyLogger.error("Status item missing visuals statusItem=\(statusBarItem != nil) button=\(button != nil) image=\(image != nil) size=\(size)")
+        }
     }
 
     /// Removes the status bar item if one has been created.
@@ -484,6 +601,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             statusBarItem = nil
         }
         statusBarMenu = nil
+        LaunchyLogger.log("status item removed")
     }
 
     /// Responds to shared `LauncherSettings` updates so the UI reacts instantly.
@@ -508,6 +626,28 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                 await self.handleArrangementReset()
             }
         }
+    }
+
+    /// Schedules quick main-thread probes to confirm the run loop is advancing.
+    private func scheduleRunloopProbes(label: String) {
+        guard hasScheduledRunloopProbe == false else { return }
+        hasScheduledRunloopProbe = true
+        DispatchQueue.main.async {
+            LaunchyLogger.log("runloop probe immediate \(label)")
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            LaunchyLogger.log("runloop probe delayed \(label)")
+        }
+    }
+
+    /// Logs window state when it fails to become visible after presentation.
+    private func logWindowIfHidden(_ window: NSWindow, reason: String) {
+        guard window.isVisible == false || window.occlusionState.contains(.visible) == false else { return }
+        guard loggedHiddenWindowReasons.insert(reason).inserted else { return }
+
+        LaunchyLogger.error(
+            "Window hidden after present (\(reason)) visible=\(window.isVisible) mini=\(window.isMiniaturized) alpha=\(window.alphaValue) occlusion=\(window.occlusionState.rawValue) level=\(window.level.rawValue) behaviors=\(window.collectionBehavior.rawValue) canKey=\(window.canBecomeKey) canMain=\(window.canBecomeMain)"
+        )
     }
 
     /// Handles work that needs to happen after settings mutate elsewhere.
@@ -725,7 +865,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         guard let window = launcherWindowManager.window else {
             recordFrontmostApplicationForRestoration()
-            launcherWindowManager.presentWindow()
+            presentLauncherWindow(reason: "toggleVisibility-windowMissing")
             prefetchMinimalIconsForVisibleLauncher()
             markLauncherDidShow()
             return
@@ -736,7 +876,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         } else {
             recordFrontmostApplicationForRestoration()
             activateApplicationForCurrentModeIfNeeded()
-            launcherWindowManager.presentWindow()
+            presentLauncherWindow(reason: "toggleVisibility-show")
             prefetchMinimalIconsForVisibleLauncher()
             NotificationCenter.default.post(name: .launcherDidShow, object: nil)
             markLauncherDidShow()
@@ -745,6 +885,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Hides the launcher window and optionally restores the previously focused app.
     private func hideLauncherWindow(restoreFocus: Bool) {
+        pendingFloatyVisibilityCheckID = nil
         fadeOutLauncherWindow(restoreFocus: restoreFocus)
     }
 
@@ -792,7 +933,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
 
         activateApplicationForCurrentModeIfNeeded()
-        controller.presentWindow()
+        presentLauncherWindow(reason: "activation")
         prefetchMinimalIconsForVisibleLauncher()
         NotificationCenter.default.post(name: .launcherDidShow, object: nil)
         markLauncherDidShow()
@@ -842,7 +983,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
         applyLauncherMode()
         activateApplicationForCurrentModeIfNeeded()
-        launcherWindowManager?.presentWindow()
+        presentLauncherWindow(reason: "statusItem-show")
         prefetchMinimalIconsForVisibleLauncher()
         NotificationCenter.default.post(name: .launcherDidShow, object: nil)
         markLauncherDidShow()

@@ -159,6 +159,11 @@ final class LauncherWindowController: NSWindowController {
         launcherContentHost.rootView = rootView
     }
 
+    /// Exposes the current launcher mode so callers can react to presentation failures.
+    var mode: LauncherMode {
+        launcherMode
+    }
+
     /// Keeps the window anchored to the screen under the cursor before presenting it so the launcher feels tied to context.
     private func updateFrameForPreferredScreenIfNeeded() {
         guard let window else { return }

@@ -3652,6 +3652,8 @@ struct LauncherView: View {
                 let currentPage = min(activeFolderPage, max(pageCount - 1, 0))
                 let showPager = pageCount > 1
 
+                let cardShape = RoundedRectangle(cornerRadius: 22, style: .continuous)
+
                 VStack(spacing: overlayLayout.titleToGridSpacing) {
                     folderTitleView(for: folder)
 
@@ -3681,12 +3683,13 @@ struct LauncherView: View {
                 .offset(y: (1 - folderOverlayOpenProgress) * 10)
                 .background(
                     searchBarBackgroundMaterial()
-                        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                        .clipShape(cardShape)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    cardShape
                         .strokeBorder(Color.white.opacity(0.25))
                 )
+                .clipShape(cardShape)
                 .shadow(color: .black.opacity(0.3), radius: 24, y: 14)
                 .opacity(folderIconWaveToggle ? 1 : 0)
                 .animation(folderOpenAnimation, value: folderIconWaveToggle)

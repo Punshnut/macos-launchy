@@ -478,6 +478,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     ) {
         guard let controller = launcherWindowManager else { return }
         controller.presentWindow(skipEntranceAnimation: skipEntranceAnimation)
+        nudgeFloatyVisibilityIfNeeded(controller: controller)
         verifyFloatyVisibilityIfNeeded(reason: reason, controller: controller)
         scheduleRunloopProbes(label: "post-present-\(reason)")
         if let window = controller.window {
@@ -499,7 +500,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let checkID = UUID()
         pendingFloatyVisibilityCheckID = checkID
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { [weak self, weak controller] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self, weak controller] in
             guard let self else { return }
             guard self.pendingFloatyVisibilityCheckID == checkID else { return }
             guard let window = controller?.window else { return }
@@ -519,6 +520,22 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             self.hasUsedFloatyFallback = true
             LaunchyLogger.error("Floaty window did not appear after present (\(reason)); visible=\(isVisible) onscreen=\(isOnscreen) alpha=\(alpha)")
             self.fallbackToFullscreenAfterFloatyFailure(trigger: reason, window: window)
+        }
+    }
+
+    /// Forces the floaty panel fully visible if the entrance animation leaves it transparent.
+    private func nudgeFloatyVisibilityIfNeeded(controller: LauncherWindowController) {
+        guard controller.mode == .floaty else { return }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) { [weak controller] in
+            guard let window = controller?.window else { return }
+            let isOnscreen = window.occlusionState.contains(.visible)
+            let alpha = window.alphaValue
+            guard alpha < 0.9 || isOnscreen == false else { return }
+
+            window.alphaValue = 1
+            window.makeKeyAndOrderFront(nil)
+            LaunchyLogger.log("Floaty window nudged visible (alpha=\(alpha) onscreen=\(isOnscreen))")
         }
     }
 

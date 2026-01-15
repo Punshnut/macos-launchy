@@ -17,6 +17,7 @@ final class LauncherWindowController: NSWindowController {
         launcherContentHost = NSHostingController(rootView: rootView)
         launcherContentHost.view.wantsLayer = true
         launcherContentHost.view.layer?.backgroundColor = NSColor.clear.cgColor
+        launcherContentHost.view.autoresizingMask = [.width, .height]
         self.launcherMode = launcherMode
         let window: NSWindow
         let presentationScreen = ScreenProvider.screenUnderMouseOrMain()
@@ -25,7 +26,6 @@ final class LauncherWindowController: NSWindowController {
         case .floaty:
             LaunchyLogger.log("LauncherWindowController init: building floaty window")
             let frame = Self.floatyFrame(for: Self.preferredFloatyContentSize, on: presentationScreen)
-            launcherContentHost.preferredContentSize = frame.size
             let floatyPanel = FloatyLauncherWindow(contentRect: frame)
             floatyPanel.contentViewController = launcherContentHost
             floatyPanel.applyRoundedCorners(radius: 32)
@@ -34,7 +34,6 @@ final class LauncherWindowController: NSWindowController {
         case .fullscreen:
             LaunchyLogger.log("LauncherWindowController init: building fullscreen window")
             let frame = Self.fullscreenFrame(on: presentationScreen)
-            launcherContentHost.preferredContentSize = frame.size
             let fullscreen = FullscreenLauncherWindow(contentRect: frame)
             fullscreen.contentViewController = launcherContentHost
             fullscreen.setFrame(frame, display: true)
@@ -127,7 +126,10 @@ final class LauncherWindowController: NSWindowController {
             updateFrameForPreferredScreenIfNeeded()
         }
         let originalFrame = window.frame
-        let shouldAnimateEntrance = window.isVisible == false && skipEntranceAnimation == false
+        // Floaty frequently failed to reappear when its entrance animation left alpha at 0, so skip animation there.
+        let shouldAnimateEntrance = window.isVisible == false
+            && skipEntranceAnimation == false
+            && launcherMode == .fullscreen
 
         if shouldAnimateEntrance {
             prepareForEntranceAnimation(window: window, originalFrame: originalFrame)
@@ -135,6 +137,7 @@ final class LauncherWindowController: NSWindowController {
 
         showWindow(nil)
         window.makeKeyAndOrderFront(nil)
+        launcherContentHost.view.frame = window.contentView?.bounds ?? originalFrame
         if launcherMode == .floaty {
             window.applyRoundedCorners(radius: 32)
         }
@@ -174,12 +177,10 @@ final class LauncherWindowController: NSWindowController {
         case .floaty:
             let targetFrame = Self.floatyFrame(for: Self.preferredFloatyContentSize, on: targetScreen)
             if window.frame != targetFrame {
-                launcherContentHost.preferredContentSize = targetFrame.size
                 window.setFrame(targetFrame, display: false)
             }
         case .fullscreen:
             let targetFrame = Self.fullscreenFrame(on: targetScreen)
-            launcherContentHost.preferredContentSize = targetFrame.size
             if window.frame != targetFrame {
                 window.setFrame(targetFrame, display: true)
             }

@@ -66,6 +66,7 @@ private struct SearchableAppEntry {
     let normalizedBundleIdentifier: String
 }
 
+/// Thread-safe cache for rendered folder preview icons so drag animations stay smooth.
 private final class FolderPreviewCache: @unchecked Sendable {
     private let cache: NSCache<NSString, NSImage>
     private let lock = NSLock()
@@ -533,7 +534,7 @@ struct LauncherView: View {
     private static let pageSwitchDuration: TimeInterval = 0.12
     private let pageSwitchAnimation = Animation.easeOut(duration: Self.pageSwitchDuration)
     private let gestureSettleAnimation = Animation.easeOut(duration: Self.pageSwitchDuration)
-    private static let folderOpenDuration: TimeInterval = 0.2
+    private static let folderOpenDuration: TimeInterval = 0.25
     private let folderOpenAnimation = Animation.easeInOut(duration: Self.folderOpenDuration)
     private let folderPreviewMatchReleaseDelay: TimeInterval = 0.42
     private let pagerButtonHitPadding: CGFloat = 12
@@ -594,13 +595,15 @@ struct LauncherView: View {
     @State private var pageDirection: PageShiftDirection = .forward
     @State private var folderIconWaveToggle = false
     @State private var folderPreviewMatchID: UUID?
+    @State private var isFolderClosing = false
+    @State private var folderCloseWorkItem: DispatchWorkItem?
+    @State private var closingFolder: FolderItem?
     @State private var folderPreviewReleaseWorkItem: DispatchWorkItem?
     @State private var folderIconWaveWorkItem: DispatchWorkItem?
     @State private var folderOverlayOpenProgress: Double = 1
     @State private var pendingFolderRenameID: UUID?
     @State private var lastActiveFolderID: UUID?
     @State private var shouldSkipActiveFolderChangeEffects = false
-    @Namespace private var folderIconAnimationNamespace
     private let highQualityRenderQueue = DispatchQueue(label: "com.launchy.icon.high", qos: .utility)
     private static let folderPreviewWarmupQueue = DispatchQueue(label: "com.launchy.icon.folder-preview", qos: .utility)
     private static let folderPreviewCache = FolderPreviewCache()
@@ -735,6 +738,10 @@ struct LauncherView: View {
                 launchingItemID = nil
                 activeFolderPage = 0
                 activeFolderPageCount = 1
+                isFolderClosing = false
+                folderCloseWorkItem?.cancel()
+                folderCloseWorkItem = nil
+                closingFolder = nil
             }
         }
         .onChange(of: searchText) { newValue in
@@ -883,9 +890,14 @@ struct LauncherView: View {
                     .padding(.top, layout.floatySearchBarTopPadding)
                     .padding(.bottom, layout.searchToGridSpacing)
 
-                    launcherGridLayer(layout: layout, canReorder: canReorder)
-
-                    gridPager(canReorder: canReorder, layout: layout)
+                    let isFolderOverlayVisible = activeFolder != nil || closingFolder != nil
+                    let gridBlendOpacity: Double = isFolderOverlayVisible ? 0.6 : 1
+                    VStack(spacing: 0) {
+                        launcherGridLayer(layout: layout, canReorder: canReorder)
+                        gridPager(canReorder: canReorder, layout: layout)
+                    }
+                    .opacity(gridBlendOpacity)
+                    .animation(.easeOut(duration: Self.folderOpenDuration), value: isFolderOverlayVisible)
                 }
                 .animation(nil, value: searchControlsExpanded)
                 .padding(.horizontal, layout.horizontalPadding)
@@ -893,7 +905,7 @@ struct LauncherView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
-            if let folder = activeFolder {
+            if let folder = activeFolder ?? closingFolder {
                 folderOverlay(for: folder, layout: layout)
             }
         }
@@ -2810,9 +2822,6 @@ struct LauncherView: View {
         let columns = Array(repeating: GridItem(.fixed(tileSize), spacing: spacing, alignment: .center), count: 3)
         let isSnapPreviewTarget = folder.id == folderSnapPreviewTargetID
 
-        let shouldUseMatchedGeometry = folderPreviewMatchingDisabled == false
-            && isArrangementEditingActive == false
-
         return ZStack {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(Color(nsColor: .quaternaryLabelColor).opacity(0.35))
@@ -2821,19 +2830,8 @@ struct LauncherView: View {
 
             LazyVGrid(columns: columns, alignment: .center, spacing: spacing) {
                 ForEach(previews, id: \.id) { app in
-                    let tile = folderTile(for: app, layout: layout)
+                    folderTile(for: app, layout: layout)
                         .frame(width: tileSize, height: tileSize)
-
-                    if shouldUseMatchedGeometry {
-                        tile.matchedGeometryEffect(
-                            id: folderPreviewMatchKey(for: folder, app: app, isOverlay: false),
-                            in: folderIconAnimationNamespace,
-                            isSource: false
-                        )
-                        .animation(folderOpenAnimation, value: activeFolder?.id)
-                    } else {
-                        tile
-                    }
                 }
                 ForEach(0..<max(0, 9 - previews.count), id: \.self) { _ in
                     Color.clear
@@ -2890,32 +2888,10 @@ struct LauncherView: View {
             }
         }
         .compositingGroup()
-        .transaction { transaction in
-            transaction.animation = nil
-        }
+        .animation(nil, value: resolvedIcon?.hash ?? 0)
         .onAppear {
             requestHighQualityIconIfNeeded(for: app, layout: layout)
         }
-    }
-
-    private func folderPreviewAnimationID(for folder: FolderItem, app: AppItem) -> String {
-        "\(folder.id.uuidString)-\(app.id.uuidString)"
-    }
-
-    private func folderPreviewMatchKey(for folder: FolderItem, app: AppItem, isOverlay: Bool) -> String {
-        let base = folderPreviewAnimationID(for: folder, app: app)
-        if isOverlay {
-            return base
-        }
-        if activeFolder?.id == folder.id && folderPreviewMatchID != folder.id {
-            return "\(base)-grid"
-        }
-        return base
-    }
-
-    private func isPreviewApp(_ app: AppItem, in folder: FolderItem) -> Bool {
-        guard let index = folder.apps.firstIndex(where: { $0.id == app.id }) else { return false }
-        return index < 9
     }
 
     private func displayIcon(for app: AppItem, layout: LauncherLayoutMetrics) -> NSImage? {
@@ -3421,8 +3397,6 @@ struct LauncherView: View {
         let columnCount = max(1, overlayLayout.columns)
         let columns = Array(repeating: GridItem(.flexible(), spacing: overlayLayout.spacing, alignment: .center), count: columnCount)
         let tileSize = layout.iconDimension
-        let allowPreviewMatch = isArrangementEditingActive == false
-            && folderPreviewMatchingDisabled == false
         let gridInsets = overlayLayout.gridInsets
 
         GeometryReader { gridProxy in
@@ -3452,17 +3426,7 @@ struct LauncherView: View {
                                 openItem(.app(app))
                             } label: {
                                 VStack(spacing: 10) {
-                                    if isPreviewApp(app, in: folder), allowPreviewMatch {
-                                        iconBase
-                                            .matchedGeometryEffect(
-                                                id: folderPreviewMatchKey(for: folder, app: app, isOverlay: true),
-                                                in: folderIconAnimationNamespace,
-                                                isSource: true
-                                            )
-                                            .animation(folderOpenAnimation, value: activeFolder?.id)
-                                    } else {
-                                        iconBase
-                                    }
+                                    iconBase
 
                                     Text(app.resolvedDisplayName)
                                         .font(.system(size: 14, weight: .medium))
@@ -3616,12 +3580,16 @@ struct LauncherView: View {
     private func folderOverlay(for folder: FolderItem, layout: LauncherLayoutMetrics) -> some View {
         GeometryReader { proxy in
             let overlayLayout = folderOverlayLayout(for: folder, containerSize: proxy.size, layout: layout)
+            let overlayOpacity: Double = isFolderClosing ? 0 : (folderIconWaveToggle ? 1 : 0)
+            let dimOpacity: Double = isFolderClosing ? 0 : (folderIconWaveToggle ? 0.2 : 0)
+
             ZStack {
                 backgroundView()
                     .ignoresSafeArea()
                 Color.black
-                    .opacity(folderIconWaveToggle ? 0.2 : 0)
+                    .opacity(dimOpacity)
                     .ignoresSafeArea()
+                    .animation(.easeOut(duration: Self.folderOpenDuration), value: isFolderClosing)
 
                 ScrollWheelPagerOverlay(
                     isEnabled: isFolderGesturePagingEnabled,
@@ -3691,8 +3659,9 @@ struct LauncherView: View {
                 )
                 .clipShape(cardShape)
                 .shadow(color: .black.opacity(0.3), radius: 24, y: 14)
-                .opacity(folderIconWaveToggle ? 1 : 0)
+                .opacity(overlayOpacity)
                 .animation(folderOpenAnimation, value: folderIconWaveToggle)
+                .animation(.easeOut(duration: Self.folderOpenDuration), value: isFolderClosing)
                 .anchorPreference(key: FolderFramePreference.self, value: .bounds) { anchor in
                     proxy[anchor]
                 }
@@ -4062,13 +4031,30 @@ struct LauncherView: View {
 
     /// Animates closing the active folder overlay so the transition stays smooth.
     private func closeActiveFolder(animated: Bool = true) {
-        guard let active = activeFolder else { return }
+        guard activeFolder != nil else { return }
         if animated {
-            folderPreviewMatchID = active.id
-            withAnimation(folderOpenAnimation) {
-                activeFolder = nil
+            folderCloseWorkItem?.cancel()
+            withAnimation(.easeOut(duration: Self.folderOpenDuration)) {
+                isFolderClosing = true
             }
+            let workItem = DispatchWorkItem { [self] in
+                withAnimation(.easeOut(duration: Self.folderOpenDuration)) {
+                    isFolderClosing = false
+                }
+                activeFolder = nil
+                folderCloseWorkItem = nil
+                closingFolder = nil
+            }
+            folderCloseWorkItem = workItem
+            DispatchQueue.main.asyncAfter(
+                deadline: .now() + Self.folderOpenDuration,
+                execute: workItem
+            )
         } else {
+            isFolderClosing = false
+            folderCloseWorkItem?.cancel()
+            folderCloseWorkItem = nil
+            closingFolder = nil
             activeFolder = nil
         }
     }

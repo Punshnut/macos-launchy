@@ -64,6 +64,7 @@ enum LaunchyLogger {
                 let directoryURL = fileURL.deletingLastPathComponent()
                 try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
                 let payload = (text + "\n").data(using: .utf8) ?? Data()
+                // Keep the rolling log capped to roughly 1 MB so it stays lightweight for support uploads.
                 if let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path),
                    let size = attributes[.size] as? NSNumber,
                    size.intValue > 1_000_000 {

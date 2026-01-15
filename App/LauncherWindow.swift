@@ -117,7 +117,7 @@ final class LauncherWindowController: NSWindowController {
         }
     }
 
-    /// Presents the window using the right ordering semantics for panels vs regular windows.
+    /// Brings the launcher onscreen, re-anchoring it to the active display and coordinating focus/entrance animations.
     func presentWindow(skipEntranceAnimation: Bool = false) {
         guard let window else { return }
         LaunchyLogger.log("LauncherWindowController presentWindow: start mode=\(launcherMode) visible=\(window.isVisible) skip=\(skipEntranceAnimation)")

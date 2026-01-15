@@ -193,6 +193,7 @@ final class ItemArrangementStore {
     /// Returns the insertion index that keeps new apps on the last page (or creates a new page).
     private func lastPageInsertionIndex(currentItems: [LauncherItem], pageCapacity: Int) -> Int {
         guard pageCapacity > 0 else { return currentItems.count }
+        // Append new discoveries to the end so existing pages remain stable.
         return currentItems.count
     }
 

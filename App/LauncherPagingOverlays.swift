@@ -80,9 +80,8 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         coordinator.stopMonitoring()
     }
 
-    /// Keeps track of the AppKit event monitor and translates deltas into paging requests.
+    /// Owns the NSEvent monitor and maps scroll gestures from the hosting window into paging callbacks.
     @MainActor
-    /// Keeps track of the AppKit event monitor and translates deltas into paging requests.
     final class Coordinator {
         var isEnabled: Bool = true {
             didSet {

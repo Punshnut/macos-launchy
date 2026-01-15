@@ -10,6 +10,7 @@ struct PageReorderDropDelegate: DropDelegate {
     var afterReorder: (Int?) -> Void
 
     private static var lastPageSwitchDate: Date = .distantPast
+    /// Soft debounce to avoid rapid-fire page hopping while dragging.
     private static let minSwitchInterval: TimeInterval = 1.0
 
     func dropEntered(info: DropInfo) {

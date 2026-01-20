@@ -561,6 +561,7 @@ struct LauncherView: View {
     @State private var searchDebounceTask: Task<Void, Never>?
     @State private var searchControlsExpanded = false
     @State private var lastNormalizedSearchQuery = ""
+    @State private var pendingSearchPageReset = false
     @State private var isMultiSelectModeActive = false
     @State private var multiSelectedItemIDs: Set<UUID> = []
     @State private var expansionAutoCollapseTask: Task<Void, Never>?
@@ -745,9 +746,14 @@ struct LauncherView: View {
             }
         }
         .onChange(of: searchText) { newValue in
-            currentPage = 0
-            pageDirection = .forward
-            pagerDragOffset = 0
+            if newValue.isEmpty {
+                currentPage = 0
+                pageDirection = .forward
+                pagerDragOffset = 0
+                pendingSearchPageReset = false
+            } else {
+                pendingSearchPageReset = currentPage != 0
+            }
             searchSelectionIndex = nil
             if newValue.isEmpty == false {
                 exitMultiSelectMode()
@@ -2126,6 +2132,12 @@ struct LauncherView: View {
 
     private func applySearchResults(_ results: [LauncherItem]) {
         cachedFilteredItems = results
+        if pendingSearchPageReset {
+            currentPage = 0
+            pageDirection = .forward
+            pagerDragOffset = 0
+        }
+        pendingSearchPageReset = false
         clampSearchSelectionIfNeeded()
         alignSearchSelectionWithCurrentPageIfNeeded()
         notifyVisiblePagesChanged()

@@ -172,3 +172,15 @@
 "Folder is empty." = "La carpeta está vacía.";
 "Apps:\n%@" = "Apps:\n%@";
 "Save" = "Guardar";
+
+"Icon size" = "Tamaño de icono";
+"Small (Original)" = "Pequeño (original)";
+"Medium" = "Mediano";
+"Large" = "Grande";
+"Large icon size applies to fullscreen only; floaty uses medium." = "El tamaño grande solo se aplica en pantalla completa; el modo flotante usa mediano.";
+"Paging direction" = "Dirección de paginación";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "La paginación vertical mueve las páginas arriba y abajo. Los indicadores pasan a la izquierda en pantalla completa y quedan abajo en flotante.";
+"Horizontal" = "Horizontal";
+"Vertical" = "Vertical";
+
+"Beta" = "Beta";

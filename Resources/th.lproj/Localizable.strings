@@ -172,3 +172,15 @@
 "Folder is empty." = "โฟลเดอร์ว่างเปล่า";
 "Apps:\n%@" = "แอป:\n%@";
 "Save" = "บันทึก";
+
+"Icon size" = "ขนาดไอคอน";
+"Small (Original)" = "เล็ก (ต้นฉบับ)";
+"Medium" = "ปานกลาง";
+"Large" = "ใหญ่";
+"Large icon size applies to fullscreen only; floaty uses medium." = "ขนาดไอคอนใหญ่ใช้ได้เฉพาะโหมดเต็มหน้าจอ; โหมดลอยใช้ขนาดปานกลาง";
+"Paging direction" = "ทิศทางการเลื่อนหน้า";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "การเลื่อนแนวตั้งจะเลื่อนหน้าขึ้นลง ตัวบอกตำแหน่งย้ายไปทางซ้ายในโหมดเต็มหน้าจอ และอยู่ล่างสุดในโหมดลอย";
+"Horizontal" = "แนวนอน";
+"Vertical" = "แนวตั้ง";
+
+"Beta" = "เบต้า";

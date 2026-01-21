@@ -172,3 +172,15 @@
 "Folder is empty." = "Map is leeg.";
 "Apps:\n%@" = "Apps:\n%@";
 "Save" = "Opslaan";
+
+"Icon size" = "Pictogramgrootte";
+"Small (Original)" = "Klein (origineel)";
+"Medium" = "Middel";
+"Large" = "Groot";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Groot pictogramformaat geldt alleen in volledig scherm; floaty gebruikt middel.";
+"Paging direction" = "Paginatierichting";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Verticale paginering verplaatst pagina's omhoog en omlaag. Indicatoren gaan links in volledig scherm en blijven onderaan in floaty.";
+"Horizontal" = "Horizontaal";
+"Vertical" = "Verticaal";
+
+"Beta" = "Beta";

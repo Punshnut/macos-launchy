@@ -79,6 +79,20 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         LauncherSettingsPersistence.setSolidBackgroundColor(color)
     }
 
+    /// Persists the preferred icon sizing preset.
+    func setIconSizePreference(_ preference: IconSizePreference) {
+        guard settingsSnapshot.iconSizePreference != preference else { return }
+        settingsSnapshot.iconSizePreference = preference
+        LauncherSettingsPersistence.setIconSizePreference(preference)
+    }
+
+    /// Persists the paging orientation preference.
+    func setPagingOrientation(_ orientation: PagingOrientation) {
+        guard settingsSnapshot.pagingOrientation != orientation else { return }
+        settingsSnapshot.pagingOrientation = orientation
+        LauncherSettingsPersistence.setPagingOrientation(orientation)
+    }
+
     /// Persists the launcher mode selection.
     func setLauncherMode(_ mode: LauncherMode) {
         guard settingsSnapshot.selectedLauncherMode != mode else { return }

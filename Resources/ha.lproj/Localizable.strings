@@ -172,3 +172,15 @@
 "Folder is empty." = "Fayil ɗin babu komai.";
 "Apps:\n%@" = "Manhajoji:\n%@";
 "Save" = "Ajiye";
+
+"Icon size" = "Girman alama";
+"Small (Original)" = "Ƙarami (na asali)";
+"Medium" = "Matsakaici";
+"Large" = "Babba";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Girman alama babba yana aiki ne kawai a cikakken allo; yanayin floaty yana amfani da matsakaici.";
+"Paging direction" = "Hanyar shafewa";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Shafewa tsaye na motsa shafuka sama da ƙasa. Alamomi suna zuwa hagu a cikakken allo, suna tsaya ƙasa a floaty.";
+"Horizontal" = "A kwance";
+"Vertical" = "Tsaye";
+
+"Beta" = "Beta";

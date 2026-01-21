@@ -172,3 +172,15 @@
 "Folder is empty." = "Folder လွတ်နေသည်။";
 "Apps:\n%@" = "Apps:\n%@";
 "Save" = "သိမ်းပါ";
+
+"Icon size" = "အိုင်ကွန်အရွယ်အစား";
+"Small (Original)" = "အသေး (မူလ)";
+"Medium" = "အလယ်";
+"Large" = "အကြီး";
+"Large icon size applies to fullscreen only; floaty uses medium." = "အကြီးအိုင်ကွန်အရွယ်အစားသည် မျက်နှာပြင်အပြည့်တွင်သာ အသုံးပြုနိုင်ပြီး floaty တွင် အလယ်အသုံးပြုသည်။";
+"Paging direction" = "စာမျက်နှာရွှေ့သည့်ဦးတည်ချက်";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "ဗတိကပ်စာမျက်နှာရွှေ့ခြင်းသည် စာမျက်နှာများကို အပေါ်အောက်ရွှေ့သည်။ ပြ Indcators များသည် မျက်နှာပြင်အပြည့်တွင် ဘယ်ဘက်သို့ ရွှေ့ပြီး floaty တွင် အောက်ဖက်တွင်ကျန်မည်။";
+"Horizontal" = "ပြင်ညီ";
+"Vertical" = "ဒေါင်လိုက်";
+
+"Beta" = "ဘီတာ";

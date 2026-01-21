@@ -172,3 +172,15 @@
 "Folder is empty." = "A mappa üres.";
 "Apps:\n%@" = "Appok:\n%@";
 "Save" = "Mentés";
+
+"Icon size" = "Ikonméret";
+"Small (Original)" = "Kicsi (eredeti)";
+"Medium" = "Közepes";
+"Large" = "Nagy";
+"Large icon size applies to fullscreen only; floaty uses medium." = "A nagy ikonméret csak teljes képernyőn érvényes; a lebegő mód közepeset használ.";
+"Paging direction" = "Lapozás iránya";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "A függőleges lapozás fel-le mozgatja az oldalakat. A jelölők teljes képernyőn balra kerülnek, lebegő módban alul maradnak.";
+"Horizontal" = "Vízszintes";
+"Vertical" = "Függőleges";
+
+"Beta" = "Béta";

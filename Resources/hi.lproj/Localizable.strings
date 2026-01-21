@@ -172,3 +172,15 @@
 "Folder is empty." = "फ़ोल्डर खाली है।";
 "Apps:\n%@" = "ऐप्स:\n%@";
 "Save" = "सहेजें";
+
+"Icon size" = "आइकन आकार";
+"Small (Original)" = "छोटा (मूल)";
+"Medium" = "मध्यम";
+"Large" = "बड़ा";
+"Large icon size applies to fullscreen only; floaty uses medium." = "बड़ा आइकन आकार सिर्फ फुलस्क्रीन में लागू होता है; फ्लोटी में मध्यम इस्तेमाल होता है।";
+"Paging direction" = "पेजिंग दिशा";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "ऊर्ध्वाधर पेजिंग पेजों को ऊपर-नीचे करती है। संकेतक फुलस्क्रीन में बाईं ओर और फ्लोटी में नीचे रहते हैं।";
+"Horizontal" = "क्षैतिज";
+"Vertical" = "ऊर्ध्वाधर";
+
+"Beta" = "बीटा";

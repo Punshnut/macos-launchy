@@ -172,3 +172,15 @@
 "Folder is empty." = "فولڈر خالی ہے۔";
 "Apps:\n%@" = "ایپس:\n%@";
 "Save" = "محفوظ کریں";
+
+"Icon size" = "آئیکن کا سائز";
+"Small (Original)" = "چھوٹا (اصل)";
+"Medium" = "درمیانہ";
+"Large" = "بڑا";
+"Large icon size applies to fullscreen only; floaty uses medium." = "بڑا آئیکن سائز صرف فل اسکرین میں لاگو ہوتا ہے؛ فلوٹی درمیانہ استعمال کرتا ہے۔";
+"Paging direction" = "صفحہ بندی کی سمت";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "عمودی صفحہ بندی صفحات کو اوپر نیچے لے جاتی ہے۔ اشارے فل اسکرین میں بائیں طرف اور فلوٹی میں نیچے رہتے ہیں۔";
+"Horizontal" = "افقی";
+"Vertical" = "عمودی";
+
+"Beta" = "بیٹا";

@@ -172,3 +172,15 @@
 "Folder is empty." = "Папка порожня.";
 "Apps:\n%@" = "Додатки:\n%@";
 "Save" = "Зберегти";
+
+"Icon size" = "Розмір іконок";
+"Small (Original)" = "Малий (оригінал)";
+"Medium" = "Середній";
+"Large" = "Великий";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Великий розмір діє лише у повноекранному режимі; плаваючий режим використовує середній.";
+"Paging direction" = "Напрямок сторінок";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Вертикальна пагінація рухає сторінки вгору-вниз. Індикатори йдуть ліворуч у повноекранному режимі й залишаються внизу в плаваючому.";
+"Horizontal" = "Горизонтально";
+"Vertical" = "Вертикально";
+
+"Beta" = "Бета";

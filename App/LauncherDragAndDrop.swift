@@ -190,8 +190,8 @@ struct GridReorderDropDelegate: DropDelegate {
     /// Maps a drop location to a linear index within the current page.
     private func linearIndex(for location: CGPoint) -> Int {
         let location = adjustedLocation(location)
-        let columns = LauncherGridConfiguration.columnsPerPage
-        let rows = LauncherGridConfiguration.rowsPerPage
+        let columns = layout.columnsPerPage
+        let rows = layout.rowsPerPage
 
         let totalSpacingX = layout.iconSpacing * CGFloat(columns - 1)
         let totalSpacingY = layout.iconSpacing * CGFloat(rows - 1)
@@ -247,8 +247,8 @@ struct GridReorderDropDelegate: DropDelegate {
 
     private func indexInCurrentPage(for location: CGPoint) -> Int? {
         let location = adjustedLocation(location)
-        let columns = LauncherGridConfiguration.columnsPerPage
-        let rows = LauncherGridConfiguration.rowsPerPage
+        let columns = layout.columnsPerPage
+        let rows = layout.rowsPerPage
 
         let totalSpacingX = layout.iconSpacing * CGFloat(columns - 1)
         let totalSpacingY = layout.iconSpacing * CGFloat(rows - 1)
@@ -287,7 +287,7 @@ struct GridReorderDropDelegate: DropDelegate {
     }
 
     private func linearIndexInPage(row: Int, column: Int) -> Int {
-        row * LauncherGridConfiguration.columnsPerPage + column
+        row * layout.columnsPerPage + column
     }
 
     private func indexInCurrentPage(forAbsoluteIndex index: Int) -> Int? {

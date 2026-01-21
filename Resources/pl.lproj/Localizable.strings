@@ -172,3 +172,15 @@
 "Folder is empty." = "Folder jest pusty.";
 "Apps:\n%@" = "Aplikacje:\n%@";
 "Save" = "Zapisz";
+
+"Icon size" = "Rozmiar ikony";
+"Small (Original)" = "Mały (oryginalny)";
+"Medium" = "Średni";
+"Large" = "Duży";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Duży rozmiar ikon działa tylko w trybie pełnoekranowym; tryb floaty używa średniego.";
+"Paging direction" = "Kierunek przewijania";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Pionowe stronicowanie przesuwa strony w górę i w dół. Wskaźniki przechodzą w lewo w pełnym ekranie i zostają na dole w trybie floaty.";
+"Horizontal" = "Poziomy";
+"Vertical" = "Pionowy";
+
+"Beta" = "Beta";

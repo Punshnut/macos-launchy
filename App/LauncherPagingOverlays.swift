@@ -42,6 +42,7 @@ enum LauncherPageShortcuts {
 /// Invisible AppKit host that captures scroll wheel events so users can page through the launcher with gestures.
 struct ScrollWheelPagerOverlay: NSViewRepresentable {
     var isEnabled: Bool
+    var pagingOrientation: PagingOrientation = .horizontal
     var onScrollProgress: (ScrollEvent) -> Void
     var onScrollEnd: () -> Void
     var onPreviousPage: () -> Void
@@ -57,6 +58,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
 
     func makeCoordinator() -> Coordinator {
         Coordinator(
+            pagingOrientation: pagingOrientation,
             onScrollProgress: onScrollProgress,
             onScrollEnd: onScrollEnd,
             onPreviousPage: onPreviousPage,
@@ -74,6 +76,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
     func updateNSView(_ nsView: PagerPassthroughView, context: Context) {
         context.coordinator.hostView = nsView
         context.coordinator.isEnabled = isEnabled
+        context.coordinator.pagingOrientation = pagingOrientation
     }
 
     static func dismantleNSView(_ nsView: PagerPassthroughView, coordinator: Coordinator) {
@@ -92,20 +95,23 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         }
 
         weak var hostView: NSView?
+        var pagingOrientation: PagingOrientation
 
         private let onScrollProgress: (ScrollEvent) -> Void
         private let onScrollEnd: () -> Void
         private let onPreviousPage: () -> Void
         private let onNextPage: () -> Void
         private var scrollMonitor: EventMonitorToken?
-        private var hasActiveHorizontalScroll = false
+        private var hasActivePagedScroll = false
 
         init(
+            pagingOrientation: PagingOrientation,
             onScrollProgress: @escaping (ScrollEvent) -> Void,
             onScrollEnd: @escaping () -> Void,
             onPreviousPage: @escaping () -> Void,
             onNextPage: @escaping () -> Void
         ) {
+            self.pagingOrientation = pagingOrientation
             self.onScrollProgress = onScrollProgress
             self.onScrollEnd = onScrollEnd
             self.onPreviousPage = onPreviousPage
@@ -145,8 +151,9 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
                 return
             }
 
-            if abs(event.scrollingDeltaX) > 0.01 {
-                hasActiveHorizontalScroll = true
+            let primaryDelta = pagingOrientation == .vertical ? event.scrollingDeltaY : event.scrollingDeltaX
+            if abs(primaryDelta) > 0.01 {
+                hasActivePagedScroll = true
                 onScrollProgress(
                     ScrollEvent(
                         deltaX: event.scrollingDeltaX,
@@ -159,19 +166,19 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             }
 
             if event.hasPreciseScrollingDeltas == false {
-                processDiscreteVerticalScroll(delta: event.scrollingDeltaY)
+                processDiscretePagingScroll(delta: primaryDelta)
             }
 
             if event.phase.contains(.ended) || event.momentumPhase.contains(.ended) {
-                if hasActiveHorizontalScroll {
+                if hasActivePagedScroll {
                     onScrollEnd()
                 }
-                hasActiveHorizontalScroll = false
+                hasActivePagedScroll = false
             }
         }
 
-        /// Maps discrete vertical scrolls (e.g. mouse wheel) to next/previous page triggers.
-        private func processDiscreteVerticalScroll(delta: CGFloat) {
+        /// Maps discrete scrolls (e.g. mouse wheel) to next/previous page triggers.
+        private func processDiscretePagingScroll(delta: CGFloat) {
             guard abs(delta) >= 1 else { return }
             if delta <= -1 {
                 trigger(.next)
@@ -190,7 +197,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         }
 
         private func resetState() {
-            hasActiveHorizontalScroll = false
+            hasActivePagedScroll = false
         }
 
         private enum PageDirection {

@@ -143,6 +143,36 @@ enum LauncherSettingsPersistence {
         }
     }
 
+    /// Reads the preferred icon size setting.
+    static func iconSizePreference(userDefaults: UserDefaults = .standard) -> IconSizePreference {
+        loadSettings(userDefaults: userDefaults).iconSizePreference
+    }
+
+    /// Persists the preferred icon size.
+    static func setIconSizePreference(
+        _ preference: IconSizePreference,
+        userDefaults: UserDefaults = .standard
+    ) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.iconSizePreference = preference
+        }
+    }
+
+    /// Reads the preferred paging orientation.
+    static func pagingOrientation(userDefaults: UserDefaults = .standard) -> PagingOrientation {
+        loadSettings(userDefaults: userDefaults).pagingOrientation
+    }
+
+    /// Persists the paging orientation.
+    static func setPagingOrientation(
+        _ orientation: PagingOrientation,
+        userDefaults: UserDefaults = .standard
+    ) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.pagingOrientation = orientation
+        }
+    }
+
     /// Reads the preferred background style selection.
     static func preferredBackgroundStyle(
         userDefaults: UserDefaults = .standard

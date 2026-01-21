@@ -172,3 +172,15 @@
 "Folder is empty." = "Folda ṣofo ni.";
 "Apps:\n%@" = "Àwọn app:\n%@";
 "Save" = "Fipamọ́";
+
+"Icon size" = "Iwọn aami";
+"Small (Original)" = "Kekere (atọwọdọwọ)";
+"Medium" = "Arin";
+"Large" = "Nla";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Iwọn aami nla n ṣiṣẹ nikan ni iboju kikun; floaty n lo iwọn arin.";
+"Paging direction" = "Ọna ìtẹ̀sí ojúewé";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Ìtẹ̀sí ináàró n gbe ojúewé soke ati isalẹ. Ààmì n lọ sí apa osi ní iboju kikun, tí wọn sì dúró ní isalẹ ní ọ̀nà floaty.";
+"Horizontal" = "Pẹ̀tẹ́lẹ̀";
+"Vertical" = "Ináàró";
+
+"Beta" = "Bẹ́tà";

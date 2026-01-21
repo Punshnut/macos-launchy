@@ -172,3 +172,15 @@
 "Folder is empty." = "フォルダは空です。";
 "Apps:\n%@" = "アプリ：\n%@";
 "Save" = "保存";
+
+"Icon size" = "アイコンサイズ";
+"Small (Original)" = "小 (オリジナル)";
+"Medium" = "中";
+"Large" = "大";
+"Large icon size applies to fullscreen only; floaty uses medium." = "大きいアイコンサイズはフルスクリーンのみで適用され、フローティは中サイズを使います。";
+"Paging direction" = "ページ送りの方向";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "縦方向のページ送りはページを上下に動かします。インジケーターはフルスクリーンでは左に、フローティでは下に表示されます。";
+"Horizontal" = "横";
+"Vertical" = "縦";
+
+"Beta" = "ベータ";

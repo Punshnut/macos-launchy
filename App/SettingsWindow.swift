@@ -249,6 +249,10 @@ struct SettingsWindow: View {
                 panelDivider
                 launcherLayoutPicker
                 panelDivider
+                iconSizeSlider
+                panelDivider
+                pagingOrientationPicker
+                panelDivider
                 iconVisibilitySection
                 panelDivider
                 backgroundStyleSection
@@ -336,6 +340,70 @@ struct SettingsWindow: View {
             .pickerStyle(.segmented)
 
             Text(String(localized: "Add a layout toggle shortcut below to flip modes instantly from anywhere."))
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+
+    private var iconSizeSlider: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(String(localized: "Icon size"))
+                .font(.subheadline)
+                .fontWeight(.semibold)
+
+            Slider(
+                value: Binding(
+                    get: { settingsStore.settingsSnapshot.iconSizePreference.sliderPosition },
+                    set: { settingsStore.setIconSizePreference(IconSizePreference.fromSliderPosition($0)) }
+                ),
+                in: 0...2,
+                step: 1
+            )
+
+            HStack {
+                Text(IconSizePreference.small.displayName)
+                Spacer()
+                Text(IconSizePreference.medium.displayName)
+                Spacer()
+                Text(IconSizePreference.large.displayName)
+            }
+            .font(.caption)
+            .foregroundColor(.secondary)
+
+            Text(String(localized: "Large icon size applies to fullscreen only; floaty uses medium."))
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+
+    private var pagingOrientationPicker: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Text(String(localized: "Paging direction"))
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                Text(String(localized: "Beta"))
+                    .font(.caption2)
+                    .fontWeight(.bold)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(Color.accentColor.opacity(0.15))
+                    .foregroundColor(Color.accentColor)
+                    .clipShape(Capsule())
+            }
+
+            Picker("", selection: Binding(
+                get: { settingsStore.settingsSnapshot.pagingOrientation },
+                set: { settingsStore.setPagingOrientation($0) }
+            )) {
+                ForEach(PagingOrientation.allCases, id: \.self) { orientation in
+                    Text(orientation.displayName).tag(orientation)
+                }
+            }
+            .labelsHidden()
+            .pickerStyle(.segmented)
+
+            Text(String(localized: "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty."))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }

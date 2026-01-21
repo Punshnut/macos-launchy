@@ -172,3 +172,15 @@
 "Folder is empty." = "Složka je prázdná.";
 "Apps:\n%@" = "Aplikace:\n%@";
 "Save" = "Uložit";
+
+"Icon size" = "Velikost ikony";
+"Small (Original)" = "Malá (původní)";
+"Medium" = "Střední";
+"Large" = "Velká";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Velká velikost ikon se použije jen v režimu celé obrazovky; plovoucí režim používá střední.";
+"Paging direction" = "Směr stránkování";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Vertikální stránkování posouvá stránky nahoru a dolů. Ukazatele se v režimu celé obrazovky přesunou doleva a v plovoucím zůstanou dole.";
+"Horizontal" = "Horizontální";
+"Vertical" = "Vertikální";
+
+"Beta" = "Beta";

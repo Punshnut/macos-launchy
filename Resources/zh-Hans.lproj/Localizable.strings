@@ -172,3 +172,15 @@
 "Folder is empty." = "文件夹为空。";
 "Apps:\n%@" = "应用：\n%@";
 "Save" = "保存";
+
+"Icon size" = "图标大小";
+"Small (Original)" = "小（原始）";
+"Medium" = "中";
+"Large" = "大";
+"Large icon size applies to fullscreen only; floaty uses medium." = "大图标仅在全屏生效，浮动模式使用中等大小。";
+"Paging direction" = "翻页方向";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "竖向翻页上下移动页面。全屏时指示器在左侧，浮动模式时在底部。";
+"Horizontal" = "水平";
+"Vertical" = "垂直";
+
+"Beta" = "测试版";

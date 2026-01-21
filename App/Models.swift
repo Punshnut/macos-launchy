@@ -253,6 +253,63 @@ enum HotCornerPosition: String, CaseIterable, Hashable, Codable {
     }
 }
 
+/// User-facing grid density for the launcher icons.
+enum IconSizePreference: String, CaseIterable, Hashable, Codable {
+    case small
+    case medium
+    case large
+
+    var displayName: String {
+        switch self {
+        case .small:
+            return String(localized: "Small (Original)")
+        case .medium:
+            return String(localized: "Medium")
+        case .large:
+            return String(localized: "Large")
+        }
+    }
+
+    var sliderPosition: Double {
+        switch self {
+        case .small: return 0
+        case .medium: return 1
+        case .large: return 2
+        }
+    }
+
+    static func fromSliderPosition(_ value: Double) -> IconSizePreference {
+        switch Int(value.rounded()) {
+        case 0: return .small
+        case 2: return .large
+        default: return .medium
+        }
+    }
+
+    /// Returns a size that can be safely applied to the provided launcher mode.
+    func effectivePreference(for mode: LauncherMode) -> IconSizePreference {
+        if mode == .floaty, self == .large {
+            return .medium
+        }
+        return self
+    }
+}
+
+/// Configures whether paging moves horizontally or vertically.
+enum PagingOrientation: String, CaseIterable, Hashable, Codable {
+    case horizontal
+    case vertical
+
+    var displayName: String {
+        switch self {
+        case .horizontal:
+            return String(localized: "Horizontal")
+        case .vertical:
+            return String(localized: "Vertical")
+        }
+    }
+}
+
 /// User-configurable settings for how the launcher behaves.
 struct LauncherSettings: Hashable, Codable {
     /// Available solid background colors when the solid style is chosen.
@@ -388,6 +445,10 @@ struct LauncherSettings: Hashable, Codable {
     var hasCompletedIntroduction: Bool
     /// When enabled, Launchy also indexes `~/Applications`.
     var shouldScanUserApplicationsFolder: Bool
+    /// Preferred icon sizing for the launcher grid.
+    var iconSizePreference: IconSizePreference
+    /// Whether launcher paging should move horizontally or vertically.
+    var pagingOrientation: PagingOrientation
     init(
         isVisibleOnAllSpaces: Bool,
         launchesAtLogin: Bool,
@@ -405,7 +466,9 @@ struct LauncherSettings: Hashable, Codable {
         hotCornerPosition: HotCornerPosition,
         fillsGapsAutomatically: Bool,
         hasCompletedIntroduction: Bool,
-        shouldScanUserApplicationsFolder: Bool
+        shouldScanUserApplicationsFolder: Bool,
+        iconSizePreference: IconSizePreference,
+        pagingOrientation: PagingOrientation
     ) {
         self.isVisibleOnAllSpaces = isVisibleOnAllSpaces
         self.launchesAtLogin = launchesAtLogin
@@ -424,6 +487,8 @@ struct LauncherSettings: Hashable, Codable {
         self.fillsGapsAutomatically = fillsGapsAutomatically
         self.hasCompletedIntroduction = hasCompletedIntroduction
         self.shouldScanUserApplicationsFolder = shouldScanUserApplicationsFolder
+        self.iconSizePreference = iconSizePreference
+        self.pagingOrientation = pagingOrientation
     }
 }
 
@@ -447,7 +512,9 @@ extension LauncherSettings {
             hotCornerPosition: .bottomRight,
             fillsGapsAutomatically: false,
             hasCompletedIntroduction: false,
-            shouldScanUserApplicationsFolder: true
+            shouldScanUserApplicationsFolder: true,
+            iconSizePreference: .small,
+            pagingOrientation: .horizontal
         )
     }
 }
@@ -471,6 +538,8 @@ extension LauncherSettings {
         case fillsGapsAutomatically
         case hasCompletedIntroduction
         case shouldScanUserApplicationsFolder
+        case iconSizePreference
+        case pagingOrientation
     }
 
     init(from decoder: Decoder) throws {
@@ -501,7 +570,9 @@ extension LauncherSettings {
             hotCornerPosition: try container.decodeIfPresent(HotCornerPosition.self, forKey: .hotCornerPosition) ?? .bottomRight,
             fillsGapsAutomatically: try container.decodeIfPresent(Bool.self, forKey: .fillsGapsAutomatically) ?? false,
             hasCompletedIntroduction: try container.decodeIfPresent(Bool.self, forKey: .hasCompletedIntroduction) ?? false,
-            shouldScanUserApplicationsFolder: try container.decodeIfPresent(Bool.self, forKey: .shouldScanUserApplicationsFolder) ?? true
+            shouldScanUserApplicationsFolder: try container.decodeIfPresent(Bool.self, forKey: .shouldScanUserApplicationsFolder) ?? true,
+            iconSizePreference: try container.decodeIfPresent(IconSizePreference.self, forKey: .iconSizePreference) ?? .small,
+            pagingOrientation: try container.decodeIfPresent(PagingOrientation.self, forKey: .pagingOrientation) ?? .horizontal
         )
     }
 
@@ -524,6 +595,8 @@ extension LauncherSettings {
         try container.encode(hasCompletedIntroduction, forKey: .hasCompletedIntroduction)
         try container.encode(shouldScanUserApplicationsFolder, forKey: .shouldScanUserApplicationsFolder)
         try container.encode(hiddenSpecialEntryIDs, forKey: .hiddenSpecialEntryIDs)
+        try container.encode(iconSizePreference, forKey: .iconSizePreference)
+        try container.encode(pagingOrientation, forKey: .pagingOrientation)
     }
 }
 

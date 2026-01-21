@@ -172,3 +172,15 @@
 "Folder is empty." = "Klasör boş.";
 "Apps:\n%@" = "Uygulamalar:\n%@";
 "Save" = "Kaydet";
+
+"Icon size" = "Simge boyutu";
+"Small (Original)" = "Küçük (orijinal)";
+"Medium" = "Orta";
+"Large" = "Büyük";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Büyük simge boyutu yalnızca tam ekranda geçerlidir; floaty modda orta kullanılır.";
+"Paging direction" = "Sayfalama yönü";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Dikey sayfalama sayfaları yukarı ve aşağı hareket ettirir. Göstergeler tam ekranda sola gider, floaty modda altta kalır.";
+"Horizontal" = "Yatay";
+"Vertical" = "Dikey";
+
+"Beta" = "Beta";

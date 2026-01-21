@@ -172,3 +172,15 @@
 "Folder is empty." = "கோப்புறை காலியாக உள்ளது.";
 "Apps:\n%@" = "ஆப்கள்:\n%@";
 "Save" = "சேமி";
+
+"Icon size" = "சின்ன அளவு";
+"Small (Original)" = "சிறியது (அசல்)";
+"Medium" = "இடை";
+"Large" = "பெரியது";
+"Large icon size applies to fullscreen only; floaty uses medium." = "பெரிய சின்ன அளவு முழுத்திரையில் மட்டும் பொருந்தும்; மிதக்கும் முறையில் இடை அளவு பயன்படுத்தப்படும்.";
+"Paging direction" = "பக்கத்திரையின் திசை";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "நிலம்பட்டு பக்கத்திரை மேலே கீழே நகர்த்தும். குறியீடுகள் முழுத்திரையில் இடப்புறம் சென்று, மிதக்கும் முறையில் அடியில் இருக்கும்.";
+"Horizontal" = "கிடைமட்ட";
+"Vertical" = "செங்குத்து";
+
+"Beta" = "பீட்டா";

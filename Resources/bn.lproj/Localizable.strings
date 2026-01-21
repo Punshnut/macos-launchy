@@ -172,3 +172,15 @@
 "Folder is empty." = "ফোল্ডার খালি।";
 "Apps:\n%@" = "অ্যাপসমূহ:\n%@";
 "Save" = "সংরক্ষণ করুন";
+
+"Icon size" = "আইকনের আকার";
+"Small (Original)" = "ছোট (মূল)";
+"Medium" = "মাঝারি";
+"Large" = "বড়";
+"Large icon size applies to fullscreen only; floaty uses medium." = "বড় আইকন আকার শুধু ফুলস্ক্রিনে প্রযোজ্য; ফ্লোটি মাঝারি ব্যবহার করে।";
+"Paging direction" = "পেজিংয়ের দিক";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "উল্লম্ব পেজিং পৃষ্ঠাগুলোকে উপরে-নিচে সরায়। ফুলস্ক্রিনে সূচকগুলো বাম পাশে যায় এবং ফ্লোটিতে নিচে থাকে।";
+"Horizontal" = "আনুভূমিক";
+"Vertical" = "উল্লম্ব";
+
+"Beta" = "বিটা";

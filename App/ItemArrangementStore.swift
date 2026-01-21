@@ -184,9 +184,9 @@ final class ItemArrangementStore {
     }
 
     /// Saves a new linear order of items including folders and their contents.
-    func saveOrderedItems(_ items: [LauncherItem], pageSizes: [Int]) {
+    func saveOrderedItems(_ items: [LauncherItem], pageSizes: [Int], pageCapacity: Int) {
         cachedItems = items.map(persistedItem(from:))
-        cachedPageSizes = normalizePageSizes(pageSizes, itemCount: items.count, pageCapacity: LauncherGridConfiguration.pageCapacity)
+        cachedPageSizes = normalizePageSizes(pageSizes, itemCount: items.count, pageCapacity: pageCapacity)
         saveItems()
     }
 

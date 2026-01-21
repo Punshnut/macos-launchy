@@ -172,3 +172,15 @@
 "Folder is empty." = "Ο φάκελος είναι άδειος.";
 "Apps:\n%@" = "Εφαρμογές:\n%@";
 "Save" = "Αποθήκευση";
+
+"Icon size" = "Μέγεθος εικονιδίου";
+"Small (Original)" = "Μικρό (Αρχικό)";
+"Medium" = "Μεσαίο";
+"Large" = "Μεγάλο";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Το μεγάλο μέγεθος ισχύει μόνο σε πλήρη οθόνη· το floaty χρησιμοποιεί μεσαίο.";
+"Paging direction" = "Κατεύθυνση κύλισης";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Η κάθετη σελιδοποίηση μετακινεί τις σελίδες πάνω-κάτω. Οι δείκτες πάνε αριστερά σε πλήρη οθόνη και μένουν κάτω στο floaty.";
+"Horizontal" = "Οριζόντια";
+"Vertical" = "Κάθετα";
+
+"Beta" = "Beta";

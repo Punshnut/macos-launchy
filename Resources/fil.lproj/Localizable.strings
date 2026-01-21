@@ -172,3 +172,15 @@
 "Folder is empty." = "Walang laman ang folder.";
 "Apps:\n%@" = "Mga app:\n%@";
 "Save" = "I-save";
+
+"Icon size" = "Laki ng icon";
+"Small (Original)" = "Maliit (orihinal)";
+"Medium" = "Katamtaman";
+"Large" = "Malaki";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Ang malaking icon ay para lang sa fullscreen; katamtaman ang gamit sa floaty mode.";
+"Paging direction" = "Direksyon ng paglipat ng pahina";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Ang patayong paging ay naglilipat ng mga pahina pataas at pababa. Sa fullscreen lilipat ang mga indicator sa kaliwa at sa floaty mananatili sa ibaba.";
+"Horizontal" = "Pahalang";
+"Vertical" = "Patayo";
+
+"Beta" = "Beta";

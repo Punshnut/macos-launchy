@@ -172,3 +172,15 @@
 "Folder is empty." = "پوشه خالی است.";
 "Apps:\n%@" = "برنامه‌ها:\n%@";
 "Save" = "ذخیره";
+
+"Icon size" = "اندازه آیکون";
+"Small (Original)" = "کوچک (اصلی)";
+"Medium" = "متوسط";
+"Large" = "بزرگ";
+"Large icon size applies to fullscreen only; floaty uses medium." = "اندازه آیکون بزرگ فقط در حالت تمام‌صفحه اعمال می‌شود؛ حالت شناور از متوسط استفاده می‌کند.";
+"Paging direction" = "جهت صفحه‌بندی";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "صفحه‌بندی عمودی صفحات را بالا و پایین می‌برد. نشانگرها در تمام‌صفحه به چپ می‌روند و در حالت شناور در پایین می‌مانند.";
+"Horizontal" = "افقی";
+"Vertical" = "عمودی";
+
+"Beta" = "بتا";

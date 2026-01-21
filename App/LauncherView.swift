@@ -175,6 +175,10 @@ struct LauncherView: View {
     var solidBackgroundColor: LauncherSettings.SolidBackgroundColor = .system
     /// Current presentation mode so layout can adapt between floaty and fullscreen.
     var launcherMode: LauncherMode = .floaty
+    /// Grid sizing for the current launcher mode.
+    var gridConfiguration: LauncherGridConfiguration = LauncherGridConfiguration.configuration(for: .small, mode: .floaty)
+    /// Orientation used when paging between grids.
+    var pagingOrientation: PagingOrientation = .horizontal
     /// Whether items should collapse upward to fill earlier gaps.
     var fillsGapsAutomatically: Bool = true
     /// Callback fired when the user requests to open settings from a context menu.
@@ -188,7 +192,7 @@ struct LauncherView: View {
     /// Provides the icon that should be used for a specific app.
     var iconProvider: @Sendable (AppItem, CGFloat, IconRenderQuality) -> NSImage? = { app, _, _ in app.iconImage }
 
-    private var pageCapacity: Int { LauncherGridConfiguration.pageCapacity }
+    private var pageCapacity: Int { gridConfiguration.pageCapacity }
     private let closeAnimationDuration: TimeInterval = 0.25
     private let wiggleCycleDuration: TimeInterval = 0.58
     private let wiggleRotationDegrees: Double = 1.65
@@ -199,6 +203,7 @@ struct LauncherView: View {
         guard launcherMode == .fullscreen else { return 1 }
         return 0.97 + 0.03 * CGFloat(fullscreenGridEntranceProgress)
     }
+    private var isVerticalPaging: Bool { pagingOrientation == .vertical }
 
     /// Calculates the folder overlay's horizontal translation, clamping it within the available pages.
     private func folderGridTranslation(pageWidth: CGFloat, totalPages: Int, basePageOffset: CGFloat) -> CGFloat {
@@ -227,16 +232,12 @@ struct LauncherView: View {
 
             ScrollWheelPagerOverlay(
                 isEnabled: isGesturePagingEnabled,
+                pagingOrientation: pagingOrientation,
                 onScrollProgress: { event in
-                    handleScrollProgress(
-                        deltaX: event.deltaX,
-                        phase: event.phase,
-                        momentumPhase: event.momentumPhase,
-                        isPrecise: event.isPrecise
-                    )
+                    handleScrollProgress(event)
                 },
                 onScrollEnd: {
-                    settlePagerOffset(pageWidth: pagerViewportWidth)
+                    settlePagerOffset(pageSpan: pagerViewportWidth)
                 },
                 onPreviousPage: { pageBackward() },
                 onNextPage: { pageForward() }
@@ -252,7 +253,7 @@ struct LauncherView: View {
                 onNextPage: { handleKeyboardPager(.forward) },
                 onEscape: { handleEscapeKeyPress() },
                 onPageShortcut: { handlePageShortcutRequest($0) },
-                onVerticalNavigation: { handleVerticalArrowNavigation($0) }
+                onVerticalNavigation: { handleVerticalNavigation($0) }
             )
             .frame(maxWidth: .infinity, minHeight: layout.gridHeight)
             .allowsHitTesting(false)
@@ -272,6 +273,7 @@ struct LauncherView: View {
         gridProxy: GeometryProxy
     ) -> some View {
         let pageWidth = max(gridProxy.size.width, 1)
+        let pageSpan = isVerticalPaging ? max(gridProxy.size.height, 1) : pageWidth
         let sizes = displayPageSizes
         let totalPages = max(pageCount, 1)
         let pageIndices = visiblePageIndices(total: totalPages)
@@ -279,19 +281,22 @@ struct LauncherView: View {
         let dragGesture = DragGesture(minimumDistance: 2)
             .onChanged { value in
                 guard isGesturePagingEnabled else { return }
-                beginPagerInteraction(pageWidth: pageWidth)
+                beginPagerInteraction(pageSpan: pageSpan)
                 lastPagerDragDate = Date()
+                let translation = isVerticalPaging ? value.translation.height : value.translation.width
                 pagerDragOffset = clampPagerOffset(
-                    value.translation.width,
-                    pageWidth: pageWidth
+                    translation,
+                    pageSpan: pageSpan
                 )
             }
             .onEnded { value in
                 guard isGesturePagingEnabled else { return }
+                let translation = isVerticalPaging ? value.translation.height : value.translation.width
+                let predicted = isVerticalPaging ? value.predictedEndTranslation.height : value.predictedEndTranslation.width
                 finishPagerInteraction(
-                    translation: value.translation.width,
-                    predictedEndTranslation: value.predictedEndTranslation.width,
-                    pageWidth: pageWidth
+                    translation: translation,
+                    predictedEndTranslation: predicted,
+                    pageSpan: pageSpan
                 )
             }
 
@@ -311,18 +316,22 @@ struct LauncherView: View {
             canReorder: canReorder,
             gridProxy: gridProxy
         )
-                .opacity(pageOpacity(for: pageIndex, pageWidth: pageWidth))
-                .offset(x: pageOffset(for: pageIndex, pageWidth: pageWidth))
+                .opacity(pageOpacity(for: pageIndex, pageSpan: pageSpan))
+                .offset(
+                    x: isVerticalPaging ? 0 : pageOffset(for: pageIndex, pageSpan: pageSpan),
+                    y: isVerticalPaging ? pageOffset(for: pageIndex, pageSpan: pageSpan) : 0
+                )
             }
         }
         .frame(width: pageWidth, height: layout.gridHeight, alignment: .leading)
         .gesture(dragGesture)
         .animation(activeGridAnimation, value: orderedItems)
         .onAppear {
-            pagerViewportWidth = pageWidth
+            pagerViewportWidth = pageSpan
         }
-        .onChange(of: gridProxy.size.width) { newWidth in
-            pagerViewportWidth = max(newWidth, 1)
+        .onChange(of: gridProxy.size) { newSize in
+            let span = isVerticalPaging ? max(newSize.height, 1) : max(newSize.width, 1)
+            pagerViewportWidth = span
         }
     }
 
@@ -630,6 +639,8 @@ struct LauncherView: View {
         backgroundStylePreference: LauncherSettings.PreferredBackgroundStyle = .standard,
         solidBackgroundColor: LauncherSettings.SolidBackgroundColor = .system,
         launcherMode: LauncherMode = .floaty,
+        gridConfiguration: LauncherGridConfiguration = LauncherGridConfiguration.configuration(for: .small, mode: .floaty),
+        pagingOrientation: PagingOrientation = .horizontal,
         fillsGapsAutomatically: Bool = true,
         onSettingsRequested: (() -> Void)? = nil,
         onAppInfoRequested: (() -> Void)? = nil,
@@ -642,6 +653,8 @@ struct LauncherView: View {
         self.backgroundStylePreference = backgroundStylePreference
         self.solidBackgroundColor = solidBackgroundColor
         self.launcherMode = launcherMode
+        self.gridConfiguration = gridConfiguration
+        self.pagingOrientation = pagingOrientation
         self.fillsGapsAutomatically = fillsGapsAutomatically
         self.onSettingsRequested = onSettingsRequested
         self.onAppInfoRequested = onAppInfoRequested
@@ -686,6 +699,18 @@ struct LauncherView: View {
             pageDirection = .forward
             pagerDragOffset = 0
             notifyVisiblePagesChanged()
+        }
+        .onChange(of: gridConfiguration) { _ in
+            if fillsGapsAutomatically {
+                pageSizes = densePageSizes(for: orderedItems.count)
+            } else {
+                pageSizes = normalizePageSizes(pageSizes, itemCount: orderedItems.count)
+            }
+            ensureCurrentPageWithinBounds()
+            pagerDragOffset = 0
+        }
+        .onChange(of: pagingOrientation) { _ in
+            pagerDragOffset = 0
         }
         .onReceive(NotificationCenter.default.publisher(for: .launcherDidHide)) { _ in
             isLauncherVisible = false
@@ -837,8 +862,8 @@ struct LauncherView: View {
             containerSize: containerSize,
             launcherMode: launcherMode,
             topInset: topInset,
-            columnsPerPage: LauncherGridConfiguration.columnsPerPage,
-            rowsPerPage: LauncherGridConfiguration.rowsPerPage
+            columnsPerPage: gridConfiguration.columnsPerPage,
+            rowsPerPage: gridConfiguration.rowsPerPage
         )
         let canReorder = searchText.isEmpty
 
@@ -898,9 +923,19 @@ struct LauncherView: View {
 
                     let isFolderOverlayVisible = activeFolder != nil || closingFolder != nil
                     let gridBlendOpacity: Double = isFolderOverlayVisible ? 0.6 : 1
-                    VStack(spacing: 0) {
-                        launcherGridLayer(layout: layout, canReorder: canReorder)
-                        gridPager(canReorder: canReorder, layout: layout)
+                    let pagerOnLeft = isVerticalPaging && launcherMode == .fullscreen
+                    Group {
+                        if pagerOnLeft {
+                            HStack(alignment: .top, spacing: 14) {
+                                gridPager(canReorder: canReorder, layout: layout)
+                                launcherGridLayer(layout: layout, canReorder: canReorder)
+                            }
+                        } else {
+                            VStack(spacing: 0) {
+                                launcherGridLayer(layout: layout, canReorder: canReorder)
+                                gridPager(canReorder: canReorder, layout: layout)
+                            }
+                        }
                     }
                     .opacity(gridBlendOpacity)
                     .animation(.easeOut(duration: Self.folderOpenDuration), value: isFolderOverlayVisible)
@@ -1036,10 +1071,10 @@ struct LauncherView: View {
         return Array(filteredItemList[startIndex..<endIndex])
     }
 
-    /// Calculates the current horizontal offset for the paged grid stack.
-    private func pageOffset(for page: Int, pageWidth: CGFloat) -> CGFloat {
+    /// Calculates the current offset for the paged grid stack.
+    private func pageOffset(for page: Int, pageSpan: CGFloat) -> CGFloat {
         let current = clampPageIndex(currentPage)
-        return CGFloat(page - current) * pageWidth + pagerDragOffset
+        return CGFloat(page - current) * pageSpan + pagerDragOffset
     }
 
     private var activeGridAnimation: Animation? {
@@ -1198,48 +1233,54 @@ struct LauncherView: View {
         }
     }
 
-    /// Records the active viewport width so scroll-based gestures map 1:1 with page width.
-    private func beginPagerInteraction(pageWidth: CGFloat) {
-        pagerViewportWidth = max(pageWidth, 1)
+    /// Records the active viewport span so scroll-based gestures map 1:1 with page distance.
+    private func beginPagerInteraction(pageSpan: CGFloat) {
+        pagerViewportWidth = max(pageSpan, 1)
     }
 
     /// Finalizes a drag-based page interaction using the predicted end state to capture velocity.
-    private func finishPagerInteraction(translation: CGFloat, predictedEndTranslation: CGFloat, pageWidth: CGFloat) {
+    private func finishPagerInteraction(translation: CGFloat, predictedEndTranslation: CGFloat, pageSpan: CGFloat) {
         let projection = predictedEndTranslation - translation
-        settlePagerOffset(pageWidth: pageWidth, projectedDelta: projection)
+        settlePagerOffset(pageSpan: pageSpan, projectedDelta: projection)
     }
 
     /// Applies live scroll deltas from the trackpad so paging feels directly connected to the gesture.
-    private func handleScrollProgress(deltaX: CGFloat, phase: NSEvent.Phase, momentumPhase: NSEvent.Phase, isPrecise: Bool) {
+    private func handleScrollProgress(_ event: ScrollWheelPagerOverlay.ScrollEvent) {
         guard isGesturePagingEnabled else { return }
         let width = pagerViewportWidth
         guard width > 0 else { return }
-        beginPagerInteraction(pageWidth: width)
+        beginPagerInteraction(pageSpan: width)
         if isUnderInteractionPressure == false {
             enterPerformanceShedding(duration: 0.55, cancelHeavyWork: false)
         }
 
-        let scale: CGFloat = isPrecise ? 1.0 : 13.0
-        pagerDragOffset = clampPagerOffset(pagerDragOffset + deltaX * scale, pageWidth: width)
-        lastPagerDragDate = Date()
-        if phase.isEmpty && momentumPhase.isEmpty && isPrecise == false {
-            settlePagerOffset(pageWidth: width)
+        let isDiscrete = event.isPrecise == false
+        let primaryDelta = isVerticalPaging ? -event.deltaY : event.deltaX
+
+        if isDiscrete {
+            // Let discrete paging (mouse wheel) trigger jumps without live dragging so animations stay in sync.
+            pagerDragOffset = 0
+            lastPagerDragDate = Date()
             return
         }
 
-        if phase.contains(.ended) || momentumPhase.contains(.ended) {
-            settlePagerOffset(pageWidth: width)
+        let scale: CGFloat = 1.0
+        pagerDragOffset = clampPagerOffset(pagerDragOffset + primaryDelta * scale, pageSpan: width)
+        lastPagerDragDate = Date()
+
+        if event.phase.contains(.ended) || event.momentumPhase.contains(.ended) {
+            settlePagerOffset(pageSpan: width)
         }
     }
 
     /// Settles the pager to the nearest target page and animates the slide.
-    private func settlePagerOffset(pageWidth: CGFloat, projectedDelta: CGFloat = 0) {
+    private func settlePagerOffset(pageSpan: CGFloat, projectedDelta: CGFloat = 0) {
         guard pageCount > 0 else {
             pagerDragOffset = 0
             return
         }
 
-        let normalizedWidth = max(pageWidth, 1)
+        let normalizedWidth = max(pageSpan, 1)
         let totalOffset = pagerDragOffset + projectedDelta
         let progress = totalOffset / normalizedWidth
         let snapThreshold: CGFloat = 0.07
@@ -1280,15 +1321,15 @@ struct LauncherView: View {
     }
 
     /// Constrains live offsets so we keep neighbors in memory but avoid excessive empty space.
-    private func clampPagerOffset(_ offset: CGFloat, pageWidth: CGFloat) -> CGFloat {
-        let limit = pageWidth * 1.1
+    private func clampPagerOffset(_ offset: CGFloat, pageSpan: CGFloat) -> CGFloat {
+        let limit = pageSpan * 1.1
         let bounded = max(min(offset, limit), -limit)
 
         if currentPage == 0 && bounded > 0 {
-            return min(bounded, pageWidth * 0.35)
+            return min(bounded, pageSpan * 0.35)
         }
         if currentPage >= pageCount - 1 && bounded < 0 {
-            return max(bounded, -pageWidth * 0.35)
+            return max(bounded, -pageSpan * 0.35)
         }
 
         return bounded
@@ -1407,12 +1448,12 @@ struct LauncherView: View {
     }
 
     /// Computes how visible a page should be based on its proximity to the active page and drag offset.
-    private func pageOpacity(for page: Int, pageWidth: CGFloat) -> Double {
+    private func pageOpacity(for page: Int, pageSpan: CGFloat) -> Double {
         if page == currentPage {
             return 1
         }
-        let width = max(pageWidth, 1)
-        let dragProgress = pagerDragOffset / width
+        let span = max(pageSpan, 1)
+        let dragProgress = pagerDragOffset / span
         let distance = abs(CGFloat(page - currentPage) + dragProgress)
         let visibility = max(0, 1 - distance)
         return Double(min(1, visibility))
@@ -2833,6 +2874,8 @@ struct LauncherView: View {
         let tileSize = max(((layout.iconDimension * 0.9) - padding * 2 - spacing * 2) / 3, 9)
         let columns = Array(repeating: GridItem(.fixed(tileSize), spacing: spacing, alignment: .center), count: 3)
         let isSnapPreviewTarget = folder.id == folderSnapPreviewTargetID
+        let disableAnimations = isPageSwitchAnimationActive || abs(pagerDragOffset) > 0.1
+        let folderIconAnimation = disableAnimations ? nil : folderOpenAnimation
 
         return ZStack {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -2851,7 +2894,7 @@ struct LauncherView: View {
                 }
             }
             .padding(padding)
-            .animation(folderOpenAnimation, value: folderIconWaveToggle)
+            .animation(folderIconAnimation, value: folderIconWaveToggle)
 
             if isSnapPreviewTarget {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -2865,10 +2908,16 @@ struct LauncherView: View {
         }
         .frame(width: layout.iconDimension, height: layout.iconDimension)
         .scaleEffect(isSnapPreviewTarget ? 1.01 : 1.0)
-        .animation(.easeInOut(duration: 0.25), value: isSnapPreviewTarget)
-        .animation(folderOpenAnimation, value: folderIconWaveToggle)
+        .animation(disableAnimations ? nil : .easeInOut(duration: 0.25), value: isSnapPreviewTarget)
+        .animation(folderIconAnimation, value: folderIconWaveToggle)
         .environment(\.colorScheme, colorScheme)
         .animation(nil, value: searchControlsExpanded)
+        .animation(nil, value: currentPage)
+        .transaction { transaction in
+            if disableAnimations {
+                transaction.animation = nil
+            }
+        }
         .onAppear {
             warmFolderPreviewIcons(for: folder, layout: layout)
         }
@@ -3251,9 +3300,15 @@ struct LauncherView: View {
     }
 
     @ViewBuilder
-    private func pagerDots(currentPage: Int, totalPages: Int, onSelect: ((Int) -> Void)? = nil) -> some View {
-        HStack(spacing: 6) {
-            let pageCount = max(totalPages, 1)
+    private func pagerDots(
+        currentPage: Int,
+        totalPages: Int,
+        orientation: PagingOrientation = .horizontal,
+        onSelect: ((Int) -> Void)? = nil
+    ) -> some View {
+        let pageCount = max(totalPages, 1)
+        let stackSpacing: CGFloat = 6
+        let stack = Group {
             ForEach(0..<pageCount, id: \.self) { index in
                 let isDisabled = onSelect == nil || index >= totalPages
                 Button {
@@ -3268,6 +3323,13 @@ struct LauncherView: View {
                 .disabled(isDisabled)
             }
         }
+
+        if orientation == .vertical {
+            VStack(spacing: stackSpacing) { stack }
+                .frame(alignment: .leading)
+        } else {
+            HStack(spacing: stackSpacing) { stack }
+        }
     }
 
     @ViewBuilder
@@ -3276,32 +3338,76 @@ struct LauncherView: View {
         let dotsTotal = max(totalPages, 1)
         let previousDisabled = currentPage == 0 || orderedItems.isEmpty
         let nextDisabled = orderedItems.isEmpty || currentPage >= totalPages - 1
+        let dotOrientation: PagingOrientation = isVerticalPaging && launcherMode == .fullscreen ? .vertical : .horizontal
+        let pagerAlignmentLeading = isVerticalPaging && launcherMode == .fullscreen
+        let previousSymbol = isVerticalPaging ? "chevron.up" : "chevron.left"
+        let nextSymbol = isVerticalPaging ? "chevron.down" : "chevron.right"
+        let pagerSpacing: CGFloat = isVerticalPaging ? 10 : 12
+        let controlWidth: CGFloat = pagerButtonHitSize
 
-        HStack(spacing: 12) {
-            pagerChevronButton(
-                systemName: "chevron.left",
-                disabled: previousDisabled,
-                canReorder: canReorder,
-                targetPage: currentPage - 1,
-                action: pageBackward
-            )
+        Group {
+            if pagerAlignmentLeading {
+                VStack(alignment: .leading, spacing: pagerSpacing) {
+                    pagerChevronButton(
+                        systemName: previousSymbol,
+                        disabled: previousDisabled,
+                        canReorder: canReorder,
+                        targetPage: currentPage - 1,
+                        action: pageBackward
+                    )
 
-            pagerDots(currentPage: min(currentPage, dotsTotal - 1), totalPages: dotsTotal) { index in
-                jumpToPage(index)
+                    pagerDots(
+                        currentPage: min(currentPage, dotsTotal - 1),
+                        totalPages: dotsTotal,
+                        orientation: dotOrientation
+                    ) { index in
+                        jumpToPage(index)
+                    }
+                    .frame(width: controlWidth, alignment: .center)
+
+                    pagerChevronButton(
+                        systemName: nextSymbol,
+                        disabled: nextDisabled,
+                        canReorder: canReorder,
+                        targetPage: currentPage + 1,
+                        action: pageForward
+                    )
+                }
+                .frame(width: controlWidth, height: layout.gridHeight, alignment: .center)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(pageIndicatorTitle)
+            } else {
+                HStack(spacing: pagerSpacing) {
+                    pagerChevronButton(
+                        systemName: previousSymbol,
+                        disabled: previousDisabled,
+                        canReorder: canReorder,
+                        targetPage: currentPage - 1,
+                        action: pageBackward
+                    )
+
+                    pagerDots(
+                        currentPage: min(currentPage, dotsTotal - 1),
+                        totalPages: dotsTotal,
+                        orientation: dotOrientation
+                    ) { index in
+                        jumpToPage(index)
+                    }
+
+                    pagerChevronButton(
+                        systemName: nextSymbol,
+                        disabled: nextDisabled,
+                        canReorder: canReorder,
+                        targetPage: currentPage + 1,
+                        action: pageForward
+                    )
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top, layout.gridToPagerSpacing)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(pageIndicatorTitle)
             }
-
-            pagerChevronButton(
-                systemName: "chevron.right",
-                disabled: nextDisabled,
-                canReorder: canReorder,
-                targetPage: currentPage + 1,
-                action: pageForward
-            )
         }
-        .frame(maxWidth: .infinity)
-        .padding(.top, layout.gridToPagerSpacing)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(pageIndicatorTitle)
     }
 
     @ViewBuilder
@@ -3900,6 +4006,24 @@ struct LauncherView: View {
         }
     }
 
+    private func handleVerticalNavigation(_ direction: KeyPressPagerOverlay.VerticalArrowDirection) {
+        if isVerticalPaging {
+            if activeFolder != nil {
+                changeFolderPage(direction == .up ? .backward : .forward)
+                return
+            }
+            let shift: PageShiftDirection = direction == .up ? .backward : .forward
+            withAnimation(pageSwitchAnimation) {
+                pageDirection = shift
+                currentPage = shift == .forward ? min(currentPage + 1, pageCount - 1) : max(currentPage - 1, 0)
+                pagerDragOffset = 0
+                markPageSwitch()
+            }
+            return
+        }
+        handleVerticalArrowNavigation(direction)
+    }
+
     private func handleVerticalArrowNavigation(_ direction: KeyPressPagerOverlay.VerticalArrowDirection) {
         guard isSearchModeActive else { return }
         navigateSearchResultsVertically(direction)
@@ -3921,7 +4045,7 @@ struct LauncherView: View {
 
     private func navigateSearchResultsVertically(_ direction: KeyPressPagerOverlay.VerticalArrowDirection) {
         guard filteredItemList.isEmpty == false else { return }
-        let columns = LauncherGridConfiguration.columnsPerPage
+        let columns = gridConfiguration.columnsPerPage
 
         if activeSearchSelectionIndex == nil {
             let seed = direction == .down ? columns : 0

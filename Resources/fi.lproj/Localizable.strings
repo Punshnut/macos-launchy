@@ -172,3 +172,15 @@
 "Folder is empty." = "Kansio on tyhjä.";
 "Apps:\n%@" = "Sovellukset:\n%@";
 "Save" = "Tallenna";
+
+"Icon size" = "Kuvakkeen koko";
+"Small (Original)" = "Pieni (alkuperäinen)";
+"Medium" = "Keskikoko";
+"Large" = "Suuri";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Suuri kuvakekoko toimii vain koko näytöllä; kelluva tila käyttää keskikokoa.";
+"Paging direction" = "Sivutuksen suunta";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Pystysuuntainen sivutus siirtää sivuja ylös ja alas. Ilmaisimet siirtyvät vasemmalle koko näytöllä ja pysyvät alhaalla kelluvassa tilassa.";
+"Horizontal" = "Vaaka";
+"Vertical" = "Pysty";
+
+"Beta" = "Beta";

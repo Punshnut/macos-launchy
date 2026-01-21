@@ -172,3 +172,15 @@
 "Folder is empty." = "폴더가 비어 있습니다.";
 "Apps:\n%@" = "앱:\n%@";
 "Save" = "저장";
+
+"Icon size" = "아이콘 크기";
+"Small (Original)" = "작게(원본)";
+"Medium" = "보통";
+"Large" = "크게";
+"Large icon size applies to fullscreen only; floaty uses medium." = "큰 아이콘 크기는 전체 화면에서만 적용됩니다. 플로티 모드는 보통을 사용합니다.";
+"Paging direction" = "페이지 이동 방향";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "세로 페이징은 페이지를 위아래로 이동합니다. 표시기는 전체 화면에서는 왼쪽으로, 플로티에서는 하단에 표시됩니다.";
+"Horizontal" = "가로";
+"Vertical" = "세로";
+
+"Beta" = "베타";

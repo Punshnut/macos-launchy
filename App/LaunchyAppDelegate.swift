@@ -392,9 +392,10 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
         applicationDiscovery.applyCacheLimitScaling(cacheLimitScale)
 
+        let capacity = pageCapacity()
         let keepLimit = isLauncherVisible
-            ? LauncherGridConfiguration.pageCapacity
-            : max(LauncherGridConfiguration.pageCapacity / 2, 8)
+            ? capacity
+            : max(capacity / 2, 8)
         let keepApps = prioritizedAppsForPrefetch(limit: keepLimit)
         let keepBundleIDs = Set(keepApps.map(\.bundleIdentifier))
         let idleInterval = isLauncherVisible ? visibleTrimGracePeriod : idleTrimGracePeriod
@@ -676,6 +677,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let previousSpecialHiddenEntries = Set(currentSettings.hiddenSpecialEntryIDs)
         let previousLauncherHotkey = currentSettings.launcherHotkey
         let previousLayoutHotkey = currentSettings.layoutToggleHotkey
+        let previousIconSize = currentSettings.iconSizePreference
+        let previousPagingOrientation = currentSettings.pagingOrientation
+        let previousLauncherMode = currentSettings.selectedLauncherMode
         currentSettings = LauncherSettingsPersistence.loadSettings()
         LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
         let hiddenChanged = previousHidden != Set(currentSettings.hiddenBundleIDs)
@@ -684,10 +688,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let specialEntryChanged = previousSpecialHiddenEntries != Set(currentSettings.hiddenSpecialEntryIDs)
         let hotkeysChanged = previousLauncherHotkey != currentSettings.launcherHotkey
             || previousLayoutHotkey != currentSettings.layoutToggleHotkey
+        let iconSizeChanged = previousIconSize != currentSettings.iconSizePreference
+        let pagingChanged = previousPagingOrientation != currentSettings.pagingOrientation
+        let launcherModeChanged = previousLauncherMode != currentSettings.selectedLauncherMode
         if scanSettingChanged {
             configureApplicationDirectoryMonitoring()
         }
-        if hiddenChanged || gapSettingChanged || scanSettingChanged || specialEntryChanged {
+        if hiddenChanged || gapSettingChanged || scanSettingChanged || specialEntryChanged || iconSizeChanged || launcherModeChanged {
             refreshLauncherItems()
         }
         applyLauncherMode()
@@ -1029,12 +1036,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Warms a tiny set of low/medium icons so the first page appears quickly after reopening.
     private func prefetchMinimalIconsForVisibleLauncher() {
-        let limit = LauncherGridConfiguration.pageCapacity
+        let limit = pageCapacity()
+        let mode = activeLauncherMode()
         let apps = prioritizedAppsForPrefetch(limit: limit)
         guard apps.isEmpty == false else { return }
         applicationDiscovery.preheatIcons(
             for: apps,
-            targetDimension: preferredIconRenderDimension(for: currentSettings.selectedLauncherMode),
+            targetDimension: preferredIconRenderDimension(for: mode),
             qualities: [.low],
             limit: limit
         )
@@ -1045,8 +1053,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         visiblePageWarmupTask?.cancel()
         let uniqueApps = uniqueAppsByBundleID(apps)
         guard uniqueApps.isEmpty == false else { return }
-        let dimension = preferredIconRenderDimension(for: currentSettings.selectedLauncherMode)
-        let limit = min(uniqueApps.count, LauncherGridConfiguration.pageCapacity * 2)
+        let mode = activeLauncherMode()
+        let dimension = preferredIconRenderDimension(for: mode)
+        let limit = min(uniqueApps.count, pageCapacity(for: mode) * 2)
         visiblePageWarmupTask = Task { @MainActor in
             try? await Task.sleep(nanoseconds: 50_000_000)
             guard Task.isCancelled == false else { return }
@@ -1207,10 +1216,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let systemToolsApps = coreServicesApps.filter { $0.hasCustomIcon == false }
         let arrangedBaseApps = decoratedBaseApps.filter { $0.isCoreServiceApplication == false }
         let arrangementSource = arrangedBaseApps + decoratedUserApps
+        let gridConfig = gridConfiguration(for: currentSettings.selectedLauncherMode)
 
         let (items, sizes) = itemOrderStore.arrangedItems(
             from: arrangementSource,
-            pageCapacity: LauncherGridConfiguration.pageCapacity,
+            pageCapacity: gridConfig.pageCapacity,
             fillsGapsAutomatically: currentSettings.fillsGapsAutomatically,
             preferredCustomNames: names
         )
@@ -1236,7 +1246,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                 apps: coreServicesWithIcon
             )
             arrangedItems.append(.folder(folder))
-            arrangedSizes = pageSizesAfterAppendingItem(arrangedSizes)
+            arrangedSizes = pageSizesAfterAppendingItem(arrangedSizes, capacity: gridConfig.pageCapacity)
         }
 
         if isSystemToolsFolderHidden == false,
@@ -1248,7 +1258,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                 apps: systemToolsApps
             )
             arrangedItems.append(.folder(folder))
-            arrangedSizes = pageSizesAfterAppendingItem(arrangedSizes)
+            arrangedSizes = pageSizesAfterAppendingItem(arrangedSizes, capacity: gridConfig.pageCapacity)
         }
 
         orderedItems = arrangedItems
@@ -1263,8 +1273,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func preheatIconsForCurrentLayout() {
-        let dimension = preferredIconRenderDimension(for: currentSettings.selectedLauncherMode)
-        let limit = LauncherGridConfiguration.pageCapacity * 2
+        let mode = activeLauncherMode()
+        let dimension = preferredIconRenderDimension(for: mode)
+        let limit = pageCapacity(for: mode) * 2
         let apps = prioritizedAppsForPrefetch(limit: limit)
         guard apps.isEmpty == false else { return }
         applicationDiscovery.preheatIcons(
@@ -1273,15 +1284,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             qualities: [.low, .medium],
             limit: limit
         )
-    }
-
-    private func preferredIconRenderDimension(for mode: LauncherMode) -> CGFloat {
-        switch mode {
-        case .floaty:
-            return 102
-        case .fullscreen:
-            return 140
-        }
     }
 
     private func prioritizedAppsForPrefetch(limit: Int) -> [AppItem] {
@@ -1312,10 +1314,37 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return prioritized
     }
 
-    private func pageSizesAfterAppendingItem(_ sizes: [Int]) -> [Int] {
+    private func activeLauncherMode() -> LauncherMode {
+        currentLauncherMode ?? currentSettings.selectedLauncherMode
+    }
+
+    private func gridConfiguration(for mode: LauncherMode? = nil) -> LauncherGridConfiguration {
+        let resolvedMode = mode ?? activeLauncherMode()
+        let preference = currentSettings.iconSizePreference.effectivePreference(for: resolvedMode)
+        return LauncherGridConfiguration.configuration(for: preference, mode: resolvedMode)
+    }
+
+    private func pageCapacity(for mode: LauncherMode? = nil) -> Int {
+        gridConfiguration(for: mode).pageCapacity
+    }
+
+    private func preferredIconRenderDimension(for mode: LauncherMode) -> CGFloat {
+        let effectivePreference = currentSettings.iconSizePreference.effectivePreference(for: mode)
+        let base: CGFloat = mode == .floaty ? 102 : 140
+        switch effectivePreference {
+        case .small:
+            return base
+        case .medium:
+            return base * 1.12
+        case .large:
+            return base * 1.28
+        }
+    }
+
+    private func pageSizesAfterAppendingItem(_ sizes: [Int], capacity: Int? = nil) -> [Int] {
         var updated = sizes
-        let capacity = LauncherGridConfiguration.pageCapacity
-        guard capacity > 0 else {
+        let resolvedCapacity = capacity ?? pageCapacity()
+        guard resolvedCapacity > 0 else {
             return updated
         }
 
@@ -1323,7 +1352,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             return [1]
         }
 
-        if let last = updated.last, last < capacity {
+        if let last = updated.last, last < resolvedCapacity {
             updated[updated.count - 1] += 1
         } else {
             updated.append(1)
@@ -1365,12 +1394,15 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Assembles the launcher SwiftUI view with the latest settings.
     private func buildLauncherView() -> LauncherView {
-        LauncherView(
+        let config = gridConfiguration(for: currentSettings.selectedLauncherMode)
+        return LauncherView(
             itemCatalog: orderedItems,
             initialPageSizes: pageSizes,
             backgroundStylePreference: currentSettings.backgroundStylePreference,
             solidBackgroundColor: currentSettings.solidBackgroundColor,
             launcherMode: currentSettings.selectedLauncherMode,
+            gridConfiguration: config,
+            pagingOrientation: currentSettings.pagingOrientation,
             fillsGapsAutomatically: currentSettings.fillsGapsAutomatically,
             onSettingsRequested: { [weak self] in
                 self?.showSettingsWindow()
@@ -1383,7 +1415,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                 self.orderedItems = reorderedItems
                 self.pageSizes = newPageSizes
                 let filteredItems = self.itemsExcludingAutoGeneratedFolders(from: reorderedItems)
-                self.itemOrderStore.saveOrderedItems(filteredItems, pageSizes: newPageSizes)
+                self.itemOrderStore.saveOrderedItems(
+                    filteredItems,
+                    pageSizes: newPageSizes,
+                    pageCapacity: config.pageCapacity
+                )
             },
             onVisiblePagesChanged: { [weak self] apps in
                 self?.warmVisiblePageIcons(apps)

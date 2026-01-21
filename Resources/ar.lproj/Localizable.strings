@@ -172,3 +172,15 @@
 "Folder is empty." = "المجلد فارغ.";
 "Apps:\n%@" = "التطبيقات:\n%@";
 "Save" = "حفظ";
+
+"Icon size" = "حجم الأيقونة";
+"Small (Original)" = "صغير (أصلي)";
+"Medium" = "متوسط";
+"Large" = "كبير";
+"Large icon size applies to fullscreen only; floaty uses medium." = "حجم الأيقونة الكبير يُطبَّق في وضع ملء الشاشة فقط؛ الوضع العائم يستخدم المتوسط.";
+"Paging direction" = "اتجاه التمرير";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "التمرير العمودي يحرك الصفحات لأعلى ولأسفل. المؤشرات تنتقل لليسار في وضع ملء الشاشة وتبقى في الأسفل في الوضع العائم.";
+"Horizontal" = "أفقي";
+"Vertical" = "رأسي";
+
+"Beta" = "تجريبي";

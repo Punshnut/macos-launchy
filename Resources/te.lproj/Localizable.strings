@@ -172,3 +172,15 @@
 "Folder is empty." = "ఫోల్డర్ ఖాళీగా ఉంది.";
 "Apps:\n%@" = "యాప్‌లు:\n%@";
 "Save" = "సేవ్ చేయండి";
+
+"Icon size" = "ఐకాన్ పరిమాణం";
+"Small (Original)" = "చిన్నది (అసలు)";
+"Medium" = "మధ్యస్థం";
+"Large" = "పెద్దది";
+"Large icon size applies to fullscreen only; floaty uses medium." = "పెద్ద ఐకాన్ పరిమాణం పూర్తి స్క్రీన్‌లో మాత్రమే వర్తిస్తుంది; ఫ్లోటీ మధ్యస్థాన్ని ఉపయోగిస్తుంది.";
+"Paging direction" = "పేజింగ్ దిశ";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "నిలువుగా పేజింగ్ పేజీలను పైకి కిందికి కదిలిస్తుంది. సూచికలు పూర్తి స్క్రీన్‌లో ఎడమకు చేరి, ఫ్లోటీలో క్రింద ఉంటాయి.";
+"Horizontal" = "అడ్డంగా";
+"Vertical" = "నిలువుగా";
+
+"Beta" = "బీటా";

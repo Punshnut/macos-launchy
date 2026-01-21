@@ -172,3 +172,15 @@
 "Folder is empty." = "Folda ni tupu.";
 "Apps:\n%@" = "Programu:\n%@";
 "Save" = "Hifadhi";
+
+"Icon size" = "Ukubwa wa ikoni";
+"Small (Original)" = "Ndogo (asili)";
+"Medium" = "Wastani";
+"Large" = "Kubwa";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Ukubwa mkubwa wa ikoni unatumika tu kwenye skrini nzima; hali ya kuelea hutumia wastani.";
+"Paging direction" = "Mwelekeo wa kurasa";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Kurasa wima husogeza kurasa juu na chini. Viashiria huhamia kushoto ukiwa skrini nzima na hubaki chini ukiwa kwenye hali ya kuelea.";
+"Horizontal" = "Mlalo";
+"Vertical" = "Wima";
+
+"Beta" = "Beta";

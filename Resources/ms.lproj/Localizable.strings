@@ -172,3 +172,15 @@
 "Folder is empty." = "Folder kosong.";
 "Apps:\n%@" = "Aplikasi:\n%@";
 "Save" = "Simpan";
+
+"Icon size" = "Saiz ikon";
+"Small (Original)" = "Kecil (asal)";
+"Medium" = "Sederhana";
+"Large" = "Besar";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Saiz ikon besar hanya digunakan dalam skrin penuh; mod terapung menggunakan saiz sederhana.";
+"Paging direction" = "Arah penghalaman";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Penghalaman menegak menggerakkan halaman ke atas dan ke bawah. Penunjuk bergerak ke kiri dalam skrin penuh dan kekal di bawah dalam mod terapung.";
+"Horizontal" = "Mengufuk";
+"Vertical" = "Menegak";
+
+"Beta" = "Beta";

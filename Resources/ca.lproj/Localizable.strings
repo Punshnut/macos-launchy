@@ -172,3 +172,15 @@
 "Folder is empty." = "La carpeta és buida.";
 "Apps:\n%@" = "Apps:\n%@";
 "Save" = "Desa";
+
+"Icon size" = "Mida de la icona";
+"Small (Original)" = "Petita (original)";
+"Medium" = "Mitjana";
+"Large" = "Gran";
+"Large icon size applies to fullscreen only; floaty uses medium." = "La mida gran només s'aplica en pantalla completa; el mode flotant usa la mitjana.";
+"Paging direction" = "Direcció de paginació";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "La paginació vertical mou les pàgines amunt i avall. Els indicadors es mouen a l'esquerra en pantalla completa i es mantenen a baix en mode flotant.";
+"Horizontal" = "Horitzontal";
+"Vertical" = "Vertical";
+
+"Beta" = "Beta";

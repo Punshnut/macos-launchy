@@ -172,3 +172,15 @@
 "Folder is empty." = "Thư mục trống.";
 "Apps:\n%@" = "Ứng dụng:\n%@";
 "Save" = "Lưu";
+
+"Icon size" = "Kích thước biểu tượng";
+"Small (Original)" = "Nhỏ (gốc)";
+"Medium" = "Trung bình";
+"Large" = "Lớn";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Kích thước biểu tượng lớn chỉ áp dụng ở chế độ toàn màn hình; chế độ nổi dùng kích thước trung bình.";
+"Paging direction" = "Hướng phân trang";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Phân trang dọc di chuyển trang lên xuống. Chỉ báo chuyển sang trái ở chế độ toàn màn hình và nằm dưới cùng ở chế độ nổi.";
+"Horizontal" = "Ngang";
+"Vertical" = "Dọc";
+
+"Beta" = "Beta";

@@ -172,3 +172,15 @@
 "Folder is empty." = "ፎልደር ባዶ ነው።";
 "Apps:\n%@" = "መተግበሪያዎች:\n%@";
 "Save" = "አስቀምጥ";
+
+"Icon size" = "የአዶ መጠን";
+"Small (Original)" = "ትንሽ (ኦሪጅናል)";
+"Medium" = "መካከለኛ";
+"Large" = "ትልቅ";
+"Large icon size applies to fullscreen only; floaty uses medium." = "ትልቅ አዶ መጠን በሙሉ ማያ ብቻ ይተገበራል፤ ፍሎቲ መካከለኛን ይጠቀማል።";
+"Paging direction" = "የመጥለቅ አቅጣጫ";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "ቁመት መጥለቅ ገጾችን ወደ ላይና ወደ ታች ያንቀሳቅሳል። አመልካቾች በሙሉ ማያ በግራ ይገኛሉ ፣ በፍሎቲ በታች ይቆያሉ።";
+"Horizontal" = "አግድም";
+"Vertical" = "ቁመት";
+
+"Beta" = "ቤታ";

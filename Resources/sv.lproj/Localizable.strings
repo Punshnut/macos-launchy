@@ -172,3 +172,15 @@
 "Folder is empty." = "Mappen är tom.";
 "Apps:\n%@" = "Appar:\n%@";
 "Save" = "Spara";
+
+"Icon size" = "Ikonstorlek";
+"Small (Original)" = "Liten (original)";
+"Medium" = "Mellan";
+"Large" = "Stor";
+"Large icon size applies to fullscreen only; floaty uses medium." = "Stor ikonstorlek gäller bara helskärm; flytande använder mellan.";
+"Paging direction" = "Pagineringsriktning";
+"Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Vertikal paginering flyttar sidor upp och ner. Indikatorer flyttas till vänster i helskärm och stannar nederst i flytande läge.";
+"Horizontal" = "Horisontell";
+"Vertical" = "Vertikal";
+
+"Beta" = "Beta";

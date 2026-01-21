@@ -66,6 +66,35 @@ private struct SearchableAppEntry {
     let normalizedBundleIdentifier: String
 }
 
+private struct SearchableFolderEntry {
+    let normalizedNames: [String]
+}
+
+private struct SearchQueryContext {
+    let rawQuery: String
+    let trimmedQuery: String
+    let normalizedQuery: String
+    let queryVariants: [String]
+    let tokenVariants: [[String]]
+
+    init(rawQuery: String) {
+        self.rawQuery = rawQuery
+        let trimmed = rawQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        trimmedQuery = trimmed
+        if trimmed.isEmpty {
+            normalizedQuery = ""
+            queryVariants = []
+            tokenVariants = []
+        } else {
+            queryVariants = LauncherView.normalizedSearchVariants(for: trimmed)
+            tokenVariants = queryVariants.map { LauncherView.tokenizeSearchValue($0) }
+            normalizedQuery = LauncherView.primarySearchCacheKey(for: trimmed)
+        }
+    }
+
+    var isEmpty: Bool { trimmedQuery.isEmpty }
+}
+
 /// Thread-safe cache for rendered folder preview icons so drag animations stay smooth.
 private final class FolderPreviewCache: @unchecked Sendable {
     private let cache: NSCache<NSString, NSImage>
@@ -563,6 +592,7 @@ struct LauncherView: View {
     @State private var searchText = ""
     @State private var cachedFilteredItems: [LauncherItem]
     @State private var searchMetadataByAppID: [UUID: SearchableAppEntry]
+    @State private var folderSearchMetadataByID: [UUID: SearchableFolderEntry]
     @State private var searchSelectionIndex: Int?
     @State private var searchTask: Task<Void, Never>?
     @State private var searchRequestID: UInt = 0
@@ -661,9 +691,11 @@ struct LauncherView: View {
         self.onItemOrderChange = onItemOrderChange
         self.onVisiblePagesChanged = onVisiblePagesChanged
         self.iconProvider = iconProvider
+        let metadata = Self.buildSearchMetadata(from: itemCatalog)
         _orderedItems = State(initialValue: itemCatalog)
         _cachedFilteredItems = State(initialValue: itemCatalog)
-        _searchMetadataByAppID = State(initialValue: Self.buildSearchMetadata(from: itemCatalog))
+        _searchMetadataByAppID = State(initialValue: metadata.apps)
+        _folderSearchMetadataByID = State(initialValue: metadata.folders)
         _pageSizes = State(initialValue: initialPageSizes)
     }
 
@@ -2168,7 +2200,9 @@ struct LauncherView: View {
     }
 
     private func rebuildSearchMetadata(for items: [LauncherItem]) {
-        searchMetadataByAppID = Self.buildSearchMetadata(from: items)
+        let metadata = Self.buildSearchMetadata(from: items)
+        searchMetadataByAppID = metadata.apps
+        folderSearchMetadataByID = metadata.folders
     }
 
     private func applySearchResults(_ results: [LauncherItem]) {
@@ -2211,7 +2245,8 @@ struct LauncherView: View {
         searchDebounceTask = nil
         let items = itemsOverride ?? orderedItems
         let query = normalizedSearchText
-        let normalizedQuery = Self.primarySearchCacheKey(for: query)
+        let queryContext = SearchQueryContext(rawQuery: query)
+        let normalizedQuery = queryContext.normalizedQuery
         searchTask?.cancel()
         searchTask = nil
 
@@ -2230,7 +2265,8 @@ struct LauncherView: View {
         isSearchLoading = true
         searchRequestID &+= 1
         let requestID = searchRequestID
-        let metadata = searchMetadataByAppID
+        let appMetadata = searchMetadataByAppID
+        let folderMetadata = folderSearchMetadataByID
         let shouldFilterFromCache = itemsOverride == nil
             && lastNormalizedSearchQuery.isEmpty == false
             && normalizedQuery.hasPrefix(lastNormalizedSearchQuery)
@@ -2239,7 +2275,12 @@ struct LauncherView: View {
 
         searchTask = Task(priority: .userInitiated) {
             let detachedTask = Task.detached(priority: .userInitiated) {
-                Self.filterItems(items: filterBaseItems, query: query, metadata: metadata)
+                Self.filterItems(
+                    items: filterBaseItems,
+                    queryContext: queryContext,
+                    appMetadata: appMetadata,
+                    folderMetadata: folderMetadata
+                )
             }
             let results = await withTaskCancellationHandler {
                 await detachedTask.value
@@ -2272,18 +2313,19 @@ struct LauncherView: View {
 
     nonisolated private static func filterItems(
         items: [LauncherItem],
-        query: String,
-        metadata: [UUID: SearchableAppEntry]
+        queryContext: SearchQueryContext,
+        appMetadata: [UUID: SearchableAppEntry],
+        folderMetadata: [UUID: SearchableFolderEntry]
     ) -> [LauncherItem] {
-        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard trimmedQuery.isEmpty == false else { return items }
-
-        let queryVariants = normalizedSearchVariants(for: trimmedQuery)
-        guard queryVariants.isEmpty == false else { return items }
-        let tokenVariants = queryVariants.map { tokenizeSearchValue($0) }
-        let normalizedQuery = primarySearchCacheKey(for: trimmedQuery)
+        guard queryContext.isEmpty == false else { return items }
+        guard queryContext.queryVariants.isEmpty == false else { return items }
         var buckets = Array(repeating: [LauncherItem](), count: 6)
         var seenAppIDs = Set<UUID>()
+        seenAppIDs.reserveCapacity(items.count)
+        let estimatedBucketSize = max(items.count / max(buckets.count, 1), 1)
+        for index in buckets.indices {
+            buckets[index].reserveCapacity(estimatedBucketSize)
+        }
 
         for item in items {
             if Task.isCancelled {
@@ -2293,30 +2335,23 @@ struct LauncherView: View {
             case .app(let app):
                 if let score = appMatchScore(
                     app,
-                    normalizedQuery: normalizedQuery,
-                    queryVariants: queryVariants,
-                    tokenVariants: tokenVariants,
-                    metadata: metadata
+                    queryContext: queryContext,
+                    metadata: appMetadata
                 ),
                    seenAppIDs.insert(app.id).inserted,
                    buckets.indices.contains(score) {
                     buckets[score].append(.app(app))
                 }
             case .folder(let folder):
-                let folderNameVariants = normalizedSearchVariants(for: folder.name)
-                let folderNameMatches = queryVariants.contains { query in
-                    folderNameVariants.contains { $0.contains(query) }
-                }
+                let folderNameMatches = folderMatchesQuery(queryContext, folderID: folder.id, metadata: folderMetadata)
                 for app in folder.apps {
                     if Task.isCancelled {
                         break
                     }
                     let appScore = appMatchScore(
                         app,
-                        normalizedQuery: normalizedQuery,
-                        queryVariants: queryVariants,
-                        tokenVariants: tokenVariants,
-                        metadata: metadata
+                        queryContext: queryContext,
+                        metadata: appMetadata
                     )
                     let score: Int? = {
                         guard let appScore else { return nil }
@@ -2339,27 +2374,29 @@ struct LauncherView: View {
 
     nonisolated private static func appMatchScore(
         _ app: AppItem,
-        normalizedQuery: String,
-        queryVariants: [String],
-        tokenVariants: [[String]],
+        queryContext: SearchQueryContext,
         metadata: [UUID: SearchableAppEntry]
     ) -> Int? {
         if let entry = metadata[app.id] {
             return matchScore(
                 entry: entry,
-                queryVariants: queryVariants,
-                tokenVariants: tokenVariants,
-                fallbackQuery: normalizedQuery
+                queryVariants: queryContext.queryVariants,
+                tokenVariants: queryContext.tokenVariants,
+                fallbackQuery: queryContext.normalizedQuery
             )
         }
-        return app.matches(query: normalizedQuery) ? 4 : nil
+        return app.matches(query: queryContext.normalizedQuery) ? 4 : nil
     }
 
-    nonisolated private static func buildSearchMetadata(from items: [LauncherItem]) -> [UUID: SearchableAppEntry] {
-        var metadata: [UUID: SearchableAppEntry] = [:]
+    nonisolated private static func buildSearchMetadata(from items: [LauncherItem]) -> (
+        apps: [UUID: SearchableAppEntry],
+        folders: [UUID: SearchableFolderEntry]
+    ) {
+        var appMetadata: [UUID: SearchableAppEntry] = [:]
+        var folderMetadata: [UUID: SearchableFolderEntry] = [:]
 
         let record: (AppItem) -> Void = { app in
-            metadata[app.id] = buildSearchEntry(for: app)
+            appMetadata[app.id] = buildSearchEntry(for: app)
         }
 
         for item in items {
@@ -2367,13 +2404,14 @@ struct LauncherView: View {
             case .app(let app):
                 record(app)
             case .folder(let folder):
+                folderMetadata[folder.id] = buildFolderEntry(for: folder)
                 for app in folder.apps {
                     record(app)
                 }
             }
         }
 
-        return metadata
+        return (apps: appMetadata, folders: folderMetadata)
     }
 
     nonisolated private static func buildSearchEntry(for app: AppItem) -> SearchableAppEntry {
@@ -2393,6 +2431,23 @@ struct LauncherView: View {
             initialisms: initialisms,
             normalizedBundleIdentifier: normalizedBundle
         )
+    }
+
+    nonisolated private static func buildFolderEntry(for folder: FolderItem) -> SearchableFolderEntry {
+        let normalizedNames = uniqueSearchValues(from: normalizedSearchVariants(for: folder.name))
+            .filter { $0.isEmpty == false }
+        return SearchableFolderEntry(normalizedNames: normalizedNames)
+    }
+
+    nonisolated private static func folderMatchesQuery(
+        _ context: SearchQueryContext,
+        folderID: UUID,
+        metadata: [UUID: SearchableFolderEntry]
+    ) -> Bool {
+        guard let entry = metadata[folderID] else { return false }
+        return context.queryVariants.contains { query in
+            entry.normalizedNames.contains { $0.contains(query) }
+        }
     }
 
     nonisolated private static func matchScore(
@@ -2477,13 +2532,22 @@ struct LauncherView: View {
     }
 
     nonisolated private static func uniqueSearchValues(from values: [String]) -> [String] {
-        values.reduce(into: [String]()) { unique, value in
-            guard value.isEmpty == false else { return }
-            let exists = unique.contains { $0.caseInsensitiveCompare(value) == .orderedSame }
-            if exists == false {
+        var seen = Set<String>()
+        var unique: [String] = []
+        unique.reserveCapacity(values.count)
+
+        for value in values {
+            guard value.isEmpty == false else { continue }
+            let normalized = value.folding(
+                options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive],
+                locale: .current
+            )
+            if seen.insert(normalized).inserted {
                 unique.append(value)
             }
         }
+
+        return unique
     }
 
     nonisolated private static func tokenizeSearchValue(_ value: String) -> [String] {

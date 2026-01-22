@@ -356,12 +356,23 @@ struct LauncherView: View {
         .gesture(dragGesture)
         .animation(activeGridAnimation, value: orderedItems)
         .onAppear {
-            pagerViewportWidth = pageSpan
+            updatePagerViewport(using: gridProxy.size)
         }
         .onChange(of: gridProxy.size) { newSize in
-            let span = isVerticalPaging ? max(newSize.height, 1) : max(newSize.width, 1)
-            pagerViewportWidth = span
+            updatePagerViewport(using: newSize)
         }
+    }
+
+    /// Persists the latest grid size and updates the pager span for the active orientation.
+    private func updatePagerViewport(using size: CGSize) {
+        lastGridViewportSize = size
+        pagerViewportWidth = computedPagerSpan(from: size)
+    }
+
+    /// Computes the effective page span for the current paging orientation.
+    private func computedPagerSpan(from size: CGSize) -> CGFloat {
+        let span = isVerticalPaging ? size.height : size.width
+        return max(span, 1)
     }
 
     @ViewBuilder
@@ -649,6 +660,7 @@ struct LauncherView: View {
     private static let folderPreviewCache = FolderPreviewCache()
     @State private var pagerDragOffset: CGFloat = 0
     @State private var pagerViewportWidth: CGFloat = 1
+    @State private var lastGridViewportSize: CGSize = .zero
     @State private var lastPagerDragDate: Date?
     @State private var folderPagerDragOffset: CGFloat = 0
     @State private var folderPagerViewportWidth: CGFloat = 1
@@ -743,6 +755,7 @@ struct LauncherView: View {
         }
         .onChange(of: pagingOrientation) { _ in
             pagerDragOffset = 0
+            pagerViewportWidth = computedPagerSpan(from: lastGridViewportSize)
         }
         .onReceive(NotificationCenter.default.publisher(for: .launcherDidHide)) { _ in
             isLauncherVisible = false
@@ -1110,6 +1123,9 @@ struct LauncherView: View {
     }
 
     private var activeGridAnimation: Animation? {
+        if isPageSwitchAnimationActive {
+            return nil
+        }
         if draggedItem != nil {
             return liveReorderSpringAnimation
         }
@@ -1213,6 +1229,29 @@ struct LauncherView: View {
         bumpHighQualityRequestEpoch(resetPending: true)
         enterPerformanceShedding(duration: 0.45)
         beginPageSwitchAnimation()
+        suppressGridAnimation = true
+    }
+
+    /// Applies a directional page change using a staged offset so both pages move coherently.
+    private func performAnimatedPageSwitch(to targetPage: Int, direction: PageShiftDirection, spanOverride: CGFloat? = nil) {
+        guard pageCount > 0 else { return }
+        guard targetPage != currentPage else { return }
+
+        let span = max(spanOverride ?? pagerViewportWidth, 1)
+        let initialOffset = direction == .forward ? span : -span
+
+        pageDirection = direction
+        suppressGridAnimation = true
+
+        // Move to the target page immediately, start it offset offscreen, then slide it in.
+        currentPage = targetPage
+        pagerDragOffset = initialOffset
+        markPageSwitch()
+        enterPerformanceShedding()
+
+        withAnimation(pageSwitchAnimation) {
+            pagerDragOffset = 0
+        }
     }
 
     private func bumpHighQualityRequestEpoch(resetPending: Bool = false) {
@@ -1246,6 +1285,9 @@ struct LauncherView: View {
             guard token == pageSwitchAnimationToken else { return }
             if abs(pagerDragOffset) < 0.5 {
                 isPageSwitchAnimationActive = false
+                if draggedItem == nil {
+                    suppressGridAnimation = false
+                }
             }
         }
     }
@@ -1342,12 +1384,14 @@ struct LauncherView: View {
         }
 
         let targetPage = clampPageIndex(currentPage - delta)
-        enterPerformanceShedding()
-        withAnimation(gestureSettleAnimation) {
-            pageDirection = targetPage >= currentPage ? .forward : .backward
-            currentPage = targetPage
-            pagerDragOffset = 0
-            markPageSwitch()
+        let direction: PageShiftDirection = targetPage >= currentPage ? .forward : .backward
+
+        if targetPage == currentPage {
+            withAnimation(gestureSettleAnimation) {
+                pagerDragOffset = 0
+            }
+        } else {
+            performAnimatedPageSwitch(to: targetPage, direction: direction, spanOverride: pageSpan)
         }
         lastPagerDragDate = nil
     }
@@ -1436,14 +1480,36 @@ struct LauncherView: View {
         }
 
         let targetPage = folderClampPageIndex(activeFolderPage - delta)
-        enterPerformanceShedding()
-        withAnimation(gestureSettleAnimation) {
-            pageDirection = targetPage >= activeFolderPage ? .forward : .backward
-            activeFolderPage = targetPage
-            folderPagerDragOffset = 0
-            markPageSwitch()
+        let direction: PageShiftDirection = targetPage >= activeFolderPage ? .forward : .backward
+
+        if targetPage == activeFolderPage {
+            withAnimation(gestureSettleAnimation) {
+                folderPagerDragOffset = 0
+            }
+        } else {
+            performAnimatedFolderSwitch(to: targetPage, direction: direction, pageWidth: pageWidth)
         }
         folderLastPagerDragDate = nil
+    }
+
+    /// Ensures folder paging uses the same directional staging as the root pager.
+    private func performAnimatedFolderSwitch(to targetPage: Int, direction: PageShiftDirection, pageWidth: CGFloat) {
+        guard activeFolder != nil else { return }
+        guard targetPage != activeFolderPage else { return }
+
+        let span = max(pageWidth, 1)
+        let initialOffset = direction == .forward ? span : -span
+
+        pageDirection = direction
+        suppressGridAnimation = true
+        activeFolderPage = targetPage
+        folderPagerDragOffset = initialOffset
+        markPageSwitch()
+        enterPerformanceShedding()
+
+        withAnimation(pageSwitchAnimation) {
+            folderPagerDragOffset = 0
+        }
     }
 
     private func folderClampPagerOffset(_ offset: CGFloat, pageWidth: CGFloat) -> CGFloat {
@@ -1968,12 +2034,8 @@ struct LauncherView: View {
         guard let page = targetPage else { return }
         let maxPage = max(pageCount - 1, 0)
         let boundedTarget = min(max(page, 0), maxPage)
-        withAnimation(pageSwitchAnimation) {
-            pageDirection = boundedTarget >= currentPage ? .forward : .backward
-            currentPage = boundedTarget
-            pagerDragOffset = 0
-            markPageSwitch()
-        }
+        let dir: PageShiftDirection = boundedTarget >= currentPage ? .forward : .backward
+        performAnimatedPageSwitch(to: boundedTarget, direction: dir)
     }
 
     /// Keeps the visible page index inside the bounds of the current arrangement.
@@ -1981,12 +2043,8 @@ struct LauncherView: View {
         let maxPage = max(fullPageCount - 1, 0)
         let boundedPage = min(currentPage, maxPage)
         if boundedPage != currentPage {
-            withAnimation(pageSwitchAnimation) {
-                pageDirection = boundedPage >= currentPage ? .forward : .backward
-                currentPage = boundedPage
-                pagerDragOffset = 0
-                markPageSwitch()
-            }
+            let dir: PageShiftDirection = boundedPage >= currentPage ? .forward : .backward
+            performAnimatedPageSwitch(to: boundedPage, direction: dir)
         } else {
             pagerDragOffset = 0
         }
@@ -2550,12 +2608,12 @@ struct LauncherView: View {
         return unique
     }
 
-    nonisolated private static func tokenizeSearchValue(_ value: String) -> [String] {
+    nonisolated fileprivate static func tokenizeSearchValue(_ value: String) -> [String] {
         let parts = value.components(separatedBy: CharacterSet.alphanumerics.inverted)
         return parts.filter { $0.isEmpty == false }
     }
 
-    nonisolated private static func normalizedSearchVariants(for value: String) -> [String] {
+    nonisolated fileprivate static func normalizedSearchVariants(for value: String) -> [String] {
         let locales = [Locale.current, Locale(identifier: "en_US_POSIX")]
         var variants: [String] = []
         for locale in locales {
@@ -2581,7 +2639,7 @@ struct LauncherView: View {
         return normalized.isEmpty ? nil : normalized
     }
 
-    nonisolated private static func primarySearchCacheKey(for value: String) -> String {
+    nonisolated fileprivate static func primarySearchCacheKey(for value: String) -> String {
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
         guard trimmed.isEmpty == false else { return "" }
         return normalizeSearchValue(trimmed, locale: .current)
@@ -4077,12 +4135,8 @@ struct LauncherView: View {
                 return
             }
             let shift: PageShiftDirection = direction == .up ? .backward : .forward
-            withAnimation(pageSwitchAnimation) {
-                pageDirection = shift
-                currentPage = shift == .forward ? min(currentPage + 1, pageCount - 1) : max(currentPage - 1, 0)
-                pagerDragOffset = 0
-                markPageSwitch()
-            }
+            let target = shift == .forward ? min(currentPage + 1, pageCount - 1) : max(currentPage - 1, 0)
+            performAnimatedPageSwitch(to: target, direction: shift)
             return
         }
         handleVerticalArrowNavigation(direction)
@@ -4142,20 +4196,15 @@ struct LauncherView: View {
         guard let targetPage = pageIndex(forLinearIndex: bounded, sizes: displayPageSizes) else { return }
         guard targetPage != currentPage else { return }
 
-        let applyPageChange = {
-            pageDirection = targetPage >= previousPage ? .forward : .backward
+        let dir: PageShiftDirection = targetPage >= previousPage ? .forward : .backward
+
+        if animated {
+            performAnimatedPageSwitch(to: targetPage, direction: dir)
+        } else {
+            pageDirection = dir
             currentPage = targetPage
             pagerDragOffset = 0
             markPageSwitch()
-        }
-
-        if animated {
-            enterPerformanceShedding()
-            withAnimation(pageSwitchAnimation) {
-                applyPageChange()
-            }
-        } else {
-            applyPageChange()
         }
     }
 
@@ -4311,13 +4360,8 @@ struct LauncherView: View {
     /// Moves to the previous page if possible.
     private func pageBackward() {
         guard pageCount > 0 else { return }
-        enterPerformanceShedding()
-        withAnimation(pageSwitchAnimation) {
-            pageDirection = .backward
-            currentPage = max(currentPage - 1, 0)
-            pagerDragOffset = 0
-            markPageSwitch()
-        }
+        let target = max(currentPage - 1, 0)
+        performAnimatedPageSwitch(to: target, direction: .backward)
     }
 
     /// Jumps directly to a target page and animates directionally.
@@ -4325,25 +4369,15 @@ struct LauncherView: View {
         guard pageCount > 0 else { return }
         let bounded = min(max(targetPage, 0), pageCount - 1)
         guard bounded != currentPage else { return }
-        enterPerformanceShedding()
-        withAnimation(pageSwitchAnimation) {
-            pageDirection = bounded >= currentPage ? .forward : .backward
-            currentPage = bounded
-            pagerDragOffset = 0
-            markPageSwitch()
-        }
+        let dir: PageShiftDirection = bounded >= currentPage ? .forward : .backward
+        performAnimatedPageSwitch(to: bounded, direction: dir)
     }
 
     /// Moves to the next page if possible.
     private func pageForward() {
         guard pageCount > 0 else { return }
-        enterPerformanceShedding()
-        withAnimation(pageSwitchAnimation) {
-            pageDirection = .forward
-            currentPage = min(currentPage + 1, pageCount - 1)
-            pagerDragOffset = 0
-            markPageSwitch()
-        }
+        let target = min(currentPage + 1, pageCount - 1)
+        performAnimatedPageSwitch(to: target, direction: .forward)
     }
 
     /// Hides the launcher when the blurred background is clicked.

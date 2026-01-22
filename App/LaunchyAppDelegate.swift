@@ -689,7 +689,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let hotkeysChanged = previousLauncherHotkey != currentSettings.launcherHotkey
             || previousLayoutHotkey != currentSettings.layoutToggleHotkey
         let iconSizeChanged = previousIconSize != currentSettings.iconSizePreference
-        let pagingChanged = previousPagingOrientation != currentSettings.pagingOrientation
+        _ = previousPagingOrientation != currentSettings.pagingOrientation
         let launcherModeChanged = previousLauncherMode != currentSettings.selectedLauncherMode
         if scanSettingChanged {
             configureApplicationDirectoryMonitoring()

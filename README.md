@@ -1,6 +1,6 @@
 # Launchy
 
-Launchy is the open-source Launchpad alternative macOS users have been waiting for. Fullscreen mode mirrors the classic Launchpad experience but adds richer controls, while Floaty Mode doubles as a HUD with fast toggles that match the new macOS design without changing the behavior you rely on. It scans your apps, caches icons, and keeps a responsive grid ready on every Space, all completely free.
+Launchy is the open-source Launchpad alternative macOS users have been waiting for. Fullscreen mode mirrors the classic Launchpad experience but adds richer controls, while Floaty Mode doubles as a HUD with fast toggles that match the new macOS design without changing the behavior you rely on. It scans your apps, caches icons, and keeps a responsive grid ready on every Space - a universal binary that runs natively on both Apple Silicon (M‑series) and Intel Macs, all completely free.
 
 <p align="center">
   <img src="https://img.shields.io/badge/platform-macOS-blue" alt="Platform macOS">
@@ -54,7 +54,9 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 - **Context-aware controls** - Right click any tile, folder, Dock, or menu bar icon to rename, hide, move, add/remove folders, show in Finder, or reset gaps without switching views.
 - **Hot corners & shortcuts** - Global toggle hotkey, optional layout-switch shortcut, plus a hot corner trigger if you prefer mouse-only activation.
 - **Startup & presence controls** - Launch at login, hide or show Dock and menu bar icons independently, and keep a menu bar status item for updates and settings.
+- **Universal & smooth** - Native speed on Apple Silicon and Intel (no Rosetta), with icon caching to keep things silky even on huge libraries.
 - **Auto-updating & MIT licensed** - Every build will be notarized, and the project will remain open source and free forever.
+- **Accessibility & localization** - VoiceOver labels, contrast-friendly visuals, and wide language coverage so more people can fly through their apps.
 
 ## Search that just works
 

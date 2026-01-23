@@ -346,6 +346,7 @@ struct LauncherView: View {
             gridProxy: gridProxy
         )
                 .opacity(pageOpacity(for: pageIndex, pageSpan: pageSpan))
+                .scaleEffect(pageScale(for: pageIndex, pageSpan: pageSpan))
                 .offset(
                     x: isVerticalPaging ? 0 : pageOffset(for: pageIndex, pageSpan: pageSpan),
                     y: isVerticalPaging ? pageOffset(for: pageIndex, pageSpan: pageSpan) : 0
@@ -562,12 +563,12 @@ struct LauncherView: View {
 
     private var fullscreenGridEntranceOpacity: Double {
         guard launcherMode == .fullscreen else { return 1 }
-        return 0.35 + 0.65 * fullscreenGridEntranceProgress
+        return 0.45 + 0.55 * fullscreenGridEntranceProgress
     }
 
     private var fullscreenGridEntranceSaturation: Double {
         guard launcherMode == .fullscreen else { return 1 }
-        return 0.6 + 0.4 * fullscreenGridEntranceProgress
+        return 0.72 + 0.28 * fullscreenGridEntranceProgress
     }
 
     private var fullscreenGridEntranceOffset: CGFloat {
@@ -578,11 +579,21 @@ struct LauncherView: View {
     private let liveReorderSpringAnimation = Animation.interactiveSpring(response: 0.2, dampingFraction: 0.78, blendDuration: 0.12)
     private let folderReorderAnimation = Animation.interactiveSpring(response: 0.23, dampingFraction: 0.8, blendDuration: 0.12)
     private let reorderLiftAnimation = Animation.spring(response: 0.26, dampingFraction: 0.82, blendDuration: 0.1)
-    private let fullscreenGridEntranceAnimation = Animation.easeOut(duration: 0.22)
-    private let fullscreenGridEntranceTranslation: CGFloat = 28
-    private static let pageSwitchDuration: TimeInterval = 0.12
-    private let pageSwitchAnimation = Animation.easeOut(duration: Self.pageSwitchDuration)
-    private let gestureSettleAnimation = Animation.easeOut(duration: Self.pageSwitchDuration)
+    private let fullscreenGridEntranceAnimation = Animation.spring(response: 0.28, dampingFraction: 0.92, blendDuration: 0.14)
+    private let fullscreenGridEntranceTranslation: CGFloat = 18
+    private static let pageSwitchDuration: TimeInterval = 0.1
+    private static let pageSwitchResponse: Double = 0.24
+    private static let pageSwitchDamping: Double = 0.9
+    private let pageSwitchAnimation = Animation.interactiveSpring(
+        response: Self.pageSwitchResponse,
+        dampingFraction: Self.pageSwitchDamping,
+        blendDuration: 0.08
+    )
+    private let gestureSettleAnimation = Animation.interactiveSpring(
+        response: Self.pageSwitchResponse + 0.02,
+        dampingFraction: Self.pageSwitchDamping + 0.04,
+        blendDuration: 0.08
+    )
     private static let folderOpenDuration: TimeInterval = 0.25
     private let folderOpenAnimation = Animation.easeInOut(duration: Self.folderOpenDuration)
     private let folderPreviewMatchReleaseDelay: TimeInterval = 0.42
@@ -670,6 +681,7 @@ struct LauncherView: View {
     @State private var folderPreviewMatchingDisabled = false
     @State private var isPageSwitchAnimationActive = false
     @State private var pageSwitchAnimationToken: UInt = 0
+    @State private var queuedPageDelta: Int = 0
     @FocusState private var isFolderNameFieldFocused: Bool
     @FocusState private var isAppNameFieldFocused: Bool
     @FocusState private var isSearchFieldFocused: Bool
@@ -1290,6 +1302,15 @@ struct LauncherView: View {
                 if draggedItem == nil {
                     suppressGridAnimation = false
                 }
+                if queuedPageDelta != 0, pageCount > 0 {
+                    let delta = queuedPageDelta
+                    queuedPageDelta = 0
+                    let target = clampPageIndex(currentPage + delta)
+                    let direction: PageShiftDirection = target >= currentPage ? .forward : .backward
+                    if target != currentPage {
+                        performAnimatedPageSwitch(to: target, direction: direction)
+                    }
+                }
             }
         }
     }
@@ -1359,14 +1380,14 @@ struct LauncherView: View {
         let normalizedWidth = max(pageSpan, 1)
         let totalOffset = pagerDragOffset + projectedDelta
         let progress = totalOffset / normalizedWidth
-        let snapThreshold: CGFloat = 0.07
-        let fastThreshold: CGFloat = 0.18
-        let doubleProgressThreshold: CGFloat = 1.35
-        let highVelocityThreshold: CGFloat = 0.9
+        let snapThreshold: CGFloat = 0.09
+        let fastThreshold: CGFloat = 0.17
+        let doubleProgressThreshold: CGFloat = 1.5
+        let highVelocityThreshold: CGFloat = 1.05
         let velocity = projectedDelta / normalizedWidth
         let absVelocity = abs(velocity)
         let absProgress = abs(progress)
-        let recentDrag = (lastPagerDragDate.map { Date().timeIntervalSince($0) < 0.2 }) ?? false
+        let recentDrag = (lastPagerDragDate.map { Date().timeIntervalSince($0) < 0.16 }) ?? false
         let directionSign: Int = {
             if absVelocity > 0.15 {
                 return velocity > 0 ? 1 : -1
@@ -1455,14 +1476,14 @@ struct LauncherView: View {
 
         let totalOffset = folderPagerDragOffset + projectedDelta
         let progress = totalOffset / normalizedWidth
-        let snapThreshold: CGFloat = 0.07
-        let fastThreshold: CGFloat = 0.22
-        let doubleProgressThreshold: CGFloat = 1.65
-        let highVelocityThreshold: CGFloat = 1.15
+        let snapThreshold: CGFloat = 0.08
+        let fastThreshold: CGFloat = 0.19
+        let doubleProgressThreshold: CGFloat = 1.75
+        let highVelocityThreshold: CGFloat = 1.22
         let velocity = projectedDelta / normalizedWidth
         let absVelocity = abs(velocity)
         let absProgress = abs(progress)
-        let recentDrag = (folderLastPagerDragDate.map { Date().timeIntervalSince($0) < 0.12 }) ?? false
+        let recentDrag = (folderLastPagerDragDate.map { Date().timeIntervalSince($0) < 0.1 }) ?? false
         let directionSign: Int = {
             if absVelocity > 0.15 {
                 return velocity > 0 ? 1 : -1
@@ -1559,8 +1580,16 @@ struct LauncherView: View {
         return Double(min(1, visibility))
     }
 
+    private func pageScale(for page: Int, pageSpan: CGFloat) -> CGFloat {
+        let span = max(pageSpan, 1)
+        let dragProgress = pagerDragOffset / span
+        let distance = abs(CGFloat(page - currentPage) + dragProgress)
+        let softened = min(distance, 1.2)
+        return 1 - 0.025 * softened
+    }
+
     private var shouldRasterizeGridPages: Bool {
-        abs(pagerDragOffset) > 0.5 || isPageSwitchAnimationActive
+        abs(pagerDragOffset) > 0.45 || isPageSwitchAnimationActive
     }
 
     /// Returns only the currently focused page and its immediate neighbors to keep gesture FPS high.
@@ -4391,9 +4420,7 @@ struct LauncherView: View {
 
     /// Moves to the previous page if possible.
     private func pageBackward() {
-        guard pageCount > 0 else { return }
-        let target = max(currentPage - 1, 0)
-        performAnimatedPageSwitch(to: target, direction: .backward)
+        requestPageShift(-1)
     }
 
     /// Jumps directly to a target page and animates directionally.
@@ -4405,11 +4432,29 @@ struct LauncherView: View {
         performAnimatedPageSwitch(to: bounded, direction: dir)
     }
 
+    /// Coalesces rapid keyboard-triggered page shifts while an animation is in flight.
+    private func requestPageShift(_ delta: Int) {
+        guard pageCount > 0 else { return }
+        guard delta != 0 else { return }
+
+        if isPageSwitchAnimationActive {
+            // Accumulate the most recent intent but keep jumps small so staging stays stable.
+            let cappedDelta = max(min(queuedPageDelta + delta, 2), -2)
+            queuedPageDelta = cappedDelta
+            return
+        }
+
+        queuedPageDelta = 0
+        let target = clampPageIndex(currentPage + delta)
+        let direction: PageShiftDirection = target >= currentPage ? .forward : .backward
+        if target != currentPage {
+            performAnimatedPageSwitch(to: target, direction: direction)
+        }
+    }
+
     /// Moves to the next page if possible.
     private func pageForward() {
-        guard pageCount > 0 else { return }
-        let target = min(currentPage + 1, pageCount - 1)
-        performAnimatedPageSwitch(to: target, direction: .forward)
+        requestPageShift(1)
     }
 
     /// Hides the launcher when the blurred background is clicked.

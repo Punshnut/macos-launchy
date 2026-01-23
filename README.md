@@ -83,13 +83,13 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 ## Quick tips
 
-- Right-click any icon for rename, move, hide, Finder reveal, or folder shortcuts.
-- Drag apps together while holding Shift or Option as you release to create a folder or drop into one without disturbing the grid; or use right-click to place apps exactly where you want.
-- Floaty mode keeps the quick palette feel; assign a hotkey to jump between fullscreen and HUD instantly instead of mouse-only taps.
-- Use the Visuals tab to pick standard, light blur, transparent, or solid color backgrounds (with a color palette) and decide if icons auto-fill gaps.
-- Hidden Apps tab lets you include ~/Applications, mute noisy tools, or pin hidden entries to the top for quick toggling.
-- Shortcuts tab sets the launcher hotkey, fullscreen ⇄ floaty toggle, and hot corner; Launchy still opens even if both Dock and menu bar icons are hidden.
-- Reset the grid from Settings when you want a clean slate - custom names and hidden states stay intact - and enable Launch at Login so it’s ready after a reboot.
+- **Right-click any icon** for rename, move, hide, Finder reveal, or folder shortcuts.
+- **Drag apps together while holding Shift or Option** as you release to create a folder or drop into one without disturbing the grid; or use right-click to place apps exactly where you want.
+- **Floaty mode** keeps the quick palette feel; assign a hotkey to jump between fullscreen and HUD instantly instead of mouse-only taps.
+- **Use the Visuals tab** to pick standard, light blur, transparent, or solid color backgrounds (with a color palette) and decide if icons auto-fill gaps.
+- **Hidden Apps** tab lets you include ~/Applications, mute noisy tools, or pin hidden entries to the top for quick toggling.
+- **Shortcuts tab** sets the launcher hotkey, fullscreen ⇄ floaty toggle, and hot corner; Launchy still opens even if both Dock and menu bar icons are hidden.
+- **Reset the grid** from Settings when you want a clean slate - **custom names and hidden states stay intact** - and enable Launch at Login so it’s ready after a reboot.
 
 ## License & support
 
@@ -104,9 +104,9 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 ## Roadmap
 
 Here are a few improvements planned for upcoming releases:
-- Richer, but unobtrusive animations - smoother transitions, user input interpretation and calmer motion across fullscreen and Floaty mode.
-- Dock menu enhancements - icons inside the Dock right-click menu for quicker recognition and a more polished feel.
-- Plugin support - support for feature extensions and visual overlays through plugins
+- **Richer, but unobtrusive animations** - smoother transitions, user input interpretation and calmer motion across fullscreen and Floaty mode.
+- **Dock menu enhancements** - icons inside the Dock right-click menu for quicker recognition and a more polished feel.
+- **Plugin support** - support for feature extensions and visual overlays through plugins
 
 [Donate (Ko-Fi)](https://ko-fi.com/janfeuerbacher)
 

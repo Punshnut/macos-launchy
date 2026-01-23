@@ -639,9 +639,16 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         arrangementResetTask?.cancel()
         arrangementResetTask = Task.detached { [weak self] in
             let notifications = NotificationCenter.default.notifications(named: .launcherArrangementResetRequested)
-            for await _ in notifications {
+            for await notification in notifications {
                 guard let self else { continue }
-                await self.handleArrangementReset()
+                let sorting: ArrangementResetSorting
+                if let raw = notification.userInfo?["sorting"] as? String,
+                   let parsed = ArrangementResetSorting(rawValue: raw) {
+                    sorting = parsed
+                } else {
+                    sorting = .alphabetical
+                }
+                await self.handleArrangementReset(sorting: sorting)
             }
         }
     }
@@ -771,10 +778,10 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Clears saved arrangement data and reloads apps from disk.
     @MainActor
-    private func handleArrangementReset() {
+    private func handleArrangementReset(sorting: ArrangementResetSorting = .alphabetical) {
         let preservedNames = customNamesByBundleID(from: orderedItems)
         itemOrderStore.resetArrangement()
-        refreshLauncherItems(preservingCustomNames: preservedNames)
+        refreshLauncherItems(preservingCustomNames: preservedNames, sorting: sorting)
         applyLauncherMode()
     }
 
@@ -1154,7 +1161,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     @discardableResult
     private func refreshLauncherItems(
         preservingCustomNames names: [String: String] = [:],
-        shouldPreheatIcons: Bool = true
+        shouldPreheatIcons: Bool = true,
+        sorting: ArrangementResetSorting = .alphabetical
     ) -> Bool {
         LaunchyLogger.log("refreshLauncherItems: preserving names=\(names.count)")
         let previousItems = orderedItems
@@ -1171,11 +1179,14 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             pendingRemovalApps[bundleID] = nil
         }
         let includeUserApplications = currentSettings.shouldScanUserApplicationsFolder
-        let (baseApps, userApps) = applicationDiscovery.reloadApps(
+        let discoveryResult = applicationDiscovery.reloadApps(
             includeUserApplicationsFolder: includeUserApplications,
-            hiddenBundleIDs: hiddenBundleIDs
+            hiddenBundleIDs: hiddenBundleIDs,
+            sorting: sorting
         )
-        let discoveredApps = baseApps + userApps
+        let baseApps = discoveryResult.main
+        let userApps = discoveryResult.userApplications
+        let discoveredApps = discoveryResult.allVisible
         let discoveredBundleIDs = Set(discoveredApps.map(\.bundleIdentifier))
 
         for bundleID in discoveredBundleIDs {
@@ -1203,26 +1214,35 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             return app
         }
         LaunchyLogger.log("app discovery results: base=\(baseApps.count), user=\(userApps.count)")
-        let decoratedBaseApps = baseApps + graceApps.filter { $0.isUserApplication == false }
-        let decoratedUserApps = (userApps + graceApps.filter(\.isUserApplication)).map { app -> AppItem in
+
+        var decoratedVisibleApps: [AppItem] = discoveredApps.map { app in
             var modified = app
             if let custom = names[app.bundleIdentifier] {
                 modified.customName = custom
             }
             return modified
         }
-        let coreServicesApps = decoratedBaseApps.filter(\.isCoreServiceApplication)
+        let decoratedGraceApps: [AppItem] = graceApps.map { app in
+            var modified = app
+            if let custom = names[app.bundleIdentifier] {
+                modified.customName = custom
+            }
+            return modified
+        }
+        decoratedVisibleApps.append(contentsOf: decoratedGraceApps)
+
+        let coreServicesApps = decoratedVisibleApps.filter(\.isCoreServiceApplication)
         let coreServicesWithIcon = coreServicesApps.filter(\.hasCustomIcon)
         let systemToolsApps = coreServicesApps.filter { $0.hasCustomIcon == false }
-        let arrangedBaseApps = decoratedBaseApps.filter { $0.isCoreServiceApplication == false }
-        let arrangementSource = arrangedBaseApps + decoratedUserApps
+        let arrangementSource = decoratedVisibleApps.filter { $0.isCoreServiceApplication == false }
         let gridConfig = gridConfiguration(for: currentSettings.selectedLauncherMode)
 
         let (items, sizes) = itemOrderStore.arrangedItems(
             from: arrangementSource,
             pageCapacity: gridConfig.pageCapacity,
             fillsGapsAutomatically: currentSettings.fillsGapsAutomatically,
-            preferredCustomNames: names
+            preferredCustomNames: names,
+            sorting: sorting
         )
 
         var arrangedItems = items

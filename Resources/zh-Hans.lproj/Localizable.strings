@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "如果想快速切换布局，选定快捷键。留空则禁用。";
 "Add shortcut" = "添加快捷键";
 "Reset icon arrangement..." = "重置图标排列...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "删除已保存的排序和文件夹，然后从头重建页面。自定义应用名保留，隐藏应用继续隐藏。输入 RESET 以确认。";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "删除已保存的顺序和文件夹，并从头重建页面。自定义名称和隐藏的应用将被保留。";
 "Application" = "应用";
 "Hidden" = "隐藏";
 "Show hidden apps first" = "优先显示隐藏的应用";
@@ -184,3 +184,17 @@
 "Vertical" = "垂直";
 
 "Beta" = "测试版";
+
+"How should the grid be sorted after reset?" = "重置后网格应如何排序？";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "选择按字母顺序（A → Z）或发现顺序（按 Launchy 发现应用的顺序）。";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "这会删除已保存的顺序、文件夹和页面布局。自定义应用名称和隐藏的应用将被保留。";
+
+"Alphabetical" = "按字母";
+
+"Discovery order" = "发现顺序";
+
+"A → Z by app name" = "按应用名称 A → Z";
+
+"As Launchy finds them" = "按 Launchy 的发现顺序";

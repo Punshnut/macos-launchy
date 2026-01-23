@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Yan àkótán tí o bá fẹ́ yí àkópọ̀ kíákíá. Fi sí òfo láti pa a.";
 "Add shortcut" = "Fi àkótán kún";
 "Reset icon arrangement..." = "Rẹ́seti ìṣètò aami...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Yóò pa ìṣètò tí o fipamọ́ àti àwọn folda rẹ́, lẹ́yìn náà yóò tún àwọn ojúewé kọ́ láti ibẹrẹ̀. Àwọn orúkọ app àtọkànwá yóò dúró, àwọn app tó farasin yóò dúró ní ìfarasin. Tẹ RESET láti jẹ́rìí.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Ó pa àtòjọ àti àwọn pọọ̀dà tí a fipamọ́, ó sì tún kó ojúewé pọ̀ láti ìpilẹ̀. Àwọn orúkọ àdáni àti app to farapamọ́ máa ṣèlẹ̀.";
 "Application" = "App";
 "Hidden" = "Farasin";
 "Show hidden apps first" = "Fi àwọn app tó farasin hàn kọ́kọ́";
@@ -184,3 +184,17 @@
 "Vertical" = "Ináàró";
 
 "Beta" = "Bẹ́tà";
+
+"How should the grid be sorted after reset?" = "Báwo ni a ṣe yẹ kí a ṣètò gírídì lẹ́yìn ìtúnṣe?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Yan Gẹ́gẹ́ bí Alfabẹ́ẹ̀tì (A → Z) tàbí Ìtọ́sọ́nà ìwárí (bí Launchy ṣe ń rí àwọn app).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Èyí máa pa àtòjọ fipamọ́ rẹ, àwọn pọọ̀dà àti àtẹ̀jáde ojúewé rẹ́. Àwọn orúkọ app ti a ṣe àdáni àti àwọn app to farapamọ́ yóò wà láìyípadà.";
+
+"Alphabetical" = "Alfabẹ́ẹ̀tì";
+
+"Discovery order" = "Ìtọ́sọ́nà ìwárí";
+
+"A → Z by app name" = "A → Z gẹ́gẹ́ bí orúkọ app";
+
+"As Launchy finds them" = "Gẹ́gẹ́ bí Launchy ṣe ń rí wọn";

@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Chagua njia ya mkato ikiwa unataka kubadilisha muundo kwa haraka. Acha tupu ili kuzima.";
 "Add shortcut" = "Ongeza njia ya mkato";
 "Reset icon arrangement..." = "Rejesha mpangilio wa ikoni...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Inafuta upangaji wako uliohifadhiwa na folda, kisha inaunda kurasa tena kutoka mwanzoni. Majina ya programu yaliyobadilishwa na zilizofichwa hubaki. Andika RESET kuthibitisha.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Huondoa mpangilio na folda ulizohifadhi na kujenga upya kurasa kutoka mwanzo. Majina maalum na app zilizofichwa hubaki.";
 "Application" = "Programu";
 "Hidden" = "Imefichwa";
 "Show hidden apps first" = "Onyesha programu zilizofichwa kwanza";
@@ -184,3 +184,17 @@
 "Vertical" = "Wima";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "Gridi ipangwe vipi baada ya kuweka upya?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Chagua Kialfabeti (A → Z) au Mpangilio wa kugundua (kulingana Launchy anavyopata app).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Hii huondoa mpangilio uliohifadhiwa, folda na mpangilio wa ukurasa. Majina uliyopachika na app zilizofichwa zitabaki.";
+
+"Alphabetical" = "Kialfabeti";
+
+"Discovery order" = "Mpangilio wa kugundua";
+
+"A → Z by app name" = "A → Z kwa jina la app";
+
+"As Launchy finds them" = "Launchy anavyowapata";

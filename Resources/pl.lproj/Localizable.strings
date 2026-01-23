@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Wybierz skrót, jeśli chcesz szybko przełączać układy. Pozostaw puste, aby wyłączyć.";
 "Add shortcut" = "Dodaj skrót";
 "Reset icon arrangement..." = "Resetuj układ ikon...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Usuwa zapisany porządek i foldery, a następnie tworzy strony od nowa. Własne nazwy aplikacji zostają, ukryte aplikacje pozostają ukryte. Wpisz RESET, aby potwierdzić.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Usuwa zapisany porządek i foldery, a strony buduje od nowa. Niestandardowe nazwy i ukryte aplikacje pozostają.";
 "Application" = "Aplikacja";
 "Hidden" = "Ukryte";
 "Show hidden apps first" = "Pokaż ukryte aplikacje jako pierwsze";
@@ -184,3 +184,17 @@
 "Vertical" = "Pionowy";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "Jak posortować siatkę po restarcie?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Wybierz Alfabetycznie (A → Z) lub Kolejność wykrycia (w jakiej Launchy znajduje aplikacje).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Usunie zapisany porządek, foldery i układ stron. Niestandardowe nazwy aplikacji i ukryte aplikacje zostaną zachowane.";
+
+"Alphabetical" = "Alfabetycznie";
+
+"Discovery order" = "Kolejność wykrycia";
+
+"A → Z by app name" = "A → Z według nazwy aplikacji";
+
+"As Launchy finds them" = "W kolejności znajdowania przez Launchy";

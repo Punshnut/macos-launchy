@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Виберіть комбінацію, якщо хочете швидко перемикати макети. Залиште пустим, щоб вимкнути.";
 "Add shortcut" = "Додати комбінацію";
 "Reset icon arrangement..." = "Скинути розташування іконок...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Видаляє збережений порядок і папки, а потім відновлює сторінки заново. Індивідуальні назви й приховані додатки лишаються. Введіть RESET, щоб підтвердити.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Видаляє збережений порядок і теки та будує сторінки заново. Користувацькі назви й приховані програми залишаються.";
 "Application" = "Додаток";
 "Hidden" = "Приховано";
 "Show hidden apps first" = "Показувати приховані додатки першими";
@@ -184,3 +184,17 @@
 "Vertical" = "Вертикально";
 
 "Beta" = "Бета";
+
+"How should the grid be sorted after reset?" = "Як упорядкувати сітку після скидання?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Оберіть За абеткою (A → Z) або В порядку знаходження (як Launchy знаходить програми).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Це видалить збережений порядок, теки та макет сторінок. Користувацькі назви й приховані програми збережуться.";
+
+"Alphabetical" = "За абеткою";
+
+"Discovery order" = "В порядку знаходження";
+
+"A → Z by app name" = "A → Z за назвою програми";
+
+"As Launchy finds them" = "У порядку знаходження Launchy";

@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "లేఅవుట్‌లను వేగంగా మార్చాలంటే ఒక షార్ట్‌కట్‌ను ఎంచుకోండి. ఆఫ్ చేయడానికి ఖాళీగా ఉంచండి.";
 "Add shortcut" = "షార్ట్‌కట్ జోడించండి";
 "Reset icon arrangement..." = "ఐకాన్ అమరికను రీసెట్ చేయండి...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "మీ సేవ్ చేసిన క్రమం మరియు ఫోల్డర్లను తొలగించి, పేజీలను కొత్తగా నిర్మిస్తుంది. కస్టమ్ యాప్ పేర్లు ఉంటాయి, దాచిన యాప్స్ దాచినవే ఉంటాయి. నిర్ధారించడానికి RESET టైప్ చేయండి.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "సేవ్ చేసిన క్రమం, ఫోల్డర్లను తొలగించి పేజీలను కొత్తగా నిర్మిస్తుంది. కస్టమ్ పేర్లు, దాచిన యాప్‌లు అలాగే ఉంటాయి.";
 "Application" = "అప్లికేషన్";
 "Hidden" = "దాచినవి";
 "Show hidden apps first" = "దాచిన యాప్‌లను ముందుగా చూపండి";
@@ -184,3 +184,17 @@
 "Vertical" = "నిలువుగా";
 
 "Beta" = "బీటా";
+
+"How should the grid be sorted after reset?" = "రీసెట్ తరువాత గ్రిడ్‌ను ఎలా క్రమబద్ధం చేయాలి?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "ఆక్షరక్రమం (A → Z) లేదా డిస్కవరీ క్రమం (Launchy యాప్‌లు కనిపించిన క్రమం) ఎంపిక చేయండి.";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "ఇది సేవ్ చేసిన క్రమం, ఫోల్డర్లు, పేజ్ లేఅవుట్‌ను తొలగిస్తుంది. కస్టమ్ యాప్ పేర్లు మరియు దాచిన యాప్‌లు నిలిచి ఉంటాయి.";
+
+"Alphabetical" = "ఆక్షరక్రమం";
+
+"Discovery order" = "డిస్కవరీ క్రమం";
+
+"A → Z by app name" = "యాప్ పేరువారీగా A → Z";
+
+"As Launchy finds them" = "Launchy కనిపెట్టిన క్రమంలో";

@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Välj en genväg om du vill växla layouter snabbt. Lämna tomt för att inaktivera.";
 "Add shortcut" = "Lägg till genväg";
 "Reset icon arrangement..." = "Återställ ikonlayout...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Raderar din sparade ordning och mappar och bygger sedan upp sidorna från grunden. Anpassade appnamn finns kvar, dolda appar förblir dolda. Skriv RESET för att bekräfta.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Tar bort sparad ordning och mappar och bygger om sidor från början. Anpassade namn och dolda appar behålls.";
 "Application" = "App";
 "Hidden" = "Dold";
 "Show hidden apps first" = "Visa dolda appar först";
@@ -184,3 +184,17 @@
 "Vertical" = "Vertikal";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "Hur ska rutnätet sorteras efter återställning?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Välj Alfabetiskt (A → Z) eller Upptäcktsordning (i den ordning Launchy hittar appar).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Detta tar bort sparad ordning, mappar och sidlayout. Anpassade appnamn och dolda appar behålls.";
+
+"Alphabetical" = "Alfabetiskt";
+
+"Discovery order" = "Upptäcktsordning";
+
+"A → Z by app name" = "A → Z efter appnamn";
+
+"As Launchy finds them" = "I den ordning Launchy hittar dem";

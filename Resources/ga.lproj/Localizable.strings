@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Roghnaigh aicearra más mian leat leaganacha a aistriú go tapa. Fág folamh chun díchumasú.";
 "Add shortcut" = "Cuir aicearra leis";
 "Reset icon arrangement..." = "Athshocraigh socrú deilbhíní...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Scriosann sé d'ordú agus d'fhillteáin sábháilte, ansin atógann sé leathanaigh ón tús. Fanann ainmneacha saincheaptha, fanann aipeanna ceilte i bhfolach. Clóscríobh RESET chun a dhearbhú.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Scriosann sé an t‑ordú agus na fillteáin shábháilte agus atógann sé na leathanaigh. Fanann ainmneacha saincheaptha agus aipeanna ceilte.";
 "Application" = "Feidhmchlár";
 "Hidden" = "I bhfolach";
 "Show hidden apps first" = "Taispeáin aipeanna ceilte ar dtús";
@@ -184,3 +184,17 @@
 "Vertical" = "Ingearach";
 
 "Beta" = "Béite";
+
+"How should the grid be sorted after reset?" = "Conas ba chóir an greille a shórtáil tar éis athshocraithe?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Roghnaigh Aibítreach (A → Z) nó Ord Fionnachtana (de réir mar a aimsíonn Launchy aipeanna).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Scriosann sé seo an t‑ordú, na fillteáin agus leagan amach na leathanach a sábháladh. Coinneofar ainmneacha saincheaptha agus aipeanna ceilte.";
+
+"Alphabetical" = "Aibítreach";
+
+"Discovery order" = "Ord Fionnachtana";
+
+"A → Z by app name" = "A → Z de réir ainm na haipe";
+
+"As Launchy finds them" = "De réir mar a aimsíonn Launchy iad";

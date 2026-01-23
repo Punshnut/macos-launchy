@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "यदि आप तेजी से लेआउट बदलना चाहते हैं तो एक शॉर्टकट चुनें। अक्षम करने के लिए खाली छोड़ दें।";
 "Add shortcut" = "शॉर्टकट जोड़ें";
 "Reset icon arrangement..." = "आइकन का क्रम रीसेट करें...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "यह आपकी सेव किए गए क्रम और फ़ोल्डरों को हटाता है, फिर पृष्ठों को फिर से बनाता है। कस्टम ऐप नाम रहे, छिपी ऐप्स छिपी रहें। पुष्टि के लिए RESET टाइप करें।";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "सहेजा गया क्रम और फ़ोल्डर मिटाकर पेज फिर से बनाता है। कस्टम ऐप नाम व छिपे ऐप बने रहते हैं।";
 "Application" = "एप्लिकेशन";
 "Hidden" = "छिपा हुआ";
 "Show hidden apps first" = "छिपी हुई ऐप्स पहले दिखाएँ";
@@ -184,3 +184,17 @@
 "Vertical" = "ऊर्ध्वाधर";
 
 "Beta" = "बीटा";
+
+"How should the grid be sorted after reset?" = "रीसेट के बाद ग्रिड को कैसे क्रमबद्ध किया जाए?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "वर्णानुक्रम (A → Z) या डिस्कवरी क्रम (जिस क्रम में Launchy ऐप्स पाता है) चुनें।";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "यह आपकी सहेजी गई क्रम, फ़ोल्डर और पेज लेआउट मिटा देगा। कस्टम ऐप नाम और छिपे ऐप बरकरार रहेंगे।";
+
+"Alphabetical" = "वर्णानुक्रम";
+
+"Discovery order" = "डिस्कवरी क्रम";
+
+"A → Z by app name" = "ऐप नाम के अनुसार A → Z";
+
+"As Launchy finds them" = "जैसे Launchy उन्हें पाता है";

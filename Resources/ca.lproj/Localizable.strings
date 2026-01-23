@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Tria una drecera si vols canviar de disposició ràpidament. Deixa-ho buit per desactivar.";
 "Add shortcut" = "Afegeix drecera";
 "Reset icon arrangement..." = "Restableix la disposició d'icones...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Esborra l'ordre i les carpetes desades, i després reconstrueix les pàgines des de zero. Els noms d'app personalitzats es mantenen, i les apps amagades continuen amagades. Escriu RESET per confirmar.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Suprimeix l’ordre i les carpetes desades i reconstrueix les pàgines des de zero. Els noms personalitzats i les apps amagades es mantenen.";
 "Application" = "Aplicació";
 "Hidden" = "Amagat";
 "Show hidden apps first" = "Mostra primer les apps amagades";
@@ -184,3 +184,17 @@
 "Vertical" = "Vertical";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "Com s’ha d’ordenar la graella després de restablir?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Tria Ordre alfabètic (A → Z) o Ordre de descobriment (tal com Launchy troba les apps).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Això suprimeix l’ordre desat, les carpetes i la disposició de pàgina. Es conserven els noms personalitzats i les apps amagades.";
+
+"Alphabetical" = "Alfabètic";
+
+"Discovery order" = "Ordre de descobriment";
+
+"A → Z by app name" = "A → Z per nom d’app";
+
+"As Launchy finds them" = "Tal com Launchy les troba";

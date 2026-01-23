@@ -96,53 +96,124 @@ final class SettingsWindowAlertPresenter {
     @MainActor
     static func confirmArrangementReset(
         hostingWindow: AnyObject?,
-        onConfirm: @escaping @MainActor () -> Void
+        initialSorting: ArrangementResetSorting,
+        onConfirm: @escaping @MainActor (ArrangementResetSorting) -> Void
     ) {
-        let alert = NSAlert()
-        alert.alertStyle = .warning
-        alert.messageText = String(localized: "Reset icon arrangement?")
-        alert.informativeText = String(localized: "This deletes your saved ordering, folders, and page layout. Type RESET to continue.")
-
-        let confirmationField = NSTextField(string: "")
-        confirmationField.placeholderString = String(localized: "RESET")
-        confirmationField.frame = NSRect(x: 0, y: 0, width: 220, height: 22)
-        alert.accessoryView = confirmationField
-
-        alert.addButton(withTitle: String(localized: "Reset"))
-        alert.addButton(withTitle: String(localized: "Cancel"))
-
         if let window = hostingWindow as? NSWindow {
-            NSApp.activate(ignoringOtherApps: true)
-            alert.beginSheetModal(for: window) { response in
-                handleArrangementResetResponse(
-                    response,
-                    typedValue: confirmationField.stringValue,
-                    onConfirm: onConfirm
-                )
-            }
-            DispatchQueue.main.async {
-                window.makeFirstResponder(confirmationField)
+            presentSortingSheet(on: window, initialSorting: initialSorting) { sorting in
+                guard let sorting else { return }
+                presentResetSheet(on: window, sorting: sorting) { confirmed in
+                    guard confirmed else { return }
+                    onConfirm(sorting)
+                }
             }
         } else {
-            let response = presentModalAlert(alert)
-            handleArrangementResetResponse(
-                response,
-                typedValue: confirmationField.stringValue,
-                onConfirm: onConfirm
-            )
+            let sorting = presentSortingChoiceModal(initialSorting: initialSorting)
+            guard let selectedSorting = sorting else { return }
+            let confirmed = presentResetConfirmationModal(sorting: selectedSorting)
+            if confirmed {
+                onConfirm(selectedSorting)
+            }
         }
     }
 
+    /// First step (sheet): ask which sorting to use via two buttons.
     @MainActor
-    private static func handleArrangementResetResponse(
-        _ response: NSApplication.ModalResponse,
-        typedValue: String,
-        onConfirm: @escaping @MainActor () -> Void
+    private static func presentSortingSheet(
+        on window: NSWindow,
+        initialSorting: ArrangementResetSorting,
+        completion: @escaping (ArrangementResetSorting?) -> Void
     ) {
-        let normalized = typedValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard response == .alertFirstButtonReturn,
-              normalized.caseInsensitiveCompare(String(localized: "RESET")) == .orderedSame else { return }
-        onConfirm()
+        let alert = sortingAlert(initialSorting: initialSorting)
+        NSApp.activate(ignoringOtherApps: true)
+        alert.beginSheetModal(for: window) { response in
+            switch response {
+            case .alertFirstButtonReturn:
+                completion(.alphabetical)
+            case .alertSecondButtonReturn:
+                completion(.discovery)
+            default:
+                completion(nil)
+            }
+        }
+    }
+
+    /// Second step (sheet): confirm reset.
+    @MainActor
+    private static func presentResetSheet(
+        on window: NSWindow,
+        sorting: ArrangementResetSorting,
+        completion: @escaping (Bool) -> Void
+    ) {
+        let alert = resetAlert()
+        NSApp.activate(ignoringOtherApps: true)
+        alert.beginSheetModal(for: window) { response in
+            completion(response == .alertFirstButtonReturn)
+        }
+    }
+
+    /// First step (modal fallback).
+    @MainActor
+    private static func presentSortingChoiceModal(
+        initialSorting: ArrangementResetSorting
+    ) -> ArrangementResetSorting? {
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = String(localized: "How should the grid be sorted after reset?")
+        alert.informativeText = String(localized: "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps).")
+        alert.addButton(withTitle: ArrangementResetSorting.alphabetical.displayName)
+        alert.addButton(withTitle: ArrangementResetSorting.discovery.displayName)
+        alert.addButton(withTitle: String(localized: "Cancel"))
+
+        let defaultIndex = initialSorting == .discovery ? 1 : 0
+        alert.buttons[defaultIndex].keyEquivalent = "\r"
+
+        let response = presentModalAlert(alert)
+
+        switch response {
+        case .alertFirstButtonReturn:
+            return .alphabetical
+        case .alertSecondButtonReturn:
+            return .discovery
+        default:
+            return nil
+        }
+    }
+
+    /// Second step (modal fallback): confirm the destructive reset.
+    @MainActor
+    private static func presentResetConfirmationModal(
+        sorting: ArrangementResetSorting
+    ) -> Bool {
+        let alert = resetAlert()
+        let response = presentModalAlert(alert)
+        return response == .alertFirstButtonReturn
+    }
+
+    /// Shared reset alert contents.
+    private static func resetAlert() -> NSAlert {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = String(localized: "Reset icon arrangement?")
+        alert.informativeText = String(localized: "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept.")
+        alert.addButton(withTitle: String(localized: "Reset"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
+        return alert
+    }
+
+    /// Shared sorting alert contents.
+    private static func sortingAlert(initialSorting: ArrangementResetSorting) -> NSAlert {
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = String(localized: "How should the grid be sorted after reset?")
+        alert.informativeText = String(localized: "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps).")
+        alert.addButton(withTitle: ArrangementResetSorting.alphabetical.displayName)
+        alert.addButton(withTitle: ArrangementResetSorting.discovery.displayName)
+        alert.addButton(withTitle: String(localized: "Cancel"))
+
+        let defaultIndex = initialSorting == .discovery ? 1 : 0
+        alert.buttons[defaultIndex].keyEquivalent = "\r"
+        return alert
     }
 
     @MainActor

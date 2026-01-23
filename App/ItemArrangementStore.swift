@@ -96,7 +96,8 @@ final class ItemArrangementStore {
         from discoveredApps: [AppItem],
         pageCapacity: Int,
         fillsGapsAutomatically: Bool,
-        preferredCustomNames: [String: String] = [:]
+        preferredCustomNames: [String: String] = [:],
+        sorting: ArrangementResetSorting = .alphabetical
     ) -> ([LauncherItem], [Int]) {
         var lookup: [String: AppItem] = Dictionary(
             uniqueKeysWithValues: discoveredApps.map { ($0.bundleIdentifier, $0) }
@@ -135,8 +136,20 @@ final class ItemArrangementStore {
             return (orderedItems, cachedPageSizes)
         }
 
-        let remainingApps = lookup.values.sorted { lhs, rhs in
-            lhs.sortingName.localizedCaseInsensitiveCompare(rhs.sortingName) == .orderedAscending
+        let remainingApps: [AppItem]
+        switch sorting {
+        case .alphabetical:
+            remainingApps = lookup.values.sorted { lhs, rhs in
+                lhs.sortingName.localizedCaseInsensitiveCompare(rhs.sortingName) == .orderedAscending
+            }
+        case .discovery:
+            remainingApps = discoveredApps.compactMap { app in
+                guard var unmatched = lookup.removeValue(forKey: app.bundleIdentifier) else { return nil }
+                if let custom = preferredCustomNames[unmatched.bundleIdentifier] {
+                    unmatched.customName = custom
+                }
+                return unmatched
+            }
         }
 
         var workingPageSizes: [Int] = []

@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Επιλέξτε μια συντόμευση αν θέλετε να αλλάζετε διατάξεις γρήγορα. Αφήστε κενό για απενεργοποίηση.";
 "Add shortcut" = "Προσθήκη συντόμευσης";
 "Reset icon arrangement..." = "Επαναφορά διάταξης εικονιδίων...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Διαγράφει την αποθηκευμένη σειρά και τους φακέλους, έπειτα αναδημιουργεί τις σελίδες από την αρχή. Τα προσαρμοσμένα ονόματα εφαρμογών μένουν, οι κρυφές εφαρμογές παραμένουν κρυφές. Πληκτρολογήστε RESET για επιβεβαίωση.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Διαγράφει την αποθηκευμένη σειρά και τους φακέλους και ξαναχτίζει τις σελίδες από την αρχή. Τα προσαρμοσμένα ονόματα και οι κρυφές εφαρμογές διατηρούνται.";
 "Application" = "Εφαρμογή";
 "Hidden" = "Κρυφό";
 "Show hidden apps first" = "Εμφάνιση κρυφών εφαρμογών πρώτα";
@@ -184,3 +184,17 @@
 "Vertical" = "Κάθετα";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "Πώς να ταξινομηθεί το πλέγμα μετά την επαναφορά;";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Διάλεξε Αλφαβητικά (A → Z) ή Σειρά εντοπισμού (όπως βρίσκει τις εφαρμογές το Launchy).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Αυτό διαγράφει την αποθηκευμένη σειρά, τους φακέλους και τη διάταξη σελίδας. Τα προσαρμοσμένα ονόματα και οι κρυφές εφαρμογές διατηρούνται.";
+
+"Alphabetical" = "Αλφαβητικά";
+
+"Discovery order" = "Σειρά εντοπισμού";
+
+"A → Z by app name" = "A → Z ανά όνομα εφαρμογής";
+
+"As Launchy finds them" = "Όπως τις βρίσκει το Launchy";

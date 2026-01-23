@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "レイアウトを素早く切り替えたいならショートカットを選択してください。空欄にすると無効になります。";
 "Add shortcut" = "ショートカットを追加";
 "Reset icon arrangement..." = "アイコンの配置をリセット...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "保存された順序とフォルダを削除し、ページを一から再構築します。カスタムアプリ名と非表示アプリはそのままです。確認するには RESET を入力してください。";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "保存済みの並びとフォルダを削除し、ページを再構築します。カスタム名と非表示アプリはそのままです。";
 "Application" = "アプリ";
 "Hidden" = "非表示";
 "Show hidden apps first" = "非表示のアプリを先頭に表示";
@@ -184,3 +184,17 @@
 "Vertical" = "縦";
 
 "Beta" = "ベータ";
+
+"How should the grid be sorted after reset?" = "リセット後、グリッドをどう並べ替えますか？";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "アルファベット順 (A → Z) または検出順（Launchy が見つけた順）を選択してください。";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "保存された並び順、フォルダ、ページレイアウトを削除します。カスタム名と非表示アプリは保持されます。";
+
+"Alphabetical" = "アルファベット順";
+
+"Discovery order" = "検出順";
+
+"A → Z by app name" = "アプリ名の A → Z";
+
+"As Launchy finds them" = "Launchy が見つけた順";

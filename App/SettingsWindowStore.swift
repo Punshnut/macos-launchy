@@ -20,6 +20,8 @@ final class SettingsWindowStore: NSObject, ObservableObject {
     @Published private(set) var settingsSnapshot: LauncherSettings
     /// Collection of applications discovered on disk for the hidden-apps table.
     @Published private(set) var discoveredApps: [AppItem] = []
+    /// Sorting applied when the grid is rebuilt via the reset flow.
+    @Published private(set) var arrangementResetSorting: ArrangementResetSorting
 
     private let appDiscoveryService: AppDiscoveryService
     private var settingsStreamTask: Task<Void, Never>?
@@ -29,6 +31,7 @@ final class SettingsWindowStore: NSObject, ObservableObject {
     init(discoveryService: AppDiscoveryService = AppDiscoveryService()) {
         self.appDiscoveryService = discoveryService
         self.settingsSnapshot = LauncherSettingsPersistence.loadSettings()
+        self.arrangementResetSorting = LauncherSettingsPersistence.arrangementResetSorting()
         super.init()
     }
 
@@ -42,10 +45,8 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         // AppDiscoveryService leans on AppKit types and shared caches, so keep calls on the main
         // actor to avoid thread-hopping crashes that happen when the settings window reloads.
         let includeUserApplications = settingsSnapshot.shouldScanUserApplicationsFolder
-        let (mainApps, userApps) = appDiscoveryService.reloadApps(
-            includeUserApplicationsFolder: includeUserApplications
-        )
-        discoveredApps = mainApps + userApps
+        let apps = appDiscoveryService.reloadApps(includeUserApplicationsFolder: includeUserApplications)
+        discoveredApps = apps.allVisible
     }
 
     /// Resolves the cached icon for the given app without storing it permanently.
@@ -171,9 +172,20 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         LauncherSettingsPersistence.setFillsGapsAutomatically(value)
     }
 
+    /// Persists the preferred sorting used when resetting the grid.
+    func setArrangementResetSorting(_ sorting: ArrangementResetSorting) {
+        guard arrangementResetSorting != sorting else { return }
+        arrangementResetSorting = sorting
+        LauncherSettingsPersistence.setArrangementResetSorting(sorting)
+    }
+
     /// Requests a full reset of the saved launcher arrangement.
-    func requestArrangementReset() {
-        NotificationCenter.default.post(name: .launcherArrangementResetRequested, object: nil)
+    func requestArrangementReset(using sorting: ArrangementResetSorting) {
+        NotificationCenter.default.post(
+            name: .launcherArrangementResetRequested,
+            object: nil,
+            userInfo: ["sorting": sorting.rawValue]
+        )
     }
 
     /// Toggles the bundle identifier in the hidden apps list.
@@ -281,6 +293,7 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         guard isDormant else { return }
         isDormant = false
         settingsSnapshot = LauncherSettingsPersistence.loadSettings()
+        arrangementResetSorting = LauncherSettingsPersistence.arrangementResetSorting()
         observeSettingsChanges()
         reloadApps()
     }
@@ -290,6 +303,7 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         let previousIncludeUserApplications = settingsSnapshot.shouldScanUserApplicationsFolder
         let updatedSettings = LauncherSettingsPersistence.loadSettings()
         settingsSnapshot = updatedSettings
+        arrangementResetSorting = LauncherSettingsPersistence.arrangementResetSorting()
         if previousIncludeUserApplications != updatedSettings.shouldScanUserApplicationsFolder {
             reloadApps()
         }

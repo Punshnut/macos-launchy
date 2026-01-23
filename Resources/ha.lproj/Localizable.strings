@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Zaɓi hanya idan kana son canza tsarin da sauri. Bar shi babu komai don kashe.";
 "Add shortcut" = "Ƙara hanya";
 "Reset icon arrangement..." = "Sake saita tsarin gumaka...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Yana goge oda da fayilolinku da aka adana, sa'annan ya sake gina shafuka daga farko. Sunayen app da aka keɓance da ɓoyayyu zasu zauna. Rubuta RESET don tabbatarwa.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Yana goge jerin da aka ajiye da fayiloli, yana sake gina shafuka daga tushe. Sunayen app na al’ada da ɓoyayyu suna ci gaba da kasancewa.";
 "Application" = "Manhaja";
 "Hidden" = "An ɓoye";
 "Show hidden apps first" = "Nuna apps da aka ɓoye da farko";
@@ -184,3 +184,17 @@
 "Vertical" = "Tsaye";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "Ta yaya za a tsara grid bayan sake saiti?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Zaɓi Haruffa (A → Z) ko Tsarin gano abubuwa (yadda Launchy ke samun apps).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Wannan zai goge jerin da aka ajiye, fayiloli da tsarin shafi. Za a kiyaye sunayen app na al’ada da waɗanda aka ɓoye.";
+
+"Alphabetical" = "Haruffa";
+
+"Discovery order" = "Tsarin gano abubuwa";
+
+"A → Z by app name" = "A → Z bisa sunan app";
+
+"As Launchy finds them" = "Yadda Launchy ke samun su";

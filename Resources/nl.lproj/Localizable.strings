@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Kies een sneltoets als je snel wilt wisselen tussen lay-outs. Laat leeg om uit te schakelen.";
 "Add shortcut" = "Sneltoets toevoegen";
 "Reset icon arrangement..." = "Pictogramindeling resetten...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Verwijdert je opgeslagen volgorde en mappen en bouwt pagina's opnieuw op. Aangepaste appnamen blijven, verborgen apps blijven verborgen. Typ RESET om te bevestigen.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Verwijdert de opgeslagen volgorde en mappen en bouwt de pagina's opnieuw op. Aangepaste namen en verborgen apps blijven.";
 "Application" = "Toepassing";
 "Hidden" = "Verborgen";
 "Show hidden apps first" = "Verborgen apps eerst tonen";
@@ -184,3 +184,17 @@
 "Vertical" = "Verticaal";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "Hoe moet het raster worden gesorteerd na resetten?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Kies Alfabetisch (A → Z) of Ontdekkingsvolgorde (zoals Launchy apps vindt).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Hiermee verwijder je de opgeslagen volgorde, mappen en paginalay-out. Aangepaste app-namen en verborgen apps blijven behouden.";
+
+"Alphabetical" = "Alfabetisch";
+
+"Discovery order" = "Ontdekkingsvolgorde";
+
+"A → Z by app name" = "A → Z op app-naam";
+
+"As Launchy finds them" = "Zoals Launchy ze vindt";

@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "اگر آپ جلدی لے آؤٹ بدلنا چاہتے ہیں تو شارٹ کٹ منتخب کریں۔ بند کرنے کے لیے خالی چھوڑ دیں۔";
 "Add shortcut" = "شارٹ کٹ شامل کریں";
 "Reset icon arrangement..." = "آئیکن ترتیب ری سیٹ کریں...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "آپ کی محفوظ ترتیب اور فولڈرز حذف ہو جائیں گے، پھر صفحات ازسرنو بنیں گے۔ کسٹم ایپ نام رہیں گے، چھپی ایپس چھپی رہیں گی۔ تصدیق کے لیے RESET ٹائپ کریں۔";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "محفوظ ترتیب اور فولڈرز کو حذف کر کے صفحات کو نئے سرے سے بناتا ہے۔ حسبِ ضرورت نام اور مخفی ایپس برقرار رہتی ہیں۔";
 "Application" = "ایپلیکیشن";
 "Hidden" = "چھپا ہوا";
 "Show hidden apps first" = "چھپی ایپس پہلے دکھائیں";
@@ -184,3 +184,17 @@
 "Vertical" = "عمودی";
 
 "Beta" = "بیٹا";
+
+"How should the grid be sorted after reset?" = "ری سیٹ کے بعد گرڈ کو کیسے ترتیب دیا جائے؟";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "حروفِ تہجی (A → Z) یا دریافت ترتیب (جس طرح Launchy ایپس ڈھونڈتا ہے) منتخب کریں۔";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "یہ محفوظ ترتیب، فولڈرز اور صفحہ لے آؤٹ کو حذف کر دے گا۔ حسبِ ضرورت ایپ نام اور مخفی ایپس برقرار رہیں گی۔";
+
+"Alphabetical" = "حروفِ تہجی";
+
+"Discovery order" = "دریافت ترتیب";
+
+"A → Z by app name" = "ایپ نام کے لحاظ سے A → Z";
+
+"As Launchy finds them" = "جس ترتیب سے Launchy ڈھونڈتا ہے";

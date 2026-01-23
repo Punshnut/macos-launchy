@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Layout တွေကို မြန်မြန် ပြောင်းချင်ရင် shortcut တစ်ခု ရွေးပါ။ ပိတ်ချင်ရင် အလွတ်ထားပါ။";
 "Add shortcut" = "Shortcut ထည့်ပါ";
 "Reset icon arrangement..." = "အိုင်ကွန် စီစဉ်မှု ပြန်သတ်မှတ်...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "သင်သိမ်းထားတဲ့ အစဉ်နှင့် folder တွေကို ဖျက်ပြီး စာမျက်နှာတွေကို အစကနေ ပြန်တည်ဆောက်ပါတယ်။ Custom app အမည်တွေ ရှိနေပြီး ဖျောက်ထားတဲ့ app တွေကလည်း ဖျောက်ထားထားသင့်ပါတယ်။ အတည်ပြုဖို့ RESET ကို ရိုက်ပါ။";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "သိမ်းထားသော စီစဉ်မှုနှင့် ဖိုင်တွဲများကို ဖျက်၍ စာမျက်နှာများကို ပြန်တည်ဆောက်ပါသည်။ မိမိပုံစံအပ်အမည်များနှင့် ဖျောက်ထားသောအပ်များ ဆက်ရှိနေမည်။";
 "Application" = "Application";
 "Hidden" = "ဖျောက်ထားသော";
 "Show hidden apps first" = "ဖျောက်ထားသော app များကို အရင်ပြ";
@@ -184,3 +184,17 @@
 "Vertical" = "ဒေါင်လိုက်";
 
 "Beta" = "ဘီတာ";
+
+"How should the grid be sorted after reset?" = "ပြန်စတင်ပြီးနောက် grid ကို ဘယ်လို စီမယ်လဲ?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "အက္ခရာစဉ် (A → Z) သို့မဟုတ် ရှာတွေ့စဉ် (Launchy အပ်တွေ့ရာစဉ်) ကို ရွေးပါ။";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "သင့်သိမ်းထားသော စီစဉ်မှု၊ ဖိုင်တွဲများနှင့် စာမျက်နှာအပြင်အဆင်ကို ဖျက်သွားမည်။ မိမိပုံစံအပ်အမည်များနှင့် ဖျောက်ထားသောအပ်များကို ဆက်လက်ထားရှိမည်။";
+
+"Alphabetical" = "အက္ခရာစဉ်";
+
+"Discovery order" = "ရှာတွေ့စဉ်";
+
+"A → Z by app name" = "အပ်အမည်အလိုက် A → Z";
+
+"As Launchy finds them" = "Launchy တွေ့သလို";

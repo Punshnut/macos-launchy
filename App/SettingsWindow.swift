@@ -544,7 +544,7 @@ struct SettingsWindow: View {
     }
 
     private var resetSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
             Button {
                 confirmArrangementReset()
             } label: {
@@ -553,7 +553,7 @@ struct SettingsWindow: View {
             .buttonStyle(.borderedProminent)
             .tint(.red)
 
-            Text(String(localized: "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm."))
+            Text(String(localized: "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden."))
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -915,8 +915,10 @@ struct SettingsWindow: View {
     private func confirmArrangementReset() {
         SettingsWindowAlertPresenter.confirmArrangementReset(
             hostingWindow: hostingWindow,
-            onConfirm: { @MainActor [weak settingsStore] in
-                settingsStore?.requestArrangementReset()
+            initialSorting: settingsStore.arrangementResetSorting,
+            onConfirm: { @MainActor [weak settingsStore] sorting in
+                settingsStore?.setArrangementResetSorting(sorting)
+                settingsStore?.requestArrangementReset(using: sorting)
             }
         )
     }

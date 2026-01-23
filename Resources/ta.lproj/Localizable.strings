@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "வேகமாக லேஅவுட்களை மாற்ற ஒரு சுருக்குவழியை தேர்வு செய்யுங்கள். முடக்க வேண்டுமெனில் காலியாக விடுங்கள்.";
 "Add shortcut" = "சுருக்குவழி சேர்க்கவும்";
 "Reset icon arrangement..." = "ஐகான் அமைப்பை ரீசெட் செய்யவும்...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "சேமித்த வரிசை மற்றும் கோப்புறைகளை நீக்கி, பின்னர் பக்கங்களை புதிதாக உருவாக்கும். தனிப்பயன் ஆப் பெயர்கள் இருக்கும், மறைக்கப்பட்ட ஆப்கள் மறைந்தே இருக்கும். உறுதி செய்ய RESET என টাইப் செய்யவும்.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "சேமித்த வரிசை மற்றும் கோப்புறைகளை அகற்றி, பக்கங்களை புதிதாக உருவாக்குகிறது. தனிப்பயன் பெயர்களும் மறைந்த பயன்பாடுகளும் நீடிக்கும்.";
 "Application" = "ஆப்";
 "Hidden" = "மறைக்கப்பட்டது";
 "Show hidden apps first" = "மறைக்கப்பட்ட ஆப்களை முதலில் காட்டவும்";
@@ -184,3 +184,17 @@
 "Vertical" = "செங்குத்து";
 
 "Beta" = "பீட்டா";
+
+"How should the grid be sorted after reset?" = "மீட்டமைத்த பின் கட்டத்தை எப்படி வரிசைப்படுத்த வேண்டும்?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "அகரவரிசை (A → Z) அல்லது கண்டுப்பிடிப்பு வரிசை (Launchy பயன்பாடுகளை காணும் வரிசை) ஒன்றைத் தேர்ந்தெடுக்கவும்.";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "இது சேமிக்கப்பட்ட வரிசை, கோப்புறைகள் மற்றும் பக்க வடிவமைப்பை அழிக்கும். தனிப்பயன் பயன்பாட்டு பெயர்கள் மற்றும் மறைந்த பயன்பாடுகள் வைத்திருக்கும்.";
+
+"Alphabetical" = "அகரவரிசை";
+
+"Discovery order" = "கண்டுப்பிடிப்பு வரிசை";
+
+"A → Z by app name" = "பயன்பாட்டு பெயரின் அடிப்படையில் A → Z";
+
+"As Launchy finds them" = "Launchy காணும் வரிசையில்";

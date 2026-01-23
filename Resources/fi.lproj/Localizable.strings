@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Valitse pikanäppäin, jos haluat vaihtaa asettelua nopeasti. Jätä tyhjäksi poistaaksesi käytöstä.";
 "Add shortcut" = "Lisää pikanäppäin";
 "Reset icon arrangement..." = "Nollaa kuvakkeiden järjestys...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Poistaa tallennetun järjestyksen ja kansiot, ja rakentaa sivut alusta. Mukautetut sovellusten nimet säilyvät, piilotetut sovellukset pysyvät piilossa. Kirjoita RESET vahvistaaksesi.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Poistaa tallennetun järjestyksen ja kansiot ja rakentaa sivut uudelleen. Mukautetut nimet ja piilotetut sovellukset säilyvät.";
 "Application" = "Sovellus";
 "Hidden" = "Piilotettu";
 "Show hidden apps first" = "Näytä piilotetut sovellukset ensin";
@@ -184,3 +184,17 @@
 "Vertical" = "Pysty";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "Kuinka ruudukko järjestetään nollauksen jälkeen?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Valitse Aakkosjärjestys (A → Z) tai Löytöjärjestys (sitä mukaa kun Launchy löytää sovelluksia).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Tämä poistaa tallennetun järjestyksen, kansiot ja sivuasettelun. Mukautetut sovellusnimet ja piilotetut sovellukset säilyvät.";
+
+"Alphabetical" = "Aakkosjärjestys";
+
+"Discovery order" = "Löytöjärjestys";
+
+"A → Z by app name" = "A → Z sovelluksen nimen mukaan";
+
+"As Launchy finds them" = "Sitä mukaa kun Launchy löytää ne";

@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Vyberte zkratku, pokud chcete rozložení rychle přepínat. Ponechte prázdné pro vypnutí.";
 "Add shortcut" = "Přidat zkratku";
 "Reset icon arrangement..." = "Resetovat uspořádání ikon...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Odstraní uložené pořadí a složky a poté znovu vytvoří stránky od začátku. Vlastní názvy aplikací zůstanou, skryté aplikace zůstanou skryté. Pro potvrzení napište RESET.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Smaže uložené pořadí a složky a znovu postaví stránky od začátku. Vlastní názvy a skryté aplikace zůstanou.";
 "Application" = "Aplikace";
 "Hidden" = "Skryté";
 "Show hidden apps first" = "Zobrazit skryté aplikace jako první";
@@ -184,3 +184,17 @@
 "Vertical" = "Vertikální";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "Jak se má mřížka po resetu seřadit?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Zvolte Abecedně (A → Z) nebo Podle nalezení (jak Launchy aplikace objevuje).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Toto smaže uložené pořadí, složky a rozložení stránek. Vlastní názvy a skryté aplikace zůstanou zachovány.";
+
+"Alphabetical" = "Abecedně";
+
+"Discovery order" = "Podle nalezení";
+
+"A → Z by app name" = "A → Z podle názvu aplikace";
+
+"As Launchy finds them" = "Jak je Launchy nachází";

@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Válassz gyorsbillentyűt, ha gyorsan szeretnél elrendezést váltani. Hagyd üresen a kikapcsoláshoz.";
 "Add shortcut" = "Gyorsbillentyű hozzáadása";
 "Reset icon arrangement..." = "Ikonelrendezés reset...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Törli a mentett sorrendet és mappákat, majd újraépíti az oldalakat. Az egyéni appnevek megmaradnak, a rejtett appok rejtve maradnak. A megerősítéshez írd be: RESET.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Törli a mentett sorrendet és mappákat, majd újraépíti az oldalakat. Az egyedi nevek és rejtett appok megmaradnak.";
 "Application" = "Alkalmazás";
 "Hidden" = "Rejtett";
 "Show hidden apps first" = "Rejtett appok megjelenítése először";
@@ -184,3 +184,17 @@
 "Vertical" = "Függőleges";
 
 "Beta" = "Béta";
+
+"How should the grid be sorted after reset?" = "Hogyan rendezze a rácsot visszaállítás után?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Válassz Ábécésorrend (A → Z) vagy Felfedezési sorrend (ahogy a Launchy megtalálja az appokat).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Ez törli a mentett sorrendet, mappákat és oldalelrendezést. Az egyedi appnevek és a rejtett appok megmaradnak.";
+
+"Alphabetical" = "Ábécésorrend";
+
+"Discovery order" = "Felfedezési sorrend";
+
+"A → Z by app name" = "A → Z az app neve szerint";
+
+"As Launchy finds them" = "Ahogy a Launchy megtalálja";

@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Выберите сочетание, если хотите быстро менять макеты. Оставьте пустым, чтобы отключить.";
 "Add shortcut" = "Добавить сочетание";
 "Reset icon arrangement..." = "Сбросить расположение иконок...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Удаляет сохранённый порядок и папки, затем перестраивает страницы заново. Переименованные приложения и скрытые остаются. Введите RESET для подтверждения.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Удаляет сохранённый порядок и папки и заново строит страницы. Пользовательские названия и скрытые приложения остаются.";
 "Application" = "Приложение";
 "Hidden" = "Скрыто";
 "Show hidden apps first" = "Показывать скрытые приложения первыми";
@@ -184,3 +184,17 @@
 "Vertical" = "Вертикально";
 
 "Beta" = "Бета";
+
+"How should the grid be sorted after reset?" = "Как отсортировать сетку после сброса?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Выберите По алфавиту (A → Z) или В порядке обнаружения (как Launchy находит приложения).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Это удалит сохранённый порядок, папки и макет страниц. Пользовательские названия и скрытые приложения сохранятся.";
+
+"Alphabetical" = "По алфавиту";
+
+"Discovery order" = "В порядке обнаружения";
+
+"A → Z by app name" = "A → Z по названию приложения";
+
+"As Launchy finds them" = "В порядке обнаружения Launchy";

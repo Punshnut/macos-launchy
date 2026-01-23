@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Düzenleri hızlıca değiştirmek için bir kısayol seç. Devre dışı bırakmak için boş bırak.";
 "Add shortcut" = "Kısayol ekle";
 "Reset icon arrangement..." = "Simge düzenini sıfırla...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Kaydedilen sıralamayı ve klasörleri siler, sayfaları baştan kurar. Özel adlar kalır, gizli uygulamalar gizli kalır. Onaylamak için RESET yaz.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Kayıtlı sıralama ve klasörleri siler, sayfaları yeniden oluşturur. Özel adlar ve gizli uygulamalar kalır.";
 "Application" = "Uygulama";
 "Hidden" = "Gizli";
 "Show hidden apps first" = "Gizli uygulamaları önce göster";
@@ -184,3 +184,17 @@
 "Vertical" = "Dikey";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "Sıfırlamadan sonra ızgara nasıl sıralansın?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Alfabetik (A → Z) ya da Keşif sırası (Launchy uygulamaları bulduğu sırada) seçin.";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Bu, kayıtlı sıralamayı, klasörleri ve sayfa düzenini siler. Özel uygulama adları ve gizli uygulamalar korunur.";
+
+"Alphabetical" = "Alfabetik";
+
+"Discovery order" = "Keşif sırası";
+
+"A → Z by app name" = "Uygulama adına göre A → Z";
+
+"As Launchy finds them" = "Launchy bulduğu sırayla";

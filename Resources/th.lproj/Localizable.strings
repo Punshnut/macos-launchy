@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "เลือกทางลัดหากต้องการสลับเลย์เอาต์เร็ว ๆ ทิ้งไว้ว่างเพื่อปิดใช้งาน";
 "Add shortcut" = "เพิ่มทางลัด";
 "Reset icon arrangement..." = "รีเซ็ตการจัดเรียงไอคอน...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "ลบการจัดเรียงและโฟลเดอร์ที่บันทึกไว้ แล้วสร้างหน้าใหม่ตั้งแต่ต้น ชื่อแอปที่กำหนดเองและแอปที่ซ่อนอยู่ยังอยู่เหมือนเดิม พิมพ์ RESET เพื่อยืนยัน";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "ลบลำดับและโฟลเดอร์ที่บันทึกไว้แล้วสร้างหน้าใหม่ตั้งแต่ต้น ชื่อกำหนดเองและแอปที่ซ่อนยังคงอยู่.";
 "Application" = "แอปพลิเคชัน";
 "Hidden" = "ซ่อน";
 "Show hidden apps first" = "แสดงแอปที่ซ่อนก่อน";
@@ -184,3 +184,17 @@
 "Vertical" = "แนวตั้ง";
 
 "Beta" = "เบต้า";
+
+"How should the grid be sorted after reset?" = "ต้องการจัดเรียงกริดอย่างไรหลังรีเซ็ต?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "เลือก เรียงตามตัวอักษร (A → Z) หรือ ตามลำดับการค้นพบ (ตามที่ Launchy พบแอป).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "การกระทำนี้จะลบลำดับที่บันทึกไว้ โฟลเดอร์ และเลย์เอาต์หน้า ชื่อแอปแบบกำหนดเองและแอปที่ซ่อนจะยังคงอยู่.";
+
+"Alphabetical" = "เรียงตามตัวอักษร";
+
+"Discovery order" = "ลำดับการค้นพบ";
+
+"A → Z by app name" = "A → Z ตามชื่อแอป";
+
+"As Launchy finds them" = "ตามที่ Launchy พบ";

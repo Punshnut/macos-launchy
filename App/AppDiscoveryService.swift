@@ -109,9 +109,11 @@ final class AppDiscoveryService {
     /// Rebuilds the cached list of installed apps, optionally excluding hidden bundle identifiers.
     func reloadApps(
         includeUserApplicationsFolder: Bool = true,
-        hiddenBundleIDs: Set<String> = []
-    ) -> (main: [AppItem], userApplications: [AppItem]) {
+        hiddenBundleIDs: Set<String> = [],
+        sorting: ArrangementResetSorting = .alphabetical
+    ) -> (main: [AppItem], userApplications: [AppItem], allVisible: [AppItem]) {
         var appsByBundleID: [String: AppItem] = [:]
+        var discoveryOrder: [String] = []
         let now = Date()
 
         LaunchyLogger.log("AppDiscovery: reload apps (includeUserApplicationsFolder=\(includeUserApplicationsFolder), hiddenCount=\(hiddenBundleIDs.count))")
@@ -123,7 +125,11 @@ final class AppDiscoveryService {
             LaunchyLogger.log("AppDiscovery: scanning directory \(directory.path)")
             let isCoreServicesDirectory = directory.standardizedFileURL == coreServicesDirectory.standardizedFileURL
             for app in discoverApplications(in: directory, isCoreServicesDirectory: isCoreServicesDirectory) {
-                appsByBundleID[app.bundleIdentifier] = app
+                let bundleID = app.bundleIdentifier
+                if appsByBundleID[bundleID] == nil {
+                    discoveryOrder.append(bundleID)
+                }
+                appsByBundleID[bundleID] = app
             }
         }
 
@@ -135,20 +141,35 @@ final class AppDiscoveryService {
         if restoredApps.isEmpty == false {
             LaunchyLogger.log("AppDiscovery: restoring \(restoredApps.count) cached apps missing from scan")
             for app in restoredApps {
-                appsByBundleID[app.bundleIdentifier] = app
+                let bundleID = app.bundleIdentifier
+                if appsByBundleID[bundleID] == nil {
+                    discoveryOrder.append(bundleID)
+                }
+                appsByBundleID[bundleID] = app
             }
         }
         updateCachedApps(with: appsByBundleID, seenAt: now)
 
-        let sortedApps = appsByBundleID.values
-            .sorted { $0.sortingName.localizedCaseInsensitiveCompare($1.sortingName) == .orderedAscending }
+        let orderedApps: [AppItem]
+        if sorting == .alphabetical {
+            orderedApps = appsByBundleID.values
+                .sorted { $0.sortingName.localizedCaseInsensitiveCompare($1.sortingName) == .orderedAscending }
+        } else {
+            let orderedByDiscovery = discoveryOrder
+                .compactMap { appsByBundleID[$0] }
+            // Append any stragglers that weren't captured in discoveryOrder (safety for future changes).
+            let remaining = appsByBundleID.keys
+                .filter { discoveryOrder.contains($0) == false }
+                .compactMap { appsByBundleID[$0] }
+            orderedApps = orderedByDiscovery + remaining
+        }
 
-        let visibleApps = sortedApps.filter { hiddenBundleIDs.contains($0.bundleIdentifier) == false }
+        let visibleApps = orderedApps.filter { hiddenBundleIDs.contains($0.bundleIdentifier) == false }
         let userApplications = visibleApps.filter { $0.isUserApplication }
         let mainApplications = visibleApps.filter { $0.isUserApplication == false }
         let userAppsToReturn = includeUserApplicationsFolder ? userApplications : []
         synchronizeIconMetadata(for: visibleApps)
-        return (main: mainApplications, userApplications: userAppsToReturn)
+        return (main: mainApplications, userApplications: userAppsToReturn, allVisible: visibleApps)
     }
 
     /// Keeps cache metadata in sync with the current set of apps and evicts stale entries.

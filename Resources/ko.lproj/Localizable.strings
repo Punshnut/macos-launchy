@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "레이아웃을 빠르게 바꾸고 싶다면 단축키를 선택하세요. 비워두면 비활성화됩니다.";
 "Add shortcut" = "단축키 추가";
 "Reset icon arrangement..." = "아이콘 배열 재설정...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "저장된 순서와 폴더를 삭제하고 페이지를 처음부터 다시 만듭니다. 맞춤 앱 이름과 숨김 앱은 유지됩니다. 확인하려면 RESET을 입력하세요.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "저장된 순서와 폴더를 삭제하고 페이지를 처음부터 다시 만듭니다. 사용자 지정 이름과 숨김 앱은 유지됩니다.";
 "Application" = "애플리케이션";
 "Hidden" = "숨김";
 "Show hidden apps first" = "숨김 앱을 먼저 표시";
@@ -184,3 +184,17 @@
 "Vertical" = "세로";
 
 "Beta" = "베타";
+
+"How should the grid be sorted after reset?" = "재설정 후 그리드를 어떻게 정렬할까요?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "알파벳순(A → Z) 또는 발견 순서(Launchy가 앱을 찾는 순서)를 선택하세요.";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "저장된 순서, 폴더, 페이지 레이아웃을 삭제합니다. 사용자 지정 앱 이름과 숨김 앱은 유지됩니다.";
+
+"Alphabetical" = "알파벳순";
+
+"Discovery order" = "발견 순서";
+
+"A → Z by app name" = "앱 이름 기준 A → Z";
+
+"As Launchy finds them" = "Launchy가 찾는 순서대로";

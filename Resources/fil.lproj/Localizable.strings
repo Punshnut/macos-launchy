@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Pumili ng shortcut kung gusto mong mabilis magpalit ng layout. Iwanang walang laman para i-disable.";
 "Add shortcut" = "Magdagdag ng shortcut";
 "Reset icon arrangement..." = "I-reset ang ayos ng icon...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Binubura ang nai-save na pagkakasunod at mga folder, tapos muling binubuo ang mga page mula simula. Mananatili ang custom na pangalan ng app, mananatiling nakatago ang mga hidden app. I-type ang RESET para kumpirmahin.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Binubura ang naka-save na ayos at mga folder at binubuo muli ang mga pahina. Nananatili ang custom na pangalan at nakatagong app.";
 "Application" = "Aplikasyon";
 "Hidden" = "Nakatago";
 "Show hidden apps first" = "Ipakita muna ang mga nakatagong app";
@@ -184,3 +184,17 @@
 "Vertical" = "Patayo";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "Paano dapat isaayos ang grid pagkatapos ng reset?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Pumili ng Alphabetical (A → Z) o Discovery order (ayon sa pagkakadiskubre ni Launchy).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Buburahin nito ang na-save mong pagkakasunod, mga folder, at layout ng pahina. Mananatili ang custom na pangalan at mga nakatagong app.";
+
+"Alphabetical" = "Alphabetical";
+
+"Discovery order" = "Discovery order";
+
+"A → Z by app name" = "A → Z batay sa pangalan ng app";
+
+"As Launchy finds them" = "Habang natatagpuan ni Launchy";

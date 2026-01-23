@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "አቀማመጦችን ፈጣን ለመቀየር አቋራጭ ይምረጡ። ለማጥፋት ባዶ ይተዉ።";
 "Add shortcut" = "አቋራጭ ያክሉ";
 "Reset icon arrangement..." = "የአዶ አቀማመጥ እንደገና አስጀምር...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "የተቀመጡ ቅደም ተከተሎችን እና ፎልደሮችን ይሰርዛል፣ ከዚያ ገጾችን ከጅምላ ይገነባል። ብጁ የመተግበሪያ ስሞች ይቀራሉ፣ የተደበቁ አፖች ተደብቀው ይቀራሉ። ለማረጋገጥ RESET ይተይፉ።";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "ያስቀመጡትን ቅደም ተከተልና ፎልደሮችን ያስወግዳል፤ ገጾችን ከእንደገና ይገነባል። ብጁ የመተግበሪያ ስሞችና የተደበቁ መተግበሪያዎች ይቆያሉ።";
 "Application" = "መተግበሪያ";
 "Hidden" = "የተደበቀ";
 "Show hidden apps first" = "የተደበቁ መተግበሪያዎችን መጀመሪያ አሳይ";
@@ -184,3 +184,17 @@
 "Vertical" = "ቁመት";
 
 "Beta" = "ቤታ";
+
+"How should the grid be sorted after reset?" = "ከዳግም ማስጀመር በኋላ ፍርግሩ እንዴት ይሰርዛል?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "ፊደላዊ (A → Z) ወይም የመግኘት ቅደም ተከተል (Launchy መተግበሪያዎችን እንደሚገኝባቸው) ይምረጡ።";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "ያስቀመጡትን ቅደም ተከተል፣ ፎልደሮች፣ የገጽ እቅድ ይሰርዛል። የተግባር ብጁ ስሞችና የተደበቁ መተግበሪያዎች ይቆያሉ።";
+
+"Alphabetical" = "ፊደላዊ";
+
+"Discovery order" = "የመግኘት ቅደም ተከተል";
+
+"A → Z by app name" = "በመተግበሪያ ስም A → Z";
+
+"As Launchy finds them" = "Launchy እንደሚገኝባቸው";

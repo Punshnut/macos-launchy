@@ -310,6 +310,32 @@ enum PagingOrientation: String, CaseIterable, Hashable, Codable {
     }
 }
 
+/// Sorting strategy applied when rebuilding the grid from scratch.
+enum ArrangementResetSorting: String, CaseIterable, Hashable, Codable {
+    case alphabetical
+    case discovery
+
+    /// User-facing label for settings UI.
+    var displayName: String {
+        switch self {
+        case .alphabetical:
+            return String(localized: "Alphabetical")
+        case .discovery:
+            return String(localized: "Discovery order")
+        }
+    }
+
+    /// Short description shown in confirmation dialogs.
+    var summary: String {
+        switch self {
+        case .alphabetical:
+            return String(localized: "A → Z by app name")
+        case .discovery:
+            return String(localized: "As Launchy finds them")
+        }
+    }
+}
+
 /// User-configurable settings for how the launcher behaves.
 struct LauncherSettings: Hashable, Codable {
     /// Available solid background colors when the solid style is chosen.

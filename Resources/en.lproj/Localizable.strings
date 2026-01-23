@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable.";
 "Add shortcut" = "Add shortcut";
 "Reset icon arrangement..." = "Reset icon arrangement...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden.";
 "Application" = "Application";
 "Hidden" = "Hidden";
 "Show hidden apps first" = "Show hidden apps first";
@@ -184,3 +184,17 @@
 "Vertical" = "Vertical";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "How should the grid be sorted after reset?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept.";
+
+"Alphabetical" = "Alphabetical";
+
+"Discovery order" = "Discovery order";
+
+"A → Z by app name" = "A → Z by app name";
+
+"As Launchy finds them" = "As Launchy finds them";

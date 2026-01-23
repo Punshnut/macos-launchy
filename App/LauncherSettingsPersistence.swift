@@ -4,6 +4,7 @@ import Foundation
 enum LauncherSettingsPersistence {
     private enum Keys {
         static let settingsPayload = "launcher.settings.payload"
+        static let arrangementResetSorting = "launcher.reset.sorting"
     }
 
     /// Registers the default values so future reads always produce `.fullscreen` until changed.
@@ -276,6 +277,23 @@ enum LauncherSettingsPersistence {
         updateSettings(userDefaults: userDefaults) { settings in
             settings.fillsGapsAutomatically = value
         }
+    }
+
+    /// Returns the preferred sorting applied when resetting the grid layout.
+    static func arrangementResetSorting(userDefaults: UserDefaults = .standard) -> ArrangementResetSorting {
+        guard
+            let raw = userDefaults.string(forKey: Keys.arrangementResetSorting),
+            let sorting = ArrangementResetSorting(rawValue: raw)
+        else { return .alphabetical }
+        return sorting
+    }
+
+    /// Persists the preferred reset sorting selection.
+    static func setArrangementResetSorting(
+        _ sorting: ArrangementResetSorting,
+        userDefaults: UserDefaults = .standard
+    ) {
+        userDefaults.set(sorting.rawValue, forKey: Keys.arrangementResetSorting)
     }
 
     /// Reconstructs a `LauncherSettings` value using the stored toggles.

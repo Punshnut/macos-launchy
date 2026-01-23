@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Chọn một phím tắt nếu bạn muốn chuyển bố cục nhanh. Để trống để vô hiệu hóa.";
 "Add shortcut" = "Thêm phím tắt";
 "Reset icon arrangement..." = "Đặt lại thứ tự biểu tượng...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Xóa thứ tự và thư mục đã lưu của bạn, sau đó khôi phục trang từ đầu. Tên ứng dụng tùy chỉnh giữ nguyên, ứng dụng ẩn vẫn ẩn. Gõ RESET để xác nhận.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Xóa thứ tự và thư mục đã lưu rồi xây dựng lại các trang từ đầu. Tên tùy chỉnh và ứng dụng ẩn vẫn giữ nguyên.";
 "Application" = "Ứng dụng";
 "Hidden" = "Đã ẩn";
 "Show hidden apps first" = "Hiển thị ứng dụng ẩn lên trước";
@@ -184,3 +184,17 @@
 "Vertical" = "Dọc";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "Sắp xếp lưới như thế nào sau khi đặt lại?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Chọn Thứ tự chữ cái (A → Z) hoặc Thứ tự tìm thấy (theo cách Launchy tìm app).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Điều này xóa thứ tự đã lưu, thư mục và bố cục trang. Tên ứng dụng tùy chỉnh và ứng dụng ẩn sẽ được giữ lại.";
+
+"Alphabetical" = "Thứ tự chữ cái";
+
+"Discovery order" = "Thứ tự tìm thấy";
+
+"A → Z by app name" = "A → Z theo tên ứng dụng";
+
+"As Launchy finds them" = "Theo thứ tự Launchy tìm thấy";

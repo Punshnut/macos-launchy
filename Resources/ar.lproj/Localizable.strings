@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "اختر اختصارًا لتبديل التخطيطات بسرعة. اتركه فارغًا لتعطيل.";
 "Add shortcut" = "أضف اختصارًا";
 "Reset icon arrangement..." = "إعادة ضبط ترتيب الأيقونات...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "يحذف ترتيبك والمجلدات المحفوظة، ثم يعيد بناء الصفحات من الصفر. تظل الأسماء المخصصة والمخفيّة كما هي. اكتب RESET للتأكيد.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "يحذف الترتيب والمجلدات التي حفظتها ثم يعيد بناء الصفحات من جديد. تُبقي أسماء التطبيقات المخصصة والتطبيقات المخفية.";
 "Application" = "تطبيق";
 "Hidden" = "مخفي";
 "Show hidden apps first" = "إظهار التطبيقات المخفية أولاً";
@@ -184,3 +184,17 @@
 "Vertical" = "رأسي";
 
 "Beta" = "تجريبي";
+
+"How should the grid be sorted after reset?" = "كيف يجب فرز الشبكة بعد إعادة التعيين؟";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "اختر الترتيب الأبجدي (A → Z) أو ترتيب الاكتشاف (كما يجد Launchy التطبيقات).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "سيحذف هذا الترتيب المحفوظ والمجلدات وتخطيط الصفحات. ستبقى أسماء التطبيقات المخصصة والتطبيقات المخفية.";
+
+"Alphabetical" = "أبجدي";
+
+"Discovery order" = "ترتيب الاكتشاف";
+
+"A → Z by app name" = "A → Z حسب اسم التطبيق";
+
+"As Launchy finds them" = "كما يعثر عليها Launchy";

@@ -101,7 +101,7 @@
 "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable." = "Pilih pintasan jika anda mahu menukar susun atur dengan cepat. Biarkan kosong untuk melumpuhkan.";
 "Add shortcut" = "Tambah pintasan";
 "Reset icon arrangement..." = "Reset susunan ikon...";
-"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden. Type RESET to confirm." = "Memadamkan susunan dan folder yang disimpan, kemudian membina semula halaman dari awal. Nama aplikasi tersuai kekal, aplikasi tersembunyi kekal tersembunyi. Taip RESET untuk mengesahkan.";
+"Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden." = "Memadam susunan dan folder tersimpan, kemudian bina semula halaman dari awal. Nama app tersuai kekal, app tersembunyi kekal tersembunyi.";
 "Application" = "Aplikasi";
 "Hidden" = "Tersembunyi";
 "Show hidden apps first" = "Tunjukkan aplikasi tersembunyi dahulu";
@@ -184,3 +184,17 @@
 "Vertical" = "Menegak";
 
 "Beta" = "Beta";
+
+"How should the grid be sorted after reset?" = "Bagaimana grid harus diisih selepas set semula?";
+
+"Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Pilih Abjad (A → Z) atau Ikut penemuan (mengikut urutan Launchy menemui app).";
+
+"This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Ini memadam susunan yang disimpan, folder, dan susun atur halaman. Nama app tersuai dan app tersembunyi akan dikekalkan.";
+
+"Alphabetical" = "Abjad";
+
+"Discovery order" = "Ikut penemuan";
+
+"A → Z by app name" = "A → Z mengikut nama app";
+
+"As Launchy finds them" = "Seperti yang Launchy temui";

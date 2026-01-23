@@ -13,7 +13,7 @@ struct LauncherLayoutMetrics {
     var horizontalPadding: CGFloat {
         switch launcherMode {
         case .floaty:
-            return 32
+            return 36
         case .fullscreen:
             return max(60, containerSize.width * 0.08)
         }
@@ -23,7 +23,7 @@ struct LauncherLayoutMetrics {
     var bottomPadding: CGFloat {
         switch launcherMode {
         case .floaty:
-            return 28
+            return 32
         case .fullscreen:
             return 56
         }
@@ -33,7 +33,7 @@ struct LauncherLayoutMetrics {
     var iconSpacing: CGFloat {
         switch launcherMode {
         case .floaty:
-            return 14
+            return 18
         case .fullscreen:
             let base = min(containerSize.width, containerSize.height) / 40
             return max(20, min(base, 60))
@@ -44,7 +44,7 @@ struct LauncherLayoutMetrics {
     var searchToGridSpacing: CGFloat {
         switch launcherMode {
         case .floaty:
-            return 32
+            return 30
         case .fullscreen:
             return 44
         }
@@ -54,7 +54,7 @@ struct LauncherLayoutMetrics {
     var gridToPagerSpacing: CGFloat {
         switch launcherMode {
         case .floaty:
-            return 20
+            return 16
         case .fullscreen:
             return 16
         }
@@ -64,7 +64,7 @@ struct LauncherLayoutMetrics {
     var gridVerticalOffset: CGFloat {
         switch launcherMode {
         case .floaty:
-            return -6
+            return -2
         case .fullscreen:
             return -8
         }
@@ -72,19 +72,19 @@ struct LauncherLayoutMetrics {
 
     /// Max width of the search bar given surrounding padding.
     var searchBarWidth: CGFloat {
-        let cap: CGFloat = launcherMode == .floaty ? 520 : 620
+        let cap: CGFloat = launcherMode == .floaty ? 560 : 620
         let available = max(containerSize.width - horizontalPadding * 2, 320)
         return min(cap, available)
     }
 
     /// Height of the search bar container.
     var searchBarHeight: CGFloat {
-        launcherMode == .floaty ? 46 : 52
+        launcherMode == .floaty ? 50 : 52
     }
 
     /// Rounded corners for the search bar background.
     var searchBarCornerRadius: CGFloat {
-        launcherMode == .floaty ? 18 : 22
+        launcherMode == .floaty ? 20 : 22
     }
 
     /// Font size used inside the search field.
@@ -99,7 +99,7 @@ struct LauncherLayoutMetrics {
 
     /// Top padding applied above the search bar in floaty mode.
     var floatySearchBarTopPadding: CGFloat {
-        launcherMode == .floaty ? 20 : 0
+        launcherMode == .floaty ? 16 : 0
     }
 
     /// Grid definition for SwiftUI's LazyVGrid.

@@ -921,12 +921,12 @@ struct LauncherView: View {
 
         if launcherMode == .floaty {
             content
+                .background(floatyBackdropHighlight(cornerRadius: layout.floatyCornerRadius))
                 .clipShape(RoundedRectangle(cornerRadius: layout.floatyCornerRadius, style: .continuous))
-                .shadow(color: Color.black.opacity(0.25), radius: 40, y: 18)
-                .overlay(
-                    RoundedRectangle(cornerRadius: layout.floatyCornerRadius, style: .continuous)
-                        .stroke(Color.white.opacity(0.4), lineWidth: 1.2)
-                )
+                .overlay(floatyGlassStroke(cornerRadius: layout.floatyCornerRadius))
+                .shadow(color: Color.black.opacity(0.32), radius: 26, y: 22)
+                .shadow(color: Color.black.opacity(0.18), radius: 12, y: 6)
+                .shadow(color: Color.white.opacity(colorScheme == .dark ? 0.14 : 0.22), radius: 2.6, y: 1)
         } else {
             content
         }
@@ -945,14 +945,13 @@ struct LauncherView: View {
                 .ignoresSafeArea()
 
             if launcherMode == .floaty {
+                let sheen = Color.white.opacity(colorScheme == .dark ? 0.16 : 0.34)
+                let glow = Color(red: 0.64, green: 0.78, blue: 0.98).opacity(colorScheme == .dark ? 0.22 : 0.32)
+                let depth = Color(red: 0.33, green: 0.45, blue: 0.74).opacity(colorScheme == .dark ? 0.16 : 0.24)
                 LinearGradient(
-                    colors: [
-                        Color.white.opacity(0.45),
-                        Color(red: 0.56, green: 0.78, blue: 0.97).opacity(0.35),
-                        Color(red: 0.45, green: 0.66, blue: 0.93).opacity(0.35)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
+                    colors: [sheen, glow, depth],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
                 .blendMode(.screen)
                 .ignoresSafeArea()
@@ -3429,17 +3428,36 @@ struct LauncherView: View {
         onSelect: ((Int) -> Void)? = nil
     ) -> some View {
         let pageCount = max(totalPages, 1)
-        let stackSpacing: CGFloat = 6
+        let isFloaty = launcherMode == .floaty
+        let stackSpacing: CGFloat = isFloaty ? 8 : 6
         let stack = Group {
             ForEach(0..<pageCount, id: \.self) { index in
                 let isDisabled = onSelect == nil || index >= totalPages
+                let isActive = index == currentPage
+                let capsuleWidth: CGFloat = {
+                    if isFloaty {
+                        return isActive ? 16 : 8
+                    } else {
+                        return 8
+                    }
+                }()
+                let capsuleHeight: CGFloat = isFloaty ? 6 : 8
+                let fillOpacity: Double = isActive ? 0.9 : (isFloaty ? 0.28 : 0.35)
+                let strokeOpacity: Double = isFloaty && isActive ? 0.22 : 0
+                let scale: CGFloat = isActive ? 1.08 : 0.95
                 Button {
                     onSelect?(index)
                 } label: {
-                    Circle()
-                        .fill(pagerControlForegroundColor.opacity(index == currentPage ? 0.9 : 0.35))
-                        .frame(width: 8, height: 8)
-                        .contentShape(Circle())
+                    Capsule(style: .continuous)
+                        .fill(pagerControlForegroundColor.opacity(fillOpacity))
+                        .frame(width: capsuleWidth, height: capsuleHeight)
+                        .overlay(
+                            Capsule(style: .continuous)
+                                .strokeBorder(Color.white.opacity(strokeOpacity), lineWidth: isFloaty ? 0.8 : 0)
+                        )
+                        .scaleEffect(scale)
+                        .animation(.spring(response: 0.34, dampingFraction: 0.82, blendDuration: 0.1), value: currentPage)
+                        .contentShape(Capsule(style: .continuous))
                 }
                 .buttonStyle(.plain)
                 .disabled(isDisabled)
@@ -3547,6 +3565,7 @@ struct LauncherView: View {
             hitPadding: pagerButtonHitPadding,
             hitSize: pagerButtonHitSize,
             hitExpansion: pagerButtonHitExpansion,
+            isFloaty: launcherMode == .floaty,
             action: action
         )
 
@@ -3579,6 +3598,7 @@ struct LauncherView: View {
         let hitPadding: CGFloat
         let hitSize: CGFloat
         let hitExpansion: CGFloat
+        let isFloaty: Bool
         let action: () -> Void
 
         @State private var didTriggerOnPress = false
@@ -3589,6 +3609,15 @@ struct LauncherView: View {
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(foregroundColor)
                     .frame(width: 28, height: 28)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(Color.white.opacity(isFloaty ? 0.10 : 0))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .strokeBorder(Color.white.opacity(isFloaty ? 0.22 : 0), lineWidth: isFloaty ? 0.8 : 0)
+                            )
+                    )
+                    .animation(.spring(response: 0.32, dampingFraction: 0.84, blendDuration: 0.1), value: isFloaty)
             }
             .padding(.horizontal, hitPadding)
             .padding(.vertical, hitPadding)
@@ -4472,6 +4501,45 @@ struct LauncherView: View {
         )
     }
 
+    /// Soft glassy halo that lifts the floaty panel off the desktop.
+    private func floatyBackdropHighlight(cornerRadius: CGFloat) -> some View {
+        RoundedRectangle(cornerRadius: cornerRadius + 10, style: .continuous)
+            .fill(
+                LinearGradient(
+                    colors: [
+                        Color.white.opacity(colorScheme == .dark ? 0.12 : 0.24),
+                        Color.white.opacity(colorScheme == .dark ? 0.04 : 0.12)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .blur(radius: 22)
+            .offset(y: -8)
+            .padding(-6)
+    }
+
+    /// Hairline strokes that mimic the layered glass edges in modern macOS HUDs.
+    private func floatyGlassStroke(cornerRadius: CGFloat) -> some View {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+            .strokeBorder(
+                LinearGradient(
+                    colors: [
+                        Color.white.opacity(colorScheme == .dark ? 0.42 : 0.55),
+                        Color.white.opacity(colorScheme == .dark ? 0.16 : 0.28)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ),
+                lineWidth: 1.1
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .strokeBorder(Color.black.opacity(colorScheme == .dark ? 0.30 : 0.12), lineWidth: 0.6)
+                    .blendMode(.overlay)
+            )
+    }
+
     /// Inserts the top spacer only when fullscreen mode is active.
     @ViewBuilder
     private func fullscreenSpacer(height: CGFloat) -> some View {
@@ -4547,24 +4615,43 @@ struct LauncherView: View {
             .overlay(alignment: .trailing) {
                 searchBarTrailingDecorations()
             }
-            .shadow(color: .black.opacity(isFloaty ? 0.18 : 0.2), radius: isFloaty ? 18 : 12, y: isFloaty ? 6 : 4)
+            .shadow(color: .black.opacity(isFloaty ? 0.22 : 0.2), radius: isFloaty ? 20 : 12, y: isFloaty ? 10 : 4)
+            .shadow(color: Color.white.opacity(isFloaty ? (colorScheme == .dark ? 0.16 : 0.26) : 0), radius: isFloaty ? 2.4 : 0, y: isFloaty ? 1 : 0)
             .frame(width: layout.searchBarWidth)
             .frame(maxWidth: .infinity)
             .environment(\.colorScheme, searchBarColorSchemeOverride())
     }
 
     private func searchFieldBackground(isFloaty: Bool, layout: LauncherLayoutMetrics) -> some View {
-        Group {
+        let shape = RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous)
+        return Group {
             if isFloaty {
                 ZStack {
                     searchBarBackgroundMaterial()
-                    Color.white.opacity(colorScheme == .dark ? 0.12 : 0.78)
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(colorScheme == .dark ? 0.18 : 0.42),
+                            Color(red: 0.76, green: 0.86, blue: 0.99).opacity(colorScheme == .dark ? 0.18 : 0.32),
+                            Color(red: 0.54, green: 0.66, blue: 0.88).opacity(colorScheme == .dark ? 0.16 : 0.26)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    Color.white.opacity(colorScheme == .dark ? 0.08 : 0.62)
+                        .blendMode(.screen)
                 }
+                .overlay(
+                    shape.strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.36 : 0.58), lineWidth: 0.9)
+                )
+                .overlay(
+                    shape.strokeBorder(Color.black.opacity(colorScheme == .dark ? 0.28 : 0.12), lineWidth: 0.6)
+                        .blendMode(.overlay)
+                )
             } else {
                 searchBarBackgroundMaterial()
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous))
+        .clipShape(shape)
     }
 
     private var isSearchControlsVisible: Bool {

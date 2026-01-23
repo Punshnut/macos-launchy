@@ -3,7 +3,7 @@ import SwiftUI
 
 /// Configures and presents the right window type for the selected launcher mode.
 final class LauncherWindowController: NSWindowController {
-    private static let preferredFloatyContentSize = NSSize(width: 960, height: 830)
+    private static let preferredFloatyContentSize = NSSize(width: 1040, height: 830)
     private let launcherContentHost: NSHostingController<LauncherView>
     private let launcherMode: LauncherMode
     private let entranceContentOffset: CGFloat = 32

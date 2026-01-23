@@ -4,9 +4,9 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 <p align="center">
   <img src="https://img.shields.io/badge/platform-macOS-blue" alt="Platform macOS">
-  <img src="https://img.shields.io/badge/Swift-6.2.1-orange" alt="Swift 6.2.1">
   <img src="https://img.shields.io/badge/Stage-Beta-yellow" alt="Stage Beta">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
+  <img src="https://img.shields.io/badge/Swift-6.2.1-orange" alt="Swift 6.2.1">
 </p>
 
 <p align="center">
@@ -104,10 +104,9 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 ## Roadmap
 
 Here are a few improvements planned for upcoming releases:
-- Richer, but unobtrusive animations - smoother transitions and calmer motion across fullscreen and Floaty mode.
+- Richer, but unobtrusive animations - smoother transitions, user input interpretation and calmer motion across fullscreen and Floaty mode.
 - Floaty mode visual overhaul - refinements to spacing, layout, and HUD elements to better match modern macOS design.
 - Dock menu enhancements - icons inside the Dock right-click menu for quicker recognition and a more polished feel.
-- More performance - less stuttering from user input while shrinking memory usage
 - Plugin support - support for feature extensions and visual overlays through plugins
 
 [Donate (Ko-Fi)](https://ko-fi.com/janfeuerbacher)

@@ -5,12 +5,14 @@ import UniformTypeIdentifiers
 
 enum IconRenderQuality: String {
     case low
+    case balanced
     case medium
     case high
 
     var cacheSuffix: String {
         switch self {
         case .low: return "l"
+        case .balanced: return "b"
         case .medium: return "m"
         case .high: return "h"
         }
@@ -19,6 +21,7 @@ enum IconRenderQuality: String {
     var pixelCap: Int {
         switch self {
         case .low: return 80
+        case .balanced: return 120
         case .medium: return 160
         case .high: return 200
         }
@@ -28,6 +31,8 @@ enum IconRenderQuality: String {
         switch self {
         case .low:
             return .low
+        case .balanced:
+            return .medium
         case .medium:
             return .medium
         case .high:

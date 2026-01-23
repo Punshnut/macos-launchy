@@ -1159,7 +1159,10 @@ struct LauncherView: View {
             if scale <= 1.2 {
                 return .medium
             }
-            return launcherMode == .floaty ? .low : .medium
+            if launcherMode == .floaty {
+                return .balanced
+            }
+            return .medium
         }()
         return (dimension, quality)
     }

@@ -1278,10 +1278,17 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let limit = pageCapacity(for: mode) * 2
         let apps = prioritizedAppsForPrefetch(limit: limit)
         guard apps.isEmpty == false else { return }
+        let qualities: [IconRenderQuality] = {
+            if mode == .floaty {
+                return [.low, .balanced]
+            } else {
+                return [.low, .medium]
+            }
+        }()
         applicationDiscovery.preheatIcons(
             for: apps,
             targetDimension: dimension,
-            qualities: [.low, .medium],
+            qualities: qualities,
             limit: limit
         )
     }

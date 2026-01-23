@@ -105,7 +105,6 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 Here are a few improvements planned for upcoming releases:
 - Richer, but unobtrusive animations - smoother transitions, user input interpretation and calmer motion across fullscreen and Floaty mode.
-- Floaty mode visual overhaul - refinements to spacing, layout, and HUD elements to better match modern macOS design.
 - Dock menu enhancements - icons inside the Dock right-click menu for quicker recognition and a more polished feel.
 - Plugin support - support for feature extensions and visual overlays through plugins
 

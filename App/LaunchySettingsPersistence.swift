@@ -311,6 +311,15 @@ enum LauncherSettingsPersistence {
         userDefaults.set(sorting.rawValue, forKey: Keys.arrangementResetSorting)
     }
 
+    /// Replaces the entire settings payload without mutating individual fields.
+    /// Used for backup/restore flows to apply a saved snapshot in one step.
+    static func overwriteSettings(
+        _ settings: LauncherSettings,
+        userDefaults: UserDefaults = .standard
+    ) {
+        saveSettings(settings, userDefaults: userDefaults)
+    }
+
     /// Reconstructs a `LauncherSettings` value using the stored toggles.
     static func loadSettings(userDefaults: UserDefaults = .standard) -> LauncherSettings {
         guard let data = userDefaults.data(forKey: Keys.settingsPayload) else {
@@ -384,4 +393,8 @@ extension Notification.Name {
     static let launcherSettingsDidChange = Notification.Name("LauncherSettingsDidChange")
     /// Posted when the user requests a reset of the saved launcher arrangement.
     static let launcherArrangementResetRequested = Notification.Name("LauncherArrangementResetRequested")
+    /// Posted when the user taps "Export backup..." in settings.
+    static let launcherBackupExportRequested = Notification.Name("LauncherBackupExportRequested")
+    /// Posted when the user taps "Restore backup..." in settings.
+    static let launcherBackupImportRequested = Notification.Name("LauncherBackupImportRequested")
 }

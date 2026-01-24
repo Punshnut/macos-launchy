@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Bu SwiftUI taslağı fikirlerin için hazır.";
 "Increase Counter" = "Sayacı artır";
 "Counter: %lld" = "Sayaç: %lld";
-
 "Floaty or fullscreen" = "Kayan veya tam ekran";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "O ana uyan düzeni seç. Kayan görünüm masaüstünün üstünde kalır, tam ekran ise klasik Launchpad gibi hissettirir.";
 "Floaty mode" = "Kayan mod";
@@ -41,11 +40,9 @@
 "Back" = "Geri";
 "Start using Launchy" = "Launchy’yi kullanmaya başla";
 "Next" = "İleri";
-
 "Visuals" = "Görünüm";
 "Shortcuts" = "Kısayollar";
 "About" = "Hakkında";
-
 "Fullscreen" = "Tam ekran";
 "Floaty Panel" = "Kayan panel";
 "System" = "Sistem";
@@ -65,7 +62,6 @@
 "Transparent" = "Şeffaf";
 "Solid Color" = "Düz renk";
 "unnamed" = "adsız";
-
 "Launcher" = "Launcher";
 "Launch at login, layouts, and background styling." = "Girişte başlatma, düzenler ve arka plan stili.";
 "Keyboard" = "Klavye";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Launchy ayarları";
 "Launcher settings" = "Başlatıcı ayarları";
 "Launchy info" = "Launchy bilgisi";
-
 "Settings" = "Ayarlar";
 "Settings..." = "Ayarlar...";
 "Check for Updates..." = "Güncellemeleri denetle...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Test arka plan stillerini aç/kapat";
 "Show Launcher" = "Launcher’ı göster";
 "Quit Launchy" = "Launchy’den çık";
-
 "No items found" = "Öğe bulunamadı";
 "No matching items" = "Eşleşen öğe yok";
 "Enter multi-select mode" = "Çoklu seçim moduna geç";
@@ -147,6 +141,8 @@
 "Search" = "Ara";
 "Clear search text" = "Arama metnini temizle";
 "More actions" = "Daha fazla işlem";
+
+// Item actions
 "Open" = "Aç";
 "Rename App" = "Uygulamayı yeniden adlandır";
 "Enter a custom name for this app. Leave empty to reset." = "Bu uygulama için özel bir ad gir. Sıfırlamak için boş bırak.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Uygulamalar:\n%@";
 "Save" = "Kaydet";
 
+// Launcher visuals
 "Icon size" = "Simge boyutu";
 "Small (Original)" = "Küçük (orijinal)";
 "Medium" = "Orta";
@@ -182,19 +179,30 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Dikey sayfalama sayfaları yukarı ve aşağı hareket ettirir. Göstergeler tam ekranda sola gider, floaty modda altta kalır.";
 "Horizontal" = "Yatay";
 "Vertical" = "Dikey";
-
 "Beta" = "Beta";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Sıfırlamadan sonra ızgara nasıl sıralansın?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Alfabetik (A → Z) ya da Keşif sırası (Launchy uygulamaları bulduğu sırada) seçin.";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Bu, kayıtlı sıralamayı, klasörleri ve sayfa düzenini siler. Özel uygulama adları ve gizli uygulamalar korunur.";
-
 "Alphabetical" = "Alfabetik";
-
 "Discovery order" = "Keşif sırası";
-
 "A → Z by app name" = "Uygulama adına göre A → Z";
-
 "As Launchy finds them" = "Launchy bulduğu sırayla";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "Yedekle ve Geri Yükle";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Simge ızgaranı, klasörleri, özel adları, gizli uygulamaları ve ayarları tek dosyada sakla. Düzeni taşımak veya kurtarmak için geri yükle.";
+"Export backup..." = "Yedeği dışa aktar...";
+"Restore backup..." = "Yedeği geri yükle...";
+"Backup saved" = "Yedek kaydedildi";
+"Your launcher layout and settings were saved to %@" = "Başlatıcı düzenin ve ayarların %@ içine kaydedildi";
+"Export failed" = "Dışa aktarma başarısız";
+"Backup restored" = "Yedek geri yüklendi";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy uygulamalarını, klasörlerini ve ayarlarını yeniden yükledi. Eksik uygulamalar atlandı; yeniler sona eklendi.";
+"Restore failed" = "Geri yükleme başarısız";
+"Could not encode backup payload." = "Yedek verisi kodlanamadı.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Dock menüsünde uygulamalardan sonra klasörleri grupla";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Dock simgesine sağ tıklandığında bağımsız uygulamalar önce alfabetik, klasörler hemen altında alfabetik sıralanır.";

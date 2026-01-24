@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Eto SwiftUI yii ti ṣetan fun awọn ero rẹ.";
 "Increase Counter" = "Mu kaunta pọ si";
 "Counter: %lld" = "Kaunta: %lld";
-
 "Floaty or fullscreen" = "Floaty tabi iboju kikun";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Yan àkópọ̀ tó bá ìgbà mu. Floaty ń fò lórí deskitọpu rẹ, ìgbà tí iboju kikun sì dà bí Launchpad ayé àtijọ́.";
 "Floaty mode" = "Ipo Floaty";
@@ -41,11 +40,9 @@
 "Back" = "Padà";
 "Start using Launchy" = "Bẹ̀rẹ̀ sí í lo Launchy";
 "Next" = "Tẹ̀síwájú";
-
 "Visuals" = "Àwòrán";
 "Shortcuts" = "Àkótán";
 "About" = "Nipa";
-
 "Fullscreen" = "Iboju kikun";
 "Floaty Panel" = "Pánẹ́lì Floaty";
 "System" = "Eto";
@@ -65,7 +62,6 @@
 "Transparent" = "Kedere";
 "Solid Color" = "Àwọ̀ tó ní ìtọ́jú";
 "unnamed" = "láìní orúkọ";
-
 "Launcher" = "Lánsà";
 "Launch at login, layouts, and background styling." = "Ṣí nígbà títẹ̀wọlé, àkópọ̀, àti ìṣàtúnṣe ẹ̀yìn.";
 "Keyboard" = "Kíbọ́ọ̀du";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Settings Launchy";
 "Launcher settings" = "Settings lánsà";
 "Launchy info" = "Ìtàn Launchy";
-
 "Settings" = "Settings";
 "Settings..." = "Settings...";
 "Check for Updates..." = "Ṣàyẹ̀wò fún àwọn ìmúlò tuntun...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Tọ́gùlù àwọn àṣà ẹ̀yìn ìdánwò";
 "Show Launcher" = "Fi lánsà hàn";
 "Quit Launchy" = "Jade Launchy";
-
 "No items found" = "Kò sí ohun tí a rí";
 "No matching items" = "Kò sí ohun tó bá mu";
 "Enter multi-select mode" = "Wọ́ ipo yíyan púpọ̀";
@@ -147,6 +141,8 @@
 "Search" = "Ṣàwárí";
 "Clear search text" = "Pa ọrọ ìṣàwárí mọ́";
 "More actions" = "Àwọn ìgbésẹ míì";
+
+// Item actions
 "Open" = "Ṣí";
 "Rename App" = "Tún orúkọ app ṣe";
 "Enter a custom name for this app. Leave empty to reset." = "Tẹ orúkọ àtọkànwá fún app yìí. Fi sí òfo láti rẹ́seti.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Àwọn app:\n%@";
 "Save" = "Fipamọ́";
 
+// Launcher visuals
 "Icon size" = "Iwọn aami";
 "Small (Original)" = "Kekere (atọwọdọwọ)";
 "Medium" = "Arin";
@@ -182,19 +179,30 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Ìtẹ̀sí ináàró n gbe ojúewé soke ati isalẹ. Ààmì n lọ sí apa osi ní iboju kikun, tí wọn sì dúró ní isalẹ ní ọ̀nà floaty.";
 "Horizontal" = "Pẹ̀tẹ́lẹ̀";
 "Vertical" = "Ináàró";
-
 "Beta" = "Bẹ́tà";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Báwo ni a ṣe yẹ kí a ṣètò gírídì lẹ́yìn ìtúnṣe?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Yan Gẹ́gẹ́ bí Alfabẹ́ẹ̀tì (A → Z) tàbí Ìtọ́sọ́nà ìwárí (bí Launchy ṣe ń rí àwọn app).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Èyí máa pa àtòjọ fipamọ́ rẹ, àwọn pọọ̀dà àti àtẹ̀jáde ojúewé rẹ́. Àwọn orúkọ app ti a ṣe àdáni àti àwọn app to farapamọ́ yóò wà láìyípadà.";
-
 "Alphabetical" = "Alfabẹ́ẹ̀tì";
-
 "Discovery order" = "Ìtọ́sọ́nà ìwárí";
-
 "A → Z by app name" = "A → Z gẹ́gẹ́ bí orúkọ app";
-
 "As Launchy finds them" = "Gẹ́gẹ́ bí Launchy ṣe ń rí wọn";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "Afẹyinti & Atunṣe";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Fipamọ àgọ àkọsílẹ, àwọn fọ́ọ̀dà, orúkọ àdáni, àwọn app tí a fi pamọ́ àti àwọn ìtọ́sọ́nà sínú fáìlì kan. Lo atunṣe láti kó tàbí gba àtẹ̀jáde padà.";
+"Export backup..." = "Ṣe àfihàn afẹyinti...";
+"Restore backup..." = "Ṣe atunṣe afẹyinti...";
+"Backup saved" = "Afẹyinti ti fipamọ";
+"Your launcher layout and settings were saved to %@" = "Àtẹ̀jáde àti àwọn ìtọ́sọ́nà launcher rẹ ni a fipamọ sí %@";
+"Export failed" = "Àfihàn kò ṣàṣeyọrí";
+"Backup restored" = "Afẹyinti ni a tún un ṣe";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy tún kó àwọn app, fọ́ọ̀dà àti àwọn ìtọ́sọ́nà rẹ wá. Àwọn app tí kò sí ni a fo lọ; tuntun ni a fi kún òpin.";
+"Restore failed" = "Atunṣe kò ṣàṣeyọrí";
+"Could not encode backup payload." = "Kò lè kó data afẹyinti sí kóòdù.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Ṣọ́ọ̀ṣọ́ fọ́ọ̀dà lẹ́yìn app nínú akojọ Dock";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Nigbati o ba tẹ Dock, àwọn app kọọkan máa wà lókè ní àtòkọ lẹ́tà, àwọn fọ́ọ̀dà sì wà ní isalẹ pẹ̀lú àtòkọ lẹ́tà.";

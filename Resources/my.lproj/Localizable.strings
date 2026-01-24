@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "ဒီ SwiftUI scaffold က သင့်အကြံဉာဏ်များအတွက် အဆင်သင့် ဖြစ်ပါတယ်။";
 "Increase Counter" = "ကောင်တာ တိုးပါ";
 "Counter: %lld" = "ကောင်တာ: %lld";
-
 "Floaty or fullscreen" = "Floaty သို့မဟုတ် မျက်နှာပြင်အပြည့်";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "အချိန်အခါနှင့် ကိုက်ညီတဲ့ လေဟန်ပုံစံကို ရွေးပါ။ Floaty က သင့် desktop အပေါ်မှာ လှုပ်ရှားပျံဝဲပြီး fullscreen ကတော့ classic Launchpad လို ခံစားရပါတယ်။";
 "Floaty mode" = "Floaty မုဒ်";
@@ -41,11 +40,9 @@
 "Back" = "နောက်သို့";
 "Start using Launchy" = "Launchy ကို စတင်အသုံးပြုပါ";
 "Next" = "နောက်တစ်ခု";
-
 "Visuals" = "ရုပ်ပုံများ";
 "Shortcuts" = "Shortcut များ";
 "About" = "အကြောင်း";
-
 "Fullscreen" = "မျက်နှာပြင်အပြည့်";
 "Floaty Panel" = "Floaty Panel";
 "System" = "စနစ်";
@@ -65,7 +62,6 @@
 "Transparent" = "ဖောက်ထွင်းမြင်နိုင်";
 "Solid Color" = "တောက်ပတဲ့ အရောင်";
 "unnamed" = "အမည်မရှိ";
-
 "Launcher" = "Launcher";
 "Launch at login, layouts, and background styling." = "Login အချိန်စတင်ခြင်း၊ layout များ၊ နှင့် background အလှဆင်ခြင်း။";
 "Keyboard" = "Keyboard";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Launchy Settings";
 "Launcher settings" = "Launcher settings";
 "Launchy info" = "Launchy info";
-
 "Settings" = "Settings";
 "Settings..." = "Settings...";
 "Check for Updates..." = "အပ်ဒိတ်များ စစ်ဆေးပါ...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Test Background Styles ကို toggle လုပ်ပါ";
 "Show Launcher" = "Launcher ကိုပြ";
 "Quit Launchy" = "Launchy မှ ထွက်";
-
 "No items found" = "မည်သည့်အရာမျှ မတွေ့ပါ";
 "No matching items" = "ကိုက်ညီသော အရာမရှိ";
 "Enter multi-select mode" = "Multi-select မုဒ်သို့ ဝင်ပါ";
@@ -147,6 +141,8 @@
 "Search" = "ရှာဖွေပါ";
 "Clear search text" = "Search text ကို ဖျက်ပါ";
 "More actions" = "နောက်ထပ် လုပ်ဆောင်ချက်များ";
+
+// Item actions
 "Open" = "ဖွင့်";
 "Rename App" = "App အမည်ပြောင်း";
 "Enter a custom name for this app. Leave empty to reset." = "ဒီ app အတွက် custom အမည် ထည့်ပါ။ Reset လုပ်ချင်ရင် အလွတ်ထားပါ။";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Apps:\n%@";
 "Save" = "သိမ်းပါ";
 
+// Launcher visuals
 "Icon size" = "အိုင်ကွန်အရွယ်အစား";
 "Small (Original)" = "အသေး (မူလ)";
 "Medium" = "အလယ်";
@@ -182,19 +179,32 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "ဗတိကပ်စာမျက်နှာရွှေ့ခြင်းသည် စာမျက်နှာများကို အပေါ်အောက်ရွှေ့သည်။ ပြ Indcators များသည် မျက်နှာပြင်အပြည့်တွင် ဘယ်ဘက်သို့ ရွှေ့ပြီး floaty တွင် အောက်ဖက်တွင်ကျန်မည်။";
 "Horizontal" = "ပြင်ညီ";
 "Vertical" = "ဒေါင်လိုက်";
-
 "Beta" = "ဘီတာ";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "ပြန်စတင်ပြီးနောက် grid ကို ဘယ်လို စီမယ်လဲ?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "အက္ခရာစဉ် (A → Z) သို့မဟုတ် ရှာတွေ့စဉ် (Launchy အပ်တွေ့ရာစဉ်) ကို ရွေးပါ။";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "သင့်သိမ်းထားသော စီစဉ်မှု၊ ဖိုင်တွဲများနှင့် စာမျက်နှာအပြင်အဆင်ကို ဖျက်သွားမည်။ မိမိပုံစံအပ်အမည်များနှင့် ဖျောက်ထားသောအပ်များကို ဆက်လက်ထားရှိမည်။";
-
 "Alphabetical" = "အက္ခရာစဉ်";
-
 "Discovery order" = "ရှာတွေ့စဉ်";
-
 "A → Z by app name" = "အပ်အမည်အလိုက် A → Z";
-
 "As Launchy finds them" = "Launchy တွေ့သလို";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "မိတ္တူကူးပြီး ပြန်လည်ထည့်သွင်းပါ";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "အိုင်ကွန်ဇာတ်စင်၊ ဖိုင်တွဲများ၊ စိတ်ကြိုက်နာမည်များ၊ ဝှက်ထားသောအပ်များနှင့် ဆက်တင်များကို ဖိုင်တစ်ခုထဲတွင် သိမ်းဆည်းပါ။ လိုအပ်လျှင် ပြန်လည်ထည့်သွင်း၍ အပြင်အဆင်ပြောင်းရွှေ့ သို့မဟုတ် ပြန်ရယူနိုင်ပါသည်။";
+"Export backup..." = "မိတ္တူ ထုတ်ယူမည်...";
+"Restore backup..." = "မိတ္တူ ပြန်ထည့်မည်...";
+"Backup saved" = "မိတ္တူကို သိမ်းဆည်းပြီးပါပြီ";
+"Your launcher layout and settings were saved to %@" = "သင့်လော့ချား အပြင်အဆင်နှင့် ဆက်တင်များကို %@ တွင် သိမ်းဆည်းထားသည်";
+"Export failed" = "ထုတ်ယူမှု မအောင်မြင်ပါ";
+"Backup restored" = "မိတ္တူ ပြန်ထည့်ပြီးပါပြီ";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy သင့်အပ်များ၊ ဖိုင်တွဲများနှင့် ဆက်တင်များကို ပြန်လည် ဖတ်ယူလိုက်သည်။ မရှိသောအပ်များကို ကျော်သွားပြီး အသစ်များကို နောက်ဆုံးတွင် ထည့်လိုက်သည်။";
+"Restore failed" = "ပြန်ထည့်ခြင်း မအောင်မြင်ပါ";
+"Could not encode backup payload." = "မိတ္တူဒေတာကို encode မလုပ်နိုင်ပါ။";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Dock မီနူးတွင် အပ်များနောက် ဖိုင်တွဲများကို စု";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Dock အိုင်ကွန်ကို right-click ပြုလုပ်သောအခါ ပုဂ္ဂလိကအပ်များကို အက္ခရာစဉ်ဖြင့် အပေါ်သို့ ထားပြီး ဖိုင်တွဲများကို အောက်တွင် အက္ခရာစဉ်ဖြင့် ပြပါသည်။";
+"Group folders after apps in Dock menu" = "Group folders after apps in Dock menu";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";

@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Этот шаблон SwiftUI готов к вашим идеям.";
 "Increase Counter" = "Увеличить счётчик";
 "Counter: %lld" = "Счётчик: %lld";
-
 "Floaty or fullscreen" = "Floaty или полноэкранный";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Выберите макет под настроение. Floaty парит над рабочим столом, а полноэкранный режим похож на классический Launchpad.";
 "Floaty mode" = "Режим Floaty";
@@ -41,11 +40,9 @@
 "Back" = "Назад";
 "Start using Launchy" = "Начать пользоваться Launchy";
 "Next" = "Далее";
-
 "Visuals" = "Визуальные";
 "Shortcuts" = "Сочетания";
 "About" = "О программе";
-
 "Fullscreen" = "Полноэкранный";
 "Floaty Panel" = "Панель Floaty";
 "System" = "Система";
@@ -65,7 +62,6 @@
 "Transparent" = "Прозрачный";
 "Solid Color" = "Сплошной цвет";
 "unnamed" = "без названия";
-
 "Launcher" = "Лаунчер";
 "Launch at login, layouts, and background styling." = "Запуск при входе, макеты и оформление фона.";
 "Keyboard" = "Клавиатура";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Настройки Launchy";
 "Launcher settings" = "Настройки лаунчера";
 "Launchy info" = "Информация о Launchy";
-
 "Settings" = "Настройки";
 "Settings..." = "Настройки...";
 "Check for Updates..." = "Проверить обновления...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Переключить тестовые стили фона";
 "Show Launcher" = "Показать лаунчер";
 "Quit Launchy" = "Выйти из Launchy";
-
 "No items found" = "Элементы не найдены";
 "No matching items" = "Совпадающих элементов нет";
 "Enter multi-select mode" = "Включить режим множественного выбора";
@@ -147,6 +141,8 @@
 "Search" = "Поиск";
 "Clear search text" = "Очистить текст поиска";
 "More actions" = "Дополнительные действия";
+
+// Item actions
 "Open" = "Открыть";
 "Rename App" = "Переименовать приложение";
 "Enter a custom name for this app. Leave empty to reset." = "Введите собственное имя для этого приложения. Оставьте пустым, чтобы сбросить.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Приложения:\n%@";
 "Save" = "Сохранить";
 
+// Launcher visuals
 "Icon size" = "Размер иконок";
 "Small (Original)" = "Маленький (оригинал)";
 "Medium" = "Средний";
@@ -182,19 +179,32 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Вертикальное перелистывание двигает страницы вверх и вниз. Индикаторы уходят влево в полноэкранном режиме и остаются внизу в плавающем.";
 "Horizontal" = "Горизонтально";
 "Vertical" = "Вертикально";
-
 "Beta" = "Бета";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Как отсортировать сетку после сброса?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Выберите По алфавиту (A → Z) или В порядке обнаружения (как Launchy находит приложения).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Это удалит сохранённый порядок, папки и макет страниц. Пользовательские названия и скрытые приложения сохранятся.";
-
 "Alphabetical" = "По алфавиту";
-
 "Discovery order" = "В порядке обнаружения";
-
 "A → Z by app name" = "A → Z по названию приложения";
-
 "As Launchy finds them" = "В порядке обнаружения Launchy";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "Резервное копирование и восстановление";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Сохраните сетку иконок, папки, пользовательские имена, скрытые приложения и настройки в один файл. Восстановите, чтобы перенести или вернуть раскладку.";
+"Export backup..." = "Экспорт копии...";
+"Restore backup..." = "Восстановить копию...";
+"Backup saved" = "Копия сохранена";
+"Your launcher layout and settings were saved to %@" = "Макет и настройки лаунчера сохранены в %@";
+"Export failed" = "Не удалось экспортировать";
+"Backup restored" = "Копия восстановлена";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy заново загрузил приложения, папки и настройки. Отсутствующие приложения пропущены; новые добавлены в конец.";
+"Restore failed" = "Не удалось восстановить";
+"Could not encode backup payload." = "Не удалось закодировать данные копии.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Группировать папки после приложений в меню Dock";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Оставляет отдельные приложения первыми по алфавиту, папки — ниже при правом клике по значку Dock.";
+"Group folders after apps in Dock menu" = "Group folders after apps in Dock menu";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";

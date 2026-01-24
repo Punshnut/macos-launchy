@@ -195,6 +195,24 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         )
     }
 
+    /// Asks the app delegate to export a full backup using a save panel.
+    func exportBackup(hostingWindow: AnyObject?) {
+        NotificationCenter.default.post(
+            name: .launcherBackupExportRequested,
+            object: hostingWindow,
+            userInfo: nil
+        )
+    }
+
+    /// Asks the app delegate to import a backup from disk.
+    func importBackup(hostingWindow: AnyObject?) {
+        NotificationCenter.default.post(
+            name: .launcherBackupImportRequested,
+            object: hostingWindow,
+            userInfo: nil
+        )
+    }
+
     /// Toggles the bundle identifier in the hidden apps list.
     func setHidden(_ isHidden: Bool, for app: AppItem) {
         var identifiers = Set(settingsSnapshot.hiddenBundleIDs)

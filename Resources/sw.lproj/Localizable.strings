@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Mfumo huu wa SwiftUI umeandaliwa kwa mawazo yako.";
 "Increase Counter" = "Ongeza kielekezi";
 "Counter: %lld" = "Kielekezi: %lld";
-
 "Floaty or fullscreen" = "Floaty au skrini nzima";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Chagua muundo unaofaa wakati huo. Floaty inaleta dirisha juu ya desktop yako, wakati skrini nzima inahisi kama Launchpad ya klasik.";
 "Floaty mode" = "Hali ya Floaty";
@@ -41,11 +40,9 @@
 "Back" = "Nyuma";
 "Start using Launchy" = "Anza kutumia Launchy";
 "Next" = "Inayofuata";
-
 "Visuals" = "Mionekano";
 "Shortcuts" = "Njia za mkato";
 "About" = "Kuhusu";
-
 "Fullscreen" = "Skrini nzima";
 "Floaty Panel" = "Paneli ya Floaty";
 "System" = "Mfumo";
@@ -65,7 +62,6 @@
 "Transparent" = "Uwazi";
 "Solid Color" = "Rangi imara";
 "unnamed" = "isiyokuwa na jina";
-
 "Launcher" = "Chombo";
 "Launch at login, layouts, and background styling." = "Anzisha unapojisajili, muundo na mtindo wa mandhari.";
 "Keyboard" = "Kibodi";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Mipangilio ya Launchy";
 "Launcher settings" = "Mipangilio ya Launcher";
 "Launchy info" = "Maelezo ya Launchy";
-
 "Settings" = "Mipangilio";
 "Settings..." = "Mipangilio...";
 "Check for Updates..." = "Angalia masasisho...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Badilisha mitindo ya mandhari ya majaribio";
 "Show Launcher" = "Onyesha chombo";
 "Quit Launchy" = "Acha Launchy";
-
 "No items found" = "Hakuna vitu vilivyopatikana";
 "No matching items" = "Hakuna vitu vinavyolingana";
 "Enter multi-select mode" = "Ingiza hali ya kuchagua nyingi";
@@ -147,6 +141,8 @@
 "Search" = "Tafuta";
 "Clear search text" = "Futa maandishi ya utafutaji";
 "More actions" = "Vitendo zaidi";
+
+// Item actions
 "Open" = "Fungua";
 "Rename App" = "Badilisha jina la programu";
 "Enter a custom name for this app. Leave empty to reset." = "Ingiza jina maalum la programu hii. Acha tupu kurejesha.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Programu:\n%@";
 "Save" = "Hifadhi";
 
+// Launcher visuals
 "Icon size" = "Ukubwa wa ikoni";
 "Small (Original)" = "Ndogo (asili)";
 "Medium" = "Wastani";
@@ -182,19 +179,30 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Kurasa wima husogeza kurasa juu na chini. Viashiria huhamia kushoto ukiwa skrini nzima na hubaki chini ukiwa kwenye hali ya kuelea.";
 "Horizontal" = "Mlalo";
 "Vertical" = "Wima";
-
 "Beta" = "Beta";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Gridi ipangwe vipi baada ya kuweka upya?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Chagua Kialfabeti (A → Z) au Mpangilio wa kugundua (kulingana Launchy anavyopata app).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Hii huondoa mpangilio uliohifadhiwa, folda na mpangilio wa ukurasa. Majina uliyopachika na app zilizofichwa zitabaki.";
-
 "Alphabetical" = "Kialfabeti";
-
 "Discovery order" = "Mpangilio wa kugundua";
-
 "A → Z by app name" = "A → Z kwa jina la app";
-
 "As Launchy finds them" = "Launchy anavyowapata";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "Hifadhi nakala na rejesha";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Hifadhi gridi ya ikoni, folda, majina maalum, programu zilizofichwa na mipangilio katika faili moja. Rejesha ili kuhamisha au kurejesha mpangilio.";
+"Export backup..." = "Hamisha nakala...";
+"Restore backup..." = "Rejesha nakala...";
+"Backup saved" = "Nakala imehifadhiwa";
+"Your launcher layout and settings were saved to %@" = "Mpangilio na mipangilio ya uzinduzi imehifadhiwa kwenye %@";
+"Export failed" = "Uhamishaji umeshindikana";
+"Backup restored" = "Nakala imerejeshwa";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy imepakia upya programu, folda na mipangilio yako. Programu zilizokosekana zimerukwa; mpya zimeongezwa mwisho.";
+"Restore failed" = "Urejeshaji umeshindikana";
+"Could not encode backup payload." = "Haikuweza kuweka data ya nakala kwa msimbo.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Panga folda baada ya programu kwenye menyu ya Dock";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Huonyesha programu pekee kwanza kwa mpangilio wa alfabeti, folda zikiwa chini unapo-bofya kulia ikoni ya Dock.";

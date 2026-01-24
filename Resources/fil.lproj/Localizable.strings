@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Handa na ang SwiftUI scaffold na ito para sa mga ideya mo.";
 "Increase Counter" = "Dagdagan ang counter";
 "Counter: %lld" = "Counter: %lld";
-
 "Floaty or fullscreen" = "Floaty o fullscreen";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Piliin ang layout na akma sa sandali. Lumulutang ang Floaty sa ibabaw ng desktop, habang ang fullscreen ay parang klasikong Launchpad.";
 "Floaty mode" = "Floaty mode";
@@ -41,11 +40,9 @@
 "Back" = "Bumalik";
 "Start using Launchy" = "Simulan gamitin ang Launchy";
 "Next" = "Susunod";
-
 "Visuals" = "Biswal";
 "Shortcuts" = "Mga shortcut";
 "About" = "Tungkol";
-
 "Fullscreen" = "Fullscreen";
 "Floaty Panel" = "Floaty Panel";
 "System" = "System";
@@ -65,7 +62,6 @@
 "Transparent" = "Transparent";
 "Solid Color" = "Solid na kulay";
 "unnamed" = "walang pangalan";
-
 "Launcher" = "Launcher";
 "Launch at login, layouts, and background styling." = "Paglunsad sa login, mga layout, at estilo ng background.";
 "Keyboard" = "Keyboard";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Mga Setting ng Launchy";
 "Launcher settings" = "Mga setting ng launcher";
 "Launchy info" = "Impormasyon ng Launchy";
-
 "Settings" = "Mga Setting";
 "Settings..." = "Mga Setting...";
 "Check for Updates..." = "Tingnan ang mga update...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "I-toggle ang test background styles";
 "Show Launcher" = "Ipakita ang Launcher";
 "Quit Launchy" = "Isara ang Launchy";
-
 "No items found" = "Walang nahanap na item";
 "No matching items" = "Walang tugmang item";
 "Enter multi-select mode" = "Pumasok sa multi-select mode";
@@ -147,6 +141,8 @@
 "Search" = "Maghanap";
 "Clear search text" = "I-clear ang teksto ng paghahanap";
 "More actions" = "Mas maraming aksyon";
+
+// Item actions
 "Open" = "Buksan";
 "Rename App" = "Palitan ang pangalan ng app";
 "Enter a custom name for this app. Leave empty to reset." = "Maglagay ng custom na pangalan para sa app na ito. Iwanang walang laman para i-reset.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Mga app:\n%@";
 "Save" = "I-save";
 
+// Launcher visuals
 "Icon size" = "Laki ng icon";
 "Small (Original)" = "Maliit (orihinal)";
 "Medium" = "Katamtaman";
@@ -182,19 +179,32 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Ang patayong paging ay naglilipat ng mga pahina pataas at pababa. Sa fullscreen lilipat ang mga indicator sa kaliwa at sa floaty mananatili sa ibaba.";
 "Horizontal" = "Pahalang";
 "Vertical" = "Patayo";
-
 "Beta" = "Beta";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Paano dapat isaayos ang grid pagkatapos ng reset?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Pumili ng Alphabetical (A → Z) o Discovery order (ayon sa pagkakadiskubre ni Launchy).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Buburahin nito ang na-save mong pagkakasunod, mga folder, at layout ng pahina. Mananatili ang custom na pangalan at mga nakatagong app.";
-
 "Alphabetical" = "Alphabetical";
-
 "Discovery order" = "Discovery order";
-
 "A → Z by app name" = "A → Z batay sa pangalan ng app";
-
 "As Launchy finds them" = "Habang natatagpuan ni Launchy";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "Mag-backup at Mag-restore";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "I-save ang grid ng icon, mga folder, custom na pangalan, nakatagong app, at mga setting sa isang file. I-restore para ilipat o bawiin ang layout.";
+"Export backup..." = "I-export ang backup...";
+"Restore backup..." = "I-restore ang backup...";
+"Backup saved" = "Nai-save ang backup";
+"Your launcher layout and settings were saved to %@" = "Na-save ang layout at mga setting ng launcher sa %@";
+"Export failed" = "Bigo ang pag-export";
+"Backup restored" = "Na-restore ang backup";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Muling na-load ng Launchy ang iyong mga app, folder, at setting. Ang nawawalang apps ay nilaktawan; ang mga bago ay idinagdag sa dulo.";
+"Restore failed" = "Bigo ang pag-restore";
+"Could not encode backup payload." = "Hindi makapag-encode ng data ng backup.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "I-grupo ang mga folder pagkatapos ng apps sa Dock menu";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Inilalagay muna ang mga solong app ayon sa alpabeto, mga folder sa ibaba kapag right-click sa Dock icon.";
+"Group folders after apps in Dock menu" = "Group folders after apps in Dock menu";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";

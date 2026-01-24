@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Tato SwiftUI kostra je připravena pro vaše nápady.";
 "Increase Counter" = "Zvýšit čítač";
 "Counter: %lld" = "Čítač: %lld";
-
 "Floaty or fullscreen" = "Floaty nebo celá obrazovka";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Vyberte rozložení, které se hodí pro daný okamžik. Floaty se vznáší nad vaší plochou, zatímco celá obrazovka působí jako klasický Launchpad.";
 "Floaty mode" = "Režim Floaty";
@@ -41,11 +40,9 @@
 "Back" = "Zpět";
 "Start using Launchy" = "Začít používat Launchy";
 "Next" = "Další";
-
 "Visuals" = "Vizuály";
 "Shortcuts" = "Zkratky";
 "About" = "O aplikaci";
-
 "Fullscreen" = "Celá obrazovka";
 "Floaty Panel" = "Panel Floaty";
 "System" = "Systém";
@@ -65,7 +62,6 @@
 "Transparent" = "Průhledné";
 "Solid Color" = "Plná barva";
 "unnamed" = "bez názvu";
-
 "Launcher" = "Spouštěč";
 "Launch at login, layouts, and background styling." = "Spuštění při přihlášení, rozložení a stylování pozadí.";
 "Keyboard" = "Klávesnice";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Nastavení Launchy";
 "Launcher settings" = "Nastavení spouštěče";
 "Launchy info" = "Informace o Launchy";
-
 "Settings" = "Nastavení";
 "Settings..." = "Nastavení...";
 "Check for Updates..." = "Zkontrolovat aktualizace...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Přepnout testovací styly pozadí";
 "Show Launcher" = "Zobrazit spouštěč";
 "Quit Launchy" = "Ukončit Launchy";
-
 "No items found" = "Nenalezeny žádné položky";
 "No matching items" = "Žádné odpovídající položky";
 "Enter multi-select mode" = "Vstoupit do režimu vícenásobného výběru";
@@ -147,6 +141,8 @@
 "Search" = "Hledat";
 "Clear search text" = "Vymazat text vyhledávání";
 "More actions" = "Další akce";
+
+// Item actions
 "Open" = "Otevřít";
 "Rename App" = "Přejmenovat aplikaci";
 "Enter a custom name for this app. Leave empty to reset." = "Zadejte vlastní název této aplikace. Pro reset ponechte prázdné.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Aplikace:\n%@";
 "Save" = "Uložit";
 
+// Launcher visuals
 "Icon size" = "Velikost ikony";
 "Small (Original)" = "Malá (původní)";
 "Medium" = "Střední";
@@ -182,19 +179,30 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Vertikální stránkování posouvá stránky nahoru a dolů. Ukazatele se v režimu celé obrazovky přesunou doleva a v plovoucím zůstanou dole.";
 "Horizontal" = "Horizontální";
 "Vertical" = "Vertikální";
-
 "Beta" = "Beta";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Jak se má mřížka po resetu seřadit?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Zvolte Abecedně (A → Z) nebo Podle nalezení (jak Launchy aplikace objevuje).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Toto smaže uložené pořadí, složky a rozložení stránek. Vlastní názvy a skryté aplikace zůstanou zachovány.";
-
 "Alphabetical" = "Abecedně";
-
 "Discovery order" = "Podle nalezení";
-
 "A → Z by app name" = "A → Z podle názvu aplikace";
-
 "As Launchy finds them" = "Jak je Launchy nachází";
+
+// Backup & restore
+"Back up & Restore" = "Zálohovat a obnovit";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Ulož svou mřížku ikon, složky, vlastní názvy, skryté aplikace a nastavení do jednoho souboru. Obnov pro migraci nebo záchranu rozložení.";
+"Export backup..." = "Exportovat zálohu...";
+"Restore backup..." = "Obnovit zálohu...";
+"Backup saved" = "Záloha uložena";
+"Your launcher layout and settings were saved to %@" = "Rozložení a nastavení launcheru byla uložena do %@";
+"Export failed" = "Export selhal";
+"Backup restored" = "Záloha obnovena";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy znovu načetl aplikace, složky a nastavení. Chybějící aplikace byly přeskočeny; nové byly přidány na konec.";
+"Restore failed" = "Obnova selhala";
+"Could not encode backup payload." = "Zálohu se nepodařilo zakódovat.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Seskupit složky za aplikace v nabídce Docku";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Jednotlivé aplikace ponechá první abecedně, složky pod nimi při kliknutí pravým tlačítkem na ikonu Docku.";

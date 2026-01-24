@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "ఈ SwiftUI స్కాఫోల్డ్ మీ ఆలోచనలకు సిద్ధంగా ఉంది.";
 "Increase Counter" = "కౌంటర్ పెంచండి";
 "Counter: %lld" = "కౌంటర్: %lld";
-
 "Floaty or fullscreen" = "ఫ్లోటీ లేదా ఫుల్‌స్క్రీన్";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "ఈ క్షణానికి సరిపోయే లేఅవుట్‌ని ఎంచుకోండి. ఫ్లోటీ మీ డెస్క్‌టాప్ పైన తేలుతూ ఉంటుంది, ఫుల్‌స్క్రీన్ మాత్రం క్లాసిక్ Launchpad లా అనిపిస్తుంది.";
 "Floaty mode" = "ఫ్లోటీ మోడ్";
@@ -41,11 +40,9 @@
 "Back" = "వెనక్కి";
 "Start using Launchy" = "Launchy ను ఉపయోగించడం ప్రారంభించండి";
 "Next" = "తరువాత";
-
 "Visuals" = "విజువల్స్";
 "Shortcuts" = "షార్ట్‌కట్లు";
 "About" = "గురించి";
-
 "Fullscreen" = "ఫుల్‌స్క్రీన్";
 "Floaty Panel" = "ఫ్లోటీ ప్యానెల్";
 "System" = "సిస్టమ్";
@@ -65,7 +62,6 @@
 "Transparent" = "పారదర్శకం";
 "Solid Color" = "సాలిడ్ కలర్";
 "unnamed" = "పేరు లేదు";
-
 "Launcher" = "లాంచర్";
 "Launch at login, layouts, and background styling." = "లాగిన్ సమయంలో ప్రారంభించడం, లేఅవుట్లు, మరియు బ్యాక్‌గ్రౌండ్ స్టైలింగ్.";
 "Keyboard" = "కీబోర్డ్";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Launchy సెట్టింగ్స్";
 "Launcher settings" = "లాంచర్ సెట్టింగ్స్";
 "Launchy info" = "Launchy సమాచారం";
-
 "Settings" = "సెట్టింగ్స్";
 "Settings..." = "సెట్టింగ్స్...";
 "Check for Updates..." = "అప్‌డేట్స్‌ను చెక్ చేయండి...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "టెస్ట్ బ్యాక్‌గ్రౌండ్ స్టైళ్లను టాగిల్ చేయండి";
 "Show Launcher" = "లాంచర్‌ను చూపండి";
 "Quit Launchy" = "Launchy నుండి బయటకి";
-
 "No items found" = "ఏ అంశాలు కనబడలేదు";
 "No matching items" = "మ్యాచ్ అయ్యే అంశాలు లేవు";
 "Enter multi-select mode" = "మల్టీ-సెలెక్ట్ మోడ్‌లోకి వెళ్లండి";
@@ -147,6 +141,8 @@
 "Search" = "శోధించండి";
 "Clear search text" = "శోధన టెక్స్ట్‌ను క్లియర్ చేయండి";
 "More actions" = "మరిన్ని చర్యలు";
+
+// Item actions
 "Open" = "తెరవండి";
 "Rename App" = "యాప్ పేరు మార్చండి";
 "Enter a custom name for this app. Leave empty to reset." = "ఈ యాప్‌కు కస్టమ్ పేరు ఇవ్వండి. రీసెట్ చేయడానికి ఖాళీగా ఉంచండి.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "యాప్‌లు:\n%@";
 "Save" = "సేవ్ చేయండి";
 
+// Launcher visuals
 "Icon size" = "ఐకాన్ పరిమాణం";
 "Small (Original)" = "చిన్నది (అసలు)";
 "Medium" = "మధ్యస్థం";
@@ -182,19 +179,30 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "నిలువుగా పేజింగ్ పేజీలను పైకి కిందికి కదిలిస్తుంది. సూచికలు పూర్తి స్క్రీన్‌లో ఎడమకు చేరి, ఫ్లోటీలో క్రింద ఉంటాయి.";
 "Horizontal" = "అడ్డంగా";
 "Vertical" = "నిలువుగా";
-
 "Beta" = "బీటా";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "రీసెట్ తరువాత గ్రిడ్‌ను ఎలా క్రమబద్ధం చేయాలి?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "ఆక్షరక్రమం (A → Z) లేదా డిస్కవరీ క్రమం (Launchy యాప్‌లు కనిపించిన క్రమం) ఎంపిక చేయండి.";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "ఇది సేవ్ చేసిన క్రమం, ఫోల్డర్లు, పేజ్ లేఅవుట్‌ను తొలగిస్తుంది. కస్టమ్ యాప్ పేర్లు మరియు దాచిన యాప్‌లు నిలిచి ఉంటాయి.";
-
 "Alphabetical" = "ఆక్షరక్రమం";
-
 "Discovery order" = "డిస్కవరీ క్రమం";
-
 "A → Z by app name" = "యాప్ పేరువారీగా A → Z";
-
 "As Launchy finds them" = "Launchy కనిపెట్టిన క్రమంలో";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "బ్యాకప్ & రీస్టోర్";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "మీ ఐకాన్ గ్రిడ్, ఫోల్డర్లు, కస్టమ్ పేర్లు, దాచిన యాప్‌లు, సెట్టింగ్‌లను ఒకే ఫైల్లో సేవ్ చేయండి. లేఆవుట్‌ను తరలించడానికి లేదా పునరుద్ధరించడానికి రీస్టోర్ చేయండి.";
+"Export backup..." = "బ్యాకప్ ఎగుమతి...";
+"Restore backup..." = "బ్యాకప్ రీస్టోర్...";
+"Backup saved" = "బ్యాకప్ సేవ్ అయింది";
+"Your launcher layout and settings were saved to %@" = "మీ లాంచర్ లేఆవుట్ మరియు సెట్టింగ్‌లు %@ లో సేవ్ అయ్యాయి";
+"Export failed" = "ఎగుమతి విఫలమైంది";
+"Backup restored" = "బ్యాకప్ రీస్టోర్ అయింది";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy మీ యాప్‌లు, ఫోల్డర్లు, సెట్టింగ్‌లను మళ్లీ లోడ్ చేసింది. లేకపోయిన యాప్‌లు దాటివేయబడ్డాయి; కొత్తవి చివరికి జోడించబడ్డాయి.";
+"Restore failed" = "రీస్టోర్ విఫలమైంది";
+"Could not encode backup payload." = "బ్యాకప్ డేటాను ఎన్‌కోడ్ చేయలేకపోయాము.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Dock మెనూలో యాప్‌ల తర్వాత ఫోల్డర్లను సమూహీకరించండి";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Dock ఐకాన్‌పై రైట్-క్లిక్ చేసినప్పుడు ఒక్కొక్క యాప్‌ను ముందు అక్షరక్రమంలో, ఫోల్డర్లను క్రింద అక్షరక్రమంలో చూపిస్తుంది.";

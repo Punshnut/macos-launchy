@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Tämä SwiftUI-runko on valmis ideoillesi.";
 "Increase Counter" = "Kasvata laskuria";
 "Counter: %lld" = "Laskuri: %lld";
-
 "Floaty or fullscreen" = "Floaty tai koko näyttö";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Valitse hetkeen sopiva asettelu. Floaty leijuu työpöytäsi yllä, kun taas koko näyttö tuntuu klassiselta Launchpadilta.";
 "Floaty mode" = "Floaty-tila";
@@ -41,11 +40,9 @@
 "Back" = "Takaisin";
 "Start using Launchy" = "Aloita Launchyn käyttö";
 "Next" = "Seuraava";
-
 "Visuals" = "Ulkoasu";
 "Shortcuts" = "Pikanäppäimet";
 "About" = "Tietoja";
-
 "Fullscreen" = "Koko näyttö";
 "Floaty Panel" = "Floaty-paneeli";
 "System" = "Järjestelmä";
@@ -65,7 +62,6 @@
 "Transparent" = "Läpinäkyvä";
 "Solid Color" = "Yksivärinen";
 "unnamed" = "nimetön";
-
 "Launcher" = "Käynnistin";
 "Launch at login, layouts, and background styling." = "Käynnistys kirjautuessa, asettelut ja taustan tyyli.";
 "Keyboard" = "Näppäimistö";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Launchy-asetukset";
 "Launcher settings" = "Käynnistimen asetukset";
 "Launchy info" = "Launchy-tiedot";
-
 "Settings" = "Asetukset";
 "Settings..." = "Asetukset...";
 "Check for Updates..." = "Tarkista päivitykset...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Vaihda testitaustan tyylejä";
 "Show Launcher" = "Näytä käynnistin";
 "Quit Launchy" = "Lopeta Launchy";
-
 "No items found" = "Kohteita ei löytynyt";
 "No matching items" = "Ei vastaavia kohteita";
 "Enter multi-select mode" = "Siirry monivalintatilaan";
@@ -147,6 +141,8 @@
 "Search" = "Hae";
 "Clear search text" = "Tyhjennä hakuteksti";
 "More actions" = "Lisää toimintoja";
+
+// Item actions
 "Open" = "Avaa";
 "Rename App" = "Nimeä sovellus uudelleen";
 "Enter a custom name for this app. Leave empty to reset." = "Anna sovellukselle mukautettu nimi. Jätä tyhjäksi nollataksesi.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Sovellukset:\n%@";
 "Save" = "Tallenna";
 
+// Launcher visuals
 "Icon size" = "Kuvakkeen koko";
 "Small (Original)" = "Pieni (alkuperäinen)";
 "Medium" = "Keskikoko";
@@ -182,19 +179,32 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Pystysuuntainen sivutus siirtää sivuja ylös ja alas. Ilmaisimet siirtyvät vasemmalle koko näytöllä ja pysyvät alhaalla kelluvassa tilassa.";
 "Horizontal" = "Vaaka";
 "Vertical" = "Pysty";
-
 "Beta" = "Beta";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Kuinka ruudukko järjestetään nollauksen jälkeen?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Valitse Aakkosjärjestys (A → Z) tai Löytöjärjestys (sitä mukaa kun Launchy löytää sovelluksia).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Tämä poistaa tallennetun järjestyksen, kansiot ja sivuasettelun. Mukautetut sovellusnimet ja piilotetut sovellukset säilyvät.";
-
 "Alphabetical" = "Aakkosjärjestys";
-
 "Discovery order" = "Löytöjärjestys";
-
 "A → Z by app name" = "A → Z sovelluksen nimen mukaan";
-
 "As Launchy finds them" = "Sitä mukaa kun Launchy löytää ne";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "Varmuuskopioi ja palauta";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Tallenna kuvakeristikko, kansiot, mukautetut nimet, piilotetut appit ja asetukset yhteen tiedostoon. Palauta siirtääksesi tai palauttaaksesi asettelun.";
+"Export backup..." = "Vie varmuuskopio...";
+"Restore backup..." = "Palauta varmuuskopio...";
+"Backup saved" = "Varmuuskopio tallennettu";
+"Your launcher layout and settings were saved to %@" = "Käynnistimen asettelu ja asetukset tallennettiin tiedostoon %@";
+"Export failed" = "Vienti epäonnistui";
+"Backup restored" = "Varmuuskopio palautettu";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy latasi sovellukset, kansiot ja asetukset uudelleen. Puuttuvat sovellukset ohitettiin; uudet lisättiin loppuun.";
+"Restore failed" = "Palautus epäonnistui";
+"Could not encode backup payload." = "Varmuuskopion tietoja ei voitu koodata.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Ryhmitä kansiot sovellusten jälkeen Dock-valikossa";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Pitää yksittäiset sovellukset ensin aakkosissa, kansiot niiden alla Dock-kuvaketta oikealla napsauttaessa.";
+"Group folders after apps in Dock menu" = "Group folders after apps in Dock menu";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";

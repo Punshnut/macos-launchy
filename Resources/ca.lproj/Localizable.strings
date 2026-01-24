@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Aquest esquelet SwiftUI està preparat per a les teves idees.";
 "Increase Counter" = "Augmenta el comptador";
 "Counter: %lld" = "Comptador: %lld";
-
 "Floaty or fullscreen" = "Floaty o pantalla completa";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Tria la disposició que s'adapti al moment. Floaty flota per sobre de l'escriptori, mentre que la pantalla completa recorda el Launchpad clàssic.";
 "Floaty mode" = "Mode Floaty";
@@ -41,11 +40,9 @@
 "Back" = "Enrere";
 "Start using Launchy" = "Comença a fer servir Launchy";
 "Next" = "Següent";
-
 "Visuals" = "Visuals";
 "Shortcuts" = "Dreceres";
 "About" = "Quant a";
-
 "Fullscreen" = "Pantalla completa";
 "Floaty Panel" = "Panell Floaty";
 "System" = "Sistema";
@@ -65,7 +62,6 @@
 "Transparent" = "Transparent";
 "Solid Color" = "Color sòlid";
 "unnamed" = "sense nom";
-
 "Launcher" = "Llançador";
 "Launch at login, layouts, and background styling." = "Inici en iniciar sessió, disposicions i estil de fons.";
 "Keyboard" = "Teclat";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Configuració de Launchy";
 "Launcher settings" = "Configuració del llançador";
 "Launchy info" = "Informació de Launchy";
-
 "Settings" = "Configuració";
 "Settings..." = "Configuració...";
 "Check for Updates..." = "Comprova si hi ha actualitzacions...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Activa els estils de fons de prova";
 "Show Launcher" = "Mostra el llançador";
 "Quit Launchy" = "Surt de Launchy";
-
 "No items found" = "No s'ha trobat cap element";
 "No matching items" = "No hi ha cap element coincident";
 "Enter multi-select mode" = "Entra al mode de selecció múltiple";
@@ -147,6 +141,8 @@
 "Search" = "Cerca";
 "Clear search text" = "Esborra el text de cerca";
 "More actions" = "Més accions";
+
+// Item actions
 "Open" = "Obre";
 "Rename App" = "Canvia el nom de l'app";
 "Enter a custom name for this app. Leave empty to reset." = "Introdueix un nom personalitzat per a aquesta app. Deixa-ho buit per restablir.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Apps:\n%@";
 "Save" = "Desa";
 
+// Launcher visuals
 "Icon size" = "Mida de la icona";
 "Small (Original)" = "Petita (original)";
 "Medium" = "Mitjana";
@@ -182,19 +179,30 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "La paginació vertical mou les pàgines amunt i avall. Els indicadors es mouen a l'esquerra en pantalla completa i es mantenen a baix en mode flotant.";
 "Horizontal" = "Horitzontal";
 "Vertical" = "Vertical";
-
 "Beta" = "Beta";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Com s’ha d’ordenar la graella després de restablir?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Tria Ordre alfabètic (A → Z) o Ordre de descobriment (tal com Launchy troba les apps).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Això suprimeix l’ordre desat, les carpetes i la disposició de pàgina. Es conserven els noms personalitzats i les apps amagades.";
-
 "Alphabetical" = "Alfabètic";
-
 "Discovery order" = "Ordre de descobriment";
-
 "A → Z by app name" = "A → Z per nom d’app";
-
 "As Launchy finds them" = "Tal com Launchy les troba";
+
+// Backup & restore
+"Back up & Restore" = "Còpia i restauració";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Desa la graella d'icones, carpetes, noms personalitzats, apps amagades i ajustos en un sol fitxer. Restaura per migrar o recuperar el disseny.";
+"Export backup..." = "Exporta la còpia...";
+"Restore backup..." = "Restaura la còpia...";
+"Backup saved" = "Còpia desada";
+"Your launcher layout and settings were saved to %@" = "El disseny i la configuració del llançador s'han desat a %@";
+"Export failed" = "Error en exportar";
+"Backup restored" = "Còpia restaurada";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy ha recarregat les apps, carpetes i ajustos. Les apps que faltaven s'han omès; les noves s'han afegit al final.";
+"Restore failed" = "Error en restaurar";
+"Could not encode backup payload." = "No s'ha pogut codificar la còpia de seguretat.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Agrupa les carpetes després de les apps al menú del Dock";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Manté les apps individuals primer en ordre alfabètic i les carpetes a sota en fer clic dret a la icona del Dock.";

@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Este proyecto base de SwiftUI está listo para tus ideas.";
 "Increase Counter" = "Aumentar contador";
 "Counter: %lld" = "Contador: %lld";
-
 "Floaty or fullscreen" = "Flotante o pantalla completa";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Elige el modo que encaja en cada momento. El flotante se mantiene sobre el escritorio y el de pantalla completa recuerda al Launchpad clásico.";
 "Floaty mode" = "Modo flotante";
@@ -41,11 +40,9 @@
 "Back" = "Atrás";
 "Start using Launchy" = "Empezar a usar Launchy";
 "Next" = "Siguiente";
-
 "Visuals" = "Apariencia";
 "Shortcuts" = "Atajos";
 "About" = "Acerca de";
-
 "Fullscreen" = "Pantalla completa";
 "Floaty Panel" = "Panel flotante";
 "System" = "Sistema";
@@ -65,7 +62,6 @@
 "Transparent" = "Transparente";
 "Solid Color" = "Color sólido";
 "unnamed" = "sin nombre";
-
 "Launcher" = "Launcher";
 "Launch at login, layouts, and background styling." = "Inicio al iniciar sesión, diseños y estilo de fondo.";
 "Keyboard" = "Teclado";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Configuración de Launchy";
 "Launcher settings" = "Configuración del lanzador";
 "Launchy info" = "Información de Launchy";
-
 "Settings" = "Configuración";
 "Settings..." = "Configuración...";
 "Check for Updates..." = "Buscar actualizaciones...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Alternar estilos de fondo de prueba";
 "Show Launcher" = "Mostrar launcher";
 "Quit Launchy" = "Salir de Launchy";
-
 "No items found" = "No se encontraron elementos";
 "No matching items" = "No hay elementos coincidentes";
 "Enter multi-select mode" = "Entrar en modo de selección múltiple";
@@ -147,6 +141,8 @@
 "Search" = "Buscar";
 "Clear search text" = "Borrar texto de búsqueda";
 "More actions" = "Más acciones";
+
+// Item actions
 "Open" = "Abrir";
 "Rename App" = "Renombrar app";
 "Enter a custom name for this app. Leave empty to reset." = "Introduce un nombre personalizado para esta app. Déjalo vacío para restablecer.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Apps:\n%@";
 "Save" = "Guardar";
 
+// Launcher visuals
 "Icon size" = "Tamaño de icono";
 "Small (Original)" = "Pequeño (original)";
 "Medium" = "Mediano";
@@ -182,19 +179,30 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "La paginación vertical mueve las páginas arriba y abajo. Los indicadores pasan a la izquierda en pantalla completa y quedan abajo en flotante.";
 "Horizontal" = "Horizontal";
 "Vertical" = "Vertical";
-
 "Beta" = "Beta";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "¿Cómo debe ordenarse la cuadrícula después de restablecer?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Elige Alfabético (A → Z) o Orden de descubrimiento (como Launchy encuentra las apps).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Esto borra el orden guardado, las carpetas y el diseño de páginas. Se conservan los nombres personalizados y las apps ocultas.";
-
 "Alphabetical" = "Alfabético";
-
 "Discovery order" = "Orden de descubrimiento";
-
 "A → Z by app name" = "A → Z por nombre de app";
-
 "As Launchy finds them" = "Como las encuentra Launchy";
+
+// Backup & restore
+"Back up & Restore" = "Respaldar y restaurar";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Guarda tu cuadrícula de iconos, carpetas, nombres personalizados, apps ocultas y ajustes en un solo archivo. Restaura para migrar o recuperar tu diseño.";
+"Export backup..." = "Exportar respaldo...";
+"Restore backup..." = "Restaurar respaldo...";
+"Backup saved" = "Respaldo guardado";
+"Your launcher layout and settings were saved to %@" = "El diseño y los ajustes del lanzador se guardaron en %@";
+"Export failed" = "Error al exportar";
+"Backup restored" = "Respaldo restaurado";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy recargó tus apps, carpetas y ajustes. Las apps faltantes se omitieron; las nuevas se añadieron al final.";
+"Restore failed" = "Error al restaurar";
+"Could not encode backup payload." = "No se pudo codificar el respaldo.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Agrupar carpetas después de las apps en el menú del Dock";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Mantiene primero las apps individuales en orden alfabético y las carpetas debajo al hacer clic derecho en el ícono del Dock.";

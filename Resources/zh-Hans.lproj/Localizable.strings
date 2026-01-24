@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "这个 SwiftUI 构架已为你的创意准备妥当。";
 "Increase Counter" = "增加计数器";
 "Counter: %lld" = "计数器：%lld";
-
 "Floaty or fullscreen" = "浮层还是全屏";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "选择适合当下的布局。Floaty 漂浮在桌面之上，全屏则还原经典 Launchpad 的感受。";
 "Floaty mode" = "浮层模式";
@@ -41,11 +40,9 @@
 "Back" = "返回";
 "Start using Launchy" = "开始使用 Launchy";
 "Next" = "下一步";
-
 "Visuals" = "视觉";
 "Shortcuts" = "快捷键";
 "About" = "关于";
-
 "Fullscreen" = "全屏";
 "Floaty Panel" = "浮层面板";
 "System" = "系统";
@@ -65,7 +62,6 @@
 "Transparent" = "透明";
 "Solid Color" = "纯色";
 "unnamed" = "未命名";
-
 "Launcher" = "启动器";
 "Launch at login, layouts, and background styling." = "开机启动、布局和背景样式。";
 "Keyboard" = "键盘";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Launchy 设置";
 "Launcher settings" = "启动器设置";
 "Launchy info" = "Launchy 信息";
-
 "Settings" = "设置";
 "Settings..." = "设置...";
 "Check for Updates..." = "检查更新...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "切换测试背景样式";
 "Show Launcher" = "显示启动器";
 "Quit Launchy" = "退出 Launchy";
-
 "No items found" = "未找到项目";
 "No matching items" = "没有匹配的项目";
 "Enter multi-select mode" = "进入多选模式";
@@ -147,6 +141,8 @@
 "Search" = "搜索";
 "Clear search text" = "清除搜索内容";
 "More actions" = "更多操作";
+
+// Item actions
 "Open" = "打开";
 "Rename App" = "重命名应用";
 "Enter a custom name for this app. Leave empty to reset." = "为该应用输入自定义名称。留空则恢复原状。";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "应用：\n%@";
 "Save" = "保存";
 
+// Launcher visuals
 "Icon size" = "图标大小";
 "Small (Original)" = "小（原始）";
 "Medium" = "中";
@@ -182,19 +179,30 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "竖向翻页上下移动页面。全屏时指示器在左侧，浮动模式时在底部。";
 "Horizontal" = "水平";
 "Vertical" = "垂直";
-
 "Beta" = "测试版";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "重置后网格应如何排序？";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "选择按字母顺序（A → Z）或发现顺序（按 Launchy 发现应用的顺序）。";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "这会删除已保存的顺序、文件夹和页面布局。自定义应用名称和隐藏的应用将被保留。";
-
 "Alphabetical" = "按字母";
-
 "Discovery order" = "发现顺序";
-
 "A → Z by app name" = "按应用名称 A → Z";
-
 "As Launchy finds them" = "按 Launchy 的发现顺序";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "备份与恢复";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "将图标网格、文件夹、自定义名称、隐藏的应用和设置保存到一个文件。恢复即可迁移或找回布局。";
+"Export backup..." = "导出备份…";
+"Restore backup..." = "恢复备份…";
+"Backup saved" = "备份已保存";
+"Your launcher layout and settings were saved to %@" = "启动器布局和设置已保存到 %@";
+"Export failed" = "导出失败";
+"Backup restored" = "备份已恢复";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy 已重新加载应用、文件夹和设置。缺失的应用已跳过；新的已添加到末尾。";
+"Restore failed" = "恢复失败";
+"Could not encode backup payload." = "无法编码备份数据。";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "在 Dock 菜单中将文件夹排列在应用之后";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "右键 Dock 图标时，先按字母顺序列出独立应用，其下按字母顺序列出文件夹。";

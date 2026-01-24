@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Wannan tsarin SwiftUI ya shirya don tunaninka.";
 "Increase Counter" = "Ƙara Ma'auni";
 "Counter: %lld" = "Ma'auni: %lld";
-
 "Floaty or fullscreen" = "Floaty ko cikakken allo";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Zaɓi tsarin da ya dace da lokacin. Floaty yana shawagi a saman teburinka, yayin da cikakken allo ke kama da Launchpad na gargajiya.";
 "Floaty mode" = "Yanayin Floaty";
@@ -41,11 +40,9 @@
 "Back" = "Baya";
 "Start using Launchy" = "Fara amfani da Launchy";
 "Next" = "Gaba";
-
 "Visuals" = "Hanyoyin gani";
 "Shortcuts" = "Gajerun hanyoyi";
 "About" = "Game da";
-
 "Fullscreen" = "Cikakken allo";
 "Floaty Panel" = "Allon Floaty";
 "System" = "Tsari";
@@ -65,7 +62,6 @@
 "Transparent" = "Hujja";
 "Solid Color" = "Launi mai ƙarfi";
 "unnamed" = "ba a sanya suna ba";
-
 "Launcher" = "Mai ƙaddamarwa";
 "Launch at login, layouts, and background styling." = "Fara lokacin shiga, tsarin, da suturar bango.";
 "Keyboard" = "Maballi";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Saitunan Launchy";
 "Launcher settings" = "Saitunan Launcher";
 "Launchy info" = "Bayanin Launchy";
-
 "Settings" = "Saituna";
 "Settings..." = "Saituna...";
 "Check for Updates..." = "Duba sabuntawa...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Canza salon bango na gwaji";
 "Show Launcher" = "Nuna mai ƙaddamarwa";
 "Quit Launchy" = "Fita daga Launchy";
-
 "No items found" = "Babu abubuwa da aka samu";
 "No matching items" = "Babu abubuwa masu dacewa";
 "Enter multi-select mode" = "Shiga yanayin zaɓi mai yawa";
@@ -147,6 +141,8 @@
 "Search" = "Bincike";
 "Clear search text" = "Goge rubutun bincike";
 "More actions" = "Ƙarin ayyuka";
+
+// Item actions
 "Open" = "Buɗe";
 "Rename App" = "Sake suna manhaja";
 "Enter a custom name for this app. Leave empty to reset." = "Shigar da suna na musamman don wannan manhaja. Bar shi babu komai don sake saitawa.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Manhajoji:\n%@";
 "Save" = "Ajiye";
 
+// Launcher visuals
 "Icon size" = "Girman alama";
 "Small (Original)" = "Ƙarami (na asali)";
 "Medium" = "Matsakaici";
@@ -182,19 +179,32 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Shafewa tsaye na motsa shafuka sama da ƙasa. Alamomi suna zuwa hagu a cikakken allo, suna tsaya ƙasa a floaty.";
 "Horizontal" = "A kwance";
 "Vertical" = "Tsaye";
-
 "Beta" = "Beta";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Ta yaya za a tsara grid bayan sake saiti?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Zaɓi Haruffa (A → Z) ko Tsarin gano abubuwa (yadda Launchy ke samun apps).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Wannan zai goge jerin da aka ajiye, fayiloli da tsarin shafi. Za a kiyaye sunayen app na al’ada da waɗanda aka ɓoye.";
-
 "Alphabetical" = "Haruffa";
-
 "Discovery order" = "Tsarin gano abubuwa";
-
 "A → Z by app name" = "A → Z bisa sunan app";
-
 "As Launchy finds them" = "Yadda Launchy ke samun su";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "Ajiyar bayanai da Mayarwa";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Ajiye tsarin gumaka, manyan fayiloli, sunaye na al’ada, apps da aka ɓoye, da saituna cikin fayil ɗaya. Mayar domin canja ko dawo da kwalliyar ka.";
+"Export backup..." = "Fitar da ajiya...";
+"Restore backup..." = "Mayar da ajiya...";
+"Backup saved" = "An ajiye bayanan ajiya";
+"Your launcher layout and settings were saved to %@" = "Tsarin mai ƙaddamarwa da saituna sun ajiye a %@";
+"Export failed" = "Fitarwa ta gaza";
+"Backup restored" = "An mayar da ajiya";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy ya sake loda apps, manyan fayiloli da saitunanka. An tsallake apps da ba su nan; sabbi sun ƙaru a ƙarshe.";
+"Restore failed" = "Mayarwa ta gaza";
+"Could not encode backup payload." = "Ba a iya tsara bayanan ajiya ba.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Hada manyan fayiloli bayan app a jeren Dock";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Yana barin app ɗin guda ɗaya a sama cikin haruffa, manyan fayiloli suna ƙasa idan an danna dama kan gunkin Dock.";
+"Group folders after apps in Dock menu" = "Group folders after apps in Dock menu";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";

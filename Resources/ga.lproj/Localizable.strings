@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Tá an t-ardán SwiftUI seo réidh do do smaointe.";
 "Increase Counter" = "Méadaigh an cuntar";
 "Counter: %lld" = "Cuntar: %lld";
-
 "Floaty or fullscreen" = "Snámhphainéal nó lánscáileán";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Roghnaigh an leagan amach a oireann don nóiméad. Lúnn an snámhphainéal os cionn do dheisce, agus mothaíonn lánscáileán cosúil le Launchpad clasaiceach.";
 "Floaty mode" = "Mód snámhphainéil";
@@ -41,11 +40,9 @@
 "Back" = "Siar";
 "Start using Launchy" = "Tosaigh ag úsáid Launchy";
 "Next" = "Ar aghaidh";
-
 "Visuals" = "Amharc";
 "Shortcuts" = "Aicearraí";
 "About" = "Maidir";
-
 "Fullscreen" = "Lánscáileán";
 "Floaty Panel" = "Snámhphainéal";
 "System" = "Córas";
@@ -65,7 +62,6 @@
 "Transparent" = "Trédhearcach";
 "Solid Color" = "Dath soladach";
 "unnamed" = "gan ainm";
-
 "Launcher" = "Tosaitheoir";
 "Launch at login, layouts, and background styling." = "Tosaigh ag logáil isteach, leaganacha amach, agus stíliú cúlra.";
 "Keyboard" = "Méarchlár";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Socruithe Launchy";
 "Launcher settings" = "Socruithe an tosaitheora";
 "Launchy info" = "Eolas Launchy";
-
 "Settings" = "Socruithe";
 "Settings..." = "Socruithe...";
 "Check for Updates..." = "Seiceáil le haghaidh nuashonruithe...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Scoránaigh stíleanna cúlra tástála";
 "Show Launcher" = "Taispeáin an tosaitheoir";
 "Quit Launchy" = "Scoir Launchy";
-
 "No items found" = "Níor aimsíodh míreanna";
 "No matching items" = "Níl aon mhíreanna comhoiriúnacha";
 "Enter multi-select mode" = "Iontráil mód ilroghnaithe";
@@ -147,6 +141,8 @@
 "Search" = "Cuardaigh";
 "Clear search text" = "Glan téacs an chuardaigh";
 "More actions" = "Tuilleadh gníomhartha";
+
+// Item actions
 "Open" = "Oscail";
 "Rename App" = "Athainmnigh an aip";
 "Enter a custom name for this app. Leave empty to reset." = "Iontráil ainm saincheaptha don aip seo. Fág folamh chun athshocrú.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Aipeanna:\n%@";
 "Save" = "Sábháil";
 
+// Launcher visuals
 "Icon size" = "Méid deilbhín";
 "Small (Original)" = "Beag (Bunaidh)";
 "Medium" = "Meánach";
@@ -182,19 +179,32 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Bogann leathanaigh ingearacha suas agus síos. Bogann táscairí go clé i lánscáileán agus fanann siad ag bun i mód snámhphainéil.";
 "Horizontal" = "Cothrománach";
 "Vertical" = "Ingearach";
-
 "Beta" = "Béite";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Conas ba chóir an greille a shórtáil tar éis athshocraithe?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Roghnaigh Aibítreach (A → Z) nó Ord Fionnachtana (de réir mar a aimsíonn Launchy aipeanna).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Scriosann sé seo an t‑ordú, na fillteáin agus leagan amach na leathanach a sábháladh. Coinneofar ainmneacha saincheaptha agus aipeanna ceilte.";
-
 "Alphabetical" = "Aibítreach";
-
 "Discovery order" = "Ord Fionnachtana";
-
 "A → Z by app name" = "A → Z de réir ainm na haipe";
-
 "As Launchy finds them" = "De réir mar a aimsíonn Launchy iad";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "Cúltaca agus Athchóirigh";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Sábháil do ghreille deilbhíní, fillteáin, ainmneacha saincheaptha, aipeanna folaithe agus socruithe in aon chomhad amháin. Athchóirigh chun do leagan amach a aistriú nó a ghnóthú.";
+"Export backup..." = "Easpórtáil cúltaca...";
+"Restore backup..." = "Athchóirigh cúltaca...";
+"Backup saved" = "Cúltaca sábháilte";
+"Your launcher layout and settings were saved to %@" = "Sábháladh leagan amach agus socruithe an lainseálaí i %@";
+"Export failed" = "Theip ar easpórtáil";
+"Backup restored" = "Athchóiríodh an cúltaca";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "D’athluchtaigh Launchy d’aipeanna, do fhillteáin agus do shocruithe. Ligeadh thar aipeanna ar iarraidh; cuireadh cinn nua leis ag an deireadh.";
+"Restore failed" = "Theip ar athchóiriú";
+"Could not encode backup payload." = "Níorbh fhéidir sonraí an chúltaca a ionchódú.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Grúpáil fillteáin i ndiaidh aipeanna i roghchlár an Dock";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Fágann sé aipeanna aonair ar dtús in ord aibítre, le fillteáin thíos agus tú ag deaschliceáil deilbhín an Dock.";
+"Group folders after apps in Dock menu" = "Group folders after apps in Dock menu";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";

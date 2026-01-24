@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "هذا القالب الخاص بـ SwiftUI جاهز لأفكارك.";
 "Increase Counter" = "زيادة العداد";
 "Counter: %lld" = "العداد: %lld";
-
 "Floaty or fullscreen" = "وضع Floaty أم ملء الشاشة";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "اختر التخطيط المناسب للحظة. Floaty يحوم فوق سطح المكتب، بينما ملء الشاشة يبدو كما في Launchpad الكلاسيكي.";
 "Floaty mode" = "وضع Floaty";
@@ -41,11 +40,9 @@
 "Back" = "رجوع";
 "Start using Launchy" = "ابدأ استخدام Launchy";
 "Next" = "التالي";
-
 "Visuals" = "المظاهر";
 "Shortcuts" = "الاختصارات";
 "About" = "حول";
-
 "Fullscreen" = "ملء الشاشة";
 "Floaty Panel" = "لوحة Floaty";
 "System" = "النظام";
@@ -65,7 +62,6 @@
 "Transparent" = "شفاف";
 "Solid Color" = "لون صلب";
 "unnamed" = "بدون اسم";
-
 "Launcher" = "المشغل";
 "Launch at login, layouts, and background styling." = "ابدأ عند تسجيل الدخول، التخطيطات، وتهيئة الخلفية.";
 "Keyboard" = "لوحة المفاتيح";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "إعدادات Launchy";
 "Launcher settings" = "إعدادات المشغل";
 "Launchy info" = "معلومات Launchy";
-
 "Settings" = "الإعدادات";
 "Settings..." = "الإعدادات...";
 "Check for Updates..." = "بحث عن تحديثات...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "تبديل أنماط الخلفية التجريبية";
 "Show Launcher" = "إظهار المشغل";
 "Quit Launchy" = "إغلاق Launchy";
-
 "No items found" = "لم يتم العثور على عناصر";
 "No matching items" = "لا توجد عناصر مطابقة";
 "Enter multi-select mode" = "ادخل وضع التحديد المتعدد";
@@ -147,6 +141,8 @@
 "Search" = "بحث";
 "Clear search text" = "مسح نص البحث";
 "More actions" = "المزيد من الإجراءات";
+
+// Item actions
 "Open" = "فتح";
 "Rename App" = "إعادة تسمية التطبيق";
 "Enter a custom name for this app. Leave empty to reset." = "أدخل اسمًا مخصصًا لهذا التطبيق. اتركه فارغًا لإعادة التعيين.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "التطبيقات:\n%@";
 "Save" = "حفظ";
 
+// Launcher visuals
 "Icon size" = "حجم الأيقونة";
 "Small (Original)" = "صغير (أصلي)";
 "Medium" = "متوسط";
@@ -182,19 +179,30 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "التمرير العمودي يحرك الصفحات لأعلى ولأسفل. المؤشرات تنتقل لليسار في وضع ملء الشاشة وتبقى في الأسفل في الوضع العائم.";
 "Horizontal" = "أفقي";
 "Vertical" = "رأسي";
-
 "Beta" = "تجريبي";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "كيف يجب فرز الشبكة بعد إعادة التعيين؟";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "اختر الترتيب الأبجدي (A → Z) أو ترتيب الاكتشاف (كما يجد Launchy التطبيقات).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "سيحذف هذا الترتيب المحفوظ والمجلدات وتخطيط الصفحات. ستبقى أسماء التطبيقات المخصصة والتطبيقات المخفية.";
-
 "Alphabetical" = "أبجدي";
-
 "Discovery order" = "ترتيب الاكتشاف";
-
 "A → Z by app name" = "A → Z حسب اسم التطبيق";
-
 "As Launchy finds them" = "كما يعثر عليها Launchy";
+
+// Backup & restore
+"Back up & Restore" = "النسخ الاحتياطي والاستعادة";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "احفظ شبكة الأيقونات والمجلدات والأسماء المخصصة والتطبيقات المخفية والإعدادات في ملف واحد. استعدها لنقل أو استرجاع التخطيط.";
+"Export backup..." = "تصدير النسخة الاحتياطية...";
+"Restore backup..." = "استعادة النسخة الاحتياطية...";
+"Backup saved" = "تم حفظ النسخة الاحتياطية";
+"Your launcher layout and settings were saved to %@" = "تم حفظ تخطيط المُشغّل وإعداداته في %@";
+"Export failed" = "فشل التصدير";
+"Backup restored" = "تمت استعادة النسخة الاحتياطية";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "أعاد Launchy تحميل تطبيقاتك ومجلداتك وإعداداتك. تم تخطي التطبيقات غير المثبتة؛ أضيفت التطبيقات الجديدة في النهاية.";
+"Restore failed" = "فشلت الاستعادة";
+"Could not encode backup payload." = "تعذر ترميز بيانات النسخة الاحتياطية.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "تجميع المجلدات بعد التطبيقات في قائمة Dock";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "يبقي التطبيقات الفردية أولاً بترتيب أبجدي، والمجلدات تحتها عند النقر بزر الماوس الأيمن على أيقونة Dock.";

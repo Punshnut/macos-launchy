@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Det här SwiftUI-skelettet är redo för dina idéer.";
 "Increase Counter" = "Öka räknaren";
 "Counter: %lld" = "Räknare: %lld";
-
 "Floaty or fullscreen" = "Floaty eller helskärm";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Välj layouten som passar stunden. Floaty svävar ovanför skrivbordet, medan helskärm känns som klassiska Launchpad.";
 "Floaty mode" = "Floaty-läge";
@@ -41,11 +40,9 @@
 "Back" = "Tillbaka";
 "Start using Launchy" = "Börja använda Launchy";
 "Next" = "Nästa";
-
 "Visuals" = "Visuellt";
 "Shortcuts" = "Genvägar";
 "About" = "Om";
-
 "Fullscreen" = "Helskärm";
 "Floaty Panel" = "Floaty-panel";
 "System" = "System";
@@ -65,7 +62,6 @@
 "Transparent" = "Transparent";
 "Solid Color" = "Enfärgad";
 "unnamed" = "namnlös";
-
 "Launcher" = "Launcher";
 "Launch at login, layouts, and background styling." = "Start vid inloggning, layouter och bakgrundsstyling.";
 "Keyboard" = "Tangentbord";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Launchy-inställningar";
 "Launcher settings" = "Launcher-inställningar";
 "Launchy info" = "Launchy-info";
-
 "Settings" = "Inställningar";
 "Settings..." = "Inställningar...";
 "Check for Updates..." = "Sök efter uppdateringar...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Växla testbakgrundsstilar";
 "Show Launcher" = "Visa launcher";
 "Quit Launchy" = "Avsluta Launchy";
-
 "No items found" = "Inga objekt hittades";
 "No matching items" = "Inga matchande objekt";
 "Enter multi-select mode" = "Gå in i flervalsläge";
@@ -147,6 +141,8 @@
 "Search" = "Sök";
 "Clear search text" = "Rensa söktext";
 "More actions" = "Fler åtgärder";
+
+// Item actions
 "Open" = "Öppna";
 "Rename App" = "Byt namn på app";
 "Enter a custom name for this app. Leave empty to reset." = "Ange ett anpassat namn för den här appen. Lämna tomt för att återställa.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Appar:\n%@";
 "Save" = "Spara";
 
+// Launcher visuals
 "Icon size" = "Ikonstorlek";
 "Small (Original)" = "Liten (original)";
 "Medium" = "Mellan";
@@ -182,19 +179,32 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Vertikal paginering flyttar sidor upp och ner. Indikatorer flyttas till vänster i helskärm och stannar nederst i flytande läge.";
 "Horizontal" = "Horisontell";
 "Vertical" = "Vertikal";
-
 "Beta" = "Beta";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Hur ska rutnätet sorteras efter återställning?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Välj Alfabetiskt (A → Z) eller Upptäcktsordning (i den ordning Launchy hittar appar).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Detta tar bort sparad ordning, mappar och sidlayout. Anpassade appnamn och dolda appar behålls.";
-
 "Alphabetical" = "Alfabetiskt";
-
 "Discovery order" = "Upptäcktsordning";
-
 "A → Z by app name" = "A → Z efter appnamn";
-
 "As Launchy finds them" = "I den ordning Launchy hittar dem";
+
+// Backup & restore
+"Back up & Restore" = "Säkerhetskopiera och återställ";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Spara ikonrutnät, mappar, egna namn, dolda appar och inställningar i en fil. Återställ för att flytta eller återfå layouten.";
+"Export backup..." = "Exportera säkerhetskopia...";
+"Restore backup..." = "Återställ säkerhetskopia...";
+"Backup saved" = "Säkerhetskopia sparad";
+"Your launcher layout and settings were saved to %@" = "Startarens layout och inställningar sparades i %@";
+"Export failed" = "Export misslyckades";
+"Backup restored" = "Säkerhetskopia återställd";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy laddade om dina appar, mappar och inställningar. Saknade appar hoppades över; nya lades till sist.";
+"Restore failed" = "Återställning misslyckades";
+"Could not encode backup payload." = "Kunde inte koda säkerhetskopians data.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Gruppera mappar efter appar i Dock-menyn";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Behåller fristående appar först i alfabetisk ordning, med mappar alfabetiskt under dem vid högerklick på Dock-ikonen.";
+"Group folders after apps in Dock menu" = "Group folders after apps in Dock menu";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";

@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "این اسکفلد SwiftUI آمادهٔ ایده‌های شماست.";
 "Increase Counter" = "افزایش شمارنده";
 "Counter: %lld" = "شمارنده: %lld";
-
 "Floaty or fullscreen" = "شناور یا تمام‌صفحه";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "چیدمانی را انتخاب کنید که مناسب لحظه باشد. حالت شناور بالای دسکتاپ می‌ماند، و حالت تمام‌صفحه حس Launchpad کلاسیک را می‌دهد.";
 "Floaty mode" = "حالت شناور";
@@ -41,11 +40,9 @@
 "Back" = "بازگشت";
 "Start using Launchy" = "شروع استفاده از Launchy";
 "Next" = "بعدی";
-
 "Visuals" = "ظاهر";
 "Shortcuts" = "میانبرها";
 "About" = "درباره";
-
 "Fullscreen" = "تمام‌صفحه";
 "Floaty Panel" = "پنل شناور";
 "System" = "سیستم";
@@ -65,7 +62,6 @@
 "Transparent" = "شفاف";
 "Solid Color" = "رنگ یکدست";
 "unnamed" = "بی‌نام";
-
 "Launcher" = "لانچر";
 "Launch at login, layouts, and background styling." = "اجرای هنگام ورود، چیدمان‌ها و سبک پس‌زمینه.";
 "Keyboard" = "صفحه‌کلید";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "تنظیمات Launchy";
 "Launcher settings" = "تنظیمات لانچر";
 "Launchy info" = "اطلاعات Launchy";
-
 "Settings" = "تنظیمات";
 "Settings..." = "تنظیمات...";
 "Check for Updates..." = "بررسی به‌روزرسانی‌ها...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "تعویض سبک‌های پس‌زمینهٔ آزمایشی";
 "Show Launcher" = "نمایش لانچر";
 "Quit Launchy" = "خروج از Launchy";
-
 "No items found" = "هیچ موردی پیدا نشد";
 "No matching items" = "مورد مطابقی نیست";
 "Enter multi-select mode" = "ورود به حالت انتخاب چندگانه";
@@ -147,6 +141,8 @@
 "Search" = "جست‌وجو";
 "Clear search text" = "پاک کردن متن جست‌وجو";
 "More actions" = "عملیات بیشتر";
+
+// Item actions
 "Open" = "باز کردن";
 "Rename App" = "تغییر نام برنامه";
 "Enter a custom name for this app. Leave empty to reset." = "برای این برنامه نام سفارشی وارد کنید. برای بازنشانی خالی بگذارید.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "برنامه‌ها:\n%@";
 "Save" = "ذخیره";
 
+// Launcher visuals
 "Icon size" = "اندازه آیکون";
 "Small (Original)" = "کوچک (اصلی)";
 "Medium" = "متوسط";
@@ -182,19 +179,32 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "صفحه‌بندی عمودی صفحات را بالا و پایین می‌برد. نشانگرها در تمام‌صفحه به چپ می‌روند و در حالت شناور در پایین می‌مانند.";
 "Horizontal" = "افقی";
 "Vertical" = "عمودی";
-
 "Beta" = "بتا";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "پس از ریست، شبکه چگونه مرتب شود؟";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "مرتب‌سازی الفبایی (A → Z) یا ترتیب کشف (همان‌طور که Launchy برنامه‌ها را پیدا می‌کند) را انتخاب کنید.";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "این کار ترتیب ذخیره‌شده، پوشه‌ها و چیدمان صفحه را حذف می‌کند. نام‌های سفارشی و برنامه‌های مخفی حفظ می‌شوند.";
-
 "Alphabetical" = "الفبایی";
-
 "Discovery order" = "ترتیب کشف";
-
 "A → Z by app name" = "A → Z بر اساس نام برنامه";
-
 "As Launchy finds them" = "همان‌طور که Launchy پیدا می‌کند";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "پشتیبان‌گیری و بازیابی";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "شبکه آیکون، پوشه‌ها، نام‌های سفارشی، برنامه‌های مخفی و تنظیمات را در یک فایل ذخیره کنید. برای مهاجرت یا بازیابی چیدمان بازگردانی کنید.";
+"Export backup..." = "خروجی گرفتن از پشتیبان...";
+"Restore backup..." = "بازیابی پشتیبان...";
+"Backup saved" = "پشتیبان ذخیره شد";
+"Your launcher layout and settings were saved to %@" = "چیدمان و تنظیمات لانچر شما در %@ ذخیره شد";
+"Export failed" = "خروجی گرفتن ناموفق بود";
+"Backup restored" = "پشتیبان بازیابی شد";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "لانچی برنامه‌ها، پوشه‌ها و تنظیمات شما را دوباره بارگیری کرد. برنامه‌های موجود نبود رد شدند؛ جدیدها به انتها افزوده شدند.";
+"Restore failed" = "بازیابی ناموفق بود";
+"Could not encode backup payload." = "رمزگذاری داده‌های پشتیبان ممکن نشد.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "گروه‌بندی پوشه‌ها بعد از برنامه‌ها در منوی داک";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "ابتدا برنامه‌های تکی را به ترتیب الفبا نشان می‌دهد و پوشه‌ها را زیر آن هنگام راست‌کلیک روی آیکون داک.";
+"Group folders after apps in Dock menu" = "Group folders after apps in Dock menu";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";

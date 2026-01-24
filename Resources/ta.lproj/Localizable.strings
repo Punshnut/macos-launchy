@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "இந்த SwiftUI ஸ்காஃபோல்ட் உங்கள் கருத்துகளுக்கு தயாராக உள்ளது.";
 "Increase Counter" = "கௌண்டரை உயர்த்தவும்";
 "Counter: %lld" = "கௌண்டர்: %lld";
-
 "Floaty or fullscreen" = "ஃப்ளோட்டி அல்லது முழுத்திரை";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "நேரத்திற்குப் பொருத்தமான அமைப்பைத் தேர்வு செய்யுங்கள். ஃப்ளோட்டி உங்கள் டெஸ்க்டாப் மீது மிதக்கும்; முழுத்திரை கிளாசிக் Launchpad போல இருக்கும்.";
 "Floaty mode" = "ஃப்ளோட்டி பயன்முறை";
@@ -41,11 +40,9 @@
 "Back" = "பின்";
 "Start using Launchy" = "Launchy-யை பயன்படுத்த தொடங்குங்கள்";
 "Next" = "அடுத்து";
-
 "Visuals" = "விசுவல்ஸ்";
 "Shortcuts" = "சுருக்குவழிகள்";
 "About" = "பற்றி";
-
 "Fullscreen" = "முழுத்திரை";
 "Floaty Panel" = "ஃப்ளோட்டி பேனல்";
 "System" = "சிஸ்டம்";
@@ -65,7 +62,6 @@
 "Transparent" = "தெளிவு";
 "Solid Color" = "திடமான நிறம்";
 "unnamed" = "பெயரிடப்படாதது";
-
 "Launcher" = "லாஞ்சர்";
 "Launch at login, layouts, and background styling." = "லாகின் போது துவக்குதல், லேஅவுட்கள், மற்றும் பின்னணி அலங்காரம்.";
 "Keyboard" = "கீபோர்டு";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Launchy அமைப்புகள்";
 "Launcher settings" = "லாஞ்சர் அமைப்புகள்";
 "Launchy info" = "Launchy தகவல்";
-
 "Settings" = "அமைப்புகள்";
 "Settings..." = "அமைப்புகள்...";
 "Check for Updates..." = "புதுப்பிப்புகளை சரிபார்க்கவும்...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "சோதனை பின்னணி பாணிகளை டோகுள் செய்யவும்";
 "Show Launcher" = "லாஞ்சரை காட்டவும்";
 "Quit Launchy" = "Launchy-யை வெளியேறு";
-
 "No items found" = "எதுவும் கிடைக்கவில்லை";
 "No matching items" = "பொருந்தும் எதுவும் இல்லை";
 "Enter multi-select mode" = "பல தேர்வு முறைக்கு செல்லவும்";
@@ -147,6 +141,8 @@
 "Search" = "தேடு";
 "Clear search text" = "தேடல் உரையை அழி";
 "More actions" = "கூடுதல் செயல்கள்";
+
+// Item actions
 "Open" = "திற";
 "Rename App" = "ஆப்பின் பெயரை மாற்றவும்";
 "Enter a custom name for this app. Leave empty to reset." = "இந்த ஆப்புக்கான தனிப்பயன் பெயரை உள்ளிடவும். ரீசெட் செய்ய காலியாக விடுங்கள்.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "ஆப்கள்:\n%@";
 "Save" = "சேமி";
 
+// Launcher visuals
 "Icon size" = "சின்ன அளவு";
 "Small (Original)" = "சிறியது (அசல்)";
 "Medium" = "இடை";
@@ -182,19 +179,30 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "நிலம்பட்டு பக்கத்திரை மேலே கீழே நகர்த்தும். குறியீடுகள் முழுத்திரையில் இடப்புறம் சென்று, மிதக்கும் முறையில் அடியில் இருக்கும்.";
 "Horizontal" = "கிடைமட்ட";
 "Vertical" = "செங்குத்து";
-
 "Beta" = "பீட்டா";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "மீட்டமைத்த பின் கட்டத்தை எப்படி வரிசைப்படுத்த வேண்டும்?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "அகரவரிசை (A → Z) அல்லது கண்டுப்பிடிப்பு வரிசை (Launchy பயன்பாடுகளை காணும் வரிசை) ஒன்றைத் தேர்ந்தெடுக்கவும்.";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "இது சேமிக்கப்பட்ட வரிசை, கோப்புறைகள் மற்றும் பக்க வடிவமைப்பை அழிக்கும். தனிப்பயன் பயன்பாட்டு பெயர்கள் மற்றும் மறைந்த பயன்பாடுகள் வைத்திருக்கும்.";
-
 "Alphabetical" = "அகரவரிசை";
-
 "Discovery order" = "கண்டுப்பிடிப்பு வரிசை";
-
 "A → Z by app name" = "பயன்பாட்டு பெயரின் அடிப்படையில் A → Z";
-
 "As Launchy finds them" = "Launchy காணும் வரிசையில்";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "காப்பு எடு & மீட்டமை";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "உங்கள் ஐகான் கட்டம், கோப்புறைகள், தனிப்பயன் பெயர்கள், மறைக்கப்பட்ட செயலிகள், அமைப்புகளை ஒரு கோப்பில் சேமிக்கவும். அமைப்பை மாற்ற அல்லது மீட்டமைக்க மீட்டமைத்தைப் பயன்படுத்து.";
+"Export backup..." = "காப்பை ஏற்றுமதி செய்...";
+"Restore backup..." = "காப்பை மீட்டமை...";
+"Backup saved" = "காப்பு சேமிக்கப்பட்டது";
+"Your launcher layout and settings were saved to %@" = "உங்கள் லாஞ்சர் அமைப்பு மற்றும் அமைப்புகள் %@-ல் சேமிக்கப்பட்டன";
+"Export failed" = "ஏற்றுமதி தோல்வி";
+"Backup restored" = "காப்பு மீட்டமைக்கப்பட்டது";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy உங்கள் செயலிகள், கோப்புறைகள், அமைப்புகளை மீளேற்றியது. காணாமல் போன செயலிகள் தவிர்க்கப்பட்டன; புதிதாக சேர்க்கப்பட்டவை முடிவில் சேர்க்கப்பட்டன.";
+"Restore failed" = "மீட்டமைப்பு தோல்வி";
+"Could not encode backup payload." = "காப்பு தரவைக் குறியாக்க முடியவில்லை.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Dock மெனுவில் செயலிகளுக்கு பின் கோப்புறைகளை குழுவாக்கு";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Dock ஐகானை வலது சொடுக்கு செய்வதில் தனித்த செயலிகள் முதலில் அகரவரிசையில், கோப்புறைகள் அவற்றின் கீழ் அகரவரிசையில் காண்பிக்கப்படும்.";

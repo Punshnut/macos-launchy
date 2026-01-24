@@ -277,6 +277,8 @@ struct SettingsWindow: View {
                 hotCornerSection
                 panelDivider
                 resetSection
+                panelDivider
+                backupSection
             }
         }
     }
@@ -571,6 +573,35 @@ struct SettingsWindow: View {
             Text(String(localized: "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden."))
                 .font(.footnote)
                 .foregroundStyle(.secondary)
+        }
+    }
+
+    private var backupSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(String(localized: "Back up & Restore"))
+                .font(.subheadline)
+                .fontWeight(.semibold)
+
+            Text(String(localized: "Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout."))
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            HStack(spacing: 10) {
+                Button {
+                    settingsStore.exportBackup(hostingWindow: hostingWindow)
+                } label: {
+                    Label(String(localized: "Export backup..."), systemImage: "arrow.down.doc.fill")
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button {
+                    settingsStore.importBackup(hostingWindow: hostingWindow)
+                } label: {
+                    Label(String(localized: "Restore backup..."), systemImage: "arrow.up.doc.fill")
+                }
+                .buttonStyle(.bordered)
+            }
         }
     }
 

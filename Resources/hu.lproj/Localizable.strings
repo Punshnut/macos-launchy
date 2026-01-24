@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Ez a SwiftUI váz készen áll az ötleteidre.";
 "Increase Counter" = "Számláló növelése";
 "Counter: %lld" = "Számláló: %lld";
-
 "Floaty or fullscreen" = "Floaty vagy teljes képernyő";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Válaszd ki az adott pillanathoz illő elrendezést. A Floaty a desktopod fölött lebeg, míg a teljes képernyő a klasszikus Launchpad érzését adja.";
 "Floaty mode" = "Floaty mód";
@@ -41,11 +40,9 @@
 "Back" = "Vissza";
 "Start using Launchy" = "Launchy használatának megkezdése";
 "Next" = "Következő";
-
 "Visuals" = "Megjelenés";
 "Shortcuts" = "Gyorsbillentyűk";
 "About" = "Névjegy";
-
 "Fullscreen" = "Teljes képernyő";
 "Floaty Panel" = "Floaty panel";
 "System" = "Rendszer";
@@ -65,7 +62,6 @@
 "Transparent" = "Átlátszó";
 "Solid Color" = "Egyszínű";
 "unnamed" = "névtelen";
-
 "Launcher" = "Launcher";
 "Launch at login, layouts, and background styling." = "Indítás bejelentkezéskor, elrendezések és háttérstílusok.";
 "Keyboard" = "Billentyűzet";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Launchy beállítások";
 "Launcher settings" = "Launcher beállítások";
 "Launchy info" = "Launchy információ";
-
 "Settings" = "Beállítások";
 "Settings..." = "Beállítások...";
 "Check for Updates..." = "Frissítések keresése...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Teszt háttérstílusok kapcsolása";
 "Show Launcher" = "Launcher megjelenítése";
 "Quit Launchy" = "Launchy kilépés";
-
 "No items found" = "Nincs találat";
 "No matching items" = "Nincs egyező elem";
 "Enter multi-select mode" = "Belépés többes kijelölés módba";
@@ -147,6 +141,8 @@
 "Search" = "Keresés";
 "Clear search text" = "Keresési szöveg törlése";
 "More actions" = "További műveletek";
+
+// Item actions
 "Open" = "Megnyitás";
 "Rename App" = "App átnevezése";
 "Enter a custom name for this app. Leave empty to reset." = "Adj meg egy egyedi nevet az appnak. Hagyd üresen a resethez.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Appok:\n%@";
 "Save" = "Mentés";
 
+// Launcher visuals
 "Icon size" = "Ikonméret";
 "Small (Original)" = "Kicsi (eredeti)";
 "Medium" = "Közepes";
@@ -182,19 +179,32 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "A függőleges lapozás fel-le mozgatja az oldalakat. A jelölők teljes képernyőn balra kerülnek, lebegő módban alul maradnak.";
 "Horizontal" = "Vízszintes";
 "Vertical" = "Függőleges";
-
 "Beta" = "Béta";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Hogyan rendezze a rácsot visszaállítás után?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Válassz Ábécésorrend (A → Z) vagy Felfedezési sorrend (ahogy a Launchy megtalálja az appokat).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Ez törli a mentett sorrendet, mappákat és oldalelrendezést. Az egyedi appnevek és a rejtett appok megmaradnak.";
-
 "Alphabetical" = "Ábécésorrend";
-
 "Discovery order" = "Felfedezési sorrend";
-
 "A → Z by app name" = "A → Z az app neve szerint";
-
 "As Launchy finds them" = "Ahogy a Launchy megtalálja";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "Biztonsági mentés és visszaállítás";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Mentsd az ikonrácsot, mappákat, egyedi neveket, rejtett appokat és beállításokat egy fájlba. Állítsd vissza az elrendezés átviteléhez vagy helyreállításához.";
+"Export backup..." = "Biztonsági mentés exportálása...";
+"Restore backup..." = "Biztonsági mentés visszaállítása...";
+"Backup saved" = "Biztonsági mentés elmentve";
+"Your launcher layout and settings were saved to %@" = "A launcher elrendezése és beállításai ide mentve: %@";
+"Export failed" = "Exportálás sikertelen";
+"Backup restored" = "Biztonsági mentés visszaállítva";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "A Launchy újratöltötte az appokat, mappákat és beállításokat. A hiányzó appok kihagyva; az újak a végére kerültek.";
+"Restore failed" = "Visszaállítás sikertelen";
+"Could not encode backup payload." = "A mentés adatait nem sikerült kódolni.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Csoportosítsa a mappákat az appok után a Dock menüben";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Önálló appokat előbb, ábécé sorrendben tartja, a mappákat alattuk a Dock ikonra jobb kattintáskor.";
+"Group folders after apps in Dock menu" = "Group folders after apps in Dock menu";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";

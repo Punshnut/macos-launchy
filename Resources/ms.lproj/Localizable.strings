@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Rangka SwiftUI ini sedia untuk idea anda.";
 "Increase Counter" = "Tambah Kaunter";
 "Counter: %lld" = "Kaunter: %lld";
-
 "Floaty or fullscreen" = "Floaty atau skrin penuh";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Pilih susun atur yang sesuai dengan waktu ini. Floaty melayang di atas desktop anda, manakala skrin penuh terasa seperti Launchpad klasik.";
 "Floaty mode" = "Mod Floaty";
@@ -41,11 +40,9 @@
 "Back" = "Kembali";
 "Start using Launchy" = "Mula menggunakan Launchy";
 "Next" = "Seterusnya";
-
 "Visuals" = "Visual";
 "Shortcuts" = "Pintasan";
 "About" = "Perihal";
-
 "Fullscreen" = "Skrin penuh";
 "Floaty Panel" = "Panel Floaty";
 "System" = "Sistem";
@@ -65,7 +62,6 @@
 "Transparent" = "Lutsinar";
 "Solid Color" = "Warna padu";
 "unnamed" = "tanpa nama";
-
 "Launcher" = "Pelancar";
 "Launch at login, layouts, and background styling." = "Lancarkan semasa log masuk, susun atur, dan gaya latar belakang.";
 "Keyboard" = "Papan kekunci";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Tetapan Launchy";
 "Launcher settings" = "Tetapan pelancar";
 "Launchy info" = "Maklumat Launchy";
-
 "Settings" = "Tetapan";
 "Settings..." = "Tetapan...";
 "Check for Updates..." = "Semak kemas kini...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Togol gaya latar belakang ujian";
 "Show Launcher" = "Tunjukkan pelancar";
 "Quit Launchy" = "Keluar Launchy";
-
 "No items found" = "Tiada item ditemui";
 "No matching items" = "Tiada item sepadan";
 "Enter multi-select mode" = "Masuk mod pilih berbilang";
@@ -147,6 +141,8 @@
 "Search" = "Cari";
 "Clear search text" = "Kosongkan teks carian";
 "More actions" = "Lebih tindakan";
+
+// Item actions
 "Open" = "Buka";
 "Rename App" = "Namakan semula aplikasi";
 "Enter a custom name for this app. Leave empty to reset." = "Masukkan nama tersuai untuk aplikasi ini. Biarkan kosong untuk reset.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Aplikasi:\n%@";
 "Save" = "Simpan";
 
+// Launcher visuals
 "Icon size" = "Saiz ikon";
 "Small (Original)" = "Kecil (asal)";
 "Medium" = "Sederhana";
@@ -182,19 +179,32 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Penghalaman menegak menggerakkan halaman ke atas dan ke bawah. Penunjuk bergerak ke kiri dalam skrin penuh dan kekal di bawah dalam mod terapung.";
 "Horizontal" = "Mengufuk";
 "Vertical" = "Menegak";
-
 "Beta" = "Beta";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Bagaimana grid harus diisih selepas set semula?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Pilih Abjad (A → Z) atau Ikut penemuan (mengikut urutan Launchy menemui app).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Ini memadam susunan yang disimpan, folder, dan susun atur halaman. Nama app tersuai dan app tersembunyi akan dikekalkan.";
-
 "Alphabetical" = "Abjad";
-
 "Discovery order" = "Ikut penemuan";
-
 "A → Z by app name" = "A → Z mengikut nama app";
-
 "As Launchy finds them" = "Seperti yang Launchy temui";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "Sandar & Pulih";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Simpan grid ikon, folder, nama tersuai, app tersembunyi, dan tetapan ke satu fail. Pulihkan untuk pindah atau dapatkan semula susun atur.";
+"Export backup..." = "Eksport sandaran...";
+"Restore backup..." = "Pulihkan sandaran...";
+"Backup saved" = "Sandaran disimpan";
+"Your launcher layout and settings were saved to %@" = "Susun atur dan tetapan pelancar disimpan ke %@";
+"Export failed" = "Eksport gagal";
+"Backup restored" = "Sandaran dipulihkan";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy memuat semula app, folder dan tetapan anda. App yang hilang dilangkau; yang baharu ditambah di hujung.";
+"Restore failed" = "Pemulihan gagal";
+"Could not encode backup payload." = "Tidak dapat mengekod data sandaran.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Kumpulkan folder selepas app dalam menu Dock";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Aplikasi tunggal disusun dahulu mengikut abjad, folder di bawahnya apabila klik kanan ikon Dock.";
+"Group folders after apps in Dock menu" = "Group folders after apps in Dock menu";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";

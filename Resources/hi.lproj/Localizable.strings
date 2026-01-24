@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "यह SwiftUI ढांचा आपके विचारों के लिए तैयार है।";
 "Increase Counter" = "काउंटर बढ़ाएँ";
 "Counter: %lld" = "काउंटर: %lld";
-
 "Floaty or fullscreen" = "फ़्लोटी या फुलस्क्रीन";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "उस लेआउट को चुनें जो उस पल के लिए ठीक बैठता है। फ़्लोटी आपके डेस्कटॉप के ऊपर तैरती है, जबकि फुलस्क्रीन पारंपरिक Launchpad जैसा लगता है।";
 "Floaty mode" = "फ़्लोटी मोड";
@@ -41,11 +40,9 @@
 "Back" = "वापस";
 "Start using Launchy" = "Launchy का उपयोग शुरू करें";
 "Next" = "अगला";
-
 "Visuals" = "दृश्य";
 "Shortcuts" = "शॉर्टकट";
 "About" = "बारे में";
-
 "Fullscreen" = "फुलस्क्रीन";
 "Floaty Panel" = "फ़्लोटी पैनल";
 "System" = "सिस्टम";
@@ -65,7 +62,6 @@
 "Transparent" = "पारदर्शी";
 "Solid Color" = "ठोस रंग";
 "unnamed" = "बिना नाम";
-
 "Launcher" = "लॉन्चर";
 "Launch at login, layouts, and background styling." = "लॉगिन पर लॉन्च, लेआउट और पृष्ठभूमि स्टाइलिंग।";
 "Keyboard" = "कीबोर्ड";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Launchy सेटिंग्स";
 "Launcher settings" = "लॉन्चर सेटिंग्स";
 "Launchy info" = "Launchy जानकारी";
-
 "Settings" = "सेटिंग्स";
 "Settings..." = "सेटिंग्स...";
 "Check for Updates..." = "अपडेट जांचें...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "टेस्ट पृष्ठभूमि शैलियों को टॉगल करें";
 "Show Launcher" = "लॉन्चर दिखाएँ";
 "Quit Launchy" = "Launchy बंद करें";
-
 "No items found" = "कोई आइटम नहीं मिला";
 "No matching items" = "कोई मेल खाने वाला आइटम नहीं";
 "Enter multi-select mode" = "मल्टी-सेलेक्ट मोड में प्रवेश करें";
@@ -147,6 +141,8 @@
 "Search" = "खोज";
 "Clear search text" = "खोज पाठ साफ़ करें";
 "More actions" = "अधिक क्रियाएँ";
+
+// Item actions
 "Open" = "खोलें";
 "Rename App" = "ऐप का नाम बदलें";
 "Enter a custom name for this app. Leave empty to reset." = "इस ऐप के लिए एक कस्टम नाम दर्ज करें। रीसेट करने के लिए खाली छोड़ दें।";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "ऐप्स:\n%@";
 "Save" = "सहेजें";
 
+// Launcher visuals
 "Icon size" = "आइकन आकार";
 "Small (Original)" = "छोटा (मूल)";
 "Medium" = "मध्यम";
@@ -182,19 +179,32 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "ऊर्ध्वाधर पेजिंग पेजों को ऊपर-नीचे करती है। संकेतक फुलस्क्रीन में बाईं ओर और फ्लोटी में नीचे रहते हैं।";
 "Horizontal" = "क्षैतिज";
 "Vertical" = "ऊर्ध्वाधर";
-
 "Beta" = "बीटा";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "रीसेट के बाद ग्रिड को कैसे क्रमबद्ध किया जाए?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "वर्णानुक्रम (A → Z) या डिस्कवरी क्रम (जिस क्रम में Launchy ऐप्स पाता है) चुनें।";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "यह आपकी सहेजी गई क्रम, फ़ोल्डर और पेज लेआउट मिटा देगा। कस्टम ऐप नाम और छिपे ऐप बरकरार रहेंगे।";
-
 "Alphabetical" = "वर्णानुक्रम";
-
 "Discovery order" = "डिस्कवरी क्रम";
-
 "A → Z by app name" = "ऐप नाम के अनुसार A → Z";
-
 "As Launchy finds them" = "जैसे Launchy उन्हें पाता है";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "बैकअप और पुनर्स्थापना";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "अपना आइकन ग्रिड, फ़ोल्डर, कस्टम नाम, छुपे ऐप्स और सेटिंग्स एक ही फ़ाइल में सहेजें। लेआउट माइग्रेट या रिकवर करने के लिए पुनर्स्थापित करें।";
+"Export backup..." = "बैकअप एक्सपोर्ट करें...";
+"Restore backup..." = "बैकअप पुनर्स्थापित करें...";
+"Backup saved" = "बैकअप सहेजा गया";
+"Your launcher layout and settings were saved to %@" = "आपका लॉन्चर लेआउट और सेटिंग्स %@ में सहेजे गए";
+"Export failed" = "एक्सपोर्ट विफल";
+"Backup restored" = "बैकअप पुनर्स्थापित हुआ";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy ने आपके ऐप्स, फ़ोल्डर और सेटिंग्स फिर से लोड किए। गायब ऐप्स को छोड़ दिया गया; नए अंत में जोड़े गए।";
+"Restore failed" = "पुनर्स्थापना विफल";
+"Could not encode backup payload." = "बैकअप डेटा एन्कोड नहीं हो सका।";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Dock मेनू में ऐप्स के बाद फ़ोल्डरों को समूहित करें";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "राइट-क्लिक पर पहले अकेली ऐप्स को वर्णक्रम में दिखाता है, फ़ोल्डर नीचे दिखते हैं।";
+"Group folders after apps in Dock menu" = "Group folders after apps in Dock menu";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";

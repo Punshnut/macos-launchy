@@ -1,5 +1,6 @@
 import AppKit
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// Coordinates non-SwiftUI lifecycle tasks such as discovery, window management, and menu bar logic.
 @MainActor
@@ -16,6 +17,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var currentSettings = LauncherSettings.defaults
     private var settingsStreamTask: Task<Void, Never>?
     private var arrangementResetTask: Task<Void, Never>?
+    private var backupExportTask: Task<Void, Never>?
+    private var backupImportTask: Task<Void, Never>?
     private var statusBarItem: NSStatusItem?
     private var statusBarMenu: NSMenu?
     private var lastFocusedApplication: NSRunningApplication?
@@ -129,6 +132,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_ notification: Notification) {
         settingsStreamTask?.cancel()
         arrangementResetTask?.cancel()
+        backupExportTask?.cancel()
+        backupImportTask?.cancel()
         applicationDirectoryMonitor?.stop()
         applicationDirectoryMonitor = nil
         removeStatusItem()
@@ -223,6 +228,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         updateHotCornerMonitoring()
         observeSettingsChanges()
         observeArrangementResetRequests()
+        observeBackupRequests()
         observeAppearanceChanges()
         showIntroductionIfNeeded()
         observeMainMenuChanges()
@@ -653,6 +659,29 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// Listens for backup export/import requests coming from the settings window.
+    private func observeBackupRequests() {
+        backupExportTask?.cancel()
+        backupExportTask = Task.detached { [weak self] in
+            let notifications = NotificationCenter.default.notifications(named: .launcherBackupExportRequested)
+            for await notification in notifications {
+                guard let self else { continue }
+                let window = notification.object as? NSWindow
+                await self.exportBackup(presentingFrom: window)
+            }
+        }
+
+        backupImportTask?.cancel()
+        backupImportTask = Task.detached { [weak self] in
+            let notifications = NotificationCenter.default.notifications(named: .launcherBackupImportRequested)
+            for await notification in notifications {
+                guard let self else { continue }
+                let window = notification.object as? NSWindow
+                await self.importBackup(presentingFrom: window)
+            }
+        }
+    }
+
     /// Schedules quick main-thread probes to confirm the run loop is advancing.
     private func scheduleRunloopProbes(label: String) {
         guard hasScheduledRunloopProbe == false else { return }
@@ -783,6 +812,289 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         itemOrderStore.resetArrangement()
         refreshLauncherItems(preservingCustomNames: preservedNames, sorting: sorting)
         applyLauncherMode()
+    }
+
+    /// Writes the current layout and settings to a user-selected backup file.
+    @MainActor
+    private func exportBackup(presentingFrom window: NSWindow?) {
+        hideLauncherIfVisible()
+
+        let payload = makeBackupPayload()
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes, .sortedKeys]
+
+        guard let data = try? encoder.encode(payload) else {
+            presentBackupAlert(
+                messageText: String(localized: "Export failed"),
+                informativeText: String(localized: "Could not encode backup payload."),
+                style: .critical,
+                window: window
+            )
+            return
+        }
+
+        let panel = NSSavePanel()
+        let backupType = UTType(filenameExtension: "launchybackup") ?? .json
+        panel.allowedContentTypes = [backupType]
+        panel.allowsOtherFileTypes = false
+        panel.canCreateDirectories = true
+        panel.nameFieldStringValue = defaultBackupFilename()
+
+        let handle: (NSApplication.ModalResponse) -> Void = { [weak self] response in
+            guard let self, response == .OK, let url = panel.url else { return }
+            let targetURL: URL
+            if url.pathExtension.isEmpty {
+                targetURL = url.appendingPathExtension("launchybackup")
+            } else {
+                targetURL = url
+            }
+
+            do {
+                try data.write(to: targetURL, options: .atomic)
+                self.presentBackupAlert(
+                    messageText: String(localized: "Backup saved"),
+                    informativeText: String(localized: "Your launcher layout and settings were saved to \(targetURL.lastPathComponent)."),
+                    style: .informational,
+                    window: window
+                )
+            } catch {
+                self.presentBackupAlert(
+                    messageText: String(localized: "Export failed"),
+                    informativeText: error.localizedDescription,
+                    style: .critical,
+                    window: window
+                )
+            }
+        }
+
+        if let window {
+            panel.beginSheetModal(for: window, completionHandler: handle)
+        } else {
+            let response = panel.runModal()
+            handle(response)
+        }
+    }
+
+    /// Restores layout and settings from a backup file, filtering out missing apps.
+    @MainActor
+    private func importBackup(presentingFrom window: NSWindow?) {
+        hideLauncherIfVisible()
+
+        let panel = NSOpenPanel()
+        let backupType = UTType(filenameExtension: "launchybackup") ?? .json
+        panel.allowedContentTypes = [backupType]
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+
+        let handle: (NSApplication.ModalResponse) -> Void = { [weak self] response in
+            guard let self, response == .OK, let url = panel.url else { return }
+
+            do {
+                let data = try Data(contentsOf: url)
+                let payload = try JSONDecoder().decode(LauncherBackupPayload.self, from: data)
+                try self.applyImportedBackup(payload)
+                self.presentBackupAlert(
+                    messageText: String(localized: "Backup restored"),
+                    informativeText: String(localized: "Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end."),
+                    style: .informational,
+                    window: window
+                )
+            } catch {
+                self.presentBackupAlert(
+                    messageText: String(localized: "Restore failed"),
+                    informativeText: error.localizedDescription,
+                    style: .critical,
+                    window: window
+                )
+            }
+        }
+
+        if let window {
+            panel.beginSheetModal(for: window, completionHandler: handle)
+        } else {
+            let response = panel.runModal()
+            handle(response)
+        }
+    }
+
+    /// Applies an imported payload, skipping apps that are not present on disk.
+    @MainActor
+    private func applyImportedBackup(_ payload: LauncherBackupPayload) throws {
+        guard payload.version <= LauncherBackupPayload.currentVersion else {
+            throw NSError(domain: "LaunchyBackup", code: 1, userInfo: [
+                NSLocalizedDescriptionKey: String(localized: "This backup was created by a newer version of Launchy.")
+            ])
+        }
+
+        let settings = payload.settings
+        let hiddenIDs = Set(settings.hiddenBundleIDs)
+        let discovery = applicationDiscovery.reloadApps(
+            includeUserApplicationsFolder: settings.shouldScanUserApplicationsFolder,
+            hiddenBundleIDs: hiddenIDs,
+            sorting: .alphabetical
+        )
+        let availableApps = discovery.allVisible
+
+        let capacity = LauncherGridConfiguration.configuration(
+            for: settings.iconSizePreference,
+            mode: settings.selectedLauncherMode
+        ).pageCapacity
+
+        let (restoredItems, restoredPageSizes) = restoredLayout(
+            from: payload.arrangement,
+            availableApps: availableApps,
+            settings: settings,
+            pageCapacity: capacity
+        )
+
+        let persistedItems = itemsExcludingAutoGeneratedFolders(from: restoredItems)
+        itemOrderStore.saveOrderedItems(
+            persistedItems,
+            pageSizes: restoredPageSizes,
+            pageCapacity: capacity
+        )
+
+        orderedItems = restoredItems
+        pageSizes = restoredPageSizes
+
+        LauncherSettingsPersistence.overwriteSettings(settings)
+        handleSettingsChange()
+        launcherWindowManager?.update(rootView: buildLauncherView())
+    }
+
+    /// Builds a compatible payload using the current in-memory state.
+    private func makeBackupPayload() -> LauncherBackupPayload {
+        let filteredItems = itemsExcludingAutoGeneratedFolders(from: orderedItems)
+        let capacity = pageCapacity()
+        let payloadItems = filteredItems.map { item -> LauncherBackupPayload.Item in
+            switch item {
+            case .app(let app):
+                return LauncherBackupPayload.Item(
+                    kind: .app,
+                    bundleID: app.bundleIdentifier,
+                    customName: app.customName,
+                    folderID: nil,
+                    folderName: nil,
+                    appBundleIDs: nil,
+                    appCustomNames: nil
+                )
+            case .folder(let folder):
+                let customNames = Dictionary(uniqueKeysWithValues: folder.apps.compactMap { app -> (String, String)? in
+                    guard let custom = app.customName else { return nil }
+                    return (app.bundleIdentifier, custom)
+                })
+                return LauncherBackupPayload.Item(
+                    kind: .folder,
+                    bundleID: nil,
+                    customName: nil,
+                    folderID: folder.id,
+                    folderName: folder.name,
+                    appBundleIDs: folder.apps.map(\.bundleIdentifier),
+                    appCustomNames: customNames.isEmpty ? nil : customNames
+                )
+            }
+        }
+
+        let resolvedPageSizes = LauncherBackupLayoutResolver.resolvedPageSizes(
+            preferredSizes: pageSizes,
+            itemCount: filteredItems.count,
+            pageCapacity: capacity,
+            fillsGapsAutomatically: currentSettings.fillsGapsAutomatically
+        )
+
+        return LauncherBackupPayload(
+            version: LauncherBackupPayload.currentVersion,
+            createdAt: Date(),
+            settings: currentSettings,
+            arrangement: .init(items: payloadItems, pageSizes: resolvedPageSizes)
+        )
+    }
+
+    /// Rebuilds launcher items from an imported arrangement while ignoring missing apps.
+    private func restoredLayout(
+        from arrangement: LauncherBackupPayload.Arrangement,
+        availableApps: [AppItem],
+        settings: LauncherSettings,
+        pageCapacity: Int
+    ) -> ([LauncherItem], [Int]) {
+        var lookup = Dictionary(uniqueKeysWithValues: availableApps.map { ($0.bundleIdentifier, $0) })
+        var restored: [LauncherItem] = []
+
+        for entry in arrangement.items {
+            switch entry.kind {
+            case .app:
+                guard let bundleID = entry.bundleID, var app = lookup.removeValue(forKey: bundleID) else { continue }
+                if let custom = entry.customName {
+                    app.customName = custom
+                }
+                restored.append(.app(app))
+            case .folder:
+                guard
+                    let bundleIDs = entry.appBundleIDs,
+                    let folderID = entry.folderID
+                else { continue }
+                let apps = bundleIDs.compactMap { bundleID -> AppItem? in
+                    guard var app = lookup.removeValue(forKey: bundleID) else { return nil }
+                    if let custom = entry.appCustomNames?[bundleID] {
+                        app.customName = custom
+                    }
+                    return app
+                }
+                guard apps.isEmpty == false else { continue }
+                let folderName = (entry.folderName?.trimmingCharacters(in: .whitespacesAndNewlines)).flatMap { $0.isEmpty ? nil : $0 }
+                let folder = FolderItem(
+                    id: folderID,
+                    name: folderName ?? FolderItem.defaultName,
+                    apps: apps
+                )
+                restored.append(.folder(folder))
+            }
+        }
+
+        let remaining = lookup.values.sorted {
+            $0.sortingName.localizedCaseInsensitiveCompare($1.sortingName) == .orderedAscending
+        }
+        restored.append(contentsOf: remaining.map { .app($0) })
+
+        let resolvedPageSizes = LauncherBackupLayoutResolver.resolvedPageSizes(
+            preferredSizes: arrangement.pageSizes,
+            itemCount: restored.count,
+            pageCapacity: pageCapacity,
+            fillsGapsAutomatically: settings.fillsGapsAutomatically
+        )
+
+        return (restored, resolvedPageSizes)
+    }
+
+    /// Presents a small alert for backup/export operations.
+    private func presentBackupAlert(
+        messageText: String,
+        informativeText: String,
+        style: NSAlert.Style,
+        window: NSWindow?
+    ) {
+        let alert = NSAlert()
+        alert.alertStyle = style
+        alert.messageText = messageText
+        alert.informativeText = informativeText
+        if let window {
+            alert.beginSheetModal(for: window, completionHandler: nil)
+        } else {
+            alert.runModal()
+        }
+    }
+
+    /// Hides the launcher window if it's currently visible so sheets aren't obscured.
+    private func hideLauncherIfVisible() {
+        if launcherWindowManager?.window?.isVisible == true {
+            hideLauncherWindow(restoreFocus: false)
+        }
+    }
+
+    private func defaultBackupFilename() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: Date()) + ".launchybackup"
     }
 
     /// Sets up global hotkeys for toggling the launcher and switching layouts.

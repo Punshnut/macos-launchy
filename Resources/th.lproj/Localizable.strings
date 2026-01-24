@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "โครงสร้าง SwiftUI นี้พร้อมสำหรับไอเดียของคุณแล้ว";
 "Increase Counter" = "เพิ่มเคาน์เตอร์";
 "Counter: %lld" = "เคาน์เตอร์: %lld";
-
 "Floaty or fullscreen" = "Floaty หรือเต็มหน้าจอ";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "เลือกเลย์เอาต์ที่เหมาะกับช่วงเวลา Floaty ลอยเหนือเดสก์ท็อป ส่วนเต็มหน้าจอให้ความรู้สึกเหมือน Launchpad แบบดั้งเดิม";
 "Floaty mode" = "โหมด Floaty";
@@ -41,11 +40,9 @@
 "Back" = "ย้อนกลับ";
 "Start using Launchy" = "เริ่มใช้ Launchy";
 "Next" = "ถัดไป";
-
 "Visuals" = "ภาพ";
 "Shortcuts" = "ทางลัด";
 "About" = "เกี่ยวกับ";
-
 "Fullscreen" = "เต็มหน้าจอ";
 "Floaty Panel" = "แผง Floaty";
 "System" = "ระบบ";
@@ -65,7 +62,6 @@
 "Transparent" = "โปร่งใส";
 "Solid Color" = "สีเรียบ";
 "unnamed" = "ไม่มีชื่อ";
-
 "Launcher" = "แอปเปิด";
 "Launch at login, layouts, and background styling." = "เปิดพร้อมล็อกอิน เลย์เอาต์ และสไตล์พื้นหลัง";
 "Keyboard" = "แป้นพิมพ์";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "การตั้งค่า Launchy";
 "Launcher settings" = "การตั้งค่า Launcher";
 "Launchy info" = "ข้อมูล Launchy";
-
 "Settings" = "การตั้งค่า";
 "Settings..." = "การตั้งค่า...";
 "Check for Updates..." = "ตรวจสอบการอัปเดต...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "สลับสไตล์พื้นหลังทดสอบ";
 "Show Launcher" = "แสดง Launcher";
 "Quit Launchy" = "ออกจาก Launchy";
-
 "No items found" = "ไม่พบรายการ";
 "No matching items" = "ไม่มีรายการตรงกัน";
 "Enter multi-select mode" = "เข้าสู่โหมดเลือกหลายรายการ";
@@ -147,6 +141,8 @@
 "Search" = "ค้นหา";
 "Clear search text" = "ล้างข้อความค้นหา";
 "More actions" = "ดำเนินการเพิ่มเติม";
+
+// Item actions
 "Open" = "เปิด";
 "Rename App" = "เปลี่ยนชื่อแอป";
 "Enter a custom name for this app. Leave empty to reset." = "ใส่ชื่อเฉพาะสำหรับแอปนี้ ปล่อยว่างเพื่อรีเซ็ต";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "แอป:\n%@";
 "Save" = "บันทึก";
 
+// Launcher visuals
 "Icon size" = "ขนาดไอคอน";
 "Small (Original)" = "เล็ก (ต้นฉบับ)";
 "Medium" = "ปานกลาง";
@@ -182,19 +179,30 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "การเลื่อนแนวตั้งจะเลื่อนหน้าขึ้นลง ตัวบอกตำแหน่งย้ายไปทางซ้ายในโหมดเต็มหน้าจอ และอยู่ล่างสุดในโหมดลอย";
 "Horizontal" = "แนวนอน";
 "Vertical" = "แนวตั้ง";
-
 "Beta" = "เบต้า";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "ต้องการจัดเรียงกริดอย่างไรหลังรีเซ็ต?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "เลือก เรียงตามตัวอักษร (A → Z) หรือ ตามลำดับการค้นพบ (ตามที่ Launchy พบแอป).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "การกระทำนี้จะลบลำดับที่บันทึกไว้ โฟลเดอร์ และเลย์เอาต์หน้า ชื่อแอปแบบกำหนดเองและแอปที่ซ่อนจะยังคงอยู่.";
-
 "Alphabetical" = "เรียงตามตัวอักษร";
-
 "Discovery order" = "ลำดับการค้นพบ";
-
 "A → Z by app name" = "A → Z ตามชื่อแอป";
-
 "As Launchy finds them" = "ตามที่ Launchy พบ";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "สำรองและกู้คืน";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "บันทึกตารางไอคอน โฟลเดอร์ ชื่อกำหนดเอง แอปที่ซ่อน และการตั้งค่าไว้ในไฟล์เดียว กู้คืนเพื่อย้ายหรือกู้คืนเลย์เอาต์";
+"Export backup..." = "ส่งออกไฟล์สำรอง...";
+"Restore backup..." = "กู้คืนไฟล์สำรอง...";
+"Backup saved" = "บันทึกไฟล์สำรองแล้ว";
+"Your launcher layout and settings were saved to %@" = "เลย์เอาต์และการตั้งค่าของตัวเรียกถูกบันทึกไปยัง %@";
+"Export failed" = "ส่งออกไม่สำเร็จ";
+"Backup restored" = "กู้คืนไฟล์สำรองแล้ว";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy โหลดแอป โฟลเดอร์ และการตั้งค่าของคุณอีกครั้ง แอปที่หายถูกข้ามไป; แอปใหม่ถูกเพิ่มท้ายรายการ";
+"Restore failed" = "กู้คืนไม่สำเร็จ";
+"Could not encode backup payload." = "ไม่สามารถเข้ารหัสข้อมูลสำรองได้";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "จัดโฟลเดอร์ไว้หลังแอปในเมนู Dock";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "เมื่อคลิกขวาที่ไอคอน Dock จะแสดงแอปเดี่ยวตามลำดับตัวอักษรก่อน ตามด้วยโฟลเดอร์เรียงตัวอักษรด้านล่าง";

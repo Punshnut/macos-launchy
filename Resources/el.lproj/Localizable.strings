@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Αυτό το περίγραμμα SwiftUI είναι έτοιμο για τις ιδέες σας.";
 "Increase Counter" = "Αύξηση μετρητή";
 "Counter: %lld" = "Μετρητής: %lld";
-
 "Floaty or fullscreen" = "Floaty ή πλήρης οθόνη";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Διαλέξτε τη διάταξη που ταιριάζει στη στιγμή. Το Floaty αιωρείται πάνω από την επιφάνεια εργασίας, ενώ η πλήρης οθόνη θυμίζει το κλασικό Launchpad.";
 "Floaty mode" = "Λειτουργία Floaty";
@@ -41,11 +40,9 @@
 "Back" = "Πίσω";
 "Start using Launchy" = "Ξεκινήστε να χρησιμοποιείτε το Launchy";
 "Next" = "Επόμενο";
-
 "Visuals" = "Οπτικά";
 "Shortcuts" = "Συντομεύσεις";
 "About" = "Σχετικά";
-
 "Fullscreen" = "Πλήρης οθόνη";
 "Floaty Panel" = "Πάνελ Floaty";
 "System" = "Σύστημα";
@@ -65,7 +62,6 @@
 "Transparent" = "Διαφανές";
 "Solid Color" = "Συμπαγές χρώμα";
 "unnamed" = "χωρίς όνομα";
-
 "Launcher" = "Εκκινητής";
 "Launch at login, layouts, and background styling." = "Εκκίνηση στη σύνδεση, διατάξεις και στυλ φόντου.";
 "Keyboard" = "Πληκτρολόγιο";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Ρυθμίσεις Launchy";
 "Launcher settings" = "Ρυθμίσεις εκκινητή";
 "Launchy info" = "Πληροφορίες Launchy";
-
 "Settings" = "Ρυθμίσεις";
 "Settings..." = "Ρυθμίσεις...";
 "Check for Updates..." = "Έλεγχος για ενημερώσεις...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Εναλλαγή δοκιμαστικών στυλ φόντου";
 "Show Launcher" = "Εμφάνιση εκκινητή";
 "Quit Launchy" = "Έξοδος από το Launchy";
-
 "No items found" = "Δεν βρέθηκαν στοιχεία";
 "No matching items" = "Δεν υπάρχουν αντιστοιχίες";
 "Enter multi-select mode" = "Είσοδος σε λειτουργία πολλαπλής επιλογής";
@@ -147,6 +141,8 @@
 "Search" = "Αναζήτηση";
 "Clear search text" = "Εκκαθάριση κειμένου αναζήτησης";
 "More actions" = "Περισσότερες ενέργειες";
+
+// Item actions
 "Open" = "Άνοιγμα";
 "Rename App" = "Μετονομασία εφαρμογής";
 "Enter a custom name for this app. Leave empty to reset." = "Εισαγάγετε προσαρμοσμένο όνομα για αυτή την εφαρμογή. Αφήστε κενό για επαναφορά.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Εφαρμογές:\n%@";
 "Save" = "Αποθήκευση";
 
+// Launcher visuals
 "Icon size" = "Μέγεθος εικονιδίου";
 "Small (Original)" = "Μικρό (Αρχικό)";
 "Medium" = "Μεσαίο";
@@ -182,19 +179,30 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Η κάθετη σελιδοποίηση μετακινεί τις σελίδες πάνω-κάτω. Οι δείκτες πάνε αριστερά σε πλήρη οθόνη και μένουν κάτω στο floaty.";
 "Horizontal" = "Οριζόντια";
 "Vertical" = "Κάθετα";
-
 "Beta" = "Beta";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Πώς να ταξινομηθεί το πλέγμα μετά την επαναφορά;";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Διάλεξε Αλφαβητικά (A → Z) ή Σειρά εντοπισμού (όπως βρίσκει τις εφαρμογές το Launchy).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Αυτό διαγράφει την αποθηκευμένη σειρά, τους φακέλους και τη διάταξη σελίδας. Τα προσαρμοσμένα ονόματα και οι κρυφές εφαρμογές διατηρούνται.";
-
 "Alphabetical" = "Αλφαβητικά";
-
 "Discovery order" = "Σειρά εντοπισμού";
-
 "A → Z by app name" = "A → Z ανά όνομα εφαρμογής";
-
 "As Launchy finds them" = "Όπως τις βρίσκει το Launchy";
+
+// Backup & restore
+"Back up & Restore" = "Δημιουργία αντιγράφου & επαναφορά";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Αποθήκευσε το πλέγμα εικονιδίων, φακέλους, προσαρμοσμένα ονόματα, κρυφές εφαρμογές και ρυθμίσεις σε ένα αρχείο. Επαναφορά για μεταφορά ή ανάκτηση της διάταξης.";
+"Export backup..." = "Εξαγωγή αντιγράφου...";
+"Restore backup..." = "Επαναφορά αντιγράφου...";
+"Backup saved" = "Το αντίγραφο αποθηκεύτηκε";
+"Your launcher layout and settings were saved to %@" = "Η διάταξη και οι ρυθμίσεις του launcher αποθηκεύτηκαν στο %@";
+"Export failed" = "Η εξαγωγή απέτυχε";
+"Backup restored" = "Το αντίγραφο επαναφέρθηκε";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Το Launchy φόρτωσε ξανά τις εφαρμογές, φακέλους και ρυθμίσεις. Οι ελλείπουσες εφαρμογές παραλείφθηκαν· οι νέες προστέθηκαν στο τέλος.";
+"Restore failed" = "Η επαναφορά απέτυχε";
+"Could not encode backup payload." = "Δεν ήταν δυνατή η κωδικοποίηση του αντιγράφου.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Ομαδοποίηση φακέλων μετά τις εφαρμογές στο μενού του Dock";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "Κρατά τις μεμονωμένες εφαρμογές πρώτες αλφαβητικά και τους φακέλους από κάτω στο δεξί κλικ του εικονιδίου Dock.";

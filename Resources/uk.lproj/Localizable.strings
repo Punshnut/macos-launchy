@@ -2,7 +2,6 @@
 "This SwiftUI scaffold is ready for your ideas." = "Цей каркас SwiftUI готовий втілювати ваші ідеї.";
 "Increase Counter" = "Збільшити лічильник";
 "Counter: %lld" = "Лічильник: %lld";
-
 "Floaty or fullscreen" = "Floaty чи повноекранний";
 "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad." = "Виберіть макет під настрій. Floaty парить над робочим столом, а повноекранний виглядає як класичний Launchpad.";
 "Floaty mode" = "Режим Floaty";
@@ -41,11 +40,9 @@
 "Back" = "Назад";
 "Start using Launchy" = "Почати користуватись Launchy";
 "Next" = "Далі";
-
 "Visuals" = "Візуально";
 "Shortcuts" = "Комбінації";
 "About" = "Про";
-
 "Fullscreen" = "Повноекранний";
 "Floaty Panel" = "Панель Floaty";
 "System" = "Система";
@@ -65,7 +62,6 @@
 "Transparent" = "Прозорий";
 "Solid Color" = "Суцільний колір";
 "unnamed" = "без назви";
-
 "Launcher" = "Лаунчер";
 "Launch at login, layouts, and background styling." = "Запуск при вході, макети й оформлення фону.";
 "Keyboard" = "Клавіатура";
@@ -123,7 +119,6 @@
 "Launchy Settings" = "Налаштування Launchy";
 "Launcher settings" = "Налаштування стартера";
 "Launchy info" = "Інформація про Launchy";
-
 "Settings" = "Налаштування";
 "Settings..." = "Налаштування...";
 "Check for Updates..." = "Перевірити оновлення...";
@@ -133,7 +128,6 @@
 "Toggle Test Background Styles" = "Переключити тестові стилі фону";
 "Show Launcher" = "Показати лаунчер";
 "Quit Launchy" = "Вийти з Launchy";
-
 "No items found" = "Елементи не знайдені";
 "No matching items" = "Немає відповідних елементів";
 "Enter multi-select mode" = "Увімкнути режим множинного вибору";
@@ -147,6 +141,8 @@
 "Search" = "Пошук";
 "Clear search text" = "Очистити текст пошуку";
 "More actions" = "Додаткові дії";
+
+// Item actions
 "Open" = "Відкрити";
 "Rename App" = "Перейменувати додаток";
 "Enter a custom name for this app. Leave empty to reset." = "Введіть власну назву для цього додатку. Залиште пустим, щоб скинути.";
@@ -173,6 +169,7 @@
 "Apps:\n%@" = "Додатки:\n%@";
 "Save" = "Зберегти";
 
+// Launcher visuals
 "Icon size" = "Розмір іконок";
 "Small (Original)" = "Малий (оригінал)";
 "Medium" = "Середній";
@@ -182,19 +179,30 @@
 "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty." = "Вертикальна пагінація рухає сторінки вгору-вниз. Індикатори йдуть ліворуч у повноекранному режимі й залишаються внизу в плаваючому.";
 "Horizontal" = "Горизонтально";
 "Vertical" = "Вертикально";
-
 "Beta" = "Бета";
 
+// Arrangement reset
 "How should the grid be sorted after reset?" = "Як упорядкувати сітку після скидання?";
-
 "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps)." = "Оберіть За абеткою (A → Z) або В порядку знаходження (як Launchy знаходить програми).";
-
 "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept." = "Це видалить збережений порядок, теки та макет сторінок. Користувацькі назви й приховані програми збережуться.";
-
 "Alphabetical" = "За абеткою";
-
 "Discovery order" = "В порядку знаходження";
-
 "A → Z by app name" = "A → Z за назвою програми";
-
 "As Launchy finds them" = "У порядку знаходження Launchy";
+// Backup & restore (placeholder English)
+// Backup & restore
+"Back up & Restore" = "Резервувати та відновити";
+"Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout." = "Збережіть сітку іконок, папки, власні назви, приховані застосунки та налаштування в один файл. Відновіть, щоб перенести чи відновити макет.";
+"Export backup..." = "Експортувати резервну копію...";
+"Restore backup..." = "Відновити резервну копію...";
+"Backup saved" = "Резервну копію збережено";
+"Your launcher layout and settings were saved to %@" = "Макет і налаштування лаунчера збережено у %@";
+"Export failed" = "Не вдалося експортувати";
+"Backup restored" = "Резервну копію відновлено";
+"Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end." = "Launchy перезавантажив ваші застосунки, папки та налаштування. Відсутні застосунки пропущено; нові додано наприкінці.";
+"Restore failed" = "Відновлення не вдалося";
+"Could not encode backup payload." = "Не вдалося закодувати дані резервної копії.";
+
+// Dock menu folder grouping
+"Group folders after apps in Dock menu" = "Групувати папки після застосунків у меню Dock";
+"Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon." = "При правому кліку на іконку Dock спершу показує окремі застосунки за алфавітом, папки під ними теж за алфавітом.";

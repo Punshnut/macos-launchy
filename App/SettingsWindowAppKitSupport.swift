@@ -191,6 +191,7 @@ final class SettingsWindowAlertPresenter {
     }
 
     /// Shared reset alert contents.
+    @MainActor
     private static func resetAlert() -> NSAlert {
         let alert = NSAlert()
         alert.alertStyle = .warning
@@ -202,6 +203,7 @@ final class SettingsWindowAlertPresenter {
     }
 
     /// Shared sorting alert contents.
+    @MainActor
     private static func sortingAlert(initialSorting: ArrangementResetSorting) -> NSAlert {
         let alert = NSAlert()
         alert.alertStyle = .informational

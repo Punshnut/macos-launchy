@@ -457,6 +457,8 @@ struct LauncherSettings: Hashable, Codable {
     var isMenuBarIconVisible: Bool
     /// Determines whether Launchy should keep a Dock icon around while the app is running.
     var isDockIconVisible: Bool
+    /// If enabled, Dock menu shows apps first (alphabetical) and folders after them (alphabetical).
+    var sortsDockMenuFoldersLast: Bool
     /// Global hotkey used to show or hide Launchy.
     var launcherHotkey: HotkeyDescriptor?
     /// Optional shortcut for toggling between floaty and fullscreen layouts.
@@ -486,6 +488,7 @@ struct LauncherSettings: Hashable, Codable {
         selectedLauncherMode: LauncherMode,
         isMenuBarIconVisible: Bool,
         isDockIconVisible: Bool,
+        sortsDockMenuFoldersLast: Bool,
         launcherHotkey: HotkeyDescriptor?,
         layoutToggleHotkey: HotkeyDescriptor?,
         hotCornerEnabled: Bool,
@@ -506,6 +509,7 @@ struct LauncherSettings: Hashable, Codable {
         self.selectedLauncherMode = selectedLauncherMode
         self.isMenuBarIconVisible = isMenuBarIconVisible
         self.isDockIconVisible = isDockIconVisible
+        self.sortsDockMenuFoldersLast = sortsDockMenuFoldersLast
         self.launcherHotkey = launcherHotkey
         self.layoutToggleHotkey = layoutToggleHotkey
         self.hotCornerEnabled = hotCornerEnabled
@@ -532,6 +536,7 @@ extension LauncherSettings {
             selectedLauncherMode: .fullscreen,
             isMenuBarIconVisible: true,
             isDockIconVisible: true,
+            sortsDockMenuFoldersLast: false,
             launcherHotkey: .toggleLauncher,
             layoutToggleHotkey: nil,
             hotCornerEnabled: false,
@@ -557,6 +562,7 @@ extension LauncherSettings {
         case selectedLauncherMode
         case isMenuBarIconVisible
         case isDockIconVisible
+        case sortsDockMenuFoldersLast
         case launcherHotkey
         case layoutToggleHotkey
         case hotCornerEnabled
@@ -590,6 +596,7 @@ extension LauncherSettings {
             selectedLauncherMode: try container.decodeIfPresent(LauncherMode.self, forKey: .selectedLauncherMode) ?? .fullscreen,
             isMenuBarIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isMenuBarIconVisible) ?? true,
             isDockIconVisible: try container.decodeIfPresent(Bool.self, forKey: .isDockIconVisible) ?? true,
+            sortsDockMenuFoldersLast: try container.decodeIfPresent(Bool.self, forKey: .sortsDockMenuFoldersLast) ?? false,
             launcherHotkey: decodedLauncherHotkey,
             layoutToggleHotkey: try container.decodeIfPresent(HotkeyDescriptor.self, forKey: .layoutToggleHotkey),
             hotCornerEnabled: try container.decodeIfPresent(Bool.self, forKey: .hotCornerEnabled) ?? false,
@@ -613,6 +620,7 @@ extension LauncherSettings {
         try container.encode(selectedLauncherMode, forKey: .selectedLauncherMode)
         try container.encode(isMenuBarIconVisible, forKey: .isMenuBarIconVisible)
         try container.encode(isDockIconVisible, forKey: .isDockIconVisible)
+        try container.encode(sortsDockMenuFoldersLast, forKey: .sortsDockMenuFoldersLast)
         try container.encode(launcherHotkey, forKey: .launcherHotkey)
         try container.encode(layoutToggleHotkey, forKey: .layoutToggleHotkey)
         try container.encode(hotCornerEnabled, forKey: .hotCornerEnabled)

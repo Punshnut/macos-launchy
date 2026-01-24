@@ -249,13 +249,15 @@ struct SettingsWindow: View {
                 panelDivider
                 launcherLayoutPicker
                 panelDivider
+                backgroundStyleSection
+                panelDivider
                 iconSizeSlider
                 panelDivider
                 pagingOrientationPicker
                 panelDivider
                 iconVisibilitySection
                 panelDivider
-                backgroundStyleSection
+                dockMenuSection
                 panelDivider
                 autoGapToggle
             }
@@ -422,6 +424,19 @@ struct SettingsWindow: View {
             ))
 
             Text(String(localized: "If both icons are hidden, Launchy keeps the toggle shortcut enabled so you can still open it."))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private var dockMenuSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Toggle(String(localized: "Group folders after apps in Dock menu"), isOn: Binding(
+                get: { settingsStore.settingsSnapshot.sortsDockMenuFoldersLast },
+                set: { settingsStore.setSortsDockMenuFoldersLast($0) }
+            ))
+
+            Text(String(localized: "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon."))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

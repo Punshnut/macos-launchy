@@ -116,6 +116,13 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         LauncherSettingsPersistence.setDockIconHidden(isHidden)
     }
 
+    /// Persists whether Dock menu folders should be placed after standalone apps.
+    func setSortsDockMenuFoldersLast(_ value: Bool) {
+        guard settingsSnapshot.sortsDockMenuFoldersLast != value else { return }
+        settingsSnapshot.sortsDockMenuFoldersLast = value
+        LauncherSettingsPersistence.setSortsDockMenuFoldersLast(value)
+    }
+
     /// Persists whether the menu bar status item should be hidden.
     func setMenuBarIconHidden(_ isHidden: Bool) {
         guard settingsSnapshot.isMenuBarIconHidden != isHidden else { return }

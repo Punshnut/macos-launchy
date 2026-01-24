@@ -68,6 +68,21 @@ enum LauncherSettingsPersistence {
         setDockIconVisible(!isHidden, userDefaults: userDefaults)
     }
 
+    /// Reads whether the Dock menu should list folders after standalone apps.
+    static func sortsDockMenuFoldersLast(userDefaults: UserDefaults = .standard) -> Bool {
+        loadSettings(userDefaults: userDefaults).sortsDockMenuFoldersLast
+    }
+
+    /// Persists the Dock menu grouping preference.
+    static func setSortsDockMenuFoldersLast(
+        _ value: Bool,
+        userDefaults: UserDefaults = .standard
+    ) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.sortsDockMenuFoldersLast = value
+        }
+    }
+
     /// Reads whether the launcher should be added to login items.
     static func launchAtLogin(userDefaults: UserDefaults = .standard) -> Bool {
         loadSettings(userDefaults: userDefaults).launchesAtLogin

@@ -1515,9 +1515,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Adds the arranged apps and folders to the provided menu in alphabetical order.
     @discardableResult
     private func appendLauncherItemsMenu(to menu: NSMenu) -> Bool {
-        let sortedItems = orderedItems.sorted { lhs, rhs in
-            menuSortKey(for: lhs).localizedCaseInsensitiveCompare(menuSortKey(for: rhs)) == .orderedAscending
-        }
+        let sortedItems = dockMenuItems()
 
         guard sortedItems.isEmpty == false else {
             let placeholder = NSMenuItem(title: String(localized: "No applications available"), action: nil, keyEquivalent: "")
@@ -1538,6 +1536,29 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
 
+    /// Returns Dock menu entries sorted either globally or grouped with folders last.
+    private func dockMenuItems() -> [LauncherItem] {
+        let alphabetical: (LauncherItem, LauncherItem) -> Bool = { [unowned self] lhs, rhs in
+            self.menuSortKey(for: lhs).localizedCaseInsensitiveCompare(self.menuSortKey(for: rhs)) == .orderedAscending
+        }
+
+        guard currentSettings.sortsDockMenuFoldersLast else {
+            return orderedItems.sorted(by: alphabetical)
+        }
+
+        let appItems = orderedItems.compactMap { item -> LauncherItem? in
+            if case .app = item { return item }
+            return nil
+        }.sorted(by: alphabetical)
+
+        let folderItems = orderedItems.compactMap { item -> LauncherItem? in
+            if case .folder = item { return item }
+            return nil
+        }.sorted(by: alphabetical)
+
+        return appItems + folderItems
+    }
+
     /// Builds a menu item representing an app launch target.
     private func menuItem(for app: AppItem) -> NSMenuItem {
         let title = menuDisplayTitle(for: app)
@@ -1554,6 +1575,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private func menuItem(for folder: FolderItem) -> NSMenuItem {
         let item = NSMenuItem(title: folder.name, action: nil, keyEquivalent: "")
         item.image = nil
+
         item.attributedTitle = nil
 
         let submenu = NSMenu()
@@ -1577,7 +1599,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Returns a stable string for sorting and displaying app items.
     private func menuDisplayTitle(for app: AppItem) -> String {
-        if let bundleName = app.bundleURL?.lastPathComponent {
+        if let bundleName = app.bundleURL?.deletingPathExtension().lastPathComponent, bundleName.isEmpty == false {
             return bundleName
         }
         return app.resolvedDisplayName

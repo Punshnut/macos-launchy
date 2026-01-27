@@ -11,7 +11,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 <p align="center">
     <a href="https://github.com/Punshnut/macos-launchy/releases/latest">
-    <img src="https://img.shields.io/badge/Download-Beta%200.4.6-blueviolet?style=for-the-badge" alt="Download Beta 0.4.6">
+    <img src="https://img.shields.io/badge/Download-Beta%200.5.0-blueviolet?style=for-the-badge" alt="Download Beta 0.5.0">
   </a>
 </p>
 
@@ -90,6 +90,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 - **Hidden Apps** tab lets you include ~/Applications, mute noisy tools, or pin hidden entries to the top for quick toggling.
 - **Shortcuts tab** sets the launcher hotkey, fullscreen ⇄ floaty toggle, and hot corner; Launchy still opens even if both Dock and menu bar icons are hidden.
 - **Reset the grid** from Settings when you want a clean slate - **custom names and hidden states stay intact** - and enable Launch at Login so it’s ready after a reboot.
+- **Backups** manual export/restore in Settings plus quiet auto-backups (max every 48h on unchanged refresh) in `~/Library/Application Support/Launchy/AutoBackup` with the latest 14 kept.
 
 ## License & support
 
@@ -105,7 +106,6 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 Here are a few improvements planned for upcoming releases:
 - **Richer, but unobtrusive animations** - smoother transitions, user input interpretation and calmer motion across fullscreen and Floaty mode.
-- **Dock menu enhancements** - icons inside the Dock right-click menu for quicker recognition and a more polished feel.
 - **Plugin support** - support for feature extensions and visual overlays through plugins
 
 [Donate (Ko-Fi)](https://ko-fi.com/janfeuerbacher)

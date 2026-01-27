@@ -21,6 +21,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var backupImportTask: Task<Void, Never>?
     private var statusBarItem: NSStatusItem?
     private var statusBarMenu: NSMenu?
+    private let autoBackupManager = AutoBackupManager()
     private var lastFocusedApplication: NSRunningApplication?
     private var pendingLaunchedApplication: NSRunningApplication?
     private var pendingLaunchBundleIdentifier: String?
@@ -235,6 +236,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         observeSparkleUpdateNotifications()
         setupMemoryPressureMonitoring()
         setupMemoryMaintenanceTimer()
+        prepareAutoBackupDirectoryIfNeeded()
     }
 
     /// Double-checks that unused menu bar items are stripped even if AppKit rebuilds the menu.
@@ -1097,6 +1099,41 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return formatter.string(from: Date()) + ".launchybackup"
     }
 
+    /// Performs an auto-backup if cadence allows; used by all triggers.
+    private func performAutoBackupIfAllowed(reason: String, now: Date = Date()) {
+        guard autoBackupManager.shouldCreateBackup(now: now) else {
+            LaunchyLogger.log("auto-backup skip (cadence) reason=\(reason) last=\(autoBackupManager.lastAutoBackupDate() ?? .distantPast)")
+            return
+        }
+
+        let payload = makeBackupPayload()
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes, .sortedKeys]
+
+        guard let data = try? encoder.encode(payload) else {
+            LaunchyLogger.error("auto-backup encode failed (\(reason))")
+            return
+        }
+
+        do {
+            let directory = try autoBackupManager.autoBackupDirectory()
+            let url = directory.appendingPathComponent(autoBackupFilename(for: payload.createdAt))
+            try data.write(to: url, options: .atomic)
+            autoBackupManager.recordBackup(date: payload.createdAt)
+            autoBackupManager.pruneOldBackups(in: directory)
+            LaunchyLogger.log("auto-backup saved path=\(url.path) reason=\(reason)")
+        } catch {
+            LaunchyLogger.error("auto-backup failed (\(reason)): \(error.localizedDescription)")
+        }
+    }
+
+    /// Uses a timestamped filename so multiple automatic backups remain unique.
+    private func autoBackupFilename(for date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd_HHmmss"
+        return "auto-\(formatter.string(from: date)).launchybackup"
+    }
+
     /// Sets up global hotkeys for toggling the launcher and switching layouts.
     private func configureHotkeyManagers() {
         LaunchyLogger.log("configureHotkeyManagers: launcherHotkey=\(String(describing: currentSettings.launcherHotkey)) layoutHotkey=\(String(describing: currentSettings.layoutToggleHotkey))")
@@ -1196,6 +1233,15 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     private func markLauncherDidHide() {
         lastLauncherVisibilityChange = Date()
+    }
+
+    /// Ensures the auto-backup directory exists early so later writes cannot fail due to a missing folder.
+    private func prepareAutoBackupDirectoryIfNeeded() {
+        do {
+            _ = try autoBackupManager.autoBackupDirectory()
+        } catch {
+            LaunchyLogger.error("auto-backup directory create failed: \(error.localizedDescription)")
+        }
     }
 
     /// Shows or hides the launcher window whenever the hotkey fires.
@@ -1601,6 +1647,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             preheatIconsForCurrentLayout()
         }
         scheduleRemovalConfirmationTimer()
+        if didChange == false {
+            performAutoBackupIfAllowed(reason: "refresh-no-change", now: now)
+        }
         return didChange
     }
 

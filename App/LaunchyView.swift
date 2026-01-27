@@ -581,9 +581,9 @@ struct LauncherView: View {
     private let reorderLiftAnimation = Animation.spring(response: 0.26, dampingFraction: 0.82, blendDuration: 0.1)
     private let fullscreenGridEntranceAnimation = Animation.spring(response: 0.28, dampingFraction: 0.92, blendDuration: 0.14)
     private let fullscreenGridEntranceTranslation: CGFloat = 18
-    private static let pageSwitchDuration: TimeInterval = 0.1
-    private static let pageSwitchResponse: Double = 0.24
-    private static let pageSwitchDamping: Double = 0.9
+    private static let pageSwitchDuration: TimeInterval = 0.085
+    private static let pageSwitchResponse: Double = 0.22
+    private static let pageSwitchDamping: Double = 0.88
     private let pageSwitchAnimation = Animation.interactiveSpring(
         response: Self.pageSwitchResponse,
         dampingFraction: Self.pageSwitchDamping,
@@ -1294,7 +1294,7 @@ struct LauncherView: View {
         pageSwitchAnimationToken &+= 1
         let token = pageSwitchAnimationToken
         isPageSwitchAnimationActive = true
-        let cooldown = Self.pageSwitchDuration + 0.08
+        let cooldown = Self.pageSwitchDuration + 0.06
         DispatchQueue.main.asyncAfter(deadline: .now() + cooldown) { [self] in
             guard token == pageSwitchAnimationToken else { return }
             if abs(pagerDragOffset) < 0.5 {
@@ -1581,11 +1581,8 @@ struct LauncherView: View {
     }
 
     private func pageScale(for page: Int, pageSpan: CGFloat) -> CGFloat {
-        let span = max(pageSpan, 1)
-        let dragProgress = pagerDragOffset / span
-        let distance = abs(CGFloat(page - currentPage) + dragProgress)
-        let softened = min(distance, 1.2)
-        return 1 - 0.025 * softened
+        // Keep pages at full scale during paging to avoid unintended zoom/stacking effects.
+        return 1
     }
 
     private var shouldRasterizeGridPages: Bool {

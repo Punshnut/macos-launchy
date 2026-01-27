@@ -16,6 +16,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 - Right-click superpowers: rename, hide, move apps, create folders, or reveal in Finder without opening another window - light housekeeping in two clicks.
 - Universal build: native speed on Apple Silicon and Intel; auto-updating, notarized, MIT licensed, and free forever. No telemetry, no nags, just tools.
 - Accessibility-aware: respects system text size, high-contrast modes, and VoiceOver labels so everyone can fly through their apps.
+- Backups: export/restore from Settings anytime, plus quiet auto-backups (max every 48h on unchanged refresh) with the newest 14 kept in `~/Library/Application Support/Launchy/AutoBackup`.
 
 ## Highlights to showcase
 

@@ -246,7 +246,7 @@ struct LauncherView: View {
         let maxScroll = CGFloat(max(totalPages - 1, 0)) * pageWidth
         let minTranslation = min(0, -maxScroll)
         let rawTranslation = basePageOffset + folderPagerDragOffset
-        return min(max(rawTranslation, minTranslation), 0)
+        return pixelAlign(min(max(rawTranslation, minTranslation), 0))
     }
 
     /// Builds the grid layer including empty state, the paged grid, and invisible gesture overlays.
@@ -593,7 +593,7 @@ struct LauncherView: View {
 
     private var fullscreenGridEntranceOffset: CGFloat {
         guard launcherMode == .fullscreen else { return 0 }
-        return (1 - CGFloat(fullscreenGridEntranceProgress)) * fullscreenGridEntranceTranslation
+        return pixelAlign((1 - CGFloat(fullscreenGridEntranceProgress)) * fullscreenGridEntranceTranslation)
     }
 
     private static let performanceLog = OSLog(
@@ -601,7 +601,7 @@ struct LauncherView: View {
         category: "Performance"
     )
 
-    private static func beginSignpost(_ name: StaticString) -> OSSignpostID {
+    private nonisolated static func beginSignpost(_ name: StaticString) -> OSSignpostID {
         #if DEBUG
         let id = OSSignpostID(log: performanceLog)
         os_signpost(.begin, log: performanceLog, name: name, signpostID: id)
@@ -611,7 +611,7 @@ struct LauncherView: View {
         #endif
     }
 
-    private static func endSignpost(_ name: StaticString, id: OSSignpostID) {
+    private nonisolated static func endSignpost(_ name: StaticString, id: OSSignpostID) {
         #if DEBUG
         guard id != .invalid else { return }
         os_signpost(.end, log: performanceLog, name: name, signpostID: id)
@@ -1206,7 +1206,7 @@ struct LauncherView: View {
     /// Calculates the current offset for the paged grid stack.
     private func pageOffset(for page: Int, pageSpan: CGFloat) -> CGFloat {
         let current = clampPageIndex(currentPage)
-        return CGFloat(page - current) * pageSpan + pagerDragOffset
+        return pixelAlign(CGFloat(page - current) * pageSpan + pagerDragOffset)
     }
 
     private var activeGridAnimation: Animation? {
@@ -2519,8 +2519,8 @@ struct LauncherView: View {
         appMetadata: [UUID: SearchableAppEntry],
         folderMetadata: [UUID: SearchableFolderEntry]
     ) -> [LauncherItem] {
-        let signpostID = beginSignpost("SearchFilter")
-        defer { endSignpost("SearchFilter", id: signpostID) }
+        let signpostID = Self.beginSignpost("SearchFilter")
+        defer { Self.endSignpost("SearchFilter", id: signpostID) }
         guard queryContext.isEmpty == false else { return items }
         guard queryContext.queryVariants.isEmpty == false else { return items }
         var buckets = Array(repeating: [LauncherItem](), count: 6)
@@ -4304,6 +4304,12 @@ struct LauncherView: View {
 
     private func currentBackingScale() -> CGFloat {
         PerformanceCapabilityLayer.shared.screenScale(for: hostingWindow()?.screen)
+    }
+
+    private func pixelAlign(_ value: CGFloat) -> CGFloat {
+        let scale = currentBackingScale()
+        guard scale > 0 else { return value }
+        return (value * scale).rounded(.toNearestOrAwayFromZero) / scale
     }
 
     private func applyPerformanceTuningIfNeeded() {

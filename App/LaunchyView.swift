@@ -357,10 +357,16 @@ struct LauncherView: View {
         .gesture(dragGesture)
         .animation(activeGridAnimation, value: orderedItems)
         .onAppear {
-            updatePagerViewport(using: gridProxy.size)
+            let transaction = Transaction(animation: nil)
+            withTransaction(transaction) {
+                updatePagerViewport(using: gridProxy.size)
+            }
         }
         .onChange(of: gridProxy.size) { newSize in
-            updatePagerViewport(using: newSize)
+            let transaction = Transaction(animation: nil)
+            withTransaction(transaction) {
+                updatePagerViewport(using: newSize)
+            }
         }
     }
 
@@ -3864,10 +3870,16 @@ struct LauncherView: View {
                 basePageOffset: -CGFloat(currentPage) * pageWidth
             ))
             .onAppear {
-                folderPagerViewportWidth = pageWidth
+                let transaction = Transaction(animation: nil)
+                withTransaction(transaction) {
+                    folderPagerViewportWidth = pageWidth
+                }
             }
             .onChange(of: pageWidth) { newWidth in
-                folderPagerViewportWidth = max(newWidth, 1)
+                let transaction = Transaction(animation: nil)
+                withTransaction(transaction) {
+                    folderPagerViewportWidth = max(newWidth, 1)
+                }
             }
         }
         .frame(height: overlayLayout.gridHeight)
@@ -3965,7 +3977,12 @@ struct LauncherView: View {
                 }
             }
             .onPreferenceChange(FolderFramePreference.self) { frame in
-                activeFolderFrame = frame
+                guard draggedItem != nil || draggedFolderApp != nil else { return }
+                guard activeFolderFrame != frame else { return }
+                let transaction = Transaction(animation: nil)
+                withTransaction(transaction) {
+                    activeFolderFrame = frame
+                }
             }
             .contentShape(Rectangle())
             .onTapGesture {

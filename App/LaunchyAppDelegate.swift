@@ -1409,6 +1409,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             for: apps,
             targetDimension: preferredIconRenderDimension(for: mode),
             qualities: [.low],
+            screenScale: launcherScreenScale(),
             limit: limit
         )
     }
@@ -1429,9 +1430,15 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                 for: slice,
                 targetDimension: dimension,
                 qualities: [.low, .medium],
+                screenScale: launcherScreenScale(),
                 limit: limit
             )
         }
+    }
+
+    private func launcherScreenScale() -> CGFloat {
+        let screen = launcherWindowManager?.window?.screen ?? ScreenProvider.screenUnderMouseOrMain()
+        return PerformanceCapabilityLayer.shared.screenScale(for: screen)
     }
 
     /// Deduplicates apps by bundle identifier while preserving the first occurrence order.
@@ -1812,12 +1819,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             onVisiblePagesChanged: { [weak self] apps in
                 self?.warmVisiblePageIcons(apps)
             },
-            iconProvider: { [weak self] app, dimension, quality in
+            iconProvider: { [weak self] app, dimension, quality, scale in
                 guard let self else { return nil }
                 return self.applicationDiscovery.preparedIcon(
                     for: app,
                     targetDimension: dimension,
-                    quality: quality
+                    quality: quality,
+                    screenScale: scale
                 )
             }
         )

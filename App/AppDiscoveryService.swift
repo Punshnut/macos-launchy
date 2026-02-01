@@ -285,7 +285,7 @@ final class AppDiscoveryService {
         for app: AppItem,
         targetDimension: CGFloat,
         quality: IconRenderQuality = .medium,
-        screenScale: CGFloat = NSScreen.main?.backingScaleFactor ?? 2
+        screenScale: CGFloat = PerformanceCapabilityLayer.shared.currentScreenScale()
     ) -> NSImage? {
         recordIconAccess()
         invalidateIfBundleUpdated(app)
@@ -314,7 +314,7 @@ final class AppDiscoveryService {
         for apps: [AppItem],
         targetDimension: CGFloat,
         qualities: [IconRenderQuality] = [.low, .medium],
-        screenScale: CGFloat = NSScreen.main?.backingScaleFactor ?? 2,
+        screenScale: CGFloat = PerformanceCapabilityLayer.shared.currentScreenScale(),
         limit: Int = 80
     ) {
         guard apps.isEmpty == false else { return }

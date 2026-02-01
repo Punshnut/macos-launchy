@@ -109,6 +109,11 @@ private final class FolderPreviewCache: @unchecked Sendable {
         self.cache = cache
     }
 
+    func applyLimits(countLimit: Int, totalCostLimit: Int) {
+        cache.countLimit = countLimit
+        cache.totalCostLimit = totalCostLimit
+    }
+
     func cacheKey(for app: AppItem, dimension: CGFloat, quality: IconRenderQuality) -> String {
         let rounded = Int(dimension.rounded())
         return "\(app.bundleIdentifier)|\(rounded)|\(quality.rawValue)"
@@ -220,7 +225,7 @@ struct LauncherView: View {
     /// Callback fired when the visible pages change so icons can be preheated.
     var onVisiblePagesChanged: (([AppItem]) -> Void)?
     /// Provides the icon that should be used for a specific app.
-    var iconProvider: @Sendable (AppItem, CGFloat, IconRenderQuality) -> NSImage? = { app, _, _ in app.iconImage }
+    var iconProvider: @Sendable (AppItem, CGFloat, IconRenderQuality, CGFloat) -> NSImage? = { app, _, _, _ in app.iconImage }
 
     private var pageCapacity: Int { gridConfiguration.pageCapacity }
     private let closeAnimationDuration: TimeInterval = 0.25
@@ -267,7 +272,7 @@ struct LauncherView: View {
                     handleScrollProgress(event)
                 },
                 onScrollEnd: {
-                    settlePagerOffset(pageSpan: pagerViewportWidth)
+                    endScrollGesture(pageSpan: pagerViewportWidth)
                 },
                 onPreviousPage: { pageBackward() },
                 onNextPage: { pageForward() }
@@ -638,11 +643,14 @@ struct LauncherView: View {
     private let pagerButtonHitPadding: CGFloat = 12
     private let pagerButtonHitSize: CGFloat = 44
     private let pagerButtonHitExpansion: CGFloat = 12
-    private let highQualityIconCacheLimit = 90
-    private let highQualityRequestDelay: TimeInterval = 0.28
-    private let searchInputDebounceNanoseconds: UInt64 = 35_000_000
-    private let searchMetadataDebounceNanoseconds: UInt64 = 120_000_000
-    private let visiblePagesDebounceNanoseconds: UInt64 = 16_000_000
+    private var performanceTuning: PerformanceTuning {
+        PerformanceCapabilityLayer.shared.tuning(for: hostingWindow()?.screen)
+    }
+    private var highQualityIconCacheLimit: Int { performanceTuning.highQualityIconCacheLimit }
+    private var highQualityRequestDelay: TimeInterval { performanceTuning.highQualityRequestDelay }
+    private var searchInputDebounceNanoseconds: UInt64 { performanceTuning.searchInputDebounceNanoseconds }
+    private var searchMetadataDebounceNanoseconds: UInt64 { performanceTuning.searchMetadataDebounceNanoseconds }
+    private var visiblePagesDebounceNanoseconds: UInt64 { performanceTuning.visiblePagesDebounceNanoseconds }
 
     @State private var orderedItems: [LauncherItem]
     @State private var draggedItem: LauncherItem?
@@ -720,9 +728,13 @@ struct LauncherView: View {
     @State private var pendingDropPage: Int?
     @State private var folderLiveReorderTargetIndex: Int?
     @State private var folderPreviewMatchingDisabled = false
+    @State private var lastPerformanceCapability: PerformanceCapability?
     @State private var isPageSwitchAnimationActive = false
     @State private var pageSwitchAnimationToken: UInt = 0
     @State private var pageSwitchSignpostID: OSSignpostID = .invalid
+    @State private var isScrollGestureActive = false
+    @State private var pendingScrollDelta: CGFloat = 0
+    @State private var scrollUpdateScheduled = false
     @State private var queuedPageDelta: Int = 0
     @State private var visiblePagesTask: Task<Void, Never>?
     @FocusState private var isFolderNameFieldFocused: Bool
@@ -743,7 +755,7 @@ struct LauncherView: View {
         onAppInfoRequested: (() -> Void)? = nil,
         onItemOrderChange: (([LauncherItem], [Int]) -> Void)? = nil,
         onVisiblePagesChanged: (([AppItem]) -> Void)? = nil,
-        iconProvider: @escaping @Sendable (AppItem, CGFloat, IconRenderQuality) -> NSImage? = { app, _, _ in app.iconImage }
+        iconProvider: @escaping @Sendable (AppItem, CGFloat, IconRenderQuality, CGFloat) -> NSImage? = { app, _, _, _ in app.iconImage }
     ) {
         self.itemCatalog = itemCatalog
         self.initialPageSizes = initialPageSizes
@@ -774,6 +786,12 @@ struct LauncherView: View {
     private var bodyContent: some View {
         GeometryReader { proxy in
             buildLauncherContent(for: proxy.size)
+        }
+        .onAppear {
+            applyPerformanceTuningIfNeeded()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didChangeScreenParametersNotification)) { _ in
+            applyPerformanceTuningIfNeeded()
         }
         .onChange(of: itemCatalog) { newValue in
             orderedItems = newValue
@@ -1059,6 +1077,11 @@ struct LauncherView: View {
                 folderOverlay(for: folder, layout: layout)
             }
         }
+        .transaction { transaction in
+            if isScrollGestureActive {
+                transaction.animation = nil
+            }
+        }
         .onChange(of: isSearchFieldFocused) { isFocused in
             if isFocused {
                 ensureSearchFieldCaretHidden()
@@ -1216,6 +1239,10 @@ struct LauncherView: View {
         return until.timeIntervalSinceNow > 0
     }
 
+    private func resolvedIcon(for app: AppItem, dimension: CGFloat, quality: IconRenderQuality) -> NSImage? {
+        iconProvider(app, dimension, quality, currentBackingScale())
+    }
+
     private func baseIconRequest(for layout: LauncherLayoutMetrics) -> (dimension: CGFloat, quality: IconRenderQuality) {
         // Keep base icon sizing stable to avoid post-animation icon swaps.
         let scale = currentBackingScale()
@@ -1245,7 +1272,7 @@ struct LauncherView: View {
         if let cached = cache.cachedIcon(for: key) {
             return cached
         }
-        let resolved = iconProvider(app, request.dimension, request.quality) ?? app.iconImage
+        let resolved = resolvedIcon(for: app, dimension: request.dimension, quality: request.quality) ?? app.iconImage
         if let resolved {
             cache.store(resolved, for: key)
         }
@@ -1264,16 +1291,17 @@ struct LauncherView: View {
         let token = "\(folder.id.uuidString)|\(Int(request.dimension.rounded()))|\(apps.map(\.id).hashValue)"
         guard cache.beginWarmupIfNeeded(token: token) else { return }
 
-        let provider: @Sendable (AppItem, CGFloat, IconRenderQuality) -> NSImage? = iconProvider
+        let provider: @Sendable (AppItem, CGFloat, IconRenderQuality, CGFloat) -> NSImage? = iconProvider
         let dimension = request.dimension
         let quality = request.quality
+        let scale = currentBackingScale()
         let queue = Self.folderPreviewWarmupQueue
         queue.async {
             for (app, key) in zip(apps, keys) {
                 if cache.cachedIcon(for: key) != nil {
                     continue
                 }
-                let resolved = provider(app, dimension, quality) ?? app.iconImage
+                let resolved = provider(app, dimension, quality, scale) ?? app.iconImage
                 if let resolved {
                     cache.store(resolved, for: key)
                 }
@@ -1351,7 +1379,7 @@ struct LauncherView: View {
         pageSwitchAnimationToken &+= 1
         let token = pageSwitchAnimationToken
         isPageSwitchAnimationActive = true
-        let cooldown = Self.pageSwitchDuration + 0.06
+        let cooldown = Self.pageSwitchDuration + 0.04
         DispatchQueue.main.asyncAfter(deadline: .now() + cooldown) { [self] in
             guard token == pageSwitchAnimationToken else { return }
             if abs(pagerDragOffset) < 0.5 {
@@ -1415,18 +1443,16 @@ struct LauncherView: View {
 
         if isDiscrete {
             // Let discrete paging (mouse wheel) trigger jumps without live dragging so animations stay in sync.
+            isScrollGestureActive = false
             pagerDragOffset = 0
             lastPagerDragDate = Date()
             return
         }
 
+        isScrollGestureActive = true
         let scale: CGFloat = 1.0
-        pagerDragOffset = clampPagerOffset(pagerDragOffset + primaryDelta * scale, pageSpan: width)
-        lastPagerDragDate = Date()
+        queueScrollDelta(primaryDelta * scale, pageSpan: width)
 
-        if event.phase.contains(.ended) || event.momentumPhase.contains(.ended) {
-            settlePagerOffset(pageSpan: width)
-        }
     }
 
     /// Settles the pager to the nearest target page and animates the slide.
@@ -1439,14 +1465,14 @@ struct LauncherView: View {
         let normalizedWidth = max(pageSpan, 1)
         let totalOffset = pagerDragOffset + projectedDelta
         let progress = totalOffset / normalizedWidth
-        let snapThreshold: CGFloat = 0.09
-        let fastThreshold: CGFloat = 0.17
+        let snapThreshold: CGFloat = 0.07
+        let fastThreshold: CGFloat = 0.15
         let doubleProgressThreshold: CGFloat = 1.5
         let highVelocityThreshold: CGFloat = 1.05
         let velocity = projectedDelta / normalizedWidth
         let absVelocity = abs(velocity)
         let absProgress = abs(progress)
-        let recentDrag = (lastPagerDragDate.map { Date().timeIntervalSince($0) < 0.16 }) ?? false
+        let recentDrag = (lastPagerDragDate.map { Date().timeIntervalSince($0) < 0.12 }) ?? false
         let directionSign: Int = {
             if absVelocity > 0.15 {
                 return velocity > 0 ? 1 : -1
@@ -2952,7 +2978,7 @@ struct LauncherView: View {
     @ViewBuilder
     private func iconForApp(_ app: AppItem, layout: LauncherLayoutMetrics) -> some View {
         let request = baseIconRequest(for: layout)
-        let baseIcon = iconProvider(app, request.dimension, request.quality) ?? app.iconImage
+        let baseIcon = resolvedIcon(for: app, dimension: request.dimension, quality: request.quality) ?? app.iconImage
         let highIcon = highQualityIconOverrides[app.id]
         let baseScale: CGFloat = request.quality == .low ? 0.994 : 1
 
@@ -3203,7 +3229,7 @@ struct LauncherView: View {
             return detailed
         }
         let request = baseIconRequest(for: layout)
-        return iconProvider(app, request.dimension, request.quality) ?? app.iconImage
+        return resolvedIcon(for: app, dimension: request.dimension, quality: request.quality) ?? app.iconImage
     }
 
     private func requestHighQualityIconIfNeeded(for app: AppItem, layout: LauncherLayoutMetrics) {
@@ -3223,15 +3249,16 @@ struct LauncherView: View {
         }
 
         let targetDimension = highQualityRequestDimension(for: layout)
-        let provider: @Sendable (AppItem, CGFloat, IconRenderQuality) -> NSImage? = iconProvider
+        let provider: @Sendable (AppItem, CGFloat, IconRenderQuality, CGFloat) -> NSImage? = iconProvider
         let cachedAppIcon = app.iconImage
         if pendingHighQualityIconIDs.insert(app.id).inserted == false {
             return
         }
         let requestEpoch = highQualityRequestEpoch
         let pressureEpoch = interactionPressureEpoch
+        let scale = currentBackingScale()
         highQualityRenderQueue.async {
-            let detailed = provider(app, targetDimension, .high)
+            let detailed = provider(app, targetDimension, .high, scale)
                 ?? cachedAppIcon
             guard let detailed else {
                 DispatchQueue.main.async {
@@ -4276,10 +4303,51 @@ struct LauncherView: View {
     }
 
     private func currentBackingScale() -> CGFloat {
-        hostingWindow()?.backingScaleFactor
-        ?? NSScreen.main?.backingScaleFactor
-        ?? 2.0
+        PerformanceCapabilityLayer.shared.screenScale(for: hostingWindow()?.screen)
     }
+
+    private func applyPerformanceTuningIfNeeded() {
+        let screen = hostingWindow()?.screen
+        let capability = PerformanceCapabilityLayer.shared.capabilities(for: screen)
+        guard capability != lastPerformanceCapability else { return }
+        let tuning = PerformanceCapabilityLayer.shared.tuning(for: screen)
+        Self.folderPreviewCache.applyLimits(
+            countLimit: tuning.folderPreviewCacheCountLimit,
+            totalCostLimit: tuning.folderPreviewCacheCostLimit
+        )
+        lastPerformanceCapability = capability
+    }
+
+    private func queueScrollDelta(_ delta: CGFloat, pageSpan: CGFloat) {
+        guard delta != 0 else { return }
+        pendingScrollDelta += delta
+        guard scrollUpdateScheduled == false else { return }
+        scrollUpdateScheduled = true
+        DispatchQueue.main.async { [self] in
+            applyPendingScrollDelta(pageSpan: pageSpan)
+        }
+    }
+
+    private func applyPendingScrollDelta(pageSpan: CGFloat) {
+        scrollUpdateScheduled = false
+        let delta = pendingScrollDelta
+        pendingScrollDelta = 0
+        guard delta != 0 else { return }
+        pagerDragOffset = clampPagerOffset(pagerDragOffset + delta, pageSpan: pageSpan)
+        lastPagerDragDate = Date()
+    }
+
+    private func flushPendingScrollDelta(pageSpan: CGFloat) {
+        guard pendingScrollDelta != 0 || scrollUpdateScheduled else { return }
+        applyPendingScrollDelta(pageSpan: pageSpan)
+    }
+
+    private func endScrollGesture(pageSpan: CGFloat) {
+        flushPendingScrollDelta(pageSpan: pageSpan)
+        isScrollGestureActive = false
+        settlePagerOffset(pageSpan: pageSpan)
+    }
+
 
     /// Identifies windows that are rendering the launcher content.
     private func isLauncherHostingWindow(_ window: NSWindow) -> Bool {

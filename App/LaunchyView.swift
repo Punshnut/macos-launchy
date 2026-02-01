@@ -609,6 +609,8 @@ struct LauncherView: View {
     private let highQualityIconCacheLimit = 90
     private let highQualityRequestDelay: TimeInterval = 0.28
     private let searchInputDebounceNanoseconds: UInt64 = 35_000_000
+    private let searchMetadataDebounceNanoseconds: UInt64 = 120_000_000
+    private let visiblePagesDebounceNanoseconds: UInt64 = 16_000_000
 
     @State private var orderedItems: [LauncherItem]
     @State private var draggedItem: LauncherItem?
@@ -629,6 +631,7 @@ struct LauncherView: View {
     @State private var searchControlsExpanded = false
     @State private var lastNormalizedSearchQuery = ""
     @State private var pendingSearchPageReset = false
+    @State private var searchMetadataTask: Task<Void, Never>?
     @State private var isMultiSelectModeActive = false
     @State private var multiSelectedItemIDs: Set<UUID> = []
     @State private var expansionAutoCollapseTask: Task<Void, Never>?
@@ -688,6 +691,7 @@ struct LauncherView: View {
     @State private var isPageSwitchAnimationActive = false
     @State private var pageSwitchAnimationToken: UInt = 0
     @State private var queuedPageDelta: Int = 0
+    @State private var visiblePagesTask: Task<Void, Never>?
     @FocusState private var isFolderNameFieldFocused: Bool
     @FocusState private var isAppNameFieldFocused: Bool
     @FocusState private var isSearchFieldFocused: Bool
@@ -740,7 +744,7 @@ struct LauncherView: View {
         }
         .onChange(of: itemCatalog) { newValue in
             orderedItems = newValue
-            rebuildSearchMetadata(for: newValue)
+            scheduleSearchMetadataRebuild(for: newValue)
             if fillsGapsAutomatically {
                 pageSizes = densePageSizes(for: newValue.count)
             } else {
@@ -865,7 +869,7 @@ struct LauncherView: View {
             }
         }
         .onChange(of: orderedItems) { newItems in
-            rebuildSearchMetadata(for: newItems)
+            scheduleSearchMetadataRebuild(for: newItems)
             if fillsGapsAutomatically {
                 pageSizes = densePageSizes(for: newItems.count)
             } else {
@@ -1604,25 +1608,42 @@ struct LauncherView: View {
 
     private func notifyVisiblePagesChanged() {
         guard let onVisiblePagesChanged else { return }
+        visiblePagesTask?.cancel()
         let sizes = displayPageSizes
         let pages = visiblePageIndices(total: pageCount)
-        var seen = Set<UUID>()
-        var apps: [AppItem] = []
-        for page in pages {
-            for item in itemsForPage(page, sizes: sizes) {
-                switch item {
-                case .app(let app):
-                    if seen.insert(app.id).inserted {
-                        apps.append(app)
-                    }
-                case .folder(let folder):
-                    for app in folder.apps where seen.insert(app.id).inserted {
-                        apps.append(app)
+        let pageItems = pages.map { itemsForPage($0, sizes: sizes) }
+        let delay: UInt64 = isPageSwitchAnimationActive
+            ? UInt64((Self.pageSwitchDuration + 0.06) * 1_000_000_000)
+            : visiblePagesDebounceNanoseconds
+        visiblePagesTask = Task(priority: .utility) {
+            if delay > 0 {
+                try? await Task.sleep(nanoseconds: delay)
+            }
+            guard Task.isCancelled == false else { return }
+            let apps = await Task.detached(priority: .utility) {
+                var seen = Set<UUID>()
+                var apps: [AppItem] = []
+                for items in pageItems {
+                    for item in items {
+                        switch item {
+                        case .app(let app):
+                            if seen.insert(app.id).inserted {
+                                apps.append(app)
+                            }
+                        case .folder(let folder):
+                            for app in folder.apps where seen.insert(app.id).inserted {
+                                apps.append(app)
+                            }
+                        }
                     }
                 }
+                return apps
+            }.value
+            await MainActor.run {
+                guard Task.isCancelled == false else { return }
+                onVisiblePagesChanged(apps)
             }
         }
-        onVisiblePagesChanged(apps)
     }
 
     /// Detects modifier keys that disable live reordering during a drag.
@@ -2291,10 +2312,24 @@ struct LauncherView: View {
         cachedFilteredItems
     }
 
-    private func rebuildSearchMetadata(for items: [LauncherItem]) {
-        let metadata = Self.buildSearchMetadata(from: items)
-        searchMetadataByAppID = metadata.apps
-        folderSearchMetadataByID = metadata.folders
+    private func scheduleSearchMetadataRebuild(for items: [LauncherItem]) {
+        searchMetadataTask?.cancel()
+        let snapshot = items
+        searchMetadataTask = Task(priority: .utility) {
+            try? await Task.sleep(nanoseconds: searchMetadataDebounceNanoseconds)
+            guard Task.isCancelled == false else { return }
+            let metadata = await Task.detached(priority: .utility) {
+                Self.buildSearchMetadata(from: snapshot)
+            }.value
+            await MainActor.run {
+                guard Task.isCancelled == false else { return }
+                searchMetadataByAppID = metadata.apps
+                folderSearchMetadataByID = metadata.folders
+                if hasActiveSearchQuery {
+                    updateFilteredItems(using: snapshot)
+                }
+            }
+        }
     }
 
     private func applySearchResults(_ results: [LauncherItem]) {

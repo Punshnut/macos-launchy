@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import os
 
 extension Notification.Name {
     /// Informs the launcher view that the search bar should regain focus after a mode switch.
@@ -304,7 +305,7 @@ struct LauncherView: View {
         let pageWidth = max(gridProxy.size.width, 1)
         let pageSpan = isVerticalPaging ? max(gridProxy.size.height, 1) : pageWidth
         let sizes = displayPageSizes
-        let totalPages = max(pageCount, 1)
+        let totalPages = max(sizes.count, 1)
         let pageIndices = visiblePageIndices(total: totalPages)
 
         let dragGesture = DragGesture(minimumDistance: 2)
@@ -411,74 +412,39 @@ struct LauncherView: View {
                 let isRenamingApp = renamingAppID == item.id
                 let shouldShowSearchSelection = isRenamingApp == false && isSearchResultSelected(item: item, globalIndex: globalIndex)
 
-                let cell: AnyView = {
-                    if isRenamingApp, case let .app(app) = item {
-                        return AnyView(
-                            editableAppCell(app: app, layout: layout)
-                        )
-                    }
-
-                    return AnyView(
-                        Button {
-                            if isMultiSelectModeActive {
-                                toggleSelection(for: item)
-                            } else {
-                                openItem(item)
-                            }
-                        } label: {
-                            VStack(spacing: 10) {
-                                iconCell(for: item, layout: layout)
-                                    .scaleEffect(isLaunching ? 1.08 : 1.0)
-                                    .opacity(isLaunching ? 0.4 : 1.0)
-                                    .animation(.easeInOut(duration: 0.18), value: launchingItemID)
-                                appOrFolderTitleView(for: item)
-                                    .font(.system(size: 13, weight: .medium))
-                                    .multilineTextAlignment(.center)
-                                    .foregroundColor(iconLabelColor())
-                                    .lineLimit(2)
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 4)
-                            .scaleEffect(isFolderBeingOpened ? 1.03 : 1.0)
-                            .animation(
-                                .spring(response: 0.35, dampingFraction: 0.82, blendDuration: 0.06),
-                                value: activeFolder?.id
-                            )
-                        }
-                        .buttonStyle(.plain)
-                    )
-                }()
-
-                let decoratedCell = AnyView(
-                    cell
-                        .background(alignment: .center) {
-                            if shouldShowSearchSelection {
-                                searchSelectionTile(layout: layout)
-                                    .allowsHitTesting(false)
-                                    .transition(.opacity)
-                            }
-                        }
+                let cell = launcherGridCellContent(
+                    item: item,
+                    layout: layout,
+                    isLaunching: isLaunching,
+                    isFolderBeingOpened: isFolderBeingOpened,
+                    isRenamingApp: isRenamingApp
                 )
-                .contentShape(Rectangle())
-                .contextMenu {
-                    itemContextMenu(for: item)
-                }
+
+                let decoratedCell = cell
+                    .background(alignment: .center) {
+                        if shouldShowSearchSelection {
+                            searchSelectionTile(layout: layout)
+                                .allowsHitTesting(false)
+                                .transition(.opacity)
+                        }
+                    }
+                    .contentShape(Rectangle())
+                    .contextMenu {
+                        itemContextMenu(for: item)
+                    }
 
                 let liftEffect = shouldRasterizeGridPages
                     ? ArrangementEffect(scale: 1, offset: 0, shadowOpacity: 0, shadowRadius: 0, shadowYOffset: 0)
                     : gridArrangementEffect(for: item)
-                let animatedCell = AnyView(
-                    decoratedCell
-                        .scaleEffect(liftEffect.scale)
-                        .offset(y: liftEffect.offset)
-                        .shadow(
-                            color: Color.black.opacity(liftEffect.shadowOpacity),
-                            radius: liftEffect.shadowRadius,
-                            y: liftEffect.shadowYOffset
-                        )
-                        .animation(reorderLiftAnimation, value: liftEffect)
-                )
+                let animatedCell = decoratedCell
+                    .scaleEffect(liftEffect.scale)
+                    .offset(y: liftEffect.offset)
+                    .shadow(
+                        color: Color.black.opacity(liftEffect.shadowOpacity),
+                        radius: liftEffect.shadowRadius,
+                        y: liftEffect.shadowYOffset
+                    )
+                    .animation(reorderLiftAnimation, value: liftEffect)
 
                 if canReorder && isRenamingApp == false {
                     if shouldStartMultiSelectionDrag(for: item) {
@@ -567,6 +533,49 @@ struct LauncherView: View {
         pageRenderingWrapper(grid)
     }
 
+    @ViewBuilder
+    private func launcherGridCellContent(
+        item: LauncherItem,
+        layout: LauncherLayoutMetrics,
+        isLaunching: Bool,
+        isFolderBeingOpened: Bool,
+        isRenamingApp: Bool
+    ) -> some View {
+        // Performance guardrail: keep this as a concrete view (avoid AnyView) to preserve diffing.
+        if isRenamingApp, case let .app(app) = item {
+            editableAppCell(app: app, layout: layout)
+        } else {
+            Button {
+                if isMultiSelectModeActive {
+                    toggleSelection(for: item)
+                } else {
+                    openItem(item)
+                }
+            } label: {
+                VStack(spacing: 10) {
+                    iconCell(for: item, layout: layout)
+                        .scaleEffect(isLaunching ? 1.08 : 1.0)
+                        .opacity(isLaunching ? 0.4 : 1.0)
+                        .animation(.easeInOut(duration: 0.18), value: launchingItemID)
+                    appOrFolderTitleView(for: item)
+                        .font(.system(size: 13, weight: .medium))
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(iconLabelColor())
+                        .lineLimit(2)
+                        .frame(maxWidth: .infinity)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 4)
+                .scaleEffect(isFolderBeingOpened ? 1.03 : 1.0)
+                .animation(
+                    .spring(response: 0.35, dampingFraction: 0.82, blendDuration: 0.06),
+                    value: activeFolder?.id
+                )
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
     private var fullscreenGridEntranceOpacity: Double {
         guard launcherMode == .fullscreen else { return 1 }
         return 0.45 + 0.55 * fullscreenGridEntranceProgress
@@ -581,6 +590,29 @@ struct LauncherView: View {
         guard launcherMode == .fullscreen else { return 0 }
         return (1 - CGFloat(fullscreenGridEntranceProgress)) * fullscreenGridEntranceTranslation
     }
+
+    private static let performanceLog = OSLog(
+        subsystem: Bundle.main.bundleIdentifier ?? "com.launchy",
+        category: "Performance"
+    )
+
+    private static func beginSignpost(_ name: StaticString) -> OSSignpostID {
+        #if DEBUG
+        let id = OSSignpostID(log: performanceLog)
+        os_signpost(.begin, log: performanceLog, name: name, signpostID: id)
+        return id
+        #else
+        return OSSignpostID.invalid
+        #endif
+    }
+
+    private static func endSignpost(_ name: StaticString, id: OSSignpostID) {
+        #if DEBUG
+        guard id != .invalid else { return }
+        os_signpost(.end, log: performanceLog, name: name, signpostID: id)
+        #endif
+    }
+
     private let gridSpringAnimation = Animation.spring(response: 0.42, dampingFraction: 0.86, blendDuration: 0.12)
     private let liveReorderSpringAnimation = Animation.interactiveSpring(response: 0.2, dampingFraction: 0.78, blendDuration: 0.12)
     private let folderReorderAnimation = Animation.interactiveSpring(response: 0.23, dampingFraction: 0.8, blendDuration: 0.12)
@@ -690,6 +722,7 @@ struct LauncherView: View {
     @State private var folderPreviewMatchingDisabled = false
     @State private var isPageSwitchAnimationActive = false
     @State private var pageSwitchAnimationToken: UInt = 0
+    @State private var pageSwitchSignpostID: OSSignpostID = .invalid
     @State private var queuedPageDelta: Int = 0
     @State private var visiblePagesTask: Task<Void, Never>?
     @FocusState private var isFolderNameFieldFocused: Bool
@@ -735,7 +768,7 @@ struct LauncherView: View {
 
     /// Builds the full launcher UI including background, grid, and pager controls.
     var body: some View {
-        AnyView(bodyContent)
+        bodyContent
     }
 
     private var bodyContent: some View {
@@ -942,13 +975,18 @@ struct LauncherView: View {
         )
 
         if launcherMode == .floaty {
+            let floatyShape = RoundedRectangle(cornerRadius: layout.floatyCornerRadius, style: .continuous)
             content
                 .background(floatyBackdropHighlight(cornerRadius: layout.floatyCornerRadius))
-                .clipShape(RoundedRectangle(cornerRadius: layout.floatyCornerRadius, style: .continuous))
+                .clipShape(floatyShape)
                 .overlay(floatyGlassStroke(cornerRadius: layout.floatyCornerRadius))
-                .shadow(color: Color.black.opacity(0.32), radius: 26, y: 22)
-                .shadow(color: Color.black.opacity(0.18), radius: 12, y: 6)
-                .shadow(color: Color.white.opacity(colorScheme == .dark ? 0.14 : 0.22), radius: 2.6, y: 1)
+                .background(
+                    floatyShape
+                        .fill(Color.clear)
+                        .shadow(color: Color.black.opacity(0.32), radius: 26, y: 22)
+                        .shadow(color: Color.black.opacity(0.18), radius: 12, y: 6)
+                        .shadow(color: Color.white.opacity(colorScheme == .dark ? 0.14 : 0.22), radius: 2.6, y: 1)
+                )
         } else {
             content
         }
@@ -963,8 +1001,13 @@ struct LauncherView: View {
         containerSize: CGSize
     ) -> some View {
         ZStack {
-            backgroundView()
-                .ignoresSafeArea()
+            LauncherBackgroundLayer(
+                style: backgroundStylePreference,
+                solidBackgroundColor: solidBackgroundColor,
+                launcherMode: launcherMode,
+                colorScheme: colorScheme
+            )
+            .ignoresSafeArea()
 
             if launcherMode == .floaty {
                 let sheen = Color.white.opacity(colorScheme == .dark ? 0.16 : 0.34)
@@ -1260,9 +1303,13 @@ struct LauncherView: View {
     private func performAnimatedPageSwitch(to targetPage: Int, direction: PageShiftDirection, spanOverride: CGFloat? = nil) {
         guard pageCount > 0 else { return }
         guard targetPage != currentPage else { return }
+        assert(Thread.isMainThread, "Page switches must run on the main thread to avoid extra view invalidations.")
+        // Performance guardrail: keep page switch animations centralized here to avoid nested transactions.
 
         let span = max(spanOverride ?? pagerViewportWidth, 1)
         let initialOffset = direction == .forward ? span : -span
+
+        pageSwitchSignpostID = Self.beginSignpost("PageSwitch")
 
         pageDirection = direction
         suppressGridAnimation = true
@@ -1309,6 +1356,8 @@ struct LauncherView: View {
             guard token == pageSwitchAnimationToken else { return }
             if abs(pagerDragOffset) < 0.5 {
                 isPageSwitchAnimationActive = false
+                Self.endSignpost("PageSwitch", id: pageSwitchSignpostID)
+                pageSwitchSignpostID = .invalid
                 if draggedItem == nil {
                     suppressGridAnimation = false
                 }
@@ -2444,6 +2493,8 @@ struct LauncherView: View {
         appMetadata: [UUID: SearchableAppEntry],
         folderMetadata: [UUID: SearchableFolderEntry]
     ) -> [LauncherItem] {
+        let signpostID = beginSignpost("SearchFilter")
+        defer { endSignpost("SearchFilter", id: signpostID) }
         guard queryContext.isEmpty == false else { return items }
         guard queryContext.queryVariants.isEmpty == false else { return items }
         var buckets = Array(repeating: [LauncherItem](), count: 6)
@@ -3743,46 +3794,13 @@ struct LauncherView: View {
                 ForEach(Array(pageApps.enumerated()), id: \.element.id) { _, app in
                     let isLaunching = launchingItemID == app.id
                     let isRenaming = renamingAppID == app.id
-                    let cell: AnyView = {
-                        if isRenaming {
-                            return AnyView(
-                                editableAppCell(app: app, layout: layout, fontSize: 14)
-                            )
-                        }
-
-                        let iconBase = iconView(for: .app(app), layout: layout)
-                            .frame(width: tileSize, height: tileSize)
-                            .scaleEffect(isLaunching ? 1.08 : 1.0)
-                            .opacity(isLaunching ? 0.4 : 1.0)
-                            .animation(.easeInOut(duration: 0.18), value: launchingItemID)
-                            .opacity(folderIconWaveToggle ? 1 : 0)
-                            .animation(folderOpenAnimation, value: folderIconWaveToggle)
-                            .modifier(wiggleMotion(for: app.id, layout: layout, isActive: shouldAllowWiggle(id: app.id)))
-                            .environment(\.colorScheme, colorScheme)
-
-                        return AnyView(
-                            Button {
-                                openItem(.app(app))
-                            } label: {
-                                VStack(spacing: 10) {
-                                    iconBase
-
-                                    Text(app.resolvedDisplayName)
-                                        .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(iconLabelColor())
-                                        .lineLimit(2)
-                                        .multilineTextAlignment(.center)
-                                        .opacity(folderIconWaveToggle ? 1 : 0)
-                                        .animation(folderOpenAnimation, value: folderIconWaveToggle)
-                                }
-                                .padding(.vertical, 6)
-                                .frame(maxWidth: .infinity)
-                                .opacity(folderIconWaveToggle ? 1 : 0)
-                                .animation(folderOpenAnimation, value: folderIconWaveToggle)
-                            }
-                            .buttonStyle(.plain)
-                        )
-                    }()
+                    let cell = folderGridCellContent(
+                        app: app,
+                        layout: layout,
+                        tileSize: tileSize,
+                        isLaunching: isLaunching,
+                        isRenaming: isRenaming
+                    )
 
                     let decoratedCell = cell
                         .contextMenu {
@@ -3872,6 +3890,51 @@ struct LauncherView: View {
     }
 
     @ViewBuilder
+    private func folderGridCellContent(
+        app: AppItem,
+        layout: LauncherLayoutMetrics,
+        tileSize: CGFloat,
+        isLaunching: Bool,
+        isRenaming: Bool
+    ) -> some View {
+        // Performance guardrail: keep this as a concrete view (avoid AnyView) to preserve diffing.
+        if isRenaming {
+            editableAppCell(app: app, layout: layout, fontSize: 14)
+        } else {
+            let iconBase = iconView(for: .app(app), layout: layout)
+                .frame(width: tileSize, height: tileSize)
+                .scaleEffect(isLaunching ? 1.08 : 1.0)
+                .opacity(isLaunching ? 0.4 : 1.0)
+                .animation(.easeInOut(duration: 0.18), value: launchingItemID)
+                .opacity(folderIconWaveToggle ? 1 : 0)
+                .animation(folderOpenAnimation, value: folderIconWaveToggle)
+                .modifier(wiggleMotion(for: app.id, layout: layout, isActive: shouldAllowWiggle(id: app.id)))
+                .environment(\.colorScheme, colorScheme)
+
+            Button {
+                openItem(.app(app))
+            } label: {
+                VStack(spacing: 10) {
+                    iconBase
+
+                    Text(app.resolvedDisplayName)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(iconLabelColor())
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
+                        .opacity(folderIconWaveToggle ? 1 : 0)
+                        .animation(folderOpenAnimation, value: folderIconWaveToggle)
+                }
+                .padding(.vertical, 6)
+                .frame(maxWidth: .infinity)
+                .opacity(folderIconWaveToggle ? 1 : 0)
+                .animation(folderOpenAnimation, value: folderIconWaveToggle)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    @ViewBuilder
     private func folderGridPager(
         for folder: FolderItem,
         layout: LauncherLayoutMetrics,
@@ -3929,8 +3992,13 @@ struct LauncherView: View {
             let dimOpacity: Double = isFolderClosing ? 0 : (folderIconWaveToggle ? 0.2 : 0)
 
             ZStack {
-                backgroundView()
-                    .ignoresSafeArea()
+                LauncherBackgroundLayer(
+                    style: backgroundStylePreference,
+                    solidBackgroundColor: solidBackgroundColor,
+                    launcherMode: launcherMode,
+                    colorScheme: colorScheme
+                )
+                .ignoresSafeArea()
                 Color.black
                     .opacity(dimOpacity)
                     .ignoresSafeArea()
@@ -3966,6 +4034,10 @@ struct LauncherView: View {
                 let showPager = pageCount > 1
 
                 let cardShape = RoundedRectangle(cornerRadius: 22, style: .continuous)
+
+                let cardChrome = cardShape
+                    .fill(Color.clear)
+                    .shadow(color: .black.opacity(0.3), radius: 24, y: 14)
 
                 VStack(spacing: overlayLayout.titleToGridSpacing) {
                     folderTitleView(for: folder)
@@ -4003,7 +4075,7 @@ struct LauncherView: View {
                         .strokeBorder(Color.white.opacity(0.25))
                 )
                 .clipShape(cardShape)
-                .shadow(color: .black.opacity(0.3), radius: 24, y: 14)
+                .background(cardChrome)
                 .opacity(overlayOpacity)
                 .animation(folderOpenAnimation, value: folderIconWaveToggle)
                 .animation(.easeOut(duration: Self.folderOpenDuration), value: isFolderClosing)
@@ -4391,6 +4463,7 @@ struct LauncherView: View {
     /// Animates closing the active folder overlay so the transition stays smooth.
     private func closeActiveFolder(animated: Bool = true) {
         guard activeFolder != nil else { return }
+        let signpostID = Self.beginSignpost("FolderOverlayClose")
         if animated {
             folderCloseWorkItem?.cancel()
             withAnimation(.easeOut(duration: Self.folderOpenDuration)) {
@@ -4403,6 +4476,7 @@ struct LauncherView: View {
                 activeFolder = nil
                 folderCloseWorkItem = nil
                 closingFolder = nil
+                Self.endSignpost("FolderOverlayClose", id: signpostID)
             }
             folderCloseWorkItem = workItem
             DispatchQueue.main.asyncAfter(
@@ -4415,6 +4489,7 @@ struct LauncherView: View {
             folderCloseWorkItem = nil
             closingFolder = nil
             activeFolder = nil
+            Self.endSignpost("FolderOverlayClose", id: signpostID)
         }
     }
 
@@ -4539,63 +4614,68 @@ struct LauncherView: View {
         return hitView.hasAncestor(ofType: NSButton.self) || hitView.hasAncestor(ofType: NSTextField.self)
     }
 
-    /// Chooses the proper background view for the configured style.
-    private func backgroundView() -> some View {
-        switch backgroundStylePreference {
-        case .standard:
-            if launcherMode == .floaty {
-                if colorScheme == .dark {
-                    return AnyView(floatyStandardBlurBackground())
+    private struct LauncherBackgroundLayer: View, Equatable {
+        let style: LauncherSettings.PreferredBackgroundStyle
+        let solidBackgroundColor: LauncherSettings.SolidBackgroundColor
+        let launcherMode: LauncherMode
+        let colorScheme: ColorScheme
+
+        @ViewBuilder
+        var body: some View {
+            switch style {
+            case .standard:
+                if launcherMode == .floaty {
+                    if colorScheme == .dark {
+                        floatyStandardBlurBackground()
+                    } else {
+                        lightBlurBackground()
+                    }
                 } else {
-                    return AnyView(lightBlurBackground())
+                    darkBlurBackground()
                 }
-            } else {
-                return AnyView(darkBlurBackground())
-            }
-        case .light:
-            return AnyView(
+            case .light:
                 lightBlurBackground()
-            )
-        case .solid:
-            return AnyView(Color(nsColor: solidBackgroundColor.nsColor))
-        case .transparent:
-            return AnyView(Color.clear)
+            case .solid:
+                Color(nsColor: solidBackgroundColor.nsColor)
+            case .transparent:
+                Color.clear
+            }
         }
-    }
 
-    /// Darkens the floaty background with the same in-window HUD tint as the search bar.
-    private func floatyStandardBlurBackground() -> VisualEffectBackground {
-        blurBackground(
-            material: .hudWindow,
-            blendingMode: .withinWindow,
-            preferredAppearance: .vibrantDark
-        )
-    }
+        /// Darkens the floaty background with the same in-window HUD tint as the search bar.
+        private func floatyStandardBlurBackground() -> VisualEffectBackground {
+            blurBackground(
+                material: .hudWindow,
+                blendingMode: .withinWindow,
+                preferredAppearance: .vibrantDark
+            )
+        }
 
-    private func darkBlurBackground() -> VisualEffectBackground {
-        blurBackground(material: .hudWindow, preferredAppearance: .vibrantDark)
-    }
+        private func darkBlurBackground() -> VisualEffectBackground {
+            blurBackground(material: .hudWindow, preferredAppearance: .vibrantDark)
+        }
 
-    private func lightBlurBackground() -> VisualEffectBackground {
-        blurBackground(
-            material: .menu,
-            blendingMode: .withinWindow,
-            preferredAppearance: .vibrantLight
-        )
-    }
+        private func lightBlurBackground() -> VisualEffectBackground {
+            blurBackground(
+                material: .menu,
+                blendingMode: .withinWindow,
+                preferredAppearance: .vibrantLight
+            )
+        }
 
-    /// Helper for building a blurred background with optional appearance.
-    private func blurBackground(
-        material: NSVisualEffectView.Material,
-        blendingMode: NSVisualEffectView.BlendingMode = .behindWindow,
-        preferredAppearance: NSAppearance.Name? = nil
-    ) -> VisualEffectBackground {
-        let appearance = preferredAppearance.flatMap { NSAppearance(named: $0) }
-        return VisualEffectBackground(
-            material: material,
-            blendingMode: blendingMode,
-            appearance: appearance
-        )
+        /// Helper for building a blurred background with optional appearance.
+        private func blurBackground(
+            material: NSVisualEffectView.Material,
+            blendingMode: NSVisualEffectView.BlendingMode = .behindWindow,
+            preferredAppearance: NSAppearance.Name? = nil
+        ) -> VisualEffectBackground {
+            let appearance = preferredAppearance.flatMap { NSAppearance(named: $0) }
+            return VisualEffectBackground(
+                material: material,
+                blendingMode: blendingMode,
+                appearance: appearance
+            )
+        }
     }
 
     /// Soft glassy halo that lifts the floaty panel off the desktop.

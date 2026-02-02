@@ -731,6 +731,7 @@ struct LauncherView: View {
     @State private var lastPerformanceCapability: PerformanceCapability?
     @State private var isPageSwitchAnimationActive = false
     @State private var pageSwitchAnimationToken: UInt = 0
+    @State private var pageSwitchPhase2Token: UInt = 0
     @State private var pageSwitchSignpostID: OSSignpostID = .invalid
     @State private var isScrollGestureActive = false
     @State private var pendingScrollDelta: CGFloat = 0
@@ -1319,12 +1320,26 @@ struct LauncherView: View {
         return min(boosted, 200)
     }
 
-    private func markPageSwitch() {
+    private func beginPageSwitchPhase1() {
         lastPageChangeDate = Date()
-        bumpHighQualityRequestEpoch(resetPending: true)
-        enterPerformanceShedding(duration: 0.45)
         beginPageSwitchAnimation()
         suppressGridAnimation = true
+    }
+
+    private func performPageSwitchPhase2() {
+        let signpostID = Self.beginSignpost("PageSwitchPhase2")
+        bumpHighQualityRequestEpoch(resetPending: true)
+        enterPerformanceShedding()
+        Self.endSignpost("PageSwitchPhase2", id: signpostID)
+    }
+
+    private func schedulePageSwitchPhase2() {
+        pageSwitchPhase2Token &+= 1
+        let phase2Token = pageSwitchPhase2Token
+        DispatchQueue.main.async { [self] in
+            guard phase2Token == pageSwitchPhase2Token else { return }
+            performPageSwitchPhase2()
+        }
     }
 
     /// Applies a directional page change using a staged offset so both pages move coherently.
@@ -1337,6 +1352,7 @@ struct LauncherView: View {
         let span = max(spanOverride ?? pagerViewportWidth, 1)
         let initialOffset = direction == .forward ? span : -span
 
+        let completionSignpostID = Self.beginSignpost("PageSwitchTrigger")
         pageSwitchSignpostID = Self.beginSignpost("PageSwitch")
 
         pageDirection = direction
@@ -1345,12 +1361,19 @@ struct LauncherView: View {
         // Move to the target page immediately, start it offset offscreen, then slide it in.
         currentPage = targetPage
         pagerDragOffset = initialOffset
-        markPageSwitch()
-        enterPerformanceShedding()
+        beginPageSwitchPhase1()
+        schedulePageSwitchPhase2()
 
         withAnimation(pageSwitchAnimation) {
             pagerDragOffset = 0
         }
+
+        DispatchQueue.main.async {
+            let commitID = Self.beginSignpost("PageSwitchCommit")
+            Self.endSignpost("PageSwitchCommit", id: commitID)
+        }
+
+        Self.endSignpost("PageSwitchTrigger", id: completionSignpostID)
     }
 
     private func bumpHighQualityRequestEpoch(resetPending: Bool = false) {
@@ -1424,8 +1447,10 @@ struct LauncherView: View {
 
     /// Finalizes a drag-based page interaction using the predicted end state to capture velocity.
     private func finishPagerInteraction(translation: CGFloat, predictedEndTranslation: CGFloat, pageSpan: CGFloat) {
+        let signpostID = Self.beginSignpost("PagerInputEnd")
         let projection = predictedEndTranslation - translation
         settlePagerOffset(pageSpan: pageSpan, projectedDelta: projection)
+        Self.endSignpost("PagerInputEnd", id: signpostID)
     }
 
     /// Applies live scroll deltas from the trackpad so paging feels directly connected to the gesture.
@@ -1495,11 +1520,19 @@ struct LauncherView: View {
         let direction: PageShiftDirection = targetPage >= currentPage ? .forward : .backward
 
         if targetPage == currentPage {
+            let signpostID = Self.beginSignpost("PagerCompletionTrigger")
             withAnimation(gestureSettleAnimation) {
                 pagerDragOffset = 0
             }
+            DispatchQueue.main.async {
+                let commitID = Self.beginSignpost("PageSettleCommit")
+                Self.endSignpost("PageSettleCommit", id: commitID)
+            }
+            Self.endSignpost("PagerCompletionTrigger", id: signpostID)
         } else {
+            let signpostID = Self.beginSignpost("PagerCompletionTrigger")
             performAnimatedPageSwitch(to: targetPage, direction: direction, spanOverride: pageSpan)
+            Self.endSignpost("PagerCompletionTrigger", id: signpostID)
         }
         lastPagerDragDate = nil
     }
@@ -1612,8 +1645,8 @@ struct LauncherView: View {
         suppressGridAnimation = true
         activeFolderPage = targetPage
         folderPagerDragOffset = initialOffset
-        markPageSwitch()
-        enterPerformanceShedding()
+        beginPageSwitchPhase1()
+        schedulePageSwitchPhase2()
 
         withAnimation(pageSwitchAnimation) {
             folderPagerDragOffset = 0
@@ -4349,9 +4382,11 @@ struct LauncherView: View {
     }
 
     private func endScrollGesture(pageSpan: CGFloat) {
+        let signpostID = Self.beginSignpost("PagerInputEnd")
         flushPendingScrollDelta(pageSpan: pageSpan)
         isScrollGestureActive = false
         settlePagerOffset(pageSpan: pageSpan)
+        Self.endSignpost("PagerInputEnd", id: signpostID)
     }
 
 
@@ -4460,7 +4495,8 @@ struct LauncherView: View {
             pageDirection = dir
             currentPage = targetPage
             pagerDragOffset = 0
-            markPageSwitch()
+            beginPageSwitchPhase1()
+            schedulePageSwitchPhase2()
         }
     }
 

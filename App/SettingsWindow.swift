@@ -757,6 +757,8 @@ struct SettingsWindow: View {
                 panelDivider
                 aboutLinks
                 panelDivider
+                aboutSupportCallout
+                panelDivider
                 aboutActions
             }
             .frame(maxWidth: .infinity, alignment: .center)
@@ -855,6 +857,87 @@ struct SettingsWindow: View {
             .buttonStyle(.borderedProminent)
         }
         .frame(maxWidth: .infinity)
+    }
+
+    private var aboutSupportCallout: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 10) {
+                Image(systemName: "heart.fill")
+                    .foregroundColor(Color(red: 1.0, green: 0.38, blue: 0.38))
+                    .font(.system(size: 14, weight: .semibold))
+                    .frame(width: 28, height: 28)
+                    .background(
+                        RoundedRectangle(cornerRadius: 9, style: .continuous)
+                            .fill(Color.white.opacity(0.12))
+                    )
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(String(localized: "Support Launchy"))
+                        .font(.headline)
+                    Text(String(localized: "If Launchy helps your flow, consider fueling its next release."))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            Button {
+                if let url = URL(string: "https://ko-fi.com/janfeuerbacher") {
+                    SettingsWindowAppKitBridge.openURL(url)
+                }
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "cup.and.saucer.fill")
+                        .imageScale(.medium)
+                    Text(String(localized: "Donate on Ko-fi"))
+                        .fontWeight(.semibold)
+                    Spacer()
+                    Image(systemName: "arrow.up.right")
+                        .imageScale(.small)
+                        .foregroundColor(.white.opacity(0.85))
+                }
+                .padding(.vertical, 10)
+                .padding(.horizontal, 14)
+                .foregroundColor(.white)
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color(red: 0.16, green: 0.56, blue: 1.0),
+                                    Color(red: 0.48, green: 0.24, blue: 0.9)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .shadow(color: Color.black.opacity(0.25), radius: 10, x: 0, y: 6)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .stroke(Color.white.opacity(0.22), lineWidth: 1)
+                        )
+                )
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.08),
+                            Color.white.opacity(0.02)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .stroke(Color.white.opacity(0.12), lineWidth: 0.8)
+                )
+        )
     }
 
     // MARK: - Shared Helpers

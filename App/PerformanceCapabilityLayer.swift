@@ -7,8 +7,17 @@ enum HardwareClass: String, Equatable {
     case intel
 }
 
+enum PerformanceClass: String, Equatable {
+    case low
+    case medium
+    case high
+}
+
 struct PerformanceCapability: Equatable {
     let hardwareClass: HardwareClass
+    let performanceClass: PerformanceClass
+    let activeCoreCount: Int
+    let physicalMemoryBytes: UInt64
     let screenScale: CGFloat
     let pixelSize: CGSize
     let refreshRate: Double?
@@ -28,6 +37,8 @@ struct PerformanceTuning: Equatable {
     let visiblePagesDebounceNanoseconds: UInt64
     let folderPreviewCacheCountLimit: Int
     let folderPreviewCacheCostLimit: Int
+    let scrollCoalescingNanoseconds: UInt64
+    let pageRasterizationThreshold: CGFloat
 }
 
 final class PerformanceCapabilityLayer: @unchecked Sendable {
@@ -109,9 +120,18 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         let refreshRate = refreshRate(for: screen, screenID: screenID)
         let hasExternalDisplay = Self.anyExternalDisplayPresent()
         let isExternalDisplay = Self.isExternalDisplay(screenID: screenID)
+        let activeCoreCount = max(ProcessInfo.processInfo.activeProcessorCount, 1)
+        let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory
+        let performanceClass = Self.performanceClass(
+            activeCoreCount: activeCoreCount,
+            physicalMemoryBytes: physicalMemoryBytes
+        )
 
         return PerformanceCapability(
             hardwareClass: Self.detectHardwareClass(),
+            performanceClass: performanceClass,
+            activeCoreCount: activeCoreCount,
+            physicalMemoryBytes: physicalMemoryBytes,
             screenScale: scale,
             pixelSize: pixelSize,
             refreshRate: refreshRate,
@@ -127,6 +147,7 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         let isIntel = capability.hardwareClass == .intel
         let hasExternal = capability.hasExternalDisplay || capability.isExternalDisplay
         let refreshRate = capability.refreshRate ?? 60
+        let isLowPerfClass = capability.performanceClass == .low
 
         let baseHighQualityIconCacheLimit = 90
         let baseHighQualityRequestDelay: TimeInterval = 0.28
@@ -135,11 +156,15 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         let baseVisiblePagesDebounce: UInt64 = 16_000_000
         let baseFolderPreviewCacheCountLimit = 120
         let baseFolderPreviewCacheCostLimit = 18 * 1024 * 1024
+        let baseScrollCoalescing: UInt64 = 0
+        let basePageRasterizationThreshold: CGFloat = 0.45
 
         var highQualityIconCacheLimit = baseHighQualityIconCacheLimit
         var visiblePagesDebounce = baseVisiblePagesDebounce
         var folderPreviewCacheCountLimit = baseFolderPreviewCacheCountLimit
         var folderPreviewCacheCostLimit = baseFolderPreviewCacheCostLimit
+        var scrollCoalescingNanoseconds = baseScrollCoalescing
+        var pageRasterizationThreshold = basePageRasterizationThreshold
 
         if isLargePixelArea || hasExternal {
             highQualityIconCacheLimit = 110
@@ -159,6 +184,14 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
             visiblePagesDebounce = max(visiblePagesDebounce, 24_000_000)
         }
 
+        if isIntel || isLowPerfClass {
+            highQualityIconCacheLimit = max(60, Int(Double(highQualityIconCacheLimit) * 0.7))
+            folderPreviewCacheCountLimit = max(80, Int(Double(folderPreviewCacheCountLimit) * 0.7))
+            folderPreviewCacheCostLimit = max(12 * 1024 * 1024, Int(Double(folderPreviewCacheCostLimit) * 0.7))
+            scrollCoalescingNanoseconds = 6_000_000
+            pageRasterizationThreshold = 0.25
+        }
+
         return PerformanceTuning(
             highQualityIconCacheLimit: highQualityIconCacheLimit,
             highQualityRequestDelay: baseHighQualityRequestDelay,
@@ -166,7 +199,9 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
             searchMetadataDebounceNanoseconds: baseSearchMetadataDebounce,
             visiblePagesDebounceNanoseconds: visiblePagesDebounce,
             folderPreviewCacheCountLimit: folderPreviewCacheCountLimit,
-            folderPreviewCacheCostLimit: folderPreviewCacheCostLimit
+            folderPreviewCacheCostLimit: folderPreviewCacheCostLimit,
+            scrollCoalescingNanoseconds: scrollCoalescingNanoseconds,
+            pageRasterizationThreshold: pageRasterizationThreshold
         )
     }
 
@@ -218,6 +253,17 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
     private static func isExternalDisplay(screenID: CGDirectDisplayID?) -> Bool {
         guard let screenID else { return false }
         return CGDisplayIsBuiltin(screenID) == 0
+    }
+
+    private static func performanceClass(activeCoreCount: Int, physicalMemoryBytes: UInt64) -> PerformanceClass {
+        let memoryGB = Double(physicalMemoryBytes) / 1_073_741_824.0
+        if activeCoreCount <= 4 || memoryGB < 8 {
+            return .low
+        }
+        if activeCoreCount <= 8 || memoryGB < 16 {
+            return .medium
+        }
+        return .high
     }
 
     private static func displayID(for screen: NSScreen?) -> CGDirectDisplayID? {

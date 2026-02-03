@@ -224,6 +224,8 @@ struct LauncherView: View {
     var onItemOrderChange: (([LauncherItem], [Int]) -> Void)?
     /// Callback fired when the visible pages change so icons can be preheated.
     var onVisiblePagesChanged: (([AppItem]) -> Void)?
+    /// Callback fired before a page switch to prewarm likely icon work.
+    var onPageSwitchPrewarm: (([AppItem]) -> Void)?
     /// Provides the icon that should be used for a specific app.
     var iconProvider: @Sendable (AppItem, CGFloat, IconRenderQuality, CGFloat) -> NSImage? = { app, _, _, _ in app.iconImage }
 
@@ -312,6 +314,7 @@ struct LauncherView: View {
         let sizes = displayPageSizes
         let totalPages = max(sizes.count, 1)
         let pageIndices = visiblePageIndices(total: totalPages)
+        let isTransitioning = isPageSwitchAnimationActive || abs(pagerDragOffset) > 0.01
 
         let dragGesture = DragGesture(minimumDistance: 2)
             .onChanged { value in
@@ -340,6 +343,7 @@ struct LauncherView: View {
                 let pageItems = itemsForPage(pageIndex, sizes: sizes)
                 let pageStart = pageStartIndex(for: pageIndex, sizes: sizes)
                 let itemCountOnPage = sizes.indices.contains(pageIndex) ? sizes[pageIndex] : 0
+                let allowHeavyWork = isTransitioning ? (pageIndex == currentPage) : true
 
         launcherGridPage(
             layout: layout,
@@ -349,7 +353,8 @@ struct LauncherView: View {
             pageStart: pageStart,
             itemCountOnPage: itemCountOnPage,
             canReorder: canReorder,
-            gridProxy: gridProxy
+            gridProxy: gridProxy,
+            allowHeavyWork: allowHeavyWork
         )
                 .opacity(pageOpacity(for: pageIndex, pageSpan: pageSpan))
                 .scaleEffect(pageScale(for: pageIndex, pageSpan: pageSpan))
@@ -367,6 +372,7 @@ struct LauncherView: View {
             withTransaction(transaction) {
                 updatePagerViewport(using: gridProxy.size)
             }
+            beginFirstPageRenderIfNeeded()
         }
         .onChange(of: gridProxy.size) { newSize in
             let transaction = Transaction(animation: nil)
@@ -403,7 +409,8 @@ struct LauncherView: View {
         pageStart: Int,
         itemCountOnPage: Int,
         canReorder: Bool,
-        gridProxy: GeometryProxy
+        gridProxy: GeometryProxy,
+        allowHeavyWork: Bool
     ) -> some View {
         let grid = LazyVGrid(
             columns: layout.gridColumns,
@@ -422,7 +429,8 @@ struct LauncherView: View {
                     layout: layout,
                     isLaunching: isLaunching,
                     isFolderBeingOpened: isFolderBeingOpened,
-                    isRenamingApp: isRenamingApp
+                    isRenamingApp: isRenamingApp,
+                    allowHeavyWork: allowHeavyWork
                 )
 
                 let decoratedCell = cell
@@ -489,6 +497,9 @@ struct LauncherView: View {
         .contextMenu {
             backgroundContextMenu()
         }
+        .onAppear {
+            recordFirstPageRenderIfNeeded()
+        }
         .onDrop(
             of: [.text],
             delegate: GridReorderDropDelegate(
@@ -544,7 +555,8 @@ struct LauncherView: View {
         layout: LauncherLayoutMetrics,
         isLaunching: Bool,
         isFolderBeingOpened: Bool,
-        isRenamingApp: Bool
+        isRenamingApp: Bool,
+        allowHeavyWork: Bool
     ) -> some View {
         // Performance guardrail: keep this as a concrete view (avoid AnyView) to preserve diffing.
         if isRenamingApp, case let .app(app) = item {
@@ -558,7 +570,7 @@ struct LauncherView: View {
                 }
             } label: {
                 VStack(spacing: 10) {
-                    iconCell(for: item, layout: layout)
+                    iconCell(for: item, layout: layout, allowHeavyWork: allowHeavyWork)
                         .scaleEffect(isLaunching ? 1.08 : 1.0)
                         .opacity(isLaunching ? 0.4 : 1.0)
                         .animation(.easeInOut(duration: 0.18), value: launchingItemID)
@@ -651,6 +663,8 @@ struct LauncherView: View {
     private var searchInputDebounceNanoseconds: UInt64 { performanceTuning.searchInputDebounceNanoseconds }
     private var searchMetadataDebounceNanoseconds: UInt64 { performanceTuning.searchMetadataDebounceNanoseconds }
     private var visiblePagesDebounceNanoseconds: UInt64 { performanceTuning.visiblePagesDebounceNanoseconds }
+    private var scrollCoalescingNanoseconds: UInt64 { performanceTuning.scrollCoalescingNanoseconds }
+    private var pageRasterizationThreshold: CGFloat { performanceTuning.pageRasterizationThreshold }
 
     @State private var orderedItems: [LauncherItem]
     @State private var draggedItem: LauncherItem?
@@ -738,6 +752,10 @@ struct LauncherView: View {
     @State private var scrollUpdateScheduled = false
     @State private var queuedPageDelta: Int = 0
     @State private var visiblePagesTask: Task<Void, Never>?
+    @State private var prewarmedPageTokens: Set<Int> = []
+    @State private var hasRecordedFirstPageRender = false
+    @State private var firstPageRenderSignpostID: OSSignpostID = .invalid
+    @State private var hasRecordedFirstPageSwitchCommit = false
     @FocusState private var isFolderNameFieldFocused: Bool
     @FocusState private var isAppNameFieldFocused: Bool
     @FocusState private var isSearchFieldFocused: Bool
@@ -756,6 +774,7 @@ struct LauncherView: View {
         onAppInfoRequested: (() -> Void)? = nil,
         onItemOrderChange: (([LauncherItem], [Int]) -> Void)? = nil,
         onVisiblePagesChanged: (([AppItem]) -> Void)? = nil,
+        onPageSwitchPrewarm: (([AppItem]) -> Void)? = nil,
         iconProvider: @escaping @Sendable (AppItem, CGFloat, IconRenderQuality, CGFloat) -> NSImage? = { app, _, _, _ in app.iconImage }
     ) {
         self.itemCatalog = itemCatalog
@@ -770,6 +789,7 @@ struct LauncherView: View {
         self.onAppInfoRequested = onAppInfoRequested
         self.onItemOrderChange = onItemOrderChange
         self.onVisiblePagesChanged = onVisiblePagesChanged
+        self.onPageSwitchPrewarm = onPageSwitchPrewarm
         self.iconProvider = iconProvider
         let metadata = Self.buildSearchMetadata(from: itemCatalog)
         _orderedItems = State(initialValue: itemCatalog)
@@ -797,6 +817,7 @@ struct LauncherView: View {
         .onChange(of: itemCatalog) { newValue in
             orderedItems = newValue
             scheduleSearchMetadataRebuild(for: newValue)
+            prewarmedPageTokens.removeAll()
             if fillsGapsAutomatically {
                 pageSizes = densePageSizes(for: newValue.count)
             } else {
@@ -890,6 +911,7 @@ struct LauncherView: View {
             }
         }
         .onChange(of: searchText) { newValue in
+            prewarmedPageTokens.removeAll()
             if newValue.isEmpty {
                 currentPage = 0
                 pageDirection = .forward
@@ -922,6 +944,7 @@ struct LauncherView: View {
         }
         .onChange(of: orderedItems) { newItems in
             scheduleSearchMetadataRebuild(for: newItems)
+            prewarmedPageTokens.removeAll()
             if fillsGapsAutomatically {
                 pageSizes = densePageSizes(for: newItems.count)
             } else {
@@ -1352,6 +1375,8 @@ struct LauncherView: View {
         let span = max(spanOverride ?? pagerViewportWidth, 1)
         let initialOffset = direction == .forward ? span : -span
 
+        prewarmPageIfNeeded(targetPage)
+
         let completionSignpostID = Self.beginSignpost("PageSwitchTrigger")
         pageSwitchSignpostID = Self.beginSignpost("PageSwitch")
 
@@ -1371,6 +1396,11 @@ struct LauncherView: View {
         DispatchQueue.main.async {
             let commitID = Self.beginSignpost("PageSwitchCommit")
             Self.endSignpost("PageSwitchCommit", id: commitID)
+            if hasRecordedFirstPageSwitchCommit == false {
+                let firstCommitID = Self.beginSignpost("FirstPageSwitchCommit")
+                Self.endSignpost("FirstPageSwitchCommit", id: firstCommitID)
+                hasRecordedFirstPageSwitchCommit = true
+            }
         }
 
         Self.endSignpost("PageSwitchTrigger", id: completionSignpostID)
@@ -1443,6 +1473,7 @@ struct LauncherView: View {
     /// Records the active viewport span so scroll-based gestures map 1:1 with page distance.
     private func beginPagerInteraction(pageSpan: CGFloat) {
         pagerViewportWidth = max(pageSpan, 1)
+        prewarmAdjacentPagesIfNeeded()
     }
 
     /// Finalizes a drag-based page interaction using the predicted end state to capture velocity.
@@ -1704,7 +1735,7 @@ struct LauncherView: View {
     }
 
     private var shouldRasterizeGridPages: Bool {
-        abs(pagerDragOffset) > 0.45 || isPageSwitchAnimationActive
+        abs(pagerDragOffset) > pageRasterizationThreshold || isPageSwitchAnimationActive
     }
 
     /// Returns only the currently focused page and its immediate neighbors to keep gesture FPS high.
@@ -1712,6 +1743,57 @@ struct LauncherView: View {
         guard total > 0 else { return [] }
         let current = clampPageIndex(currentPage)
         return [current - 1, current, current + 1].filter { $0 >= 0 && $0 < total }
+    }
+
+    private nonisolated static func collectApps(from items: [LauncherItem]) -> [AppItem] {
+        var seen = Set<UUID>()
+        var apps: [AppItem] = []
+        for item in items {
+            switch item {
+            case .app(let app):
+                if seen.insert(app.id).inserted {
+                    apps.append(app)
+                }
+            case .folder(let folder):
+                for app in folder.apps where seen.insert(app.id).inserted {
+                    apps.append(app)
+                }
+            }
+        }
+        return apps
+    }
+
+    private func prewarmPageIfNeeded(_ pageIndex: Int) {
+        guard let onPageSwitchPrewarm else { return }
+        guard pageCount > 0 else { return }
+        guard pageIndex != currentPage else { return }
+        guard pageIndex >= 0 && pageIndex < pageCount else { return }
+        guard isClosingLauncher == false else { return }
+        guard prewarmedPageTokens.insert(pageIndex).inserted else { return }
+        let sizes = displayPageSizes
+        let items = itemsForPage(pageIndex, sizes: sizes)
+        let apps = Self.collectApps(from: items)
+        guard apps.isEmpty == false else { return }
+        onPageSwitchPrewarm(apps)
+    }
+
+    private func prewarmAdjacentPagesIfNeeded() {
+        prewarmPageIfNeeded(currentPage - 1)
+        prewarmPageIfNeeded(currentPage + 1)
+    }
+
+    private func beginFirstPageRenderIfNeeded() {
+        guard hasRecordedFirstPageRender == false else { return }
+        guard firstPageRenderSignpostID == .invalid else { return }
+        firstPageRenderSignpostID = Self.beginSignpost("FirstPageRender")
+    }
+
+    private func recordFirstPageRenderIfNeeded() {
+        guard hasRecordedFirstPageRender == false else { return }
+        guard firstPageRenderSignpostID != .invalid else { return }
+        Self.endSignpost("FirstPageRender", id: firstPageRenderSignpostID)
+        firstPageRenderSignpostID = .invalid
+        hasRecordedFirstPageRender = true
     }
 
     private func notifyVisiblePagesChanged() {
@@ -1729,23 +1811,12 @@ struct LauncherView: View {
             }
             guard Task.isCancelled == false else { return }
             let apps = await Task.detached(priority: .utility) {
-                var seen = Set<UUID>()
-                var apps: [AppItem] = []
+                var flattened: [AppItem] = []
                 for items in pageItems {
-                    for item in items {
-                        switch item {
-                        case .app(let app):
-                            if seen.insert(app.id).inserted {
-                                apps.append(app)
-                            }
-                        case .folder(let folder):
-                            for app in folder.apps where seen.insert(app.id).inserted {
-                                apps.append(app)
-                            }
-                        }
-                    }
+                    flattened.append(contentsOf: Self.collectApps(from: items))
                 }
-                return apps
+                var seen = Set<UUID>()
+                return flattened.filter { seen.insert($0.id).inserted }
             }.value
             await MainActor.run {
                 guard Task.isCancelled == false else { return }
@@ -2999,17 +3070,25 @@ struct LauncherView: View {
 
     /// Picks either the discovered icon or the fallback system glyph.
     @ViewBuilder
-    private func iconView(for item: LauncherItem, layout: LauncherLayoutMetrics) -> some View {
+    private func iconView(
+        for item: LauncherItem,
+        layout: LauncherLayoutMetrics,
+        allowHeavyWork: Bool = true
+    ) -> some View {
         switch item {
         case .app(let app):
-            iconForApp(app, layout: layout)
+            iconForApp(app, layout: layout, allowHeavyWork: allowHeavyWork)
         case .folder(let folder):
-            folderIcon(for: folder, layout: layout)
+            folderIcon(for: folder, layout: layout, allowHeavyWork: allowHeavyWork)
         }
     }
 
     @ViewBuilder
-    private func iconForApp(_ app: AppItem, layout: LauncherLayoutMetrics) -> some View {
+    private func iconForApp(
+        _ app: AppItem,
+        layout: LauncherLayoutMetrics,
+        allowHeavyWork: Bool
+    ) -> some View {
         let request = baseIconRequest(for: layout)
         let baseIcon = resolvedIcon(for: app, dimension: request.dimension, quality: request.quality) ?? app.iconImage
         let highIcon = highQualityIconOverrides[app.id]
@@ -3044,11 +3123,16 @@ struct LauncherView: View {
         .compositingGroup()
         .animation(.easeInOut(duration: 0.12), value: highIcon != nil)
         .onAppear {
+            guard allowHeavyWork else { return }
             requestHighQualityIconIfNeeded(for: app, layout: layout)
         }
     }
 
-    private func iconCell(for item: LauncherItem, layout: LauncherLayoutMetrics) -> some View {
+    private func iconCell(
+        for item: LauncherItem,
+        layout: LauncherLayoutMetrics,
+        allowHeavyWork: Bool
+    ) -> some View {
         let isSelected = isMultiSelectModeActive && multiSelectedItemIDs.contains(item.id)
         let shouldWiggleIcon = shouldRasterizeGridPages ? false : shouldWiggle(item: item)
         let selectionShadowOpacity = shouldRasterizeGridPages ? 0 : (isSelected ? 0.28 : 0)
@@ -3056,7 +3140,7 @@ struct LauncherView: View {
         let selectionShadowYOffset: CGFloat = shouldRasterizeGridPages ? 0 : (isSelected ? 2 : 0)
         let selectionBlendMode: BlendMode = isSelected ? .screen : .normal
 
-        return iconView(for: item, layout: layout)
+        return iconView(for: item, layout: layout, allowHeavyWork: allowHeavyWork)
             .frame(width: layout.iconDimension, height: layout.iconDimension)
             .overlay(selectionHighlight(for: item, layout: layout, isSelected: isSelected))
             .modifier(wiggleMotion(for: item.id, layout: layout, isActive: shouldWiggleIcon))
@@ -3168,7 +3252,11 @@ struct LauncherView: View {
     }
 
     /// Composes a 3x3 grid of the first nine app icons to mimic the macOS folder style.
-    private func folderIcon(for folder: FolderItem, layout: LauncherLayoutMetrics) -> some View {
+    private func folderIcon(
+        for folder: FolderItem,
+        layout: LauncherLayoutMetrics,
+        allowHeavyWork: Bool
+    ) -> some View {
         let previews = Array(folder.apps.prefix(9))
         let spacing = max(layout.iconDimension * 0.035, 2)
         let padding = spacing * 1.05
@@ -3186,7 +3274,7 @@ struct LauncherView: View {
 
             LazyVGrid(columns: columns, alignment: .center, spacing: spacing) {
                 ForEach(previews, id: \.id) { app in
-                    folderTile(for: app, layout: layout)
+                    folderTile(for: app, layout: layout, allowHeavyWork: allowHeavyWork)
                         .frame(width: tileSize, height: tileSize)
                 }
                 ForEach(0..<max(0, 9 - previews.count), id: \.self) { _ in
@@ -3220,16 +3308,22 @@ struct LauncherView: View {
             }
         }
         .onAppear {
+            guard allowHeavyWork else { return }
             warmFolderPreviewIcons(for: folder, layout: layout)
         }
         .onChange(of: folder.apps.map(\.id)) { _ in
+            guard allowHeavyWork else { return }
             warmFolderPreviewIcons(for: folder, layout: layout)
         }
     }
 
     /// Shows a single tiny app icon inside the folder preview grid.
     @ViewBuilder
-    private func folderTile(for app: AppItem, layout: LauncherLayoutMetrics) -> some View {
+    private func folderTile(
+        for app: AppItem,
+        layout: LauncherLayoutMetrics,
+        allowHeavyWork: Bool
+    ) -> some View {
         let resolvedIcon = folderPreviewIcon(for: app, layout: layout)
         Group {
             if let icon = resolvedIcon {
@@ -3252,6 +3346,7 @@ struct LauncherView: View {
         .compositingGroup()
         .animation(nil, value: resolvedIcon?.hash ?? 0)
         .onAppear {
+            guard allowHeavyWork else { return }
             requestHighQualityIconIfNeeded(for: app, layout: layout)
         }
     }
@@ -4362,8 +4457,15 @@ struct LauncherView: View {
         pendingScrollDelta += delta
         guard scrollUpdateScheduled == false else { return }
         scrollUpdateScheduled = true
-        DispatchQueue.main.async { [self] in
-            applyPendingScrollDelta(pageSpan: pageSpan)
+        let delay = scrollCoalescingNanoseconds
+        if delay > 0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .nanoseconds(Int(delay))) { [self] in
+                applyPendingScrollDelta(pageSpan: pageSpan)
+            }
+        } else {
+            DispatchQueue.main.async { [self] in
+                applyPendingScrollDelta(pageSpan: pageSpan)
+            }
         }
     }
 

@@ -1436,6 +1436,32 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// Warms a small, conservative slice of icons before a page switch to avoid first-frame hitches.
+    private func prewarmLikelyPageIcons(_ apps: [AppItem]) {
+        let uniqueApps = uniqueAppsByBundleID(apps)
+        guard uniqueApps.isEmpty == false else { return }
+        guard launcherWindowManager?.window?.isVisible == true else { return }
+
+        let mode = activeLauncherMode()
+        let capability = PerformanceCapabilityLayer.shared.capabilities(for: launcherWindowManager?.window?.screen)
+        let lowMemoryThreshold: UInt64 = 12 * 1024 * 1024 * 1024
+        let isLowMemoryDevice = ProcessInfo.processInfo.physicalMemory < lowMemoryThreshold
+        let isConservative = capability.hardwareClass == .intel || isLowMemoryDevice
+
+        let baseLimit = max(pageCapacity(for: mode), 1)
+        let maxLimit = isConservative ? max(6, min(baseLimit / 2, 10)) : max(10, min(baseLimit, 18))
+        let limit = min(uniqueApps.count, maxLimit)
+        let qualities: [IconRenderQuality] = isConservative ? [.low] : [.low, .medium]
+
+        applicationDiscovery.preheatIcons(
+            for: Array(uniqueApps.prefix(limit)),
+            targetDimension: preferredIconRenderDimension(for: mode),
+            qualities: qualities,
+            screenScale: launcherScreenScale(),
+            limit: limit
+        )
+    }
+
     private func launcherScreenScale() -> CGFloat {
         let screen = launcherWindowManager?.window?.screen ?? ScreenProvider.screenUnderMouseOrMain()
         return PerformanceCapabilityLayer.shared.screenScale(for: screen)
@@ -1818,6 +1844,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             },
             onVisiblePagesChanged: { [weak self] apps in
                 self?.warmVisiblePageIcons(apps)
+            },
+            onPageSwitchPrewarm: { [weak self] apps in
+                self?.prewarmLikelyPageIcons(apps)
             },
             iconProvider: { [weak self] app, dimension, quality, scale in
                 guard let self else { return nil }

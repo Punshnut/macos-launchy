@@ -21,6 +21,7 @@ Packages/
 /.sparkle-keys
 .venv/
 tmp.iconset
+.cache/
 
 # Local development tooling metadata
 .vscode/

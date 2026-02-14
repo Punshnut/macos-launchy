@@ -256,7 +256,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             if self.launcherWindowManager == nil {
-                self.applyLauncherMode(shouldPresentWindow: false)
+                self.applyLauncherMode()
+                return
             }
             guard let controller = self.launcherWindowManager else { return }
             if controller.window?.isVisible == true {
@@ -437,6 +438,15 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         shouldAutoPresentOnFirstActivation = mode == .floaty || (currentSettings.isDockIconHidden && currentSettings.isMenuBarIconHidden)
         let shouldActivateApp = shouldPresentWindow && (modeChanged || launcherWindowManager?.window?.isVisible == true)
         updateActivationPolicy(for: mode, shouldActivate: shouldActivateApp)
+
+        // macOS 26.3 can hang while constructing hidden SwiftUI windows during launch.
+        // Defer building until the launcher is actually presented.
+        if shouldPresentWindow == false, launcherWindowManager == nil {
+            LaunchyLogger.log("applyLauncherMode: deferring hidden window construction")
+            preheatIconsForCurrentLayout()
+            scheduleRunloopProbes(label: "post-apply-\(mode.rawValue)")
+            return
+        }
 
         if modeChanged == false, let controller = launcherWindowManager {
             LaunchyLogger.log("applyLauncherMode: updating existing window controller")
@@ -1247,7 +1257,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Shows or hides the launcher window whenever the hotkey fires.
     private func toggleLauncherVisibility() {
         if launcherWindowManager == nil {
-            applyLauncherMode(shouldPresentWindow: false)
+            recordFrontmostApplicationForRestoration()
+            applyLauncherMode()
+            return
         }
 
         guard let launcherWindowManager else { return }
@@ -1311,7 +1323,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Shows the launcher after the system activates the app (e.g., via Cmd+Tab).
     private func showLauncherWindowAfterActivation() {
         if launcherWindowManager == nil {
-            applyLauncherMode(shouldPresentWindow: false)
+            applyLauncherMode()
+            return
         }
 
         guard let controller = launcherWindowManager else { return }

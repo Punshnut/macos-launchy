@@ -8,7 +8,6 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
   <img src="https://img.shields.io/badge/macOS-native-000000?style=flat&logo=apple" alt="macOS native">
   <img src="https://img.shields.io/badge/Stage-Beta-yellow" alt="Stage Beta">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
-  <img src="https://img.shields.io/badge/Swift-6.2.1-orange" alt="Swift 6.2.1">
 </p>
 
 <p align="center">

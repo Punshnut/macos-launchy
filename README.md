@@ -97,7 +97,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 - **License:** MIT. Use it anywhere, just keep the notice.
 
-[Website](https://launchy.space) (currently there's not much to see)
+[Website](https://feuerbacher.me/projects/launchy) (currently there's not much to see)
 
 ## Get Launchy
 

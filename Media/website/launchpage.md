@@ -40,5 +40,5 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 - <a href="https://github.com/Punshnut/macos-launchy">Source on GitHub</a> (MIT).
 - <a href="https://github.com/Punshnut/macos-launchy/releases/latest">Latest release</a> (auto-updating, notarized, Apple Silicon + Intel).
 - Feedback or bugs? <a href="https://github.com/Punshnut/macos-launchy/issues">Open an issue</a>.
-- Follow updates at <a href="https://launchy.space">launchy.space</a>.
+- Follow updates at <a href="https://feuerbacher.me/projects/launchy">feuerbacher.me/projects/launchy</a>.
 - Want to support development? <a href="https://ko-fi.com/janfeuerbacher">Ko-Fi</a>

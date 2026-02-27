@@ -795,7 +795,7 @@ struct SettingsWindow: View {
             aboutLinkRow(
                 icon: "link",
                 title: String(localized: "Project Website"),
-                urlString: "https://www.launchy.space"
+                urlString: "https://feuerbacher.me/projects/launchy"
             )
 
             aboutLinkRow(

@@ -3,6 +3,7 @@ import Carbon
 import SwiftUI
 
 extension NSWindow {
+    /// Applies rounded clipping to backing views for translucent windows.
     func applyRoundedCorners(radius: CGFloat) {
         guard let contentView else { return }
         let targetView = contentView.superview ?? contentView
@@ -16,16 +17,16 @@ extension NSWindow {
 
 // MARK: - Window Hosting Helpers
 
-/// Bridges SwiftUI's settings window into AppKit so we can resize and control the host window directly.
+/// Bridges SwiftUI settings UI with AppKit window controls.
 @MainActor
 enum SettingsWindowHostManager {
-    /// Applies shared chrome customizations (transparency/opacity) to the hosting window.
+    /// Applies shared chrome settings to the host window.
     static func applyConfiguration(to hostingWindow: AnyObject?) {
         guard let window = hostingWindow as? NSWindow else { return }
         updateWindowChrome(for: window)
     }
 
-    /// Resizes the settings window to the target tab height while keeping the title bar anchored.
+    /// Resizes settings window for target tab height.
     static func resize(window hostingWindow: AnyObject?, for tab: SettingsTab, animated: Bool) {
         guard let window = hostingWindow as? NSWindow else { return }
         resizeWindow(for: tab, in: window, animated: animated)
@@ -44,6 +45,7 @@ enum SettingsWindowHostManager {
         }
     }
 
+    /// Recomputes frame for target tab.
     private static func resizeWindow(for tab: SettingsTab, in window: NSWindow, animated: Bool) {
         let currentFrame = window.frame
         let currentContentRect = window.contentRect(forFrameRect: currentFrame)
@@ -68,6 +70,7 @@ enum SettingsWindowHostManager {
         window.setFrame(newFrame, display: true, animate: animated)
     }
 
+    /// Applies shared visual styling for the settings host window.
     private static func updateWindowChrome(for window: NSWindow) {
         window.isOpaque = false
         window.backgroundColor = .clear
@@ -78,6 +81,7 @@ enum SettingsWindowHostManager {
 /// Tiny shim that exposes AppKit-only helpers back to SwiftUI.
 @MainActor
 enum SettingsWindowAppKitBridge {
+    /// Returns the current app icon as a SwiftUI image.
     static func applicationIconImage() -> Image? {
         guard let icon = NSApp.applicationIconImage else {
             return nil
@@ -85,6 +89,7 @@ enum SettingsWindowAppKitBridge {
         return Image(nsImage: icon)
     }
 
+    /// Opens an external URL through NSWorkspace.
     static func openURL(_ url: URL) {
         NSWorkspace.shared.open(url)
     }
@@ -94,6 +99,7 @@ enum SettingsWindowAppKitBridge {
 
 final class SettingsWindowAlertPresenter {
     @MainActor
+    /// Starts two-step arrangement reset confirmation flow.
     static func confirmArrangementReset(
         hostingWindow: AnyObject?,
         initialSorting: ArrangementResetSorting,
@@ -117,7 +123,7 @@ final class SettingsWindowAlertPresenter {
         }
     }
 
-    /// First step (sheet): ask which sorting to use via two buttons.
+    /// Presents sorting choice as a sheet.
     @MainActor
     private static func presentSortingSheet(
         on window: NSWindow,
@@ -138,7 +144,7 @@ final class SettingsWindowAlertPresenter {
         }
     }
 
-    /// Second step (sheet): confirm reset.
+    /// Presents reset confirmation as a sheet.
     @MainActor
     private static func presentResetSheet(
         on window: NSWindow,
@@ -152,7 +158,7 @@ final class SettingsWindowAlertPresenter {
         }
     }
 
-    /// First step (modal fallback).
+    /// Presents sorting choice as modal fallback when no host window exists.
     @MainActor
     private static func presentSortingChoiceModal(
         initialSorting: ArrangementResetSorting
@@ -180,7 +186,7 @@ final class SettingsWindowAlertPresenter {
         }
     }
 
-    /// Second step (modal fallback): confirm the destructive reset.
+    /// Presents reset confirmation as modal fallback.
     @MainActor
     private static func presentResetConfirmationModal(
         sorting: ArrangementResetSorting
@@ -190,7 +196,7 @@ final class SettingsWindowAlertPresenter {
         return response == .alertFirstButtonReturn
     }
 
-    /// Shared reset alert contents.
+    /// Creates reset confirmation alert contents.
     @MainActor
     private static func resetAlert() -> NSAlert {
         let alert = NSAlert()
@@ -202,7 +208,7 @@ final class SettingsWindowAlertPresenter {
         return alert
     }
 
-    /// Shared sorting alert contents.
+    /// Creates sorting-choice alert contents.
     @MainActor
     private static func sortingAlert(initialSorting: ArrangementResetSorting) -> NSAlert {
         let alert = NSAlert()
@@ -218,6 +224,7 @@ final class SettingsWindowAlertPresenter {
         return alert
     }
 
+    /// Presents alert above launcher windows and returns modal response.
     @MainActor
     private static func presentModalAlert(_ alert: NSAlert) -> NSApplication.ModalResponse {
         NSApp.activate(ignoringOtherApps: true)
@@ -241,6 +248,7 @@ struct HotkeyRecorderField: NSViewRepresentable {
     var cancelToken: Int
     var onChange: (HotkeyDescriptor?) -> Void
 
+    /// Creates the AppKit recorder text field bridged into SwiftUI.
     func makeNSView(context: Context) -> HotkeyRecorderTextField {
         let view = HotkeyRecorderTextField()
         view.placeholderText = placeholder
@@ -249,10 +257,12 @@ struct HotkeyRecorderField: NSViewRepresentable {
         return view
     }
 
+    /// Tracks cancellation token changes between SwiftUI updates.
     func makeCoordinator() -> Coordinator {
         Coordinator(cancelToken: cancelToken)
     }
 
+    /// Synchronizes binding values and cancels recording when token changes.
     func updateNSView(_ nsView: HotkeyRecorderTextField, context: Context) {
         nsView.placeholderText = placeholder
         nsView.hotkey = hotkey
@@ -309,10 +319,12 @@ final class HotkeyRecorderTextField: NSTextField {
 
     override var acceptsFirstResponder: Bool { true }
 
+    /// Allows single-click activation without requiring prior window focus.
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
         true
     }
 
+    /// Enter recording mode as soon as the field gains first responder.
     override func becomeFirstResponder() -> Bool {
         let success = super.becomeFirstResponder()
         if success {
@@ -321,21 +333,25 @@ final class HotkeyRecorderTextField: NSTextField {
         return success
     }
 
+    /// Leaves recording mode when focus is lost.
     override func resignFirstResponder() -> Bool {
         endRecording(resignFirstResponder: false)
         return super.resignFirstResponder()
     }
 
+    /// Click-to-record behavior for hotkey capture.
     override func mouseDown(with event: NSEvent) {
         window?.makeFirstResponder(self)
         beginRecording()
     }
 
+    /// Routes key events to the recorder while active.
     override func keyDown(with event: NSEvent) {
         guard isRecording else { return }
         handleKeyEvent(event)
     }
 
+    /// Handles Escape, delete-clear, and standard hotkey capture semantics.
     private func handleKeyEvent(_ event: NSEvent) {
         let deleteKeyCodes: Set<UInt16> = [
             UInt16(kVK_Delete),
@@ -366,11 +382,13 @@ final class HotkeyRecorderTextField: NSTextField {
         endRecording(resignFirstResponder: true)
     }
 
+    /// Public cancellation hook for SwiftUI token updates.
     func cancelRecording() {
         guard isRecording else { return }
         endRecording(resignFirstResponder: true)
     }
 
+    /// Arms monitors and updates placeholder text for capture state.
     private func beginRecording() {
         isRecording = true
         installKeyDownMonitorIfNeeded()
@@ -378,6 +396,7 @@ final class HotkeyRecorderTextField: NSTextField {
         updateDisplay()
     }
 
+    /// Tears down monitors and optionally resigns first responder.
     private func endRecording(resignFirstResponder: Bool) {
         isRecording = false
         removeSystemDefinedMonitor()
@@ -388,6 +407,7 @@ final class HotkeyRecorderTextField: NSTextField {
         updateDisplay()
     }
 
+    /// Installs a local monitor for media/system-defined keys.
     private func installSystemDefinedMonitorIfNeeded() {
         guard systemDefinedMonitor == nil else { return }
         systemDefinedMonitor = NSEvent.addLocalMonitorForEvents(matching: .systemDefined) { [weak self] event in
@@ -402,6 +422,7 @@ final class HotkeyRecorderTextField: NSTextField {
         }
     }
 
+    /// Removes media/system-defined key monitor if installed.
     private func removeSystemDefinedMonitor() {
         if let systemDefinedMonitor {
             NSEvent.removeMonitor(systemDefinedMonitor)
@@ -409,6 +430,7 @@ final class HotkeyRecorderTextField: NSTextField {
         }
     }
 
+    /// Installs local key-down monitor for regular keyboard shortcuts.
     private func installKeyDownMonitorIfNeeded() {
         guard keyDownMonitor == nil else { return }
         keyDownMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
@@ -418,6 +440,7 @@ final class HotkeyRecorderTextField: NSTextField {
         }
     }
 
+    /// Removes local key-down monitor if present.
     private func removeKeyDownMonitor() {
         if let keyDownMonitor {
             NSEvent.removeMonitor(keyDownMonitor)
@@ -425,6 +448,7 @@ final class HotkeyRecorderTextField: NSTextField {
         }
     }
 
+    /// Updates visible text/placeholder according to capture state and selected hotkey.
     private func updateDisplay() {
         if isRecording {
             stringValue = ""
@@ -447,6 +471,7 @@ final class HotkeyRecorderTextField: NSTextField {
 struct HostingWindowFinder: NSViewRepresentable {
     let onResolve: (NSWindow?) -> Void
 
+    /// Emits an empty NSView and asynchronously resolves its owning window.
     func makeNSView(context: Context) -> NSView {
         let view = NSView()
         DispatchQueue.main.async {
@@ -455,6 +480,7 @@ struct HostingWindowFinder: NSViewRepresentable {
         return view
     }
 
+    /// Re-resolves host window when SwiftUI updates this representable.
     func updateNSView(_ nsView: NSView, context: Context) {
         DispatchQueue.main.async {
             onResolve(nsView.window)
@@ -465,6 +491,7 @@ struct HostingWindowFinder: NSViewRepresentable {
 struct FrostedBackgroundView: NSViewRepresentable {
     let material: NSVisualEffectView.Material
 
+    /// Creates a frosted AppKit background view for glass styling.
     func makeNSView(context: Context) -> NSVisualEffectView {
         let view = NSVisualEffectView()
         view.material = material
@@ -475,6 +502,7 @@ struct FrostedBackgroundView: NSViewRepresentable {
         return view
     }
 
+    /// Keeps frosted material/state in sync with SwiftUI state.
     func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
         nsView.material = material
         nsView.state = .active
@@ -542,11 +570,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
 
+    /// Selects a tab before presenting and activating the settings window.
     func showWindowAndActivate(selecting tab: SettingsTab) {
         coordinator.selectTab(tab)
         showWindowAndActivate()
     }
 
+    /// Centers the window on the screen under the cursor, clamped to visible bounds.
     private func centerWindowOnPreferredScreen() {
         guard let window else { return }
         guard let screen = ScreenProvider.screenUnderMouseOrMain() else { return }
@@ -568,17 +598,20 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         window.setFrameOrigin(NSPoint(x: clampedX, y: clampedY))
     }
 
+    /// Forwards close events to observers on the main actor.
     func windowWillClose(_ notification: Notification) {
         Task { @MainActor in
             onClose?()
         }
     }
 
+    /// Reapplies corner masking after moves that can reset backing view layers.
     func windowDidMove(_ notification: Notification) {
         guard let window = notification.object as? NSWindow else { return }
         window.applyRoundedCorners(radius: 32)
     }
 
+    /// Reapplies corner masking after frame changes.
     func windowDidResize(_ notification: Notification) {
         guard let window = notification.object as? NSWindow else { return }
         window.applyRoundedCorners(radius: 32)

@@ -30,6 +30,7 @@ enum LaunchyLogger {
         record(entry: "[Launchy][ERROR] \(message)", level: .error)
     }
 
+    /// Central sink that fans each entry out to stdout, os_log, and file storage.
     private static func record(entry: String, level: OSLogType) {
         print(entry)
         switch level {
@@ -41,6 +42,7 @@ enum LaunchyLogger {
         appendToLogFile(entry)
     }
 
+    /// Resolves Launchy's per-user rolling log file path.
     private static func resolvedLogFileURL() -> URL? {
         let baseDirectory = FileManager.default.homeDirectoryForCurrentUser
         return baseDirectory
@@ -50,6 +52,7 @@ enum LaunchyLogger {
             .appendingPathComponent(logFileName, isDirectory: false)
     }
 
+    /// Deletes the previous session log before startup header is written.
     private static func clearLogFile() {
         logQueue.sync {
             guard let fileURL = resolvedLogFileURL() else { return }
@@ -57,6 +60,7 @@ enum LaunchyLogger {
         }
     }
 
+    /// Appends a line to the rolling log file, creating directories lazily.
     private static func appendToLogFile(_ text: String) {
         guard let fileURL = resolvedLogFileURL() else { return }
         logQueue.async {

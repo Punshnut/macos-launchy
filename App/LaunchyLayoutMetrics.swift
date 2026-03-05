@@ -161,7 +161,7 @@ struct LauncherLayoutMetrics {
         iconSpacing * CGFloat(columnsPerPage - 1)
     }
 
-    /// Rough estimate of pager height used for layout calculations.
+    /// Rough estimate of pager height for layout calculations.
     private var pagerHeightEstimate: CGFloat {
         40
     }
@@ -179,7 +179,7 @@ struct LauncherLayoutMetrics {
         labelFont.ascender - labelFont.descender + labelFont.leading
     }
 
-    /// Font used for icon labels; kept here for reuse in sizing.
+    /// Font for icon labels; kept here for reuse in sizing.
     private var labelFont: NSFont {
         .systemFont(ofSize: 13, weight: .medium)
     }

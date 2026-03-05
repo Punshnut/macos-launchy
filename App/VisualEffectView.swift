@@ -34,7 +34,7 @@ struct VisualEffectBackground: NSViewRepresentable {
         nsView.appearance = preferredAppearance
     }
 
-    /// Shared helper that wires up the visual effect view with the chosen material/appearance settings.
+    /// Creates and configures the backing visual effect view.
     private func makeView() -> NSVisualEffectView {
         let view = NSVisualEffectView()
         view.material = visualMaterial

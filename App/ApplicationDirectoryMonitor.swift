@@ -102,6 +102,7 @@ final class ApplicationDirectoryMonitor {
         return descriptor
     }
 
+    /// Adds a fallback polling timer for file systems that miss dispatch source events.
     private func startPollingIfNeeded() {
         guard let pollingInterval, pollingInterval > 0 else { return }
         let timer = DispatchSource.makeTimerSource(queue: queue)

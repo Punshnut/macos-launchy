@@ -74,7 +74,7 @@ final class AppDiscoveryService {
         }
         return normalizedIconData(for: icon)
     }()
-    /// Global scale applied to icon bitmaps to reduce peak memory usage without changing layout sizes.
+    /// Global icon scale used to cap memory usage.
     private static let iconResolutionScale: CGFloat = 0.65
     private static let maximumIconDimension: CGFloat = CGFloat(256) * iconResolutionScale
     private static let iconCacheCountLimit = 200
@@ -106,7 +106,7 @@ final class AppDiscoveryService {
         configureIconCacheLimits()
     }
 
-    /// Rebuilds the cached list of installed apps, optionally excluding hidden bundle identifiers.
+    /// Rebuilds discovered app list, optionally excluding hidden bundle IDs.
     func reloadApps(
         includeUserApplicationsFolder: Bool = true,
         hiddenBundleIDs: Set<String> = [],
@@ -196,7 +196,7 @@ final class AppDiscoveryService {
         return scaledIcon
     }
 
-    /// Clears the cached icons, forcing the next `resolveIcon(for:)` call to reload from disk.
+    /// Clears icon caches; next resolve reloads from disk.
     func clearIconCache(cancelIdleRelease: Bool = true) {
         if cancelIdleRelease {
             cancelIdleCacheRelease()
@@ -240,7 +240,7 @@ final class AppDiscoveryService {
         metadataLock.unlock()
     }
 
-    /// Releases cached icons that are not part of the preferred keep set, respecting recent activity.
+    /// Releases cached icons outside preferred keep set.
     func trimCaches(
         keeping bundleIdentifiersToKeep: Set<String>,
         aggressively: Bool = false,
@@ -280,7 +280,7 @@ final class AppDiscoveryService {
         metadataLock.unlock()
     }
 
-    /// Returns an icon scaled to the exact dimension the grid needs, keeping memory usage bounded.
+    /// Returns icon scaled to grid dimension.
     func preparedIcon(
         for app: AppItem,
         targetDimension: CGFloat,
@@ -309,7 +309,7 @@ final class AppDiscoveryService {
         return sized
     }
 
-    /// Warms a bounded number of icons on a background queue so the grid renders without stalls.
+    /// Prewarms a bounded icon set on a background queue.
     func preheatIcons(
         for apps: [AppItem],
         targetDimension: CGFloat,
@@ -387,6 +387,7 @@ final class AppDiscoveryService {
         return renderIcon(icon, targetSize: targetSize, quality: .high)
     }
 
+    /// Stores the base icon keyed by bundle ID and tracks the key for later targeted eviction.
     private func cacheIcon(_ icon: NSImage, for bundleIdentifier: String) {
         let cost = imageCost(icon)
         iconCache.setObject(icon, forKey: bundleIdentifier as NSString, cost: cost)
@@ -395,6 +396,7 @@ final class AppDiscoveryService {
         metadataLock.unlock()
     }
 
+    /// Stores a rendered icon variant and links it to bundle-level invalidation state.
     private func cachePreparedIcon(_ icon: NSImage, forKey key: String, bundleIdentifier: String) {
         let cost = imageCost(icon)
         preparedIconCache.setObject(icon, forKey: key as NSString, cost: cost)
@@ -418,6 +420,7 @@ final class AppDiscoveryService {
         preparedIconCache.totalCostLimit = Int(Double(Self.preparedIconCacheCostLimit) * preparedScale)
     }
 
+    /// Drops only prepared variants while keeping base icons warm.
     private func clearPreparedIconCaches() {
         preparedIconCache.removeAllObjects()
         metadataLock.lock()
@@ -425,6 +428,7 @@ final class AppDiscoveryService {
         metadataLock.unlock()
     }
 
+    /// Marks icon activity and delays idle cache release.
     private func recordIconAccess() {
         metadataLock.lock()
         lastIconAccessDate = Date()
@@ -432,6 +436,7 @@ final class AppDiscoveryService {
         scheduleIdleCacheRelease()
     }
 
+    /// Arms delayed tasks that release prepared and base icon caches after inactivity.
     private func scheduleIdleCacheRelease() {
         let preparedDelay = UInt64(Self.preparedIconCacheIdleReleaseInterval * 1_000_000_000)
         let iconDelay = UInt64(Self.iconCacheIdleReleaseInterval * 1_000_000_000)
@@ -469,6 +474,7 @@ final class AppDiscoveryService {
         }
     }
 
+    /// Cancels any pending idle cache release work.
     private func cancelIdleCacheRelease() {
         cacheReleaseQueue.sync {
             preparedCacheReleaseTask?.cancel()
@@ -478,7 +484,7 @@ final class AppDiscoveryService {
         }
     }
 
-    /// Resolves the pixel size for a requested icon based on target dimension, scale, and quality.
+    /// Resolves pixel size for requested icon dimension and quality.
     private func pixelDimension(
         for targetDimension: CGFloat,
         quality: IconRenderQuality,
@@ -489,12 +495,13 @@ final class AppDiscoveryService {
         return min(max(scaled, 1), Self.scaledPixelCap(for: quality))
     }
 
+    /// Applies the global resolution scale to a quality tier's hard pixel cap.
     private static func scaledPixelCap(for quality: IconRenderQuality) -> Int {
         let scaledCap = Int((Double(quality.pixelCap) * Double(iconResolutionScale)).rounded(.toNearestOrAwayFromZero))
         return max(scaledCap, 1)
     }
 
-    /// Returns the current generation counter for a bundle so prepared icons can be invalidated.
+    /// Returns bundle icon generation for cache invalidation.
     private func iconGeneration(for bundleIdentifier: String) -> Int {
         metadataLock.lock()
         let generation = iconGenerations[bundleIdentifier] ?? 0
@@ -502,6 +509,7 @@ final class AppDiscoveryService {
         return generation
     }
 
+    /// Revalidates bundle modification state and bumps icon generation if contents changed.
     private func invalidateIfBundleUpdated(_ app: AppItem, force: Bool = false) {
         guard let bundleURL = app.bundleURL else { return }
         let bundleID = app.bundleIdentifier
@@ -523,6 +531,7 @@ final class AppDiscoveryService {
         metadataLock.unlock()
     }
 
+    /// Throttles expensive bundle metadata checks unless a forced refresh is requested.
     private func shouldValidateBundle(bundleID: String, force: Bool) -> Bool {
         guard force == false else { return true }
         let now = Date()
@@ -605,6 +614,7 @@ final class AppDiscoveryService {
         return uniqueDirectories(from: directories)
     }
 
+    /// Normalizes and deduplicates directory paths before scanning or monitoring.
     private func uniqueDirectories(from directories: [URL]) -> [URL] {
         var seen: Set<String> = []
         var unique: [URL] = []
@@ -616,6 +626,7 @@ final class AppDiscoveryService {
         return unique
     }
 
+    /// Builds cache key from size, quality, generation, and appearance.
     private func preparedIconCacheKey(
         for bundleIdentifier: String,
         dimension: Int,
@@ -634,6 +645,7 @@ final class AppDiscoveryService {
         return max(pixels * bytesPerPixel, 1)
     }
 
+    /// Compares the bundle icon to the generic system app icon to flag placeholder-only apps.
     private func hasCustomIcon(for bundleURL: URL) -> Bool {
         guard let defaultData = defaultApplicationIconData else { return true }
         let icon = workspaceInterface.icon(forFile: bundleURL.path)
@@ -641,6 +653,7 @@ final class AppDiscoveryService {
         return iconData != defaultData
     }
 
+    /// Produces a square icon bitmap sized for the target grid cell.
     private func resizedIcon(_ icon: NSImage, pixelDimension: Int, quality: IconRenderQuality) -> NSImage {
         guard pixelDimension > 0 else { return icon }
         if let downsampled = downsampledIcon(icon, pixelDimension: pixelDimension) {
@@ -741,6 +754,7 @@ final class AppDiscoveryService {
         return downsampled
     }
 
+    /// Converts icon to normalized raster snapshot for deterministic equality.
     private func normalizedIconData(for icon: NSImage) -> Data? {
         let target = renderIcon(icon, targetSize: NSSize(width: 128, height: 128), quality: .high)
         return target.tiffRepresentation
@@ -770,6 +784,7 @@ final class AppDiscoveryService {
         return restored
     }
 
+    /// Keeps recently-missing apps visible while still allowing disk-backed resurrection.
     private func shouldRestore(record: CachedAppRecord, now: Date) -> Bool {
         let age = now.timeIntervalSince(record.lastSeen)
         if age <= Self.missingAppRetentionInterval {
@@ -789,6 +804,7 @@ final class AppDiscoveryService {
         persistCachedApps()
     }
 
+    /// Captures the persistable subset of an `AppItem` for cache storage.
     private func cachedRecord(from app: AppItem, seenAt: Date) -> CachedAppRecord? {
         guard let bundleURL = app.bundleURL else { return nil }
         return CachedAppRecord(
@@ -804,6 +820,7 @@ final class AppDiscoveryService {
         )
     }
 
+    /// Rebuilds a lightweight item from cached metadata when icon loading is deferred.
     private func appItem(from record: CachedAppRecord) -> AppItem {
         AppItem(
             id: record.id,
@@ -819,6 +836,7 @@ final class AppDiscoveryService {
         )
     }
 
+    /// Attempts full on-disk rebuild for restored cache entries.
     private func rebuildApp(from record: CachedAppRecord) -> AppItem? {
         let bundleURL = URL(fileURLWithPath: record.bundlePath, isDirectory: true)
         guard fileSystem.fileExists(atPath: bundleURL.path) else { return nil }
@@ -848,6 +866,7 @@ final class AppDiscoveryService {
         }
     }
 
+    /// Loads persisted discovery cache records, returning an empty map when decoding fails.
     private static func loadCachedApps(from url: URL) -> [String: CachedAppRecord] {
         guard let data = try? Data(contentsOf: url) else { return [:] }
         guard let records = try? JSONDecoder().decode([String: CachedAppRecord].self, from: data) else {
@@ -856,6 +875,7 @@ final class AppDiscoveryService {
         return records
     }
 
+    /// Returns Launchy's Application Support directory, creating it on first access.
     private static func applicationSupportDirectory(fileManager: FileManager) -> URL {
         let baseDirectory = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
@@ -902,6 +922,7 @@ final class AppDiscoveryService {
         )
     }
 
+    /// Resolves a localized app name using plist/localization sources before Finder fallback.
     private func localizedDisplayName(for bundle: Bundle, bundleURL: URL, fallback: String) -> String? {
         let preferredCodes = preferredLocalizationCodes(for: bundle)
         if let infoPlistName = localizedNameFromInfoPlist(
@@ -930,6 +951,7 @@ final class AppDiscoveryService {
         return sanitizedLocalizedName(finderName, fallback: fallback)
     }
 
+    /// Trims and normalizes localized names, dropping duplicates of the non-localized fallback.
     private func sanitizedLocalizedName(_ raw: String?, fallback: String) -> String? {
         guard let raw else { return nil }
         let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -949,6 +971,7 @@ final class AppDiscoveryService {
         return withoutAppSuffix
     }
 
+    /// Reads localized display names from `InfoPlist.strings` in preferred language order.
     private func localizedNameFromInfoPlist(
         bundle: Bundle,
         fallback: String,
@@ -992,6 +1015,7 @@ final class AppDiscoveryService {
         return nil
     }
 
+    /// Reads localized names from `InfoPlist.loctable` when present in bundle resources.
     private func localizedNameFromLoctable(
         bundleURL: URL,
         fallback: String,
@@ -1028,6 +1052,7 @@ final class AppDiscoveryService {
         return nil
     }
 
+    /// Checks whether an app bundle lives under the user's `~/Applications` hierarchy.
     private func isUserApplication(_ bundleURL: URL?) -> Bool {
         guard let bundleURL else { return false }
         let folderPath = userApplicationsDirectory.path
@@ -1037,6 +1062,7 @@ final class AppDiscoveryService {
             : bundleURL.path.dropFirst(folderPath.count).hasPrefix("/")
     }
 
+    /// Produces ordered, deduplicated localization preference codes.
     private func preferredLocalizationCodes(for bundle: Bundle) -> [String] {
         var ordered: [String] = []
         if let primary = bundle.preferredLocalizations.first {
@@ -1053,6 +1079,7 @@ final class AppDiscoveryService {
         }
     }
 
+    /// Reads the current appearance token used to partition prepared icon cache variants.
     private func currentAppearanceCacheToken() -> String {
         metadataLock.lock()
         let token = appearanceCacheToken
@@ -1060,6 +1087,7 @@ final class AppDiscoveryService {
         return token
     }
 
+    /// Converts an `NSAppearance` into a stable string token for cache keying.
     private static func appearanceToken(for appearance: NSAppearance?) -> String {
         if let match = appearance?.bestMatch(from: [.darkAqua, .aqua]) {
             return match.rawValue

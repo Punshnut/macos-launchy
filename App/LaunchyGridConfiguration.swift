@@ -1,6 +1,6 @@
 import Foundation
 
-/// Shared grid sizing used by the launcher so paging math stays consistent everywhere.
+/// Shared grid sizing for the launcher so paging math stays consistent everywhere.
 struct LauncherGridConfiguration: Equatable {
     let columnsPerPage: Int
     let rowsPerPage: Int
@@ -26,7 +26,7 @@ struct LauncherGridConfiguration: Equatable {
         }
     }
 
-    /// Returns an insertion index that keeps the item within the target page, pushing overflow forward.
+    /// Returns insertion index for a target page while preserving page overflow behavior.
     static func insertionIndex(for targetPage: Int, itemsCount: Int, pageCapacity: Int) -> Int {
         guard pageCapacity > 0 else { return itemsCount }
 

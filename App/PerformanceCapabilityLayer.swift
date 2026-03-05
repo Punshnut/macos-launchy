@@ -64,6 +64,7 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         observers.forEach(NotificationCenter.default.removeObserver)
     }
 
+    /// Returns cached capabilities for the target screen, rebuilding them when the display changes.
     func capabilities(for screen: NSScreen?) -> PerformanceCapability {
         let screenID = displayID(for: screen)
         lock.lock()
@@ -81,6 +82,7 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         return capability
     }
 
+    /// Derives runtime tuning values from the active screen's capability profile.
     func tuning(for screen: NSScreen?) -> PerformanceTuning {
         let screenID = displayID(for: screen)
         lock.lock()
@@ -98,15 +100,18 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         return tuning
     }
 
+    /// Convenience accessor for backing scale for icon rendering code paths.
     func screenScale(for screen: NSScreen?) -> CGFloat {
         capabilities(for: screen).screenScale
     }
 
+    /// Returns scale for the most relevant display.
     func currentScreenScale() -> CGFloat {
         let screen = Thread.isMainThread ? ScreenProvider.screenUnderMouseOrMain() : NSScreen.main
         return screenScale(for: screen)
     }
 
+    /// Clears memoized capability/tuning state after display topology changes.
     private func invalidateCache() {
         lock.lock()
         cachedCapability = nil
@@ -114,6 +119,7 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         lock.unlock()
     }
 
+    /// Collects hardware and display traits that influence Launchy's rendering strategy.
     private func buildCapabilities(for screen: NSScreen?, screenID: CGDirectDisplayID?) -> PerformanceCapability {
         let scale = screen?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2.0
         let pixelSize = pixelSize(for: screen, screenID: screenID, fallbackScale: scale)
@@ -140,6 +146,7 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         )
     }
 
+    /// Applies heuristic tuning rules based on display size, refresh rate, and hardware class.
     private func buildTuning(for capability: PerformanceCapability) -> PerformanceTuning {
         let pixelArea = capability.pixelArea
         let isLargePixelArea = pixelArea >= 7_000_000
@@ -205,6 +212,7 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         )
     }
 
+    /// Extracts CoreGraphics display ID from an `NSScreen`.
     private func displayID(for screen: NSScreen?) -> CGDirectDisplayID? {
         guard let screen,
               let screenNumber = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber
@@ -214,6 +222,7 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         return CGDirectDisplayID(screenNumber.uint32Value)
     }
 
+    /// Resolves physical pixel dimensions with a safe fallback for unavailable display modes.
     private func pixelSize(
         for screen: NSScreen?,
         screenID: CGDirectDisplayID?,
@@ -227,6 +236,7 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         return CGSize(width: frameSize.width * fallbackScale, height: frameSize.height * fallbackScale)
     }
 
+    /// Reads refresh rate from display mode (or macOS fallback APIs) when available.
     private func refreshRate(for screen: NSScreen?, screenID: CGDirectDisplayID?) -> Double? {
         if let screenID,
            let mode = CGDisplayCopyDisplayMode(screenID) {
@@ -243,6 +253,7 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         return nil
     }
 
+    /// Checks whether any non-built-in display is currently connected.
     private static func anyExternalDisplayPresent() -> Bool {
         NSScreen.screens.contains { screen in
             guard let screenID = displayID(for: screen) else { return false }
@@ -250,11 +261,13 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         }
     }
 
+    /// Returns true when the given display ID belongs to an external monitor.
     private static func isExternalDisplay(screenID: CGDirectDisplayID?) -> Bool {
         guard let screenID else { return false }
         return CGDisplayIsBuiltin(screenID) == 0
     }
 
+    /// Buckets the machine into coarse performance classes for tuning heuristics.
     private static func performanceClass(activeCoreCount: Int, physicalMemoryBytes: UInt64) -> PerformanceClass {
         let memoryGB = Double(physicalMemoryBytes) / 1_073_741_824.0
         if activeCoreCount <= 4 || memoryGB < 8 {
@@ -266,6 +279,7 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         return .high
     }
 
+    /// Static helper for static detection paths that cannot call instance methods.
     private static func displayID(for screen: NSScreen?) -> CGDirectDisplayID? {
         guard let screen,
               let screenNumber = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber
@@ -275,6 +289,7 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
         return CGDirectDisplayID(screenNumber.uint32Value)
     }
 
+    /// Detects Apple Silicon vs Intel for architecture-aware rendering defaults.
     private static func detectHardwareClass() -> HardwareClass {
         #if arch(arm64)
         return .appleSilicon

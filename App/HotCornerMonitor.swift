@@ -114,6 +114,7 @@ final class HotCornerMonitor {
         trigger()
     }
 
+    /// Tests whether a cursor point falls inside the configured corner activation rectangle.
     private func isPoint(_ point: CGPoint, in corner: HotCornerPosition, on screen: NSScreen) -> Bool {
         let frame = screen.frame
         let isWithinX: Bool

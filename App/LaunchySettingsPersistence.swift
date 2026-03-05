@@ -1,13 +1,13 @@
 import Foundation
 
-/// Simple persistence helpers for `LauncherSettings` values backed by `UserDefaults`.
+/// Persists and loads `LauncherSettings` via `UserDefaults`.
 enum LauncherSettingsPersistence {
     private enum Keys {
         static let settingsPayload = "launcher.settings.payload"
         static let arrangementResetSorting = "launcher.reset.sorting"
     }
 
-    /// Registers the default values so future reads always produce `.fullscreen` until changed.
+    /// Seeds defaults on first run.
     static func registerDefaults(userDefaults: UserDefaults = .standard) {
         guard userDefaults.data(forKey: Keys.settingsPayload) == nil else { return }
         saveSettings(
@@ -17,63 +17,63 @@ enum LauncherSettingsPersistence {
         )
     }
 
-    /// Reverts all persisted settings back to their defaults.
+    /// Resets all settings to defaults.
     static func resetSettings(userDefaults: UserDefaults = .standard) {
         saveSettings(LauncherSettings.defaults, userDefaults: userDefaults)
     }
 
-    /// Reads the persisted launcher mode, falling back to `.fullscreen` if nothing has been saved.
+    /// Returns current launcher mode.
     static func launcherMode(userDefaults: UserDefaults = .standard) -> LauncherMode {
         loadSettings(userDefaults: userDefaults).selectedLauncherMode
     }
 
-    /// Persists the provided launcher mode for future sessions.
+    /// Saves launcher mode.
     static func setLauncherMode(_ mode: LauncherMode, userDefaults: UserDefaults = .standard) {
         updateSettings(userDefaults: userDefaults) { settings in
             settings.selectedLauncherMode = mode
         }
     }
 
-    /// Reads a persisted boolean indicating whether the menu bar icon should be visible.
+    /// Returns whether menu bar icon is visible.
     static func showMenuBarIcon(userDefaults: UserDefaults = .standard) -> Bool {
         loadSettings(userDefaults: userDefaults).isMenuBarIconVisible
     }
 
-    /// Persists the visibility selection for the menu bar icon.
+    /// Saves menu bar icon visibility.
     static func setShowMenuBarIcon(_ isVisible: Bool, userDefaults: UserDefaults = .standard) {
         updateSettings(userDefaults: userDefaults) { settings in
             settings.isMenuBarIconVisible = isVisible
         }
     }
 
-    /// Persists whether the menu bar icon should be hidden.
+    /// Convenience setter for hidden menu bar icon state.
     static func setMenuBarIconHidden(_ isHidden: Bool, userDefaults: UserDefaults = .standard) {
         setShowMenuBarIcon(!isHidden, userDefaults: userDefaults)
     }
 
-    /// Reads a persisted boolean indicating whether the Dock icon should remain visible.
+    /// Returns whether Dock icon is visible.
     static func showDockIcon(userDefaults: UserDefaults = .standard) -> Bool {
         loadSettings(userDefaults: userDefaults).isDockIconVisible
     }
 
-    /// Persists the Dock icon visibility preference.
+    /// Saves Dock icon visibility.
     static func setDockIconVisible(_ isVisible: Bool, userDefaults: UserDefaults = .standard) {
         updateSettings(userDefaults: userDefaults) { settings in
             settings.isDockIconVisible = isVisible
         }
     }
 
-    /// Persists whether the Dock icon should be hidden.
+    /// Convenience setter for hidden Dock icon state.
     static func setDockIconHidden(_ isHidden: Bool, userDefaults: UserDefaults = .standard) {
         setDockIconVisible(!isHidden, userDefaults: userDefaults)
     }
 
-    /// Reads whether the Dock menu should list folders after standalone apps.
+    /// Returns Dock menu grouping preference.
     static func sortsDockMenuFoldersLast(userDefaults: UserDefaults = .standard) -> Bool {
         loadSettings(userDefaults: userDefaults).sortsDockMenuFoldersLast
     }
 
-    /// Persists the Dock menu grouping preference.
+    /// Saves Dock menu grouping preference.
     static func setSortsDockMenuFoldersLast(
         _ value: Bool,
         userDefaults: UserDefaults = .standard
@@ -83,24 +83,24 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Reads whether the launcher should be added to login items.
+    /// Returns launch-at-login preference.
     static func launchAtLogin(userDefaults: UserDefaults = .standard) -> Bool {
         loadSettings(userDefaults: userDefaults).launchesAtLogin
     }
 
-    /// Persists the launch at login toggle for future sessions.
+    /// Saves launch-at-login preference.
     static func setLaunchAtLogin(_ launchAtLogin: Bool, userDefaults: UserDefaults = .standard) {
         updateSettings(userDefaults: userDefaults) { settings in
             settings.launchesAtLogin = launchAtLogin
         }
     }
 
-    /// Returns the list of bundle identifiers the user marked as hidden.
+    /// Returns hidden app bundle IDs.
     static func hiddenBundleIdentifiers(userDefaults: UserDefaults = .standard) -> [String] {
         loadSettings(userDefaults: userDefaults).hiddenBundleIDs
     }
 
-    /// Persists the hidden bundles list.
+    /// Saves hidden app bundle IDs.
     static func setHiddenBundleIdentifiers(
         _ identifiers: [String],
         userDefaults: UserDefaults = .standard
@@ -110,14 +110,14 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Reads identifiers for special entries that can be hidden.
+    /// Returns hidden special entry IDs.
     static func hiddenSpecialEntryIdentifiers(
         userDefaults: UserDefaults = .standard
     ) -> [String] {
         loadSettings(userDefaults: userDefaults).hiddenSpecialEntryIDs
     }
 
-    /// Persists the hidden state of special entries such as auto-generated folders.
+    /// Saves hidden special entry IDs.
     static func setHiddenSpecialEntryIdentifiers(
         _ identifiers: [String],
         userDefaults: UserDefaults = .standard
@@ -127,12 +127,12 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Reads whether hidden apps should be anchored at the top of the list.
+    /// Returns hidden-app ordering preference.
     static func showHiddenAppsFirst(userDefaults: UserDefaults = .standard) -> Bool {
         loadSettings(userDefaults: userDefaults).showHiddenAppsFirst
     }
 
-    /// Persists the hidden-apps ordering preference.
+    /// Saves hidden-app ordering preference.
     static func setShowHiddenAppsFirst(
         _ value: Bool,
         userDefaults: UserDefaults = .standard
@@ -142,14 +142,14 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Reads whether the user's Applications folder is scanned for installed apps.
+    /// Returns user Applications scan preference.
     static func shouldScanUserApplicationsFolder(
         userDefaults: UserDefaults = .standard
     ) -> Bool {
         loadSettings(userDefaults: userDefaults).shouldScanUserApplicationsFolder
     }
 
-    /// Persists whether the user's Applications folder should be indexed.
+    /// Saves user Applications scan preference.
     static func setShouldScanUserApplicationsFolder(
         _ value: Bool,
         userDefaults: UserDefaults = .standard
@@ -159,12 +159,12 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Reads the preferred icon size setting.
+    /// Returns icon size preference.
     static func iconSizePreference(userDefaults: UserDefaults = .standard) -> IconSizePreference {
         loadSettings(userDefaults: userDefaults).iconSizePreference
     }
 
-    /// Persists the preferred icon size.
+    /// Saves icon size preference.
     static func setIconSizePreference(
         _ preference: IconSizePreference,
         userDefaults: UserDefaults = .standard
@@ -174,12 +174,12 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Reads the preferred paging orientation.
+    /// Returns paging orientation.
     static func pagingOrientation(userDefaults: UserDefaults = .standard) -> PagingOrientation {
         loadSettings(userDefaults: userDefaults).pagingOrientation
     }
 
-    /// Persists the paging orientation.
+    /// Saves paging orientation.
     static func setPagingOrientation(
         _ orientation: PagingOrientation,
         userDefaults: UserDefaults = .standard
@@ -189,14 +189,14 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Reads the preferred background style selection.
+    /// Returns background style preference.
     static func preferredBackgroundStyle(
         userDefaults: UserDefaults = .standard
     ) -> LauncherSettings.PreferredBackgroundStyle {
         loadSettings(userDefaults: userDefaults).backgroundStylePreference
     }
 
-    /// Persists the selected background style.
+    /// Saves background style preference.
     static func setPreferredBackgroundStyle(
         _ style: LauncherSettings.PreferredBackgroundStyle,
         userDefaults: UserDefaults = .standard
@@ -206,7 +206,7 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Persists the chosen solid background color.
+    /// Saves solid background color.
     static func setSolidBackgroundColor(
         _ color: LauncherSettings.SolidBackgroundColor,
         userDefaults: UserDefaults = .standard
@@ -216,48 +216,48 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Reads the stored launcher hotkey.
+    /// Returns launcher hotkey.
     static func launcherHotkey(userDefaults: UserDefaults = .standard) -> HotkeyDescriptor? {
         loadSettings(userDefaults: userDefaults).launcherHotkey
     }
 
-    /// Persists the selected launcher hotkey.
+    /// Saves launcher hotkey.
     static func setLauncherHotkey(_ value: HotkeyDescriptor?, userDefaults: UserDefaults = .standard) {
         updateSettings(userDefaults: userDefaults) { settings in
             settings.launcherHotkey = value
         }
     }
 
-    /// Reads the shortcut used to flip between floaty and fullscreen modes.
+    /// Returns layout-toggle hotkey.
     static func layoutToggleHotkey(userDefaults: UserDefaults = .standard) -> HotkeyDescriptor? {
         loadSettings(userDefaults: userDefaults).layoutToggleHotkey
     }
 
-    /// Persists the layout toggle shortcut.
+    /// Saves layout-toggle hotkey.
     static func setLayoutToggleHotkey(_ value: HotkeyDescriptor?, userDefaults: UserDefaults = .standard) {
         updateSettings(userDefaults: userDefaults) { settings in
             settings.layoutToggleHotkey = value
         }
     }
 
-    /// Reads whether the hot corner trigger is enabled.
+    /// Returns hot-corner enabled state.
     static func hotCornerEnabled(userDefaults: UserDefaults = .standard) -> Bool {
         loadSettings(userDefaults: userDefaults).hotCornerEnabled
     }
 
-    /// Persists whether the launcher should respond to a hot corner.
+    /// Saves hot-corner enabled state.
     static func setHotCornerEnabled(_ value: Bool, userDefaults: UserDefaults = .standard) {
         updateSettings(userDefaults: userDefaults) { settings in
             settings.hotCornerEnabled = value
         }
     }
 
-    /// Reads which hot corner position is configured.
+    /// Returns selected hot-corner position.
     static func hotCornerPosition(userDefaults: UserDefaults = .standard) -> HotCornerPosition {
         loadSettings(userDefaults: userDefaults).hotCornerPosition
     }
 
-    /// Persists the selected hot corner position.
+    /// Saves hot-corner position.
     static func setHotCornerPosition(
         _ position: HotCornerPosition,
         userDefaults: UserDefaults = .standard
@@ -267,17 +267,17 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Reads whether the grid should collapse gaps.
+    /// Returns gap-fill preference.
     static func fillsGapsAutomatically(userDefaults: UserDefaults = .standard) -> Bool {
         loadSettings(userDefaults: userDefaults).fillsGapsAutomatically
     }
 
-    /// Returns true when the user has finished the introduction flow.
+    /// Returns introduction completion state.
     static func hasCompletedIntroduction(userDefaults: UserDefaults = .standard) -> Bool {
         loadSettings(userDefaults: userDefaults).hasCompletedIntroduction
     }
 
-    /// Persists whether the introduction has been completed.
+    /// Saves introduction completion state.
     static func setHasCompletedIntroduction(
         _ value: Bool,
         userDefaults: UserDefaults = .standard
@@ -287,14 +287,14 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Persists the gap collapsing preference.
+    /// Saves gap-fill preference.
     static func setFillsGapsAutomatically(_ value: Bool, userDefaults: UserDefaults = .standard) {
         updateSettings(userDefaults: userDefaults) { settings in
             settings.fillsGapsAutomatically = value
         }
     }
 
-    /// Returns the preferred sorting applied when resetting the grid layout.
+    /// Returns preferred sorting for arrangement reset.
     static func arrangementResetSorting(userDefaults: UserDefaults = .standard) -> ArrangementResetSorting {
         guard
             let raw = userDefaults.string(forKey: Keys.arrangementResetSorting),
@@ -303,7 +303,7 @@ enum LauncherSettingsPersistence {
         return sorting
     }
 
-    /// Persists the preferred reset sorting selection.
+    /// Saves reset sorting preference.
     static func setArrangementResetSorting(
         _ sorting: ArrangementResetSorting,
         userDefaults: UserDefaults = .standard
@@ -311,8 +311,7 @@ enum LauncherSettingsPersistence {
         userDefaults.set(sorting.rawValue, forKey: Keys.arrangementResetSorting)
     }
 
-    /// Replaces the entire settings payload without mutating individual fields.
-    /// Used for backup/restore flows to apply a saved snapshot in one step.
+    /// Replaces entire settings payload (for backup restore).
     static func overwriteSettings(
         _ settings: LauncherSettings,
         userDefaults: UserDefaults = .standard
@@ -320,7 +319,7 @@ enum LauncherSettingsPersistence {
         saveSettings(settings, userDefaults: userDefaults)
     }
 
-    /// Reconstructs a `LauncherSettings` value using the stored toggles.
+    /// Loads persisted settings or defaults.
     static func loadSettings(userDefaults: UserDefaults = .standard) -> LauncherSettings {
         guard let data = userDefaults.data(forKey: Keys.settingsPayload) else {
             var defaults = LauncherSettings.defaults
@@ -340,12 +339,12 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Broadcasts a notification so listeners can react to persistence updates.
+    /// Broadcasts settings-change notification.
     private static func notifyChange() {
         NotificationCenter.default.post(name: .launcherSettingsDidChange, object: nil)
     }
 
-    /// Persists the provided settings, optionally suppressing notifications.
+    /// Saves settings, optionally without notification.
     private static func saveSettings(
         _ settings: LauncherSettings,
         userDefaults: UserDefaults = .standard,
@@ -360,7 +359,7 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Loads, mutates, and saves settings while emitting change notifications.
+    /// Loads, mutates, and saves settings.
     private static func updateSettings(
         userDefaults: UserDefaults = .standard,
         mutate: (inout LauncherSettings) -> Void
@@ -372,7 +371,7 @@ enum LauncherSettingsPersistence {
         saveSettings(mutableSettings, userDefaults: userDefaults)
     }
 
-    /// Ensures the launcher remains openable when all affordances are hidden.
+    /// Guarantees launcher remains reachable.
     private static func enforceLauncherReachability(_ settings: inout LauncherSettings) {
         guard settings.isDockIconHidden && settings.isMenuBarIconHidden else { return }
         if settings.launcherHotkey == nil {
@@ -380,7 +379,7 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Auto-hides the generated system tools folder to avoid cluttering the grid by default.
+    /// Keeps generated system-tools folder hidden by default.
     private static func ensureSystemToolsFolderHidden(_ settings: inout LauncherSettings) {
         guard settings.hiddenSpecialEntryIDs.contains(HiddenSpecialEntryIdentifiers.systemToolsFolder) == false else { return }
         settings.hiddenSpecialEntryIDs.append(HiddenSpecialEntryIdentifiers.systemToolsFolder)
@@ -389,12 +388,12 @@ enum LauncherSettingsPersistence {
 }
 
 extension Notification.Name {
-    /// Posted each time any launcher setting is persisted.
+    /// Fired after settings are persisted.
     static let launcherSettingsDidChange = Notification.Name("LauncherSettingsDidChange")
-    /// Posted when the user requests a reset of the saved launcher arrangement.
+    /// Fired when arrangement reset is requested.
     static let launcherArrangementResetRequested = Notification.Name("LauncherArrangementResetRequested")
-    /// Posted when the user taps "Export backup..." in settings.
+    /// Fired when backup export is requested.
     static let launcherBackupExportRequested = Notification.Name("LauncherBackupExportRequested")
-    /// Posted when the user taps "Restore backup..." in settings.
+    /// Fired when backup import is requested.
     static let launcherBackupImportRequested = Notification.Name("LauncherBackupImportRequested")
 }

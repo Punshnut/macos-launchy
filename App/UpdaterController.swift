@@ -64,6 +64,7 @@ final class UpdaterController: NSObject, SPUStandardUserDriverDelegate, SPUUpdat
         }
     }
 
+    /// Heuristically identifies Sparkle-owned windows by their runtime class prefixes.
     private func isSparkleWindow(_ window: NSWindow) -> Bool {
         let className = NSStringFromClass(type(of: window))
         return className.hasPrefix("SPU") || className.hasPrefix("SU")

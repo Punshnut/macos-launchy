@@ -3,6 +3,7 @@ import AppKit
 
 /// Maps modifier+key combinations to page indices so keyboard shortcuts can jump between pages.
 enum LauncherPageShortcuts {
+    /// Resolves Ctrl+number (main keyboard or keypad) into a zero-based page index.
     static func pageIndex(for event: NSEvent) -> Int? {
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         let filteredModifiers = modifiers.subtracting([.numericPad, .function, .capsLock])
@@ -10,6 +11,7 @@ enum LauncherPageShortcuts {
         return pageIndex(for: event.keyCode)
     }
 
+    /// Maps known numeric key codes to page indexes.
     static func pageIndex(for keyCode: UInt16) -> Int? {
         let primary: [UInt16: Int] = [
             18: 0, // 1
@@ -39,7 +41,7 @@ enum LauncherPageShortcuts {
     }
 }
 
-/// Invisible AppKit host that captures scroll wheel events so users can page through the launcher with gestures.
+/// Invisible AppKit host that captures scroll-wheel paging gestures.
 struct ScrollWheelPagerOverlay: NSViewRepresentable {
     var isEnabled: Bool
     var pagingOrientation: PagingOrientation = .horizontal
@@ -56,6 +58,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         let isPrecise: Bool
     }
 
+    /// Creates the AppKit coordinator that owns event monitors.
     func makeCoordinator() -> Coordinator {
         Coordinator(
             pagingOrientation: pagingOrientation,
@@ -66,6 +69,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         )
     }
 
+    /// Creates a transparent host view used to scope event handling to this window.
     func makeNSView(context: Context) -> PagerPassthroughView {
         let view = PagerPassthroughView()
         view.coordinator = context.coordinator
@@ -73,12 +77,14 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         return view
     }
 
+    /// Propagates SwiftUI state changes into the coordinator.
     func updateNSView(_ nsView: PagerPassthroughView, context: Context) {
         context.coordinator.hostView = nsView
         context.coordinator.isEnabled = isEnabled
         context.coordinator.pagingOrientation = pagingOrientation
     }
 
+    /// Tears down local monitors when the overlay leaves the hierarchy.
     static func dismantleNSView(_ nsView: PagerPassthroughView, coordinator: Coordinator) {
         coordinator.stopMonitoring()
     }
@@ -118,6 +124,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             self.onNextPage = onNextPage
         }
 
+        /// Installs a local scroll monitor once.
         func startMonitoringIfNeeded() {
             guard scrollMonitor == nil else { return }
             let token = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] event in
@@ -129,6 +136,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             }
         }
 
+        /// Removes installed monitors and resets gesture state.
         func stopMonitoring() {
             scrollMonitor?.invalidate()
             scrollMonitor = nil
@@ -187,6 +195,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             }
         }
 
+        /// Dispatches page navigation callback for resolved direction.
         private func trigger(_ direction: PageDirection) {
             switch direction {
             case .next:
@@ -196,6 +205,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             }
         }
 
+        /// Clears in-progress scroll gesture tracking.
         private func resetState() {
             hasActivePagedScroll = false
         }
@@ -220,6 +230,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             fatalError("init(coder:) has not been implemented")
         }
 
+        /// Binds monitor lifetime to the host view's window attachment.
         override func viewDidMoveToWindow() {
             super.viewDidMoveToWindow()
             if window != nil {
@@ -231,13 +242,14 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             }
         }
 
+        /// Allows pointer events to pass through to underlying content.
         override func hitTest(_ point: NSPoint) -> NSView? {
             nil
         }
     }
 }
 
-/// Captures left/right arrow key presses (when not typing) to trigger page changes and optionally swallows Escape.
+/// Captures arrow keys for paging and optionally handles Escape.
 struct KeyPressPagerOverlay: NSViewRepresentable {
     var isEnabled: Bool
     var shouldCaptureArrowKeys: () -> Bool = { true }
@@ -253,6 +265,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
         case down
     }
 
+    /// Creates the keyboard coordinator handling arrow/page shortcut events.
     func makeCoordinator() -> Coordinator {
         Coordinator(
             shouldCaptureArrowKeys: shouldCaptureArrowKeys,
@@ -265,6 +278,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
         )
     }
 
+    /// Creates an invisible AppKit view used to scope keyboard interception.
     func makeNSView(context: Context) -> KeyCaptureView {
         let view = KeyCaptureView()
         view.coordinator = context.coordinator
@@ -272,11 +286,13 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
         return view
     }
 
+    /// Updates coordinator wiring and enabled state from SwiftUI.
     func updateNSView(_ nsView: KeyCaptureView, context: Context) {
         context.coordinator.hostView = nsView
         context.coordinator.isEnabled = isEnabled
     }
 
+    /// Stops key monitors when SwiftUI tears down the representable.
     static func dismantleNSView(_ nsView: KeyCaptureView, coordinator: Coordinator) {
         coordinator.stopMonitoring()
     }
@@ -328,6 +344,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             self.onVerticalNavigation = onVerticalNavigation
         }
 
+        /// Installs key down/up local monitors once.
         func startMonitoringIfNeeded() {
             if keyDownMonitor == nil {
                 let token = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
@@ -347,6 +364,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             }
         }
 
+        /// Removes key monitors and cancels any key-repeat timer.
         func stopMonitoring() {
             keyDownMonitor?.invalidate()
             keyUpMonitor?.invalidate()
@@ -355,6 +373,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             stopRepeating()
         }
 
+        /// Handles page shortcuts, arrow navigation, and Escape capture.
         private func handleKeyDown(_ event: NSEvent) -> NSEvent? {
             guard isEnabled else { return event }
             guard let view = hostView, view.window != nil else { return event }
@@ -390,6 +409,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             return nil
         }
 
+        /// Stops repeat behavior when relevant navigation keys are released.
         private func handleKeyUp(_ event: NSEvent) -> NSEvent? {
             if event.keyCode == Self.escapeKeyCode {
                 guard shouldHandleEscape() else { return event }
@@ -406,6 +426,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             return nil
         }
 
+        /// Starts hold-to-repeat for the supplied navigation direction.
         private func beginRepeating(_ direction: ArrowDirection) {
             stopRepeating()
             trigger(direction)
@@ -413,6 +434,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             startTimer()
         }
 
+        /// Routes directional input to horizontal/vertical navigation callbacks.
         private func trigger(_ direction: ArrowDirection) {
             switch direction {
             case .previous:
@@ -426,6 +448,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             }
         }
 
+        /// Creates and registers a repeating timer on the main run loop.
         private func startTimer() {
             let timer = Timer(timeInterval: repeatInterval, repeats: true) { [weak self] _ in
                 Task { @MainActor [weak self] in
@@ -436,6 +459,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             RunLoop.main.add(timer, forMode: .common)
         }
 
+        /// Fires one repeat tick when navigation is still active.
         private func fireRepeat() {
             guard isEnabled, let direction = repeatingDirection else {
                 stopRepeating()
@@ -444,6 +468,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             trigger(direction)
         }
 
+        /// Stops repeat timer, optionally only for a specific direction.
         private func stopRepeating(for direction: ArrowDirection? = nil) {
             if let direction, repeatingDirection != direction {
                 return
@@ -499,6 +524,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             fatalError("init(coder:) has not been implemented")
         }
 
+        /// Starts/stops keyboard monitoring with window attachment lifecycle.
         override func viewDidMoveToWindow() {
             super.viewDidMoveToWindow()
             if window != nil {
@@ -510,6 +536,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             }
         }
 
+        /// Keeps this overlay non-interactive for pointer hit-testing.
         override func hitTest(_ point: NSPoint) -> NSView? {
             nil
         }

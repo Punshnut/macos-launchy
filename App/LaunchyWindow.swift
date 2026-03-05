@@ -53,6 +53,7 @@ final class LauncherWindowController: NSWindowController {
     /// Centers the floaty panel window and constrains it to the visible screen area.
     private static let floatyTopExtension: CGFloat = 82
 
+    /// Computes a centered floaty-panel frame clamped to the visible bounds of the target screen.
     private static func floatyFrame(for size: NSSize, on screen: NSScreen?) -> NSRect {
         guard let screen = screen ?? NSScreen.main else {
             return NSRect(origin: .zero, size: size)
@@ -116,7 +117,7 @@ final class LauncherWindowController: NSWindowController {
         }
     }
 
-    /// Brings the launcher onscreen, re-anchoring it to the active display and coordinating focus/entrance animations.
+    /// Presents launcher window on the active display and runs entrance behavior.
     func presentWindow(skipEntranceAnimation: Bool = false) {
         guard let window else { return }
         LaunchyLogger.log("LauncherWindowController presentWindow: start mode=\(launcherMode) visible=\(window.isVisible) skip=\(skipEntranceAnimation)")
@@ -167,7 +168,7 @@ final class LauncherWindowController: NSWindowController {
         launcherMode
     }
 
-    /// Keeps the window anchored to the screen under the cursor before presenting it so the launcher feels tied to context.
+    /// Repositions window to the screen under the cursor before presentation.
     private func updateFrameForPreferredScreenIfNeeded() {
         guard let window else { return }
         let targetScreen = ScreenProvider.screenUnderMouseOrMain()
@@ -250,7 +251,7 @@ final class LauncherWindowController: NSWindowController {
     }
 }
 
-/// Non-activating floating panel used for the "floaty" launcher mode.
+/// Non-activating floating panel for the "floaty" launcher mode.
 final class FloatyLauncherWindow: NSPanel {
     static let entranceSlideOffset: CGFloat = 32
 
@@ -338,6 +339,7 @@ final class FloatyLauncherWindow: NSPanel {
         }
     }
 
+    /// Consumes page shortcut equivalents so NSPanel does not emit default error beeps.
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
         if LauncherPageShortcuts.pageIndex(for: event) != nil {
             return true
@@ -389,6 +391,7 @@ final class FullscreenLauncherWindow: NSWindow {
         }
     }
 
+    /// Consumes page shortcut equivalents so fullscreen mode behaves like floaty mode.
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
         if LauncherPageShortcuts.pageIndex(for: event) != nil {
             return true

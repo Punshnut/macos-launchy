@@ -205,6 +205,7 @@ struct IntroductionWindow: View {
         .padding(.vertical, 24)
     }
 
+    /// Renders the prominent hero card shown for each onboarding step.
     private func heroCard(for step: IntroStep) -> some View {
         ZStack(alignment: .topLeading) {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
@@ -251,6 +252,7 @@ struct IntroductionWindow: View {
         .frame(minHeight: 156)
     }
 
+    /// Displays concise bullet points explaining the current intro step.
     private func bulletList(for step: IntroStep) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             ForEach(step.bullets) { bullet in
@@ -345,6 +347,7 @@ struct IntroductionWindow: View {
         onFinish?()
     }
 
+    /// Applies rounded/translucent styling to the intro host window.
     private func updateWindowChrome(for window: NSWindow?) {
         guard let window else { return }
         window.isOpaque = false
@@ -428,11 +431,13 @@ final class IntroductionWindowController: NSWindowController {
         NSApp.activate(ignoringOtherApps: true)
     }
 
+    /// Centers intro window on preferred screen while preserving current size.
     private func center(window: NSWindow) {
         let frame = centeredFrame(for: window.frame.size)
         window.setFrame(frame, display: false)
     }
 
+    /// Computes a centered frame on the preferred display for the provided size.
     private func centeredFrame(for size: NSSize) -> NSRect {
         guard let screen = ScreenProvider.screenUnderMouseOrMain() ?? NSScreen.main else {
             return NSRect(origin: .zero, size: size)

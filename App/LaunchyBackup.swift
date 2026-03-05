@@ -50,6 +50,7 @@ enum LauncherBackupLayoutResolver {
         return normalized.isEmpty ? densePageSizes(for: itemCount, pageCapacity: pageCapacity) : normalized
     }
 
+    /// Produces fully packed page sizes without intentional gaps.
     private static func densePageSizes(for itemCount: Int, pageCapacity: Int) -> [Int] {
         var remaining = itemCount
         var sizes: [Int] = []
@@ -61,6 +62,7 @@ enum LauncherBackupLayoutResolver {
         return sizes
     }
 
+    /// Normalizes imported page sizes so totals match item count and each page respects capacity.
     private static func normalize(_ sizes: [Int], itemCount: Int, pageCapacity: Int) -> [Int] {
         var normalized = sizes.compactMap { value -> Int? in
             let bounded = min(max(value, 0), pageCapacity)

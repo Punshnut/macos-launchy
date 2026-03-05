@@ -13,20 +13,24 @@ struct PageReorderDropDelegate: DropDelegate {
     /// Soft debounce to avoid rapid-fire page hopping while dragging.
     private static let minSwitchInterval: TimeInterval = 1.0
 
+    /// Intentionally ignores hover entry; paging only happens on final drop.
     func dropEntered(info: DropInfo) {
         // Intentionally no-op to avoid premature page jumps while hovering.
     }
 
+    /// Advertises move semantics while dragging over page targets.
     func dropUpdated(info: DropInfo) -> DropProposal? {
         return DropProposal(operation: .move)
     }
 
+    /// Commits a page-level reorder and clears drag state.
     func performDrop(info: DropInfo) -> Bool {
         handleDropUpdate(info, isFinal: true)
         draggedItem = nil
         return true
     }
 
+    /// Moves the dragged item to the target page insertion slot with a debounce gate.
     private func handleDropUpdate(_ info: DropInfo, isFinal: Bool) {
         guard isFinal, let draggedItem else { return }
         guard pageCapacity > 0 else { return }
@@ -68,12 +72,14 @@ struct GridReorderDropDelegate: DropDelegate {
     var performLiveReorder: (LauncherItem, Int) -> Int?
     var onModifierStateChange: ((Bool) -> Void)?
 
+    /// Captures modifier state early so folder-merge previews appear immediately.
     func dropEntered(info: DropInfo) {
         let modifiersActive = shouldSuppressReorder()
         onModifierStateChange?(modifiersActive)
         handleHover(info)
     }
 
+    /// Continuously updates hover affordances and optional live reordering.
     func dropUpdated(info: DropInfo) -> DropProposal? {
         let modifiersActive = shouldSuppressReorder()
         onModifierStateChange?(modifiersActive)
@@ -82,6 +88,7 @@ struct GridReorderDropDelegate: DropDelegate {
         return DropProposal(operation: .move)
     }
 
+    /// Clears transient hover/reorder state when leaving the grid.
     func dropExited(info: DropInfo) {
         onModifierStateChange?(false)
         onFolderSnapPreviewChange(nil)
@@ -89,6 +96,7 @@ struct GridReorderDropDelegate: DropDelegate {
         lastLiveReorderTargetIndex.wrappedValue = nil
     }
 
+    /// Finalizes either reorder or folder-merge behavior based on modifiers/target.
     func performDrop(info: DropInfo) -> Bool {
         defer {
             draggedItem = nil
@@ -142,6 +150,7 @@ struct GridReorderDropDelegate: DropDelegate {
         return true
     }
 
+    /// Updates folder-hover and modifier-driven preview state while dragging.
     private func handleHover(_ info: DropInfo) {
         updateFolderSnapPreview(for: info)
         // Keep grid stable while hovering; no live reordering or folder auto-creation.
@@ -224,6 +233,7 @@ struct GridReorderDropDelegate: DropDelegate {
         return baseCount
     }
 
+    /// Resolves a pointer location into the absolute insertion index for the current page.
     private func targetIndex(for location: CGPoint) -> Int {
         let linearIndex = linearIndex(for: location)
         let pageEndIndex = pageStartIndex + effectivePageItemCount
@@ -233,6 +243,7 @@ struct GridReorderDropDelegate: DropDelegate {
         return min(pageStartIndex + linearIndex, items.count)
     }
 
+    /// Returns whether the pointer is over an empty grid slot beyond current item count.
     private func isLocationInEmptySlot(_ location: CGPoint) -> Bool {
         linearIndex(for: location) >= effectivePageItemCount
     }
@@ -245,6 +256,7 @@ struct GridReorderDropDelegate: DropDelegate {
         return linearIndex <= lastIndexInPage ? linearIndex : nil
     }
 
+    /// Computes the visible cell index under the pointer for the active page.
     private func indexInCurrentPage(for location: CGPoint) -> Int? {
         let location = adjustedLocation(location)
         let columns = layout.columnsPerPage
@@ -286,10 +298,12 @@ struct GridReorderDropDelegate: DropDelegate {
         return max(min(pageItemCount, available), 0)
     }
 
+    /// Converts 2D grid coordinates into a page-local linear index.
     private func linearIndexInPage(row: Int, column: Int) -> Int {
         row * layout.columnsPerPage + column
     }
 
+    /// Converts an absolute item index into a page-local index when visible.
     private func indexInCurrentPage(forAbsoluteIndex index: Int) -> Int? {
         let local = index - pageStartIndex
         guard local >= 0, local < boundedPageItemCount else { return nil }
@@ -318,19 +332,23 @@ struct FolderReorderDropDelegate: DropDelegate {
     var onDropEnded: (() -> Void)?
     var lastLiveReorderTargetIndex: Binding<Int?>
 
+    /// Updates live reorder preview immediately when entering folder grid.
     func dropEntered(info: DropInfo) {
         handleDropUpdate(info)
     }
 
+    /// Recomputes folder insertion/reorder target while hovering.
     func dropUpdated(info: DropInfo) -> DropProposal? {
         handleDropUpdate(info)
         return DropProposal(operation: .move)
     }
 
+    /// Clears folder live-reorder target when pointer leaves the drop zone.
     func dropExited(info: DropInfo) {
         lastLiveReorderTargetIndex.wrappedValue = nil
     }
 
+    /// Commits in-folder reorder or inserts external apps into the folder.
     func performDrop(info: DropInfo) -> Bool {
         defer { lastLiveReorderTargetIndex.wrappedValue = nil }
         let app = draggedApp ?? resolveDraggedApp()
@@ -349,6 +367,7 @@ struct FolderReorderDropDelegate: DropDelegate {
         return true
     }
 
+    /// Applies non-committal live reorder updates for folder dragging.
     private func handleDropUpdate(_ info: DropInfo) {
         let target = targetIndex(for: info.location)
         guard lastLiveReorderTargetIndex.wrappedValue != target else { return }
@@ -358,6 +377,7 @@ struct FolderReorderDropDelegate: DropDelegate {
         performLiveReorder(draggedApp, target)
     }
 
+    /// Maps folder-grid pointer position to an absolute insertion index.
     private func targetIndex(for location: CGPoint) -> Int {
         let rows = max(1, Int(ceil(Double(max(pageItemCount, 1)) / Double(columns))))
 
@@ -386,18 +406,22 @@ struct FolderExitDropDelegate: DropDelegate {
     var edgeThreshold: CGFloat
     var onExitDrag: () -> Void
 
+    /// No-op entry point for edge-exit detection delegate.
     func dropEntered(info: DropInfo) {
     }
 
+    /// Keeps move semantics while monitoring edge proximity.
     func dropUpdated(info: DropInfo) -> DropProposal? {
         return DropProposal(operation: .move)
     }
 
+    /// Triggers folder-exit behavior when a drop finishes near container edges.
     func performDrop(info: DropInfo) -> Bool {
         attemptExit(at: info.location)
         return true
     }
 
+    /// Emits exit callback only when pointer is both outside the folder and near container boundaries.
     private func attemptExit(at location: CGPoint) {
         guard activeFrame.isEmpty == false else { return }
         guard activeFrame.contains(location) == false else { return }
@@ -405,6 +429,7 @@ struct FolderExitDropDelegate: DropDelegate {
         onExitDrag()
     }
 
+    /// Tests whether a location is inside the configured edge threshold.
     private func isNearEdge(_ location: CGPoint) -> Bool {
         let threshold = max(edgeThreshold, 0)
         return location.x <= threshold

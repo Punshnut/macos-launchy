@@ -175,6 +175,7 @@ struct SettingsWindow: View {
         .padding(.bottom, 10)
     }
 
+    /// Renders a sidebar tab button with active-state styling.
     private func tabButton(for tab: SettingsTab) -> some View {
         let isSelected = coordinator.activeTab == tab
         return Button {
@@ -697,6 +698,7 @@ struct SettingsWindow: View {
         }
     }
 
+    /// Renders one hide/show row in the hidden apps list.
     private func hiddenEntryRow(entry: HiddenAppsListEntry) -> some View {
         HStack(alignment: .center, spacing: 12) {
             iconView(for: entry)
@@ -728,6 +730,7 @@ struct SettingsWindow: View {
         )
     }
 
+    /// Shows either the discovered app icon or a fallback symbol.
     private func iconView(for entry: HiddenAppsListEntry) -> some View {
         Group {
             if let image = entry.icon {
@@ -813,6 +816,7 @@ struct SettingsWindow: View {
     }
 
     @ViewBuilder
+    /// Builds a consistent clickable link row for the About section.
     private func aboutLinkRow(icon: String, title: String, urlString: String) -> some View {
         if let url = URL(string: urlString) {
             Link(destination: url) {
@@ -1001,6 +1005,7 @@ struct SettingsWindow: View {
         )
     }
 
+    /// Displays app icon artwork in lists with a symbol fallback.
     private func iconView(for app: AppItem) -> some View {
         Group {
             if let image = settingsStore.icon(for: app) {
@@ -1017,6 +1022,7 @@ struct SettingsWindow: View {
         .cornerRadius(6)
     }
 
+    /// Shared translucent card background for list-style settings panes.
     private func glassListBackground(cornerRadius: CGFloat = 22, highlight: Bool = false) -> some View {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
             .fill(.ultraThinMaterial)
@@ -1062,6 +1068,7 @@ struct SettingsWindow: View {
         SettingsWindowHostManager.resize(window: window, for: coordinator.activeTab, animated: false)
     }
 
+    /// Requests tab-specific window sizing through the AppKit bridge.
     private func resizeWindow(for tab: SettingsTab, animated: Bool) {
         SettingsWindowHostManager.resize(window: hostingWindow, for: tab, animated: animated)
     }
@@ -1070,6 +1077,7 @@ struct SettingsWindow: View {
         Color.white.opacity(0.12)
     }
 
+    /// Delegates close/minimize/zoom actions to the host window helper.
     private func performWindowAction(for kind: WindowControlKind) {
         SettingsWindowHostManager.performWindowAction(kind, on: hostingWindow)
     }
@@ -1090,10 +1098,12 @@ struct SettingsWindow: View {
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
     }
 
+    /// Reads bundle display name with a safe fallback for previews/tests.
     private func appDisplayName() -> String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "Launchy"
     }
 
+    /// Formats version/build metadata for the About tab.
     private func versionSummary() -> String {
         let rawVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
             ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
@@ -1101,6 +1111,7 @@ struct SettingsWindow: View {
         return String(format: String(localized: "Version %@"), rawVersion)
     }
 
+    /// Resolves developer attribution text for About.
     private func developerSummary() -> String {
         if let copyright = Bundle.main.object(forInfoDictionaryKey: "NSHumanReadableCopyright") as? String {
             return copyright
@@ -1108,6 +1119,7 @@ struct SettingsWindow: View {
         return String(localized: "Built by the Launchy team")
     }
 
+    /// Retrieves the app icon through AppKit bridge helpers.
     private func applicationIconImage() -> Image? {
         SettingsWindowAppKitBridge.applicationIconImage()
     }
@@ -1249,6 +1261,7 @@ struct WindowControlDot: View {
 // MARK: - Scroll Background Helper
 
 struct GlassListScrollBackground: ViewModifier {
+    /// Wraps tab content in shared panel spacing and transition defaults.
     func body(content: Content) -> some View {
         content
             .background(
@@ -1270,6 +1283,7 @@ struct GlassListScrollBackground: ViewModifier {
 }
 
 extension View {
+    /// Applies platform-correct translucent background for scrolling list sections.
     func glassListScrollBackground() -> some View {
         modifier(GlassListScrollBackground())
     }

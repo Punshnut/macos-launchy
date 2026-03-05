@@ -109,25 +109,30 @@ private final class FolderPreviewCache: @unchecked Sendable {
         self.cache = cache
     }
 
+    /// Applies cache size constraints derived from runtime performance tuning.
     func applyLimits(countLimit: Int, totalCostLimit: Int) {
         cache.countLimit = countLimit
         cache.totalCostLimit = totalCostLimit
     }
 
+    /// Builds deterministic cache key for app preview icon variant.
     func cacheKey(for app: AppItem, dimension: CGFloat, quality: IconRenderQuality) -> String {
         let rounded = Int(dimension.rounded())
         return "\(app.bundleIdentifier)|\(rounded)|\(quality.rawValue)"
     }
 
+    /// Reads cached preview icon for key if available.
     func cachedIcon(for key: String) -> NSImage? {
         cache.object(forKey: key as NSString)
     }
 
+    /// Stores preview icon with a lightweight pixel-based cost estimate.
     func store(_ icon: NSImage, for key: String) {
         let cost = Int(icon.size.width * icon.size.height)
         cache.setObject(icon, forKey: key as NSString, cost: cost)
     }
 
+    /// Marks a warmup token as in-progress and returns false when already running.
     func beginWarmupIfNeeded(token: String) -> Bool {
         lock.lock()
         defer { lock.unlock() }
@@ -138,12 +143,14 @@ private final class FolderPreviewCache: @unchecked Sendable {
         return true
     }
 
+    /// Clears warmup token once asynchronous prewarm pass finishes.
     func finishWarmup(token: String) {
         lock.lock()
         warmupTokens.remove(token)
         lock.unlock()
     }
 
+    /// Clears all cached preview icons and warmup bookkeeping.
     func purge() {
         cache.removeAllObjects()
         lock.lock()
@@ -170,6 +177,7 @@ private struct WiggleMotion: ViewModifier {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @ViewBuilder
+    /// Applies deterministic wiggle transform while active.
     func body(content: Content) -> some View {
         if isActive, reduceMotion == false {
             TimelineView(.periodic(from: .now, by: 1.0 / 60.0)) { context in
@@ -226,7 +234,7 @@ struct LauncherView: View {
     var onVisiblePagesChanged: (([AppItem]) -> Void)?
     /// Callback fired before a page switch to prewarm likely icon work.
     var onPageSwitchPrewarm: (([AppItem]) -> Void)?
-    /// Provides the icon that should be used for a specific app.
+    /// Provides the icon that should be for a specific app.
     var iconProvider: @Sendable (AppItem, CGFloat, IconRenderQuality, CGFloat) -> NSImage? = { app, _, _, _ in app.iconImage }
 
     private var pageCapacity: Int { gridConfiguration.pageCapacity }
@@ -251,7 +259,7 @@ struct LauncherView: View {
         return pixelAlign(min(max(rawTranslation, minTranslation), 0))
     }
 
-    /// Builds the grid layer including empty state, the paged grid, and invisible gesture overlays.
+    /// Builds the main grid layer with pager overlays and empty-state handling.
     @ViewBuilder
     private func launcherGridLayer(layout: LauncherLayoutMetrics, canReorder: Bool) -> some View {
         ZStack {
@@ -302,7 +310,7 @@ struct LauncherView: View {
         .padding(.top, layout.gridVerticalOffset)
     }
 
-    /// Renders the lazy grid pages and wires drag gestures used for swiping between them.
+    /// Renders paged grid content and wires drag/drop state for each page.
     @ViewBuilder
     private func launcherGridPages(
         layout: LauncherLayoutMetrics,
@@ -399,7 +407,7 @@ struct LauncherView: View {
         content.compositingGroup()
     }
 
-    /// Displays a single paged grid of items with drag-and-drop reordering and context menus.
+    /// Renders one launcher page and configures per-page drop targets.
     @ViewBuilder
     private func launcherGridPage(
         layout: LauncherLayoutMetrics,
@@ -550,6 +558,7 @@ struct LauncherView: View {
     }
 
     @ViewBuilder
+    /// Produces visual content for a grid cell (app or folder) including selection/drag affordances.
     private func launcherGridCellContent(
         item: LauncherItem,
         layout: LauncherLayoutMetrics,
@@ -613,6 +622,7 @@ struct LauncherView: View {
         category: "Performance"
     )
 
+    /// Starts a debug-only signpost span and returns its identifier.
     private nonisolated static func beginSignpost(_ name: StaticString) -> OSSignpostID {
         #if DEBUG
         let id = OSSignpostID(log: performanceLog)
@@ -623,6 +633,7 @@ struct LauncherView: View {
         #endif
     }
 
+    /// Ends a previously started debug signpost span.
     private nonisolated static func endSignpost(_ name: StaticString, id: OSSignpostID) {
         #if DEBUG
         guard id != .invalid else { return }
@@ -996,7 +1007,7 @@ struct LauncherView: View {
         }
     }
 
-    /// Builds the full-screen filling layers for either floaty or fullscreen modes.
+    /// Builds container-aware launcher content for the active mode.
     @ViewBuilder
     private func buildLauncherContent(for containerSize: CGSize) -> some View {
         let topInset = fullscreenTopInset(for: containerSize.height)
@@ -1034,7 +1045,7 @@ struct LauncherView: View {
         }
     }
 
-    /// Lays out the gradient background, search controls, and grid stack sized for the current mode.
+    /// Shared root content body for both floaty and fullscreen presentations.
     @ViewBuilder
     private func launcherContentBody(
         layout: LauncherLayoutMetrics,
@@ -1161,7 +1172,7 @@ struct LauncherView: View {
         return max(displayPageSizes.count, 1)
     }
 
-    /// Page count ignoring active search filters, used by context menus.
+    /// Page count ignoring active search filters, for context menus.
     private var fullPageCount: Int {
         guard orderedItems.isEmpty == false else { return 1 }
         return max(activePageSizes(for: orderedItems.count).count, 1)
@@ -1263,10 +1274,12 @@ struct LauncherView: View {
         return until.timeIntervalSinceNow > 0
     }
 
+    /// Resolves an icon using layered caches and the external provider callback.
     private func resolvedIcon(for app: AppItem, dimension: CGFloat, quality: IconRenderQuality) -> NSImage? {
         iconProvider(app, dimension, quality, currentBackingScale())
     }
 
+    /// Chooses baseline icon size/quality for grid rendering.
     private func baseIconRequest(for layout: LauncherLayoutMetrics) -> (dimension: CGFloat, quality: IconRenderQuality) {
         // Keep base icon sizing stable to avoid post-animation icon swaps.
         let scale = currentBackingScale()
@@ -1283,12 +1296,14 @@ struct LauncherView: View {
         return (dimension, quality)
     }
 
+    /// Chooses icon request parameters for compact folder previews.
     private func folderTileIconRequest(for layout: LauncherLayoutMetrics) -> (dimension: CGFloat, quality: IconRenderQuality) {
         // Folder preview icons should not rescale after interactions.
         let scaledDimension = max(layout.iconDimension * 0.6, 34)
         return (scaledDimension, .low)
     }
 
+    /// Retrieves one cached icon used inside folder tile previews.
     private func folderPreviewIcon(for app: AppItem, layout: LauncherLayoutMetrics) -> NSImage? {
         let request = folderTileIconRequest(for: layout)
         let cache = Self.folderPreviewCache
@@ -1303,6 +1318,7 @@ struct LauncherView: View {
         return resolved
     }
 
+    /// Preloads folder preview icons to avoid delayed pop-in when opening folders.
     private func warmFolderPreviewIcons(for folder: FolderItem, layout: LauncherLayoutMetrics) {
         let request = folderTileIconRequest(for: layout)
         let apps = Array(folder.apps.prefix(9))
@@ -1334,21 +1350,25 @@ struct LauncherView: View {
         }
     }
 
+    /// Clears transient folder preview cache when inputs/limits change.
     private func purgeFolderPreviewCache() {
         Self.folderPreviewCache.purge()
     }
 
+    /// Computes icon dimension for deferred high-quality replacement requests.
     private func highQualityRequestDimension(for layout: LauncherLayoutMetrics) -> CGFloat {
         let boosted = max(layout.iconDimension * 1.2, layout.iconDimension)
         return min(boosted, 200)
     }
 
+    /// Starts phase one of page switching (immediate state updates before deferred settle).
     private func beginPageSwitchPhase1() {
         lastPageChangeDate = Date()
         beginPageSwitchAnimation()
         suppressGridAnimation = true
     }
 
+    /// Completes deferred page-switch state after transition delay.
     private func performPageSwitchPhase2() {
         let signpostID = Self.beginSignpost("PageSwitchPhase2")
         bumpHighQualityRequestEpoch(resetPending: true)
@@ -1356,6 +1376,7 @@ struct LauncherView: View {
         Self.endSignpost("PageSwitchPhase2", id: signpostID)
     }
 
+    /// Schedules phase-two page-switch work and coalesces rapid triggers.
     private func schedulePageSwitchPhase2() {
         pageSwitchPhase2Token &+= 1
         let phase2Token = pageSwitchPhase2Token
@@ -1406,6 +1427,7 @@ struct LauncherView: View {
         Self.endSignpost("PageSwitchTrigger", id: completionSignpostID)
     }
 
+    /// Invalidates stale high-quality icon requests by bumping epoch generation.
     private func bumpHighQualityRequestEpoch(resetPending: Bool = false) {
         highQualityRequestEpoch &+= 1
         if resetPending {
@@ -1414,6 +1436,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Drops high-quality icon override cache.
     private func purgeHighQualityOverrides() {
         highQualityIconOverrides.removeAll()
         highQualityIconOrder.removeAll()
@@ -1422,12 +1445,14 @@ struct LauncherView: View {
         bumpHighQualityRequestEpoch(resetPending: true)
     }
 
+    /// Cancels any in-flight deferred high-quality icon fetch work.
     private func cancelPendingHighQualityRequests() {
         pendingHighQualityIconIDs.removeAll()
         delayedHighQualityRequests.removeAll()
         bumpHighQualityRequestEpoch(resetPending: true)
     }
 
+    /// Kicks off page transition animation bookkeeping.
     private func beginPageSwitchAnimation() {
         pageSwitchAnimationToken &+= 1
         let token = pageSwitchAnimationToken
@@ -1583,10 +1608,12 @@ struct LauncherView: View {
         return bounded
     }
 
+    /// Initializes drag/scroll state for folder-internal pager interaction.
     private func folderBeginPagerInteraction(pageWidth: CGFloat) {
         folderPagerViewportWidth = max(pageWidth, 1)
     }
 
+    /// Applies folder pager offset updates from scroll gesture deltas.
     private func handleFolderScrollProgress(deltaX: CGFloat, phase: NSEvent.Phase, momentumPhase: NSEvent.Phase, isPrecise: Bool) {
         guard isFolderGesturePagingEnabled else { return }
         let width = folderPagerViewportWidth
@@ -1610,6 +1637,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Snaps folder pager to nearest page after gesture end/projected momentum.
     private func folderSettlePagerOffset(pageWidth: CGFloat, projectedDelta: CGFloat = 0) {
         guard activeFolder != nil else {
             folderPagerDragOffset = 0
@@ -1684,6 +1712,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Clamps folder pager offset to valid bounds for current page count.
     private func folderClampPagerOffset(_ offset: CGFloat, pageWidth: CGFloat) -> CGFloat {
         let limit = pageWidth * 0.35
         let bounded = max(min(offset, limit), -limit)
@@ -1698,6 +1727,7 @@ struct LauncherView: View {
         return bounded
     }
 
+    /// Computes per-page opacity based on pager offset to soften transitions.
     private func folderPageOpacity(for page: Int, pageWidth: CGFloat) -> Double {
         guard pageWidth > 0 else { return page == activeFolderPage ? 1 : 0 }
         let dragProgress = folderPagerDragOffset / pageWidth
@@ -1706,6 +1736,7 @@ struct LauncherView: View {
         return Double(min(1, visibility))
     }
 
+    /// Clamps folder page index to valid range.
     private func folderClampPageIndex(_ index: Int) -> Int {
         guard activeFolderPageCount > 0 else { return 0 }
         return min(max(index, 0), activeFolderPageCount - 1)
@@ -1729,6 +1760,7 @@ struct LauncherView: View {
         return Double(min(1, visibility))
     }
 
+    /// Computes subtle scale transform for adjacent pages during scrolling.
     private func pageScale(for page: Int, pageSpan: CGFloat) -> CGFloat {
         // Keep pages at full scale during paging to avoid unintended zoom/stacking effects.
         return 1
@@ -1745,6 +1777,7 @@ struct LauncherView: View {
         return [current - 1, current, current + 1].filter { $0 >= 0 && $0 < total }
     }
 
+    /// Flattens mixed launcher items into a simple app list.
     private nonisolated static func collectApps(from items: [LauncherItem]) -> [AppItem] {
         var seen = Set<UUID>()
         var apps: [AppItem] = []
@@ -1763,6 +1796,7 @@ struct LauncherView: View {
         return apps
     }
 
+    /// Triggers icon prewarming for a specific page when eligible.
     private func prewarmPageIfNeeded(_ pageIndex: Int) {
         guard let onPageSwitchPrewarm else { return }
         guard pageCount > 0 else { return }
@@ -1777,17 +1811,20 @@ struct LauncherView: View {
         onPageSwitchPrewarm(apps)
     }
 
+    /// Triggers low-cost prewarm pass for neighboring pages.
     private func prewarmAdjacentPagesIfNeeded() {
         prewarmPageIfNeeded(currentPage - 1)
         prewarmPageIfNeeded(currentPage + 1)
     }
 
+    /// Starts first-page render timing instrumentation once.
     private func beginFirstPageRenderIfNeeded() {
         guard hasRecordedFirstPageRender == false else { return }
         guard firstPageRenderSignpostID == .invalid else { return }
         firstPageRenderSignpostID = Self.beginSignpost("FirstPageRender")
     }
 
+    /// Records first-page render completion marker once content is drawn.
     private func recordFirstPageRenderIfNeeded() {
         guard hasRecordedFirstPageRender == false else { return }
         guard firstPageRenderSignpostID != .invalid else { return }
@@ -1796,6 +1833,7 @@ struct LauncherView: View {
         hasRecordedFirstPageRender = true
     }
 
+    /// Publishes apps visible on active/adjacent pages to external warmup callbacks.
     private func notifyVisiblePagesChanged() {
         guard let onVisiblePagesChanged else { return }
         visiblePagesTask?.cancel()
@@ -1835,6 +1873,7 @@ struct LauncherView: View {
         return flags.contains(.shift) || flags.contains(.option)
     }
 
+    /// Reacts to modifier changes that switch between reorder and merge drag behavior.
     private func handleDragModifierChange(_ active: Bool) {
         guard draggedItem != nil else {
             isDragModifierSnapActive = false
@@ -1853,6 +1892,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Snaps currently dragged item back to captured origin slot.
     private func snapDraggedItemToOrigin() {
         guard
             let draggedItem,
@@ -1866,6 +1906,7 @@ struct LauncherView: View {
         _ = reorderItem(draggedItem, to: originIndex, animated: false)
     }
 
+    /// Captures initial drag index for modifier-triggered snapback.
     private func captureDragOrigin(for item: LauncherItem) {
         dragOriginIndex = orderedItems.firstIndex(of: item)
         isDragModifierSnapActive = false
@@ -1878,7 +1919,7 @@ struct LauncherView: View {
         return app
     }
 
-    /// Moves the dragged app to a new linear position and persists the arrangement.
+    /// Reorders an item with optional animation and page-size updates.
     @discardableResult
     private func reorderItem(
         _ item: LauncherItem,
@@ -1934,7 +1975,7 @@ struct LauncherView: View {
         }
     }
 
-    /// Convenience overload for callers that do not care about swap semantics.
+    /// Convenience reorder entrypoint using default animation behavior.
     @discardableResult
     private func reorderItem(_ item: LauncherItem, to targetIndex: Int) -> Int? {
         reorderItem(item, to: targetIndex, preferSwap: false)
@@ -2035,7 +2076,7 @@ struct LauncherView: View {
         persistOrderChange()
     }
 
-    /// Removes the dragged app from its folder and inserts it into the root grid to continue dragging.
+    /// Lifts an app out of an open folder so it can participate in root-grid drag flow.
     @discardableResult
     private func extractAppFromFolderForDrag() -> LauncherItem? {
         guard let context = folderDragContext else { return nil }
@@ -2294,6 +2335,7 @@ struct LauncherView: View {
         return String(localized: "Page \(currentPage + 1) of \(pageCount)")
     }
 
+    /// Resolves effective page sizes for current item count and fill-gaps mode.
     private func activePageSizes(for itemCount: Int) -> [Int] {
         guard itemCount > 0 else { return [] }
         if fillsGapsAutomatically {
@@ -2303,6 +2345,7 @@ struct LauncherView: View {
         return normalized.isEmpty ? densePageSizes(for: itemCount) : normalized
     }
 
+    /// Produces dense page sizes using current grid capacity.
     private func densePageSizes(for itemCount: Int) -> [Int] {
         guard itemCount > 0, pageCapacity > 0 else { return [] }
         var remaining = itemCount
@@ -2315,6 +2358,7 @@ struct LauncherView: View {
         return sizes
     }
 
+    /// Resolves page target used when inserting/moving items between pages.
     private func resolveTargetPageForInsertion(
         hint: Int?,
         sizes: [Int]
@@ -2329,6 +2373,7 @@ struct LauncherView: View {
         return sizes.count
     }
 
+    /// Normalizes page-size arrays to match item count and grid capacity.
     private func normalizePageSizes(_ raw: [Int], itemCount: Int) -> [Int] {
         guard itemCount > 0, pageCapacity > 0 else { return [] }
 
@@ -2364,12 +2409,14 @@ struct LauncherView: View {
         return normalized
     }
 
+    /// Computes linear start index for a page within page-size partitions.
     private func pageStartIndex(for page: Int, sizes: [Int]) -> Int {
         guard page > 0, sizes.isEmpty == false else { return 0 }
         let safePage = min(page, sizes.count)
         return sizes.prefix(safePage).reduce(0, +)
     }
 
+    /// Locates which page contains a given linear item index.
     private func pageIndex(forLinearIndex index: Int, sizes: [Int]) -> Int? {
         var remaining = index
         for (page, size) in sizes.enumerated() {
@@ -2382,6 +2429,7 @@ struct LauncherView: View {
         return sizes.isEmpty ? nil : sizes.count - 1
     }
 
+    /// Returns insertion index at end of requested page.
     private func insertionIndexForPage(_ page: Int, sizes: [Int]) -> Int {
         guard sizes.isEmpty == false else { return 0 }
         let boundedPage = max(page, 0)
@@ -2392,6 +2440,7 @@ struct LauncherView: View {
         return start + sizes[boundedPage]
     }
 
+    /// Computes insertion index for page-level drop targets.
     private func pageDropInsertionIndex(for page: Int) -> Int {
         LauncherGridConfiguration.insertionIndex(
             for: page,
@@ -2400,6 +2449,7 @@ struct LauncherView: View {
         )
     }
 
+    /// Returns updated page sizes after removing one item from a page/index.
     private func pageSizesAfterRemoval(
         _ sizes: [Int],
         removingIndex: Int,
@@ -2423,6 +2473,7 @@ struct LauncherView: View {
         return updated
     }
 
+    /// Returns updated page sizes after inserting one item into a target page/index.
     private func pageSizesAfterInsertion(
         _ sizes: [Int],
         insertingIndex: Int,
@@ -2443,6 +2494,7 @@ struct LauncherView: View {
         return trimTrailingEmptyPages(updated)
     }
 
+    /// Removes trailing zero-sized pages.
     private func trimTrailingEmptyPages(_ sizes: [Int]) -> [Int] {
         var mutable = sizes
         while let last = mutable.last, last == 0 {
@@ -2451,6 +2503,7 @@ struct LauncherView: View {
         return mutable
     }
 
+    /// Persists current item ordering and optional explicit page sizes.
     private func persistOrderChange(using updatedSizes: [Int]? = nil) {
         let normalized = updatedSizes
             ?? (fillsGapsAutomatically ? densePageSizes(for: orderedItems.count) : normalizePageSizes(pageSizes, itemCount: orderedItems.count))
@@ -2491,6 +2544,7 @@ struct LauncherView: View {
         cachedFilteredItems
     }
 
+    /// Debounces expensive search metadata rebuild work.
     private func scheduleSearchMetadataRebuild(for items: [LauncherItem]) {
         searchMetadataTask?.cancel()
         let snapshot = items
@@ -2511,6 +2565,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Applies asynchronously computed search results on main actor state.
     private func applySearchResults(_ results: [LauncherItem]) {
         cachedFilteredItems = results
         if pendingSearchPageReset {
@@ -2524,6 +2579,7 @@ struct LauncherView: View {
         notifyVisiblePagesChanged()
     }
 
+    /// Debounces query-driven filtering updates.
     private func scheduleSearchUpdate() {
         searchDebounceTask?.cancel()
         searchDebounceTask = nil
@@ -2546,6 +2602,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Recomputes filtered launcher items based on current query/metadata.
     private func updateFilteredItems(using itemsOverride: [LauncherItem]? = nil) {
         searchDebounceTask?.cancel()
         searchDebounceTask = nil
@@ -2610,6 +2667,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Cancels pending search and metadata tasks.
     private func cancelSearchTasks() {
         searchDebounceTask?.cancel()
         searchDebounceTask = nil
@@ -2617,6 +2675,7 @@ struct LauncherView: View {
         searchTask = nil
     }
 
+    /// Pure filtering/sorting implementation for background search tasks.
     nonisolated private static func filterItems(
         items: [LauncherItem],
         queryContext: SearchQueryContext,
@@ -2680,6 +2739,7 @@ struct LauncherView: View {
         return buckets.flatMap { $0 }
     }
 
+    /// Scores app matches for ranking (higher is better).
     nonisolated private static func appMatchScore(
         _ app: AppItem,
         queryContext: SearchQueryContext,
@@ -2696,6 +2756,7 @@ struct LauncherView: View {
         return app.matches(query: queryContext.normalizedQuery) ? 4 : nil
     }
 
+    /// Builds reusable normalized search metadata from launcher items.
     nonisolated private static func buildSearchMetadata(from items: [LauncherItem]) -> (
         apps: [UUID: SearchableAppEntry],
         folders: [UUID: SearchableFolderEntry]
@@ -2722,6 +2783,7 @@ struct LauncherView: View {
         return (apps: appMetadata, folders: folderMetadata)
     }
 
+    /// Converts app model into normalized search entry payload.
     nonisolated private static func buildSearchEntry(for app: AppItem) -> SearchableAppEntry {
         let normalizedNames = uniqueSearchValues(from: app.searchableNames.flatMap { normalizedSearchVariants(for: $0) })
             .filter { $0.isEmpty == false }
@@ -2741,12 +2803,14 @@ struct LauncherView: View {
         )
     }
 
+    /// Converts folder model into normalized search entry payload.
     nonisolated private static func buildFolderEntry(for folder: FolderItem) -> SearchableFolderEntry {
         let normalizedNames = uniqueSearchValues(from: normalizedSearchVariants(for: folder.name))
             .filter { $0.isEmpty == false }
         return SearchableFolderEntry(normalizedNames: normalizedNames)
     }
 
+    /// Checks whether folder metadata matches the active query tokens.
     nonisolated private static func folderMatchesQuery(
         _ context: SearchQueryContext,
         folderID: UUID,
@@ -2758,6 +2822,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Computes string/token match score for ranking search hits.
     nonisolated private static func matchScore(
         entry: SearchableAppEntry,
         queryVariants: [String],
@@ -2790,6 +2855,7 @@ struct LauncherView: View {
         return bestScore
     }
 
+    /// Variant scoring for app entries used during query ranking.
     nonisolated private static func matchScore(
         entry: SearchableAppEntry,
         query: String,
@@ -2828,6 +2894,7 @@ struct LauncherView: View {
         return nil
     }
 
+    /// Fast token containment check for exact-token search mode.
     nonisolated private static func tokensMatch(nameTokens: [String], queryTokens: [String]) -> Bool {
         guard queryTokens.isEmpty == false else { return false }
         for queryToken in queryTokens {
@@ -2839,6 +2906,7 @@ struct LauncherView: View {
         return true
     }
 
+    /// Deduplicates candidate search strings while preserving order.
     nonisolated private static func uniqueSearchValues(from values: [String]) -> [String] {
         var seen = Set<String>()
         var unique: [String] = []
@@ -2858,11 +2926,13 @@ struct LauncherView: View {
         return unique
     }
 
+    /// Tokenizes normalized search text into whitespace-separated terms.
     nonisolated fileprivate static func tokenizeSearchValue(_ value: String) -> [String] {
         let parts = value.components(separatedBy: CharacterSet.alphanumerics.inverted)
         return parts.filter { $0.isEmpty == false }
     }
 
+    /// Produces normalized + latinized variants to support multilingual matching.
     nonisolated fileprivate static func normalizedSearchVariants(for value: String) -> [String] {
         let locales = [Locale.current, Locale(identifier: "en_US_POSIX")]
         var variants: [String] = []
@@ -2878,10 +2948,12 @@ struct LauncherView: View {
         return uniqueSearchValues(from: variants)
     }
 
+    /// Applies case/diacritic/width normalization for stable search keys.
     nonisolated private static func normalizeSearchValue(_ value: String, locale: Locale) -> String {
         value.folding(options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive], locale: locale)
     }
 
+    /// Attempts latin transliteration fallback for non-latin scripts.
     nonisolated private static func latinizedSearchValue(_ value: String, locale: Locale) -> String? {
         guard let latin = value.applyingTransform(.toLatin, reverse: false) else { return nil }
         let stripped = latin.applyingTransform(.stripCombiningMarks, reverse: false) ?? latin
@@ -2889,12 +2961,14 @@ struct LauncherView: View {
         return normalized.isEmpty ? nil : normalized
     }
 
+    /// Computes cache key for tokenization/normalization memoization.
     nonisolated fileprivate static func primarySearchCacheKey(for value: String) -> String {
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
         guard trimmed.isEmpty == false else { return "" }
         return normalizeSearchValue(trimmed, locale: .current)
     }
 
+    /// Keeps selected search result index inside current result bounds.
     private func clampSearchSelectionIfNeeded() {
         guard isSearchModeActive else {
             searchSelectionIndex = nil
@@ -2904,6 +2978,7 @@ struct LauncherView: View {
         selectSearchResult(at: index, animated: false)
     }
 
+    /// Re-aligns search selection when current page changes.
     private func alignSearchSelectionWithCurrentPageIfNeeded() {
         guard isSearchModeActive else { return }
         let sizes = displayPageSizes
@@ -2918,6 +2993,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Returns whether a page can accept another item.
     private func pageHasSpace(_ page: Int) -> Bool {
         guard pageCapacity > 0 else { return false }
         let sizes = activePageSizes(for: orderedItems.count)
@@ -2925,6 +3001,7 @@ struct LauncherView: View {
         return sizes[page] < pageCapacity
     }
 
+    /// Determines whether wiggle animation is permitted for an item ID.
     private func shouldAllowWiggle(id: UUID) -> Bool {
         guard isArrangementEditingActive else { return false }
         guard hasActiveSearchQuery == false else { return false }
@@ -2934,6 +3011,7 @@ struct LauncherView: View {
         return true
     }
 
+    /// Determines whether an item should currently wiggle.
     private func shouldWiggle(item: LauncherItem) -> Bool {
         switch item {
         case .app(let app):
@@ -2943,6 +3021,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Produces deterministic wiggle phase/amplitude from item identity.
     private func wiggleMotion(for id: UUID, layout: LauncherLayoutMetrics, isActive: Bool) -> WiggleMotion {
         let seed = Self.wiggleSeed(for: id)
         let dragAttenuation: CGFloat = isReorderDragActive ? 0.6 : 1.0
@@ -2961,6 +3040,7 @@ struct LauncherView: View {
         )
     }
 
+    /// Builds pseudo-random wiggle seed values from stable UUID hash.
     nonisolated private static func wiggleSeed(for id: UUID) -> WiggleSeed {
         let hash = wiggleHash(for: id)
         let phase = wiggleComponent(from: hash, lower: 0, upper: 2 * .pi)
@@ -2969,11 +3049,13 @@ struct LauncherView: View {
         return WiggleSeed(phase: phase, intensity: intensity, rate: rate)
     }
 
+    /// Maps a hash fragment into a numeric range for wiggle parameters.
     nonisolated private static func wiggleComponent(from value: UInt64, lower: Double, upper: Double) -> Double {
         let normalized = Double(value & 0xFFFF) / Double(UInt16.max)
         return lower + (upper - lower) * normalized
     }
 
+    /// Creates deterministic 64-bit hash for wiggle parameter generation.
     nonisolated private static func wiggleHash(for id: UUID) -> UInt64 {
         withUnsafeBytes(of: id.uuid) { raw -> UInt64 in
             let bytes = raw.bindMemory(to: UInt8.self)
@@ -2986,6 +3068,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Computes drag-neighbor transform effect for root grid items.
     private func gridArrangementEffect(for item: LauncherItem) -> ArrangementEffect {
         arrangementEffect(
             isDragged: draggedItem?.id == item.id,
@@ -2993,6 +3076,7 @@ struct LauncherView: View {
         )
     }
 
+    /// Computes drag-neighbor transform effect for items in open folder grid.
     private func folderArrangementEffect(for app: AppItem, in folder: FolderItem) -> ArrangementEffect {
         arrangementEffect(
             isDragged: draggedFolderApp?.id == app.id || currentDraggedApp()?.id == app.id,
@@ -3000,6 +3084,7 @@ struct LauncherView: View {
         )
     }
 
+    /// Converts drag state and neighbor distance into visual transform parameters.
     private func arrangementEffect(isDragged: Bool, neighborDistance: Int?) -> ArrangementEffect {
         if isDragged {
             return ArrangementEffect(
@@ -3020,6 +3105,7 @@ struct LauncherView: View {
         )
     }
 
+    /// Returns Manhattan-like distance from current grid reorder target.
     private func gridNeighborDistance(for id: UUID) -> Int? {
         neighborDistance(
             for: id,
@@ -3028,6 +3114,7 @@ struct LauncherView: View {
         )
     }
 
+    /// Returns distance from current folder reorder target for an app.
     private func folderNeighborDistance(for app: AppItem, in folder: FolderItem) -> Int? {
         neighborDistance(
             for: app.id,
@@ -3036,6 +3123,7 @@ struct LauncherView: View {
         )
     }
 
+    /// Resolves active root-grid reorder target index.
     private func currentGridReorderTargetIndex() -> Int? {
         if let live = lastLiveReorderTargetIndex {
             return live
@@ -3046,6 +3134,7 @@ struct LauncherView: View {
         return dragOriginIndex
     }
 
+    /// Resolves active reorder target index inside the open folder.
     private func currentFolderReorderTargetIndex(for folder: FolderItem) -> Int? {
         if let live = folderLiveReorderTargetIndex {
             return live
@@ -3068,7 +3157,7 @@ struct LauncherView: View {
         return abs(currentIndex - targetIndex)
     }
 
-    /// Picks either the discovered icon or the fallback system glyph.
+    /// Wraps icon rendering with per-item effects and fallback handling.
     @ViewBuilder
     private func iconView(
         for item: LauncherItem,
@@ -3084,6 +3173,7 @@ struct LauncherView: View {
     }
 
     @ViewBuilder
+    /// Resolves icon image for app cells with quality escalation.
     private func iconForApp(
         _ app: AppItem,
         layout: LauncherLayoutMetrics,
@@ -3128,6 +3218,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Builds the complete app/folder cell chrome.
     private func iconCell(
         for item: LauncherItem,
         layout: LauncherLayoutMetrics,
@@ -3154,6 +3245,7 @@ struct LauncherView: View {
     }
 
     @ViewBuilder
+    /// Draws selection overlay for keyboard/search/multi-select states.
     private func selectionHighlight(for item: LauncherItem, layout: LauncherLayoutMetrics, isSelected: Bool) -> some View {
         let opacity = isSelected ? 0.92 : 0
         let lineWidth = isSelected ? 2.4 : 0
@@ -3167,6 +3259,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Renders floating highlight tile for selected search result.
     private func searchSelectionTile(layout: LauncherLayoutMetrics) -> some View {
         let size = searchSelectionTileSize(for: layout)
         let cornerRadius = searchSelectionCornerRadius(for: layout)
@@ -3195,6 +3288,7 @@ struct LauncherView: View {
         .animation(.easeInOut(duration: 0.18), value: activeSearchSelectionIndex)
     }
 
+    /// Computes search selection tile size from active layout metrics.
     private func searchSelectionTileSize(for layout: LauncherLayoutMetrics) -> CGSize {
         let widthPadding = max(layout.iconDimension * 0.42, 32)
         let heightPadding = max(layout.iconDimension * 0.62, 48)
@@ -3204,10 +3298,12 @@ struct LauncherView: View {
         )
     }
 
+    /// Computes corner radius for search selection tile.
     private func searchSelectionCornerRadius(for layout: LauncherLayoutMetrics) -> CGFloat {
         max(layout.iconDimension * 0.34, 18)
     }
 
+    /// Indicates whether item/index pair is the active search selection.
     private func isSearchResultSelected(item: LauncherItem, globalIndex: Int) -> Bool {
         guard isSearchModeActive else { return false }
         guard case .app = item else { return false }
@@ -3225,6 +3321,7 @@ struct LauncherView: View {
             .shadow(color: .black.opacity(0.18), radius: 10, y: 6)
     }
 
+    /// Shows stacked preview when dragging multiple selected items.
     private func multiSelectionDragPreview(layout: LauncherLayoutMetrics) -> some View {
         let stackItems = Array(selectedLauncherItems.prefix(4))
         let offsetStep: CGFloat = layout.iconDimension * 0.06
@@ -3317,7 +3414,7 @@ struct LauncherView: View {
         }
     }
 
-    /// Shows a single tiny app icon inside the folder preview grid.
+    /// Renders folder cell including preview icons and title.
     @ViewBuilder
     private func folderTile(
         for app: AppItem,
@@ -3351,6 +3448,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Chooses currently displayable icon for app tile (base or high-quality override).
     private func displayIcon(for app: AppItem, layout: LauncherLayoutMetrics) -> NSImage? {
         // Prefer any cached high-quality icon to avoid visible swaps when entering wiggle/drag.
         if let detailed = highQualityIconOverrides[app.id] {
@@ -3360,6 +3458,7 @@ struct LauncherView: View {
         return resolvedIcon(for: app, dimension: request.dimension, quality: request.quality) ?? app.iconImage
     }
 
+    /// Schedules deferred high-quality icon request for visible app tiles.
     private func requestHighQualityIconIfNeeded(for app: AppItem, layout: LauncherLayoutMetrics) {
         guard highQualityIconOverrides[app.id] == nil else { return }
         guard delayedHighQualityRequests.contains(app.id) == false else { return }
@@ -3414,6 +3513,7 @@ struct LauncherView: View {
     }
 
     @MainActor
+    /// Stores high-quality icon override and updates recency bookkeeping.
     private func recordHighQualityIcon(_ icon: NSImage, for id: UUID) {
         guard highQualityIconOverrides[id] == nil else { return }
         withAnimation(.easeInOut(duration: 0.16)) {
@@ -3424,6 +3524,7 @@ struct LauncherView: View {
     }
 
     @MainActor
+    /// Evicts least-recently-used high-quality overrides when cache exceeds limit.
     private func trimHighQualityIconCacheIfNeeded() {
         let overflow = highQualityIconOverrides.count - highQualityIconCacheLimit
         guard overflow > 0 else { return }
@@ -3434,7 +3535,7 @@ struct LauncherView: View {
         highQualityIconOrder.removeFirst(min(overflow, highQualityIconOrder.count))
     }
 
-    /// Renders a standard title for either an app or folder.
+    /// Returns title view for either app or folder items.
     @ViewBuilder
     private func appOrFolderTitleView(for item: LauncherItem) -> some View {
         Text(item.displayName)
@@ -3474,7 +3575,7 @@ struct LauncherView: View {
         .scaleEffect(renamingAppID == app.id ? 1.0 : 0.98)
     }
 
-    /// Renders the folder title and allows inline editing when tapped.
+    /// Renders folder title with in-place rename affordances.
     @ViewBuilder
     private func folderTitleView(for folder: FolderItem) -> some View {
         if isEditingFolderName {
@@ -3512,6 +3613,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Computes folder overlay geometry and paging constraints.
     private func folderOverlayLayout(for folder: FolderItem, containerSize: CGSize, layout: LauncherLayoutMetrics) -> FolderOverlayLayout {
         let spacing: CGFloat = launcherMode == .floaty ? 18 : 20
         let titleToGridSpacing: CGFloat = launcherMode == .floaty ? 14 : 16
@@ -3540,6 +3642,7 @@ struct LauncherView: View {
         let preferredCap = launcherMode == .fullscreen ? 8 : 6
         let softMaxColumns = max(3, min(maxColumnsByWidth, preferredCap))
 
+        /// Estimates folder grid content height for a candidate column count.
         func gridContentHeight(for columns: Int) -> CGFloat {
             let perPageCount = min(folder.apps.count, max(columns, 1) * maxRows)
             return folderGridHeight(for: perPageCount, columns: max(columns, 1), spacing: spacing, layout: layout, maxRows: maxRows)
@@ -3575,6 +3678,7 @@ struct LauncherView: View {
         )
     }
 
+    /// Computes content height for folder grid based on rows/spacing and text chrome.
     private func folderGridHeight(for appCount: Int, columns: Int, spacing: CGFloat, layout: LauncherLayoutMetrics, maxRows: Int) -> CGFloat {
         guard columns > 0 else { return 0 }
         let rowsNeeded = Int(ceil(Double(max(appCount, 1)) / Double(columns)))
@@ -3584,6 +3688,7 @@ struct LauncherView: View {
         return CGFloat(rows) * cellHeight + spacingTotal
     }
 
+    /// Splits folder apps into per-page chunks for overlay pager.
     private func folderPages(for folder: FolderItem, overlayLayout: FolderOverlayLayout) -> [[AppItem]] {
         let capacity = max(overlayLayout.pageCapacity, 1)
         guard capacity > 0 else { return [folder.apps] }
@@ -3601,6 +3706,7 @@ struct LauncherView: View {
         return pages.isEmpty ? [apps] : pages
     }
 
+    /// Returns fixed vertical chrome for folder cells (title + spacing).
     private func folderCellChromeHeight() -> CGFloat {
         let labelHeight = folderLabelLineHeight()
         let padding: CGFloat = 12 // .padding(.vertical, 6)
@@ -3608,17 +3714,20 @@ struct LauncherView: View {
         return labelHeight * 2 + padding + spacing
     }
 
+    /// Returns line height for folder cell labels.
     private func folderLabelLineHeight() -> CGFloat {
         let font = NSFont.systemFont(ofSize: 14, weight: .medium)
         return font.ascender - font.descender + font.leading
     }
 
+    /// Returns title row height used in folder overlay.
     private func folderTitleHeight() -> CGFloat {
         let font = NSFont.systemFont(ofSize: 22, weight: .semibold)
         let lineHeight = font.ascender - font.descender + font.leading
         return lineHeight + 10 // accounts for the extra .padding(.top, 8)
     }
 
+    /// Insets for folder overlay card content.
     private func folderContentInsets() -> EdgeInsets {
         switch launcherMode {
         case .floaty:
@@ -3628,14 +3737,17 @@ struct LauncherView: View {
         }
     }
 
+    /// Insets applied around folder grid pages.
     private func folderGridInsets() -> EdgeInsets {
         EdgeInsets(top: 6, leading: 10, bottom: 8, trailing: 10)
     }
 
+    /// Minimum folder cell width derived from icon size and label allowance.
     private func folderMinCellWidth(for layout: LauncherLayoutMetrics) -> CGFloat {
         max(layout.iconDimension + 28, 110)
     }
 
+    /// Synchronizes active folder page count and clamps selected page if needed.
     private func updateActiveFolderPageCount(_ count: Int) {
         let bounded = max(count, 1)
         if activeFolderPageCount != bounded {
@@ -3649,6 +3761,7 @@ struct LauncherView: View {
     }
 
     @ViewBuilder
+    /// Renders folder pager controls for multi-page folders.
     private func folderPager(currentPage: Int, totalPages: Int) -> some View {
         HStack(spacing: 12) {
             Button {
@@ -3697,6 +3810,7 @@ struct LauncherView: View {
     }
 
     @ViewBuilder
+    /// Shared dot indicator row for root/folder pagers.
     private func pagerDots(
         currentPage: Int,
         totalPages: Int,
@@ -3749,6 +3863,7 @@ struct LauncherView: View {
     }
 
     @ViewBuilder
+    /// Renders root-grid pager controls and gesture affordances.
     private func gridPager(canReorder: Bool, layout: LauncherLayoutMetrics) -> some View {
         let totalPages = pageCount
         let dotsTotal = max(totalPages, 1)
@@ -3827,6 +3942,7 @@ struct LauncherView: View {
     }
 
     @ViewBuilder
+    /// Builds one pager chevron button with repeat-on-hold behavior.
     private func pagerChevronButton(
         systemName: String,
         disabled: Bool,
@@ -3913,12 +4029,14 @@ struct LauncherView: View {
             )
         }
 
+        /// Starts hold tracking and triggers first action immediately.
         private func triggerFromPress() {
             guard didTriggerOnPress == false else { return }
             didTriggerOnPress = true
             action()
         }
 
+        /// Finalizes press action on release when hold timer did not already fire.
         private func triggerIfNeededFromRelease() {
             guard disabled == false else { return }
             guard didTriggerOnPress == false else {
@@ -3930,7 +4048,7 @@ struct LauncherView: View {
         }
     }
 
-    /// Lays out the folder contents with a Launchpad-inspired grid that supports reordering.
+    /// Renders current folder page grid with drag/drop support.
     @ViewBuilder
     private func folderGrid(
         for folder: FolderItem,
@@ -4045,6 +4163,7 @@ struct LauncherView: View {
     }
 
     @ViewBuilder
+    /// Builds one app cell inside folder overlay grid.
     private func folderGridCellContent(
         app: AppItem,
         layout: LauncherLayoutMetrics,
@@ -4090,6 +4209,7 @@ struct LauncherView: View {
     }
 
     @ViewBuilder
+    /// Pager wrapper for folder grid pages.
     private func folderGridPager(
         for folder: FolderItem,
         layout: LauncherLayoutMetrics,
@@ -4138,7 +4258,7 @@ struct LauncherView: View {
         .frame(height: overlayLayout.gridHeight)
     }
 
-    /// Displays a blurred overlay showing a folder's contents with Launchpad-inspired styling.
+    /// Renders the full folder overlay card and interaction layers.
     @ViewBuilder
     private func folderOverlay(for folder: FolderItem, layout: LauncherLayoutMetrics) -> some View {
         GeometryReader { proxy in
@@ -4430,16 +4550,19 @@ struct LauncherView: View {
         return nil
     }
 
+    /// Resolves current backing scale with safe fallback.
     private func currentBackingScale() -> CGFloat {
         PerformanceCapabilityLayer.shared.screenScale(for: hostingWindow()?.screen)
     }
 
+    /// Aligns values to physical pixel boundaries to reduce blur.
     private func pixelAlign(_ value: CGFloat) -> CGFloat {
         let scale = currentBackingScale()
         guard scale > 0 else { return value }
         return (value * scale).rounded(.toNearestOrAwayFromZero) / scale
     }
 
+    /// Applies adaptive runtime tuning limits based on active display capability.
     private func applyPerformanceTuningIfNeeded() {
         let screen = hostingWindow()?.screen
         let capability = PerformanceCapabilityLayer.shared.capabilities(for: screen)
@@ -4452,6 +4575,7 @@ struct LauncherView: View {
         lastPerformanceCapability = capability
     }
 
+    /// Accumulates scroll delta for coalesced page navigation processing.
     private func queueScrollDelta(_ delta: CGFloat, pageSpan: CGFloat) {
         guard delta != 0 else { return }
         pendingScrollDelta += delta
@@ -4469,6 +4593,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Applies buffered scroll deltas to page offset and navigation state.
     private func applyPendingScrollDelta(pageSpan: CGFloat) {
         scrollUpdateScheduled = false
         let delta = pendingScrollDelta
@@ -4478,11 +4603,13 @@ struct LauncherView: View {
         lastPagerDragDate = Date()
     }
 
+    /// Forces immediate application of buffered scroll deltas.
     private func flushPendingScrollDelta(pageSpan: CGFloat) {
         guard pendingScrollDelta != 0 || scrollUpdateScheduled else { return }
         applyPendingScrollDelta(pageSpan: pageSpan)
     }
 
+    /// Finalizes scroll gesture and settles to nearest page.
     private func endScrollGesture(pageSpan: CGFloat) {
         let signpostID = Self.beginSignpost("PagerInputEnd")
         flushPendingScrollDelta(pageSpan: pageSpan)
@@ -4521,6 +4648,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Handles vertical keyboard navigation depending on current context.
     private func handleVerticalNavigation(_ direction: KeyPressPagerOverlay.VerticalArrowDirection) {
         if isVerticalPaging {
             if activeFolder != nil {
@@ -4535,11 +4663,13 @@ struct LauncherView: View {
         handleVerticalArrowNavigation(direction)
     }
 
+    /// Handles vertical paging when search mode is not active.
     private func handleVerticalArrowNavigation(_ direction: KeyPressPagerOverlay.VerticalArrowDirection) {
         guard isSearchModeActive else { return }
         navigateSearchResultsVertically(direction)
     }
 
+    /// Moves search selection horizontally through result set.
     private func navigateSearchResults(_ direction: PageShiftDirection) {
         guard filteredItemList.isEmpty == false else { return }
         if activeSearchSelectionIndex == nil {
@@ -4554,6 +4684,7 @@ struct LauncherView: View {
         selectSearchResult(at: nextIndex)
     }
 
+    /// Moves search selection vertically by grid row stride.
     private func navigateSearchResultsVertically(_ direction: KeyPressPagerOverlay.VerticalArrowDirection) {
         guard filteredItemList.isEmpty == false else { return }
         let columns = gridConfiguration.columnsPerPage
@@ -4571,6 +4702,7 @@ struct LauncherView: View {
         selectSearchResult(at: nextIndex)
     }
 
+    /// Initializes search selection index when navigating from empty state.
     private func createSearchSelectionIfNeeded(seedIndex: Int) {
         guard isSearchModeActive else { return }
         guard filteredItemList.isEmpty == false else { return }
@@ -4580,6 +4712,7 @@ struct LauncherView: View {
         selectSearchResult(at: bounded)
     }
 
+    /// Selects and reveals a search result index.
     private func selectSearchResult(at index: Int, animated: Bool = true) {
         guard isSearchModeActive else { return }
         let bounded = min(max(index, 0), filteredItemList.count - 1)
@@ -4611,6 +4744,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Jumps folder overlay to a specific page with clamping and animation.
     private func jumpToActiveFolderPage(_ targetPage: Int) {
         guard activeFolder != nil else { return }
         guard activeFolderPageCount > 0 else { return }
@@ -4705,6 +4839,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Schedules staged folder-icon wave animation toggles.
     private func scheduleFolderIconWaveToggle(_ value: Bool, delay: TimeInterval, animated: Bool) {
         folderIconWaveWorkItem?.cancel()
         let workItem = DispatchWorkItem { [self] in
@@ -4724,12 +4859,14 @@ struct LauncherView: View {
         }
     }
 
+    /// Seeds animation flags before presenting folder overlay.
     private func primeFolderOverlayOpenAnimation() {
         withTransaction(Transaction(animation: nil)) {
             folderOverlayOpenProgress = 0
         }
     }
 
+    /// Defers clearing folder-preview match highlight to smooth transient state changes.
     private func scheduleFolderPreviewMatchRelease(for folderID: UUID?) {
         folderPreviewReleaseWorkItem?.cancel()
         folderPreviewReleaseWorkItem = nil
@@ -4749,6 +4886,7 @@ struct LauncherView: View {
         )
     }
 
+    /// Cancels pending delayed folder-preview highlight release.
     private func cancelFolderPreviewMatchRelease() {
         folderPreviewReleaseWorkItem?.cancel()
         folderPreviewReleaseWorkItem = nil
@@ -4863,10 +5001,12 @@ struct LauncherView: View {
             )
         }
 
+        /// Builds dark blur material for fullscreen and dark states.
         private func darkBlurBackground() -> VisualEffectBackground {
             blurBackground(material: .hudWindow, preferredAppearance: .vibrantDark)
         }
 
+        /// Builds light blur material for light-mode variants.
         private func lightBlurBackground() -> VisualEffectBackground {
             blurBackground(
                 material: .menu,
@@ -4929,7 +5069,7 @@ struct LauncherView: View {
             )
     }
 
-    /// Inserts the top spacer only when fullscreen mode is active.
+    /// Spacer used to reserve header/search area in fullscreen mode.
     @ViewBuilder
     private func fullscreenSpacer(height: CGFloat) -> some View {
         if height > 0 {
@@ -4963,7 +5103,7 @@ struct LauncherView: View {
         }
     }
 
-    /// Chooses the right search bar variant based on the launcher mode.
+    /// Renders search bar and mode-specific trailing controls.
     @ViewBuilder
     private func searchBar(layout: LauncherLayoutMetrics) -> some View {
         if launcherMode == .floaty {
@@ -4983,6 +5123,7 @@ struct LauncherView: View {
         searchFieldBody(layout: layout, isFloaty: true)
     }
 
+    /// Builds text field row for search with mode-aware sizing.
     private func searchFieldBody(layout: LauncherLayoutMetrics, isFloaty: Bool) -> some View {
         TextField(String(localized: "Search"), text: $searchText)
             .textFieldStyle(.plain)
@@ -5011,6 +5152,7 @@ struct LauncherView: View {
             .environment(\.colorScheme, searchBarColorSchemeOverride())
     }
 
+    /// Returns layered search-field background visuals.
     private func searchFieldBackground(isFloaty: Bool, layout: LauncherLayoutMetrics) -> some View {
         let shape = RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous)
         return Group {
@@ -5056,6 +5198,7 @@ struct LauncherView: View {
     }
 
     @ViewBuilder
+    /// Renders trailing decoration stack for search bar.
     private func searchBarTrailingDecorations() -> some View {
         ZStack(alignment: .trailing) {
             Button {
@@ -5110,6 +5253,7 @@ struct LauncherView: View {
     }
 
     @ViewBuilder
+    /// Leading search icon and context glyphs for search field.
     private func searchIconStack(isEmpty: Bool) -> some View {
         ZStack {
             Image(systemName: "ellipsis.circle")
@@ -5137,6 +5281,7 @@ struct LauncherView: View {
         .animation(searchBarIconTransition, value: showSearchLoadingIndicator)
     }
 
+    /// Toggles multi-select mode from search/control area.
     private func multiSelectToggleControl() -> some View {
         Button {
             toggleMultiSelectMode()
@@ -5158,6 +5303,7 @@ struct LauncherView: View {
         .help(isMultiSelectModeActive ? String(localized: "Exit multi-select mode") : String(localized: "Enter multi-select mode"))
     }
 
+    /// Toggles expansion state for compact search controls.
     private func toggleSearchControlsExpansion() {
         guard searchText.isEmpty else { return }
         let shouldExpand = !searchControlsExpanded
@@ -5167,6 +5313,7 @@ struct LauncherView: View {
         updateSearchControlsExpansion(to: shouldExpand)
     }
 
+    /// Applies expanded/collapsed state and related animation bookkeeping.
     private func updateSearchControlsExpansion(to expanded: Bool) {
         withAnimation(.none) {
             searchControlsExpanded = expanded
@@ -5178,6 +5325,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Enters or exits multi-selection mode.
     private func toggleMultiSelectMode() {
         if isMultiSelectModeActive {
             exitMultiSelectMode()
@@ -5190,6 +5338,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Schedules automatic collapse of expanded control tray.
     private func scheduleExpansionAutoCollapse() {
         guard isMultiSelectModeActive == false else { return }
         cancelExpansionAutoCollapse()
@@ -5201,11 +5350,13 @@ struct LauncherView: View {
         }
     }
 
+    /// Cancels pending auto-collapse timer/task.
     private func cancelExpansionAutoCollapse() {
         expansionAutoCollapseTask?.cancel()
         expansionAutoCollapseTask = nil
     }
 
+    /// Clears multi-select state and exits selection mode.
     private func exitMultiSelectMode() {
         isMultiSelectModeActive = false
         multiSelectedItemIDs.removeAll()
@@ -5220,6 +5371,7 @@ struct LauncherView: View {
         isMultiSelectModeActive && isPerformingMultiSelectionDrag && selectedLauncherItems.count > 1
     }
 
+    /// Determines whether drag should include current multi-selection set.
     private func shouldStartMultiSelectionDrag(for item: LauncherItem) -> Bool {
         guard isMultiSelectModeActive else { return false }
         guard multiSelectedItemIDs.contains(item.id) else { return false }
@@ -5227,6 +5379,7 @@ struct LauncherView: View {
         return true
     }
 
+    /// Returns launcher-item targets participating in current multi-select action.
     private func multiSelectTargets(for item: LauncherItem) -> [LauncherItem] {
         let selection = selectedLauncherItems
         if isMultiSelectModeActive && selection.isEmpty == false {
@@ -5235,6 +5388,7 @@ struct LauncherView: View {
         return [item]
     }
 
+    /// Returns app-only targets participating in current multi-select action.
     private func multiSelectAppTargets(for item: LauncherItem) -> [AppItem] {
         multiSelectTargets(for: item).compactMap { target in
             if case let .app(app) = target {
@@ -5257,6 +5411,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Checks whether selected apps can be added to target folder.
     private func canAddSelection(to folder: FolderItem) -> Bool {
         guard isMultiSelectModeActive else { return false }
         let selection = selectedLauncherItems.filter { $0.id != folder.id }
@@ -5267,6 +5422,7 @@ struct LauncherView: View {
         selectedAppEntries.count >= 2
     }
 
+    /// Toggles membership of an item in the multi-select set.
     private func toggleSelection(for item: LauncherItem) {
         guard isMultiSelectModeActive else { return }
         if multiSelectedItemIDs.contains(item.id) {
@@ -5381,7 +5537,7 @@ struct LauncherView: View {
         openItem(selection)
     }
 
-    /// Context menu shown for each grid item.
+    /// Context menu for app/folder items with move/rename/group actions.
     @ViewBuilder
     private func itemContextMenu(for item: LauncherItem) -> some View {
         Button(String(localized: "Open")) {
@@ -5448,7 +5604,7 @@ struct LauncherView: View {
         }
     }
 
-    /// Nested menu showing available folders for an app move.
+    /// Context submenu listing destination folders for selected apps.
     @ViewBuilder
     private func folderMoveMenu(for apps: [AppItem]) -> some View {
         let folders = orderedItems.compactMap { item -> FolderItem? in
@@ -5481,6 +5637,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Builds insertion options for creating a new page via move actions.
     private func newPageInsertionOptions(totalPages: Int) -> [PageInsertionOption] {
         let pageCount = max(totalPages, 1)
         var options: [PageInsertionOption] = [
@@ -5514,7 +5671,7 @@ struct LauncherView: View {
         return options
     }
 
-    /// Nested menu listing pages for quick jumps.
+    /// Context submenu for moving an item to existing or new pages.
     @ViewBuilder
     private func pageMoveMenu(for item: LauncherItem) -> some View {
         let totalPages = max(fullPageCount, 1)
@@ -5566,7 +5723,7 @@ struct LauncherView: View {
         }
     }
 
-    /// Context menu for the empty grid background.
+    /// Context menu shown when right-clicking launcher background.
     @ViewBuilder
     private func backgroundContextMenu() -> some View {
         if isMultiSelectModeActive && canCreateFolderFromSelection {
@@ -5719,6 +5876,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Resets temporary rename UI state for both apps and folders.
     private func resetAppRenameState() {
         renamingAppID = nil
         isAppNameFieldFocused = false
@@ -5830,6 +5988,7 @@ struct LauncherView: View {
         persistOrderChange(using: pageSizes)
     }
 
+    /// Moves apps into target folder and persists resulting arrangement.
     private func moveApps(_ apps: [AppItem], toFolderID folderID: UUID) {
         for app in apps {
             moveApp(app, toFolderID: folderID)
@@ -5880,12 +6039,14 @@ struct LauncherView: View {
         persistOrderChange(using: finalSizes)
     }
 
+    /// Moves items to an existing page while preserving relative order.
     private func moveItems(_ items: [LauncherItem], toPage targetPage: Int) {
         for item in items {
             moveItem(item, toPage: targetPage)
         }
     }
 
+    /// Creates a new page and inserts selected targets at the requested insertion point.
     private func moveItemsToNewPage(_ targets: [LauncherItem], atInsertionIndex insertionIndex: Int) {
         guard targets.isEmpty == false else { return }
 
@@ -5985,6 +6146,7 @@ struct LauncherView: View {
         persistOrderChange(using: finalSizes)
     }
 
+    /// Extracts an app from its folder and inserts it onto a target page.
     private func moveAppOutOfFolderToPage(_ item: LauncherItem, targetPage: Int) {
         guard case .app(let app) = item else { return }
         guard let removal = removeAppFromHierarchy(
@@ -6012,12 +6174,14 @@ struct LauncherView: View {
         persistOrderChange(using: finalSizes)
     }
 
+    /// Runs shared cleanup after completing a bulk selection action.
     private func finalizeBulkSelectionAction() {
         guard isMultiSelectModeActive else { return }
         exitMultiSelectMode()
         updateSearchControlsExpansion(to: false)
     }
 
+    /// Creates a folder from current selection and optionally enters rename flow.
     private func createFolderFromSelection(promptForName: Bool) {
         let selection = selectedAppEntries
         guard selection.count >= 2 else { return }
@@ -6042,7 +6206,7 @@ struct LauncherView: View {
         finalizeBulkSelectionAction()
     }
 
-    /// Inserts a launcher item at the end of the requested page slice.
+    /// Inserts item into a page and returns updated normalized page sizes.
     @discardableResult
     private func insert(_ item: LauncherItem, into items: inout [LauncherItem], atPage page: Int) -> [Int] {
         guard pageCapacity > 0 else {
@@ -6104,6 +6268,7 @@ struct LauncherView: View {
         return nil
     }
 
+    /// Finds folder model by ID from mixed launcher items.
     private func folderItem(withID id: UUID, in items: [LauncherItem]) -> FolderItem? {
         for item in items {
             if case let .folder(folder) = item, folder.id == id {
@@ -6118,6 +6283,7 @@ struct LauncherView: View {
         locateApp(app, in: orderedItems)
     }
 
+    /// Locates app either at root or within a folder, returning positional metadata.
     private func locateApp(_ app: AppItem, in items: [LauncherItem]) -> AppLocation? {
         for (index, item) in items.enumerated() {
             switch item {
@@ -6252,6 +6418,7 @@ struct LauncherView: View {
     }
 
     @discardableResult
+    /// Presents alert modally above launcher windows and returns response.
     private func presentModalAlert(_ alert: NSAlert) -> NSApplication.ModalResponse {
         NSApp.activate(ignoringOtherApps: true)
         let alertWindow = alert.window
@@ -6313,6 +6480,7 @@ struct LauncherView: View {
 private struct FolderFramePreference: PreferenceKey {
     static let defaultValue: CGRect = .zero
 
+    /// Preference reduction keeps latest folder frame emitted by subtree.
     static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
         value = nextValue()
     }

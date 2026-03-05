@@ -1,7 +1,7 @@
 import Foundation
 import AppKit
 
-/// Identifiers used for special entries that don’t correspond to individual apps.
+/// Identifiers for special entries that don’t correspond to individual apps.
 /// IDs used to represent auto-generated folders (core services and tools) in settings and persistence.
 enum HiddenSpecialEntryIdentifiers {
     static let coreServicesFolder = "launchy.hidden.core-services-folder"
@@ -59,6 +59,7 @@ struct AppItem: Identifiable, Hashable {
         lhs.id == rhs.id
     }
 
+    /// Hashes solely by stable UUID identity.
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
@@ -76,7 +77,7 @@ struct AppItem: Identifiable, Hashable {
         return normalizedDisplayName
     }
 
-    /// All candidate names used for search and filtering without duplicates.
+    /// All candidate names for search and filtering without duplicates.
     var searchableNames: [String] {
         let candidates = [
             normalizedCustomName,
@@ -126,6 +127,7 @@ struct AppItem: Identifiable, Hashable {
         return trimmed.isEmpty ? displayName : trimmed
     }
 
+    /// Normalizes case/diacritics/width to improve locale-friendly search matching.
     private func normalizedSearchValue(_ value: String) -> String {
         value.folding(options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive], locale: .current)
     }
@@ -169,6 +171,7 @@ enum LauncherItem: Identifiable, Hashable {
         lhs.id == rhs.id
     }
 
+    /// Hashes launcher items by stable identity across enum cases.
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
@@ -214,11 +217,13 @@ enum LauncherMode: String, CaseIterable, Hashable, Codable {
         self = LauncherMode.map(from: rawValue)
     }
 
+    /// Encodes launcher mode raw value for persistence.
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(rawValue)
     }
 
+    /// Maps persisted raw values, including legacy fullscreen aliases.
     private static func map(from rawValue: String?) -> LauncherMode {
         if rawValue == legacyFullscreenRawValue {
             return .fullscreen
@@ -278,6 +283,7 @@ enum IconSizePreference: String, CaseIterable, Hashable, Codable {
         }
     }
 
+    /// Converts slider positions to nearest supported icon size bucket.
     static func fromSliderPosition(_ value: Double) -> IconSizePreference {
         switch Int(value.rounded()) {
         case 0: return .small
@@ -609,6 +615,7 @@ extension LauncherSettings {
         )
     }
 
+    /// Persists full settings payload with explicit coding keys.
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(isVisibleOnAllSpaces, forKey: .isVisibleOnAllSpaces)

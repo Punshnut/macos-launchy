@@ -52,6 +52,7 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
         mediaKey = try container.decodeIfPresent(MediaKey.self, forKey: .mediaKey)
     }
 
+    /// Persists only sanitized fields so restored shortcuts always use supported modifiers.
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(keyCode, forKey: .keyCode)
@@ -103,14 +104,17 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
         )
     }
 
+    /// Public helper for callers that need Launchy's canonical modifier filtering.
     static func sanitizedModifiers(for event: NSEvent) -> NSEvent.ModifierFlags {
         filtered(event.modifierFlags)
     }
 
+    /// Keeps only command/option/shift/control to avoid unstable device-specific flags.
     private static func filtered(_ modifiers: NSEvent.ModifierFlags) -> NSEvent.ModifierFlags {
         modifiers.intersection(relevantModifiers)
     }
 
+    /// Builds localized modifier labels in display order for settings UI.
     private func modifierDisplayParts() -> [String] {
         var parts: [String] = []
         if modifierFlags.contains(.command) {
@@ -128,6 +132,7 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
         return parts
     }
 
+    /// Resolves the key text shown to users, including media key labels.
     private func keyDisplayText() -> String {
         if let mediaKey {
             return mediaKey.displayName
@@ -135,6 +140,7 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
         return keyRepresentation ?? Self.displayName(for: keyCode)
     }
 
+    /// Derives a readable key name from a keyboard event, preserving "Space".
     private static func displayNameForKey(_ event: NSEvent) -> String {
         let trimmed = event.charactersIgnoringModifiers?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         if trimmed.isEmpty {
@@ -146,6 +152,7 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
         return trimmed.uppercased()
     }
 
+    /// Converts a key code into a stable fallback label when event characters are unavailable.
     private static func displayName(for keyCode: UInt32) -> String {
         if let known = keyCodeLabels[keyCode] {
             return known
@@ -159,6 +166,7 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
         return "Key \(keyCode)"
     }
 
+    /// Extracts a media-key press from `.systemDefined` events.
     static func mediaKey(from event: NSEvent) -> MediaKey? {
         guard event.type == .systemDefined, event.subtype.rawValue == 8 else {
             return nil
@@ -309,7 +317,9 @@ enum MediaKey: UInt16, Codable, CaseIterable {
 
 /// Abstraction describing something that can register/unregister a global hotkey.
 protocol HotkeyRegistering {
+    /// Starts listening for the supplied descriptor and invokes `handler` on trigger.
     func beginListening(descriptor: HotkeyDescriptor, handler: @escaping () -> Void) -> Bool
+    /// Stops listening and releases any installed hooks/monitors.
     func endListening()
 }
 
@@ -388,6 +398,7 @@ final class CarbonHotkeyRegistrar: HotkeyRegistering {
         }
     }
 
+    /// Registers a Carbon global hotkey and stores the callback.
     func beginListening(descriptor: HotkeyDescriptor, handler: @escaping () -> Void) -> Bool {
         endListening()
         self.registeredHandler = handler
@@ -417,7 +428,7 @@ final class CarbonHotkeyRegistrar: HotkeyRegistering {
         return true
     }
 
-    /// Unregisters any active hotkey and drops the stored handler.
+    /// Unregisters active Carbon hotkey and drops stored callback.
     func endListening() {
         if let registeredHotKey {
             UnregisterEventHotKey(registeredHotKey)
@@ -427,7 +438,7 @@ final class CarbonHotkeyRegistrar: HotkeyRegistering {
         registeredHandler = nil
     }
 
-    /// Installs the Carbon event handler once so we can respond to presses.
+    /// Installs the Carbon event handler once to respond to presses.
     private func ensureEventHandlerInstalled() -> Bool {
         guard keyboardEventHandler == nil else { return true }
 
@@ -485,6 +496,7 @@ final class MediaHotkeyRegistrar: HotkeyRegistering {
     private var registeredDescriptor: HotkeyDescriptor?
     private var registeredHandler: (() -> Void)?
 
+    /// Registers media-key monitoring using local/global `.systemDefined` event taps.
     func beginListening(descriptor: HotkeyDescriptor, handler: @escaping () -> Void) -> Bool {
         guard descriptor.mediaKey != nil else {
             return false
@@ -506,6 +518,7 @@ final class MediaHotkeyRegistrar: HotkeyRegistering {
         return true
     }
 
+    /// Removes installed media-key monitors and clears registration state.
     func endListening() {
         if let globalMonitor {
             NSEvent.removeMonitor(globalMonitor)
@@ -519,6 +532,7 @@ final class MediaHotkeyRegistrar: HotkeyRegistering {
         registeredHandler = nil
     }
 
+    /// Validates media key + modifiers then invokes the registered callback.
     private func handle(_ event: NSEvent) {
         guard let registeredDescriptor,
               let expectedMediaKey = registeredDescriptor.mediaKey else {
@@ -542,6 +556,7 @@ final class CompositeHotkeyRegistrar: HotkeyRegistering {
     private let mediaRegistrar = MediaHotkeyRegistrar()
     private var isUsingMediaRegistrar = false
 
+    /// Delegates registration to media or Carbon registrar depending on descriptor.
     func beginListening(descriptor: HotkeyDescriptor, handler: @escaping () -> Void) -> Bool {
         endListening()
         if descriptor.mediaKey != nil {
@@ -552,6 +567,7 @@ final class CompositeHotkeyRegistrar: HotkeyRegistering {
         return carbonRegistrar.beginListening(descriptor: descriptor, handler: handler)
     }
 
+    /// Unregisters whichever registrar is currently active.
     func endListening() {
         if isUsingMediaRegistrar {
             mediaRegistrar.endListening()

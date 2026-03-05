@@ -334,6 +334,7 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         }
     }
 
+    /// Builds synthetic toggle rows for auto-generated CoreServices/system-tool folders.
     private func specialFolderEntries() -> [HiddenAppsListEntry] {
         let coreServiceApps = discoveredApps.filter { $0.isCoreServiceApplication }
         guard coreServiceApps.isEmpty == false else { return [] }
@@ -367,6 +368,7 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         return entries
     }
 
+    /// Creates a standardized hidden-list row for a special folder entry.
     private func folderEntry(
         id: String,
         title: String,

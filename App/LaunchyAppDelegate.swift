@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// Coordinates non-SwiftUI lifecycle tasks such as discovery, window management, and menu bar logic.
+/// Handles app lifecycle tasks outside SwiftUI.
 @MainActor
 final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var launcherWindowManager: LauncherWindowController?
@@ -68,7 +68,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private let criticalMemoryThreshold: UInt64 = 850 * 1024 * 1024
     private var lastLauncherVisibilityChange = Date()
 
-    /// Finishes bootstrapping the app by loading settings, refreshing apps, and preparing the window.
+    /// Bootstraps settings, items, and window state.
     func applicationDidFinishLaunching(_ notification: Notification) {
         LaunchyLogger.startup()
         LaunchyLogger.log("applicationDidFinishLaunching")
@@ -102,7 +102,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         showLauncherWindowAfterActivation()
     }
 
-    /// Captures the previously focused app so focus can be restored after showing Launchy.
+    /// Captures previously focused app for later focus restore.
     func applicationWillBecomeActive(_ notification: Notification) {
         guard let frontmost = NSWorkspace.shared.frontmostApplication,
               frontmost.isTerminated == false,
@@ -249,7 +249,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Presents the launcher shortly after launch when floaty is selected so the app does not feel hung.
+    /// Presents floaty launcher shortly after launch.
     private func scheduleFloatyStartupPresentationIfNeeded() {
         guard currentSettings.selectedLauncherMode == .floaty else { return }
 
@@ -271,7 +271,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Observes AppKit updates so we can trim the menu anytime Launchy is active.
+    /// Observes AppKit updates to keep menus trimmed while active.
     private func observeMainMenuChanges() {
         mainMenuUpdateObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.didUpdateNotification,
@@ -285,7 +285,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Listens for Sparkle UI presentation so we can gracefully hide the launcher first.
+    /// Listens for Sparkle UI presentation to hide launcher first.
     private func observeSparkleUpdateNotifications() {
         sparkleUpdateObserver = NotificationCenter.default.addObserver(
             forName: .sparkleWillPresentUpdateUI,
@@ -364,7 +364,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         NotificationCenter.default.post(name: .launcherShouldPurgeVisualCaches, object: nil)
     }
 
-    /// Periodically trims caches while the launcher is idle so the footprint stays bounded over time.
+    /// Periodically trims caches while launcher is idle.
     private func setupMemoryMaintenanceTimer() {
         memoryMaintenanceTimer?.cancel()
         let timer = DispatchSource.makeTimerSource(queue: .main)
@@ -440,7 +440,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         updateActivationPolicy(for: mode, shouldActivate: shouldActivateApp)
 
         // macOS 26.3 can hang while constructing hidden SwiftUI windows during launch.
-        // Defer building until the launcher is actually presented.
         if shouldPresentWindow == false, launcherWindowManager == nil {
             LaunchyLogger.log("applyLauncherMode: deferring hidden window construction")
             preheatIconsForCurrentLayout()
@@ -490,7 +489,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return controller
     }
 
-    /// Presents the launcher window and verifies floaty presentation so the app does not appear hung.
+    /// Presents launcher window and verifies floaty visibility.
     private func presentLauncherWindow(
         skipEntranceAnimation: Bool = false,
         reason: String
@@ -558,7 +557,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Switches to fullscreen mode when floaty fails to surface so users are not stuck with no UI.
+    /// Switches to fullscreen if floaty fails to appear.
     private func fallbackToFullscreenAfterFloatyFailure(trigger: String, window: NSWindow? = nil) {
         guard currentSettings.selectedLauncherMode == .floaty else { return }
 
@@ -716,7 +715,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         )
     }
 
-    /// Handles work that needs to happen after settings mutate elsewhere.
+    /// Reloads settings and applies side effects (mode, refresh, hotkeys, monitoring).
     @MainActor
     private func handleSettingsChange() {
         let previousHidden = Set(currentSettings.hiddenBundleIDs)
@@ -806,6 +805,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return uniqueDirectories(from: directories)
     }
 
+    /// Deduplicates standardized directory paths before wiring file system monitors.
     private func uniqueDirectories(from directories: [URL]) -> [URL] {
         var seen: Set<String> = []
         var unique: [URL] = []
@@ -817,7 +817,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return unique
     }
 
-    /// Clears saved arrangement data and reloads apps from disk.
+    /// Resets saved arrangement while preserving custom names.
     @MainActor
     private func handleArrangementReset(sorting: ArrangementResetSorting = .alphabetical) {
         let preservedNames = customNamesByBundleID(from: orderedItems)
@@ -826,7 +826,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         applyLauncherMode()
     }
 
-    /// Writes the current layout and settings to a user-selected backup file.
+    /// Exports current settings and layout to a `.launchybackup` file.
     @MainActor
     private func exportBackup(presentingFrom window: NSWindow?) {
         hideLauncherIfVisible()
@@ -887,7 +887,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Restores layout and settings from a backup file, filtering out missing apps.
+    /// Imports backup and restores settings/layout, skipping missing apps.
     @MainActor
     private func importBackup(presentingFrom window: NSWindow?) {
         hideLauncherIfVisible()
@@ -929,7 +929,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Applies an imported payload, skipping apps that are not present on disk.
+    /// Applies imported payload and persists reconstructed arrangement.
     @MainActor
     private func applyImportedBackup(_ payload: LauncherBackupPayload) throws {
         guard payload.version <= LauncherBackupPayload.currentVersion else {
@@ -1096,20 +1096,21 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Hides the launcher window if it's currently visible so sheets aren't obscured.
+    /// Hides launcher window when visible so sheets stay unobscured.
     private func hideLauncherIfVisible() {
         if launcherWindowManager?.window?.isVisible == true {
             hideLauncherWindow(restoreFocus: false)
         }
     }
 
+    /// Generates a date-based default filename for manual backup exports.
     private func defaultBackupFilename() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: Date()) + ".launchybackup"
     }
 
-    /// Performs an auto-backup if cadence allows; used by all triggers.
+    /// Performs an auto-backup if cadence allows; for all triggers.
     private func performAutoBackupIfAllowed(reason: String, now: Date = Date()) {
         guard autoBackupManager.shouldCreateBackup(now: now) else {
             LaunchyLogger.log("auto-backup skip (cadence) reason=\(reason) last=\(autoBackupManager.lastAutoBackupDate() ?? .distantPast)")
@@ -1137,7 +1138,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Uses a timestamped filename so multiple automatic backups remain unique.
+    /// Uses timestamped filenames to keep auto-backups unique.
     private func autoBackupFilename(for date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd_HHmmss"
@@ -1174,7 +1175,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         )
     }
 
-    /// Remembers which app was active before the launcher appeared so we can restore focus after hiding.
+    /// Remembers active app before launcher appears.
     private func recordFrontmostApplicationForRestoration() {
         guard let frontmost = NSWorkspace.shared.frontmostApplication,
               frontmost.isTerminated == false else { return }
@@ -1186,7 +1187,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         lastFocusedApplication = frontmost
     }
 
-    /// Tracks the app the user asked to launch so we can bring it forward after the launcher hides.
+    /// Tracks requested app launch for post-hide activation.
     func recordLaunchedApplication(bundleIdentifier: String, application: NSRunningApplication?) {
         pendingLaunchBundleIdentifier = bundleIdentifier
         if let application {
@@ -1198,7 +1199,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Restores focus to either the app being launched or the one that was active before opening Launchy.
+    /// Restores focus to launch target or previous app.
     func focusPreferredApplicationAfterLauncherHides() {
         if activatePendingLaunchIfPossible() {
             return
@@ -1206,6 +1207,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         activateLastFocusedApplicationIfAvailable()
     }
 
+    /// Re-keys launcher window if it is currently visible.
     private func refocusLauncherWindowIfVisible() {
         guard let window = launcherWindowManager?.window, window.isVisible else { return }
         window.makeKeyAndOrderFront(nil)
@@ -1236,16 +1238,18 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         app.activate(options: [.activateAllWindows, .activateIgnoringOtherApps])
     }
 
+    /// Records show timestamp and resets hide-related bookkeeping.
     private func markLauncherDidShow() {
         applicationDiscovery.applyCacheLimitScaling(1)
         lastLauncherVisibilityChange = Date()
     }
 
+    /// Records hide timestamp and performs post-hide housekeeping.
     private func markLauncherDidHide() {
         lastLauncherVisibilityChange = Date()
     }
 
-    /// Ensures the auto-backup directory exists early so later writes cannot fail due to a missing folder.
+    /// Creates the auto-backup directory early so later writes cannot fail.
     private func prepareAutoBackupDirectoryIfNeeded() {
         do {
             _ = try autoBackupManager.autoBackupDirectory()
@@ -1412,7 +1416,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         applicationDiscovery.shrinkCachesForHiddenLauncher()
     }
 
-    /// Warms a tiny set of low/medium icons so the first page appears quickly after reopening.
+    /// Warms a small icon set for faster first-page render.
     private func prefetchMinimalIconsForVisibleLauncher() {
         let limit = pageCapacity()
         let mode = activeLauncherMode()
@@ -1449,7 +1453,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Warms a small, conservative slice of icons before a page switch to avoid first-frame hitches.
+    /// Warms a conservative icon slice before page switches.
     private func prewarmLikelyPageIcons(_ apps: [AppItem]) {
         let uniqueApps = uniqueAppsByBundleID(apps)
         guard uniqueApps.isEmpty == false else { return }
@@ -1475,6 +1479,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         )
     }
 
+    /// Resolves backing scale from launcher window screen or active cursor screen fallback.
     private func launcherScreenScale() -> CGFloat {
         let screen = launcherWindowManager?.window?.screen ?? ScreenProvider.screenUnderMouseOrMain()
         return PerformanceCapabilityLayer.shared.screenScale(for: screen)
@@ -1518,7 +1523,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return Set(expired)
     }
 
-    /// Schedules a timer to re-run discovery once pending removals are past their grace window.
+    /// Schedules rediscovery after pending-removal grace windows expire.
     private func scheduleRemovalConfirmationTimer() {
         removalConfirmationTimer?.cancel()
         removalConfirmationTimer = nil
@@ -1561,7 +1566,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         NSApp.terminate(sender)
     }
 
-    /// Rebuilds the visible items list using the current hidden settings.
+    /// Rebuilds visible launcher items and returns whether content changed.
     @discardableResult
     private func refreshLauncherItems(
         preservingCustomNames names: [String: String] = [:],
@@ -1699,6 +1704,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return didChange
     }
 
+    /// Preheats icon variants for likely-visible content in the active launcher mode.
     private func preheatIconsForCurrentLayout() {
         let mode = activeLauncherMode()
         let dimension = preferredIconRenderDimension(for: mode)
@@ -1720,10 +1726,12 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         )
     }
 
+    /// Flattens root/folder apps into a deduplicated list ordered by on-screen priority.
     private func prioritizedAppsForPrefetch(limit: Int) -> [AppItem] {
         var seen = Set<String>()
         var prioritized: [AppItem] = []
 
+        /// Adds app once while respecting prefetch cap.
         func appendIfNeeded(_ app: AppItem) {
             guard prioritized.count < limit else { return }
             if seen.insert(app.bundleIdentifier).inserted {
@@ -1748,20 +1756,24 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return prioritized
     }
 
+    /// Returns runtime mode override when present, else persisted setting.
     private func activeLauncherMode() -> LauncherMode {
         currentLauncherMode ?? currentSettings.selectedLauncherMode
     }
 
+    /// Computes grid metrics from icon-size preference and launcher mode.
     private func gridConfiguration(for mode: LauncherMode? = nil) -> LauncherGridConfiguration {
         let resolvedMode = mode ?? activeLauncherMode()
         let preference = currentSettings.iconSizePreference.effectivePreference(for: resolvedMode)
         return LauncherGridConfiguration.configuration(for: preference, mode: resolvedMode)
     }
 
+    /// Convenience accessor for grid page capacity in the resolved mode.
     private func pageCapacity(for mode: LauncherMode? = nil) -> Int {
         gridConfiguration(for: mode).pageCapacity
     }
 
+    /// Maps mode and icon-size preference to target icon render dimension.
     private func preferredIconRenderDimension(for mode: LauncherMode) -> CGFloat {
         let effectivePreference = currentSettings.iconSizePreference.effectivePreference(for: mode)
         let base: CGFloat = mode == .floaty ? 102 : 140
@@ -1775,6 +1787,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// Appends one slot to trailing page sizes, opening a new page when needed.
     private func pageSizesAfterAppendingItem(_ sizes: [Int], capacity: Int? = nil) -> [Int] {
         var updated = sizes
         let resolvedCapacity = capacity ?? pageCapacity()
@@ -1795,6 +1808,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return updated
     }
 
+    /// Removes synthesized system folders before persisting arrangement state.
     private func itemsExcludingAutoGeneratedFolders(from items: [LauncherItem]) -> [LauncherItem] {
         items.filter { item in
             if case .folder(let folder) = item {
@@ -1808,6 +1822,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private func customNamesByBundleID(from items: [LauncherItem]) -> [String: String] {
         var names: [String: String] = [:]
 
+        /// Persists only non-empty trimmed custom names.
         func recordName(for app: AppItem) {
             guard let custom = app.customName?.trimmingCharacters(in: .whitespacesAndNewlines),
                   custom.isEmpty == false else { return }
@@ -1923,7 +1938,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         return menu
     }
 
-    /// Adds the arranged apps and folders to the provided menu in alphabetical order.
+    /// Populates menu with launcher items; returns false for placeholder-only.
     @discardableResult
     private func appendLauncherItemsMenu(to menu: NSMenu) -> Bool {
         let sortedItems = dockMenuItems()

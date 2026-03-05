@@ -55,6 +55,7 @@ final class ItemArrangementStore {
             }
         }
 
+        /// Persists enum payload using an explicit discriminator for forward compatibility.
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             switch self {
@@ -210,6 +211,7 @@ final class ItemArrangementStore {
         return currentItems.count
     }
 
+    /// Converts in-memory launcher items into persistence records.
     private func persistedItem(from item: LauncherItem) -> PersistedItem {
         switch item {
         case .app(let app):
@@ -230,11 +232,13 @@ final class ItemArrangementStore {
         }
     }
 
+    /// Creates the Launchy Application Support directory if missing.
     private func bootstrapDirectoryIfNeeded(at url: URL) {
         guard fileManager.fileExists(atPath: url.path) == false else { return }
         try? fileManager.createDirectory(at: url, withIntermediateDirectories: true)
     }
 
+    /// Loads current payload format, with fallback support for legacy bundle-order files.
     private func loadPersistedPayload() -> Payload {
         guard let data = try? Data(contentsOf: arrangementURL) else { return Payload(items: [], pageSizes: nil) }
         if let payload = try? JSONDecoder().decode(Payload.self, from: data) {
@@ -248,6 +252,7 @@ final class ItemArrangementStore {
         return Payload(items: [], pageSizes: nil)
     }
 
+    /// Writes the current arrangement snapshot atomically to disk.
     private func saveItems() {
         let payload = Payload(items: cachedItems, pageSizes: cachedPageSizes)
         guard let data = try? JSONEncoder().encode(payload) else { return }
@@ -261,6 +266,7 @@ final class ItemArrangementStore {
         cachedPageSizes = []
     }
 
+    /// Resolves final page sizes based on fill-gaps mode and normalized persisted values.
     private func resolvedPageSizes(
         storedSizes: [Int],
         itemCount: Int,
@@ -275,6 +281,7 @@ final class ItemArrangementStore {
         return normalized.isEmpty ? densePageSizes(for: itemCount, pageCapacity: pageCapacity) : normalized
     }
 
+    /// Packs items densely into pages of `pageCapacity`.
     private func densePageSizes(for itemCount: Int, pageCapacity: Int) -> [Int] {
         guard itemCount > 0, pageCapacity > 0 else { return [] }
         var remaining = itemCount
@@ -287,6 +294,7 @@ final class ItemArrangementStore {
         return sizes
     }
 
+    /// Appends one item to the last page or starts a new trailing page as needed.
     private func appendNewItem(atEndOf pageSizes: inout [Int], pageCapacity: Int) {
         guard pageCapacity > 0 else {
             if pageSizes.isEmpty {
@@ -306,6 +314,7 @@ final class ItemArrangementStore {
         }
     }
 
+    /// Clamps and rebalances page-size arrays to match exact item count and capacity.
     private func normalizePageSizes(_ sizes: [Int], itemCount: Int, pageCapacity: Int) -> [Int] {
         guard itemCount > 0, pageCapacity > 0 else { return [] }
 

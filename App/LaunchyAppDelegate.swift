@@ -578,10 +578,10 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Adjusts the app's activation policy so the Dock and Spaces behave appropriately for each mode.
-    private func updateActivationPolicy(for _: LauncherMode, shouldActivate: Bool) {
+    private func updateActivationPolicy(for mode: LauncherMode, shouldActivate: Bool) {
         if currentSettings.isDockIconVisible {
             NSApp.setActivationPolicy(.regular)
-            if shouldActivate {
+            if shouldActivate, shouldForceApplicationActivation(for: mode) {
                 NSApp.activate(ignoringOtherApps: true)
             }
         } else {
@@ -1347,11 +1347,17 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Activates the app when the current launcher mode expects a regular foreground experience.
     private func activateApplicationForCurrentModeIfNeeded() {
-        switch currentSettings.selectedLauncherMode {
+        guard shouldForceApplicationActivation(for: currentSettings.selectedLauncherMode) else { return }
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    /// Fullscreen uses a non-activating panel so Stage Manager does not reshuffle other displays.
+    private func shouldForceApplicationActivation(for mode: LauncherMode) -> Bool {
+        switch mode {
         case .floaty:
-            NSApp.activate(ignoringOtherApps: true)
+            true
         case .fullscreen:
-            NSApp.activate(ignoringOtherApps: true)
+            false
         }
     }
 

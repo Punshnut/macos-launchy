@@ -136,8 +136,7 @@ final class LauncherWindowController: NSWindowController {
             prepareForEntranceAnimation(window: window, originalFrame: originalFrame)
         }
 
-        showWindow(nil)
-        window.makeKeyAndOrderFront(nil)
+        bringWindowToFront(window)
         launcherContentHost.view.frame = window.contentView?.bounds ?? originalFrame
         if launcherMode == .floaty {
             window.applyRoundedCorners(radius: 32)
@@ -156,6 +155,18 @@ final class LauncherWindowController: NSWindowController {
             runEntranceAnimation(window: window, originalFrame: originalFrame)
         }
         LaunchyLogger.log("LauncherWindowController presentWindow: done mode=\(launcherMode)")
+    }
+
+    /// Brings the launcher onscreen while minimizing cross-display side effects in fullscreen mode.
+    private func bringWindowToFront(_ window: NSWindow) {
+        switch launcherMode {
+        case .floaty:
+            showWindow(nil)
+            window.makeKeyAndOrderFront(nil)
+        case .fullscreen:
+            window.orderFrontRegardless()
+            window.makeKey()
+        }
     }
 
     /// Replaces the hosted SwiftUI content while keeping the same window instance alive.
@@ -349,13 +360,14 @@ final class FloatyLauncherWindow: NSPanel {
 }
 
 /// Borderless fullscreen window backing the immersive launcher presentation.
-final class FullscreenLauncherWindow: NSWindow {
+final class FullscreenLauncherWindow: NSPanel {
     /// Initializes the window with the minimal chrome needed for fullscreen content.
     init(contentRect: NSRect) {
         super.init(
             contentRect: contentRect,
             styleMask: [
                 .borderless,
+                .nonactivatingPanel,
                 .fullSizeContentView
             ],
             backing: .buffered,
@@ -408,10 +420,17 @@ final class FullscreenLauncherWindow: NSWindow {
         isMovable = false
         hasShadow = false
         isReleasedWhenClosed = false
+        hidesOnDeactivate = false
+        isFloatingPanel = true
+        worksWhenModal = true
+        becomesKeyOnlyIfNeeded = false
         collectionBehavior = [
-            .canJoinAllSpaces,
-            .fullScreenPrimary,
-            .stationary
+            // Keep fullscreen launcher on the invoking space/display instead of cloning across spaces.
+            .moveToActiveSpace,
+            .fullScreenAuxiliary,
+            .stationary,
+            .transient,
+            .ignoresCycle
         ]
         level = .mainMenu
         animationBehavior = .default

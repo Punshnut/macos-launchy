@@ -94,12 +94,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             suppressLauncherRevealOnNextActivation = false
             return
         }
-
-        guard launcherWindowManager?.window?.isVisible != true else {
-            return
-        }
-
-        showLauncherWindowAfterActivation()
     }
 
     /// Captures previously focused app for later focus restore.

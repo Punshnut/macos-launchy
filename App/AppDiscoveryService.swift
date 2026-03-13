@@ -133,6 +133,8 @@ final class AppDiscoveryService {
             }
         }
 
+        let scannedAppsByBundleID = appsByBundleID
+
         let restoredApps = restoredAppsFromCache(
             existingApps: appsByBundleID,
             referenceDate: now,
@@ -148,7 +150,7 @@ final class AppDiscoveryService {
                 appsByBundleID[bundleID] = app
             }
         }
-        updateCachedApps(with: appsByBundleID, seenAt: now)
+        updateCachedApps(withScannedApps: scannedAppsByBundleID, seenAt: now)
 
         let orderedApps: [AppItem]
         if sorting == .alphabetical {
@@ -786,6 +788,11 @@ final class AppDiscoveryService {
 
     /// Keeps recently-missing apps visible while still allowing disk-backed resurrection.
     private func shouldRestore(record: CachedAppRecord, now: Date) -> Bool {
+        shouldKeepMissingRecord(record: record, now: now)
+    }
+
+    /// Retains missing records only while they remain within the temporary restore window.
+    private func shouldKeepMissingRecord(record: CachedAppRecord, now: Date) -> Bool {
         let age = now.timeIntervalSince(record.lastSeen)
         if age <= Self.missingAppRetentionInterval {
             return true
@@ -793,12 +800,17 @@ final class AppDiscoveryService {
         return fileSystem.fileExists(atPath: record.bundlePath)
     }
 
-    /// Updates and persists the on-disk cache with the latest discovered apps.
-    private func updateCachedApps(with apps: [String: AppItem], seenAt: Date) {
+    /// Updates and persists the on-disk cache with apps that were actually seen on disk.
+    private func updateCachedApps(withScannedApps apps: [String: AppItem], seenAt: Date) {
         var updated: [String: CachedAppRecord] = [:]
         for app in apps.values {
             guard let record = cachedRecord(from: app, seenAt: seenAt) else { continue }
             updated[app.bundleIdentifier] = record
+        }
+        for (bundleIdentifier, record) in cachedAppsByBundleID {
+            guard updated[bundleIdentifier] == nil else { continue }
+            guard shouldKeepMissingRecord(record: record, now: seenAt) else { continue }
+            updated[bundleIdentifier] = record
         }
         cachedAppsByBundleID = updated
         persistCachedApps()

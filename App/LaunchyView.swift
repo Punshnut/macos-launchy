@@ -30,6 +30,11 @@ private enum PageShiftDirection {
     case backward
 }
 
+private enum PagerInteractionSource {
+    case drag
+    case scroll
+}
+
 private struct RemovedAppContext {
     var items: [LauncherItem]
     var app: AppItem
@@ -328,6 +333,7 @@ struct LauncherView: View {
             .onChanged { value in
                 guard isGesturePagingEnabled else { return }
                 beginPagerInteraction(pageSpan: pageSpan)
+                lastPagerInteractionSource = .drag
                 lastPagerDragDate = Date()
                 let translation = isVerticalPaging ? value.translation.height : value.translation.width
                 pagerDragOffset = clampPagerOffset(
@@ -353,17 +359,17 @@ struct LauncherView: View {
                 let itemCountOnPage = sizes.indices.contains(pageIndex) ? sizes[pageIndex] : 0
                 let allowHeavyWork = isTransitioning ? (pageIndex == currentPage) : true
 
-        launcherGridPage(
-            layout: layout,
-            pageIndex: pageIndex,
-            pageWidth: pageWidth,
-            pageItems: pageItems,
-            pageStart: pageStart,
-            itemCountOnPage: itemCountOnPage,
-            canReorder: canReorder,
-            gridProxy: gridProxy,
-            allowHeavyWork: allowHeavyWork
-        )
+                launcherGridPage(
+                    layout: layout,
+                    pageIndex: pageIndex,
+                    pageWidth: pageWidth,
+                    pageItems: pageItems,
+                    pageStart: pageStart,
+                    itemCountOnPage: itemCountOnPage,
+                    canReorder: canReorder,
+                    gridProxy: gridProxy,
+                    allowHeavyWork: allowHeavyWork
+                )
                 .opacity(pageOpacity(for: pageIndex, pageSpan: pageSpan))
                 .scaleEffect(pageScale(for: pageIndex, pageSpan: pageSpan))
                 .offset(
@@ -402,6 +408,10 @@ struct LauncherView: View {
         return max(span, 1)
     }
 
+    private var usesCoherentVerticalPagingRenderer: Bool {
+        isVerticalPaging
+    }
+
     @ViewBuilder
     private func pageRenderingWrapper<Content: View>(_ content: Content) -> some View {
         content.compositingGroup()
@@ -420,81 +430,14 @@ struct LauncherView: View {
         gridProxy: GeometryProxy,
         allowHeavyWork: Bool
     ) -> some View {
-        let grid = LazyVGrid(
-            columns: layout.gridColumns,
-            alignment: .center,
-            spacing: layout.iconSpacing
-        ) {
-            ForEach(Array(pageItems.enumerated()), id: \.element.id) { localIndex, item in
-                let globalIndex = pageStart + localIndex
-                let isLaunching = launchingItemID == item.id
-                let isFolderBeingOpened = activeFolder?.id == item.id
-                let isRenamingApp = renamingAppID == item.id
-                let shouldShowSearchSelection = isRenamingApp == false && isSearchResultSelected(item: item, globalIndex: globalIndex)
-
-                let cell = launcherGridCellContent(
-                    item: item,
-                    layout: layout,
-                    isLaunching: isLaunching,
-                    isFolderBeingOpened: isFolderBeingOpened,
-                    isRenamingApp: isRenamingApp,
-                    allowHeavyWork: allowHeavyWork
-                )
-
-                let decoratedCell = cell
-                    .background(alignment: .center) {
-                        if shouldShowSearchSelection {
-                            searchSelectionTile(layout: layout)
-                                .allowsHitTesting(false)
-                                .transition(.opacity)
-                        }
-                    }
-                    .contentShape(Rectangle())
-                    .contextMenu {
-                        itemContextMenu(for: item)
-                    }
-
-                let liftEffect = shouldRasterizeGridPages
-                    ? ArrangementEffect(scale: 1, offset: 0, shadowOpacity: 0, shadowRadius: 0, shadowYOffset: 0)
-                    : gridArrangementEffect(for: item)
-                let animatedCell = decoratedCell
-                    .scaleEffect(liftEffect.scale)
-                    .offset(y: liftEffect.offset)
-                    .shadow(
-                        color: Color.black.opacity(liftEffect.shadowOpacity),
-                        radius: liftEffect.shadowRadius,
-                        y: liftEffect.shadowYOffset
-                    )
-                    .animation(reorderLiftAnimation, value: liftEffect)
-
-                if canReorder && isRenamingApp == false {
-                    if shouldStartMultiSelectionDrag(for: item) {
-                        animatedCell
-                            .onDrag {
-                                enterPerformanceShedding(duration: 0.6)
-                                draggedItem = item
-                                captureDragOrigin(for: item)
-                                isPerformingMultiSelectionDrag = true
-                                return NSItemProvider(object: NSString(string: item.id.uuidString))
-                            } preview: {
-                                multiSelectionDragPreview(layout: layout)
-                            }
-                    } else {
-                        animatedCell
-                            .onDrag {
-                                enterPerformanceShedding(duration: 0.6)
-                                draggedItem = item
-                                captureDragOrigin(for: item)
-                                return NSItemProvider(object: NSString(string: item.id.uuidString))
-                            } preview: {
-                                dragPreview(for: item, layout: layout)
-                            }
-                    }
-                } else {
-                    animatedCell
-                }
-            }
-        }
+        let grid = launcherGridPageContent(
+            layout: layout,
+            pageWidth: pageWidth,
+            pageItems: pageItems,
+            pageStart: pageStart,
+            canReorder: canReorder,
+            allowHeavyWork: allowHeavyWork
+        )
         .transaction { transaction in
             if transaction.animation == nil {
                 transaction.animation = activeGridAnimation
@@ -555,6 +498,153 @@ struct LauncherView: View {
         )
 
         pageRenderingWrapper(grid)
+    }
+
+    @ViewBuilder
+    private func launcherGridPageContent(
+        layout: LauncherLayoutMetrics,
+        pageWidth: CGFloat,
+        pageItems: [LauncherItem],
+        pageStart: Int,
+        canReorder: Bool,
+        allowHeavyWork: Bool
+    ) -> some View {
+        if usesCoherentVerticalPagingRenderer {
+            let columnCount = max(layout.columnsPerPage, 1)
+            let rowCount = max(layout.rowsPerPage, 1)
+            let horizontalSpacing = layout.iconSpacing
+            let verticalSpacing = layout.iconSpacing
+            let cellWidth = max(
+                (pageWidth - horizontalSpacing * CGFloat(max(columnCount - 1, 0))) / CGFloat(columnCount),
+                0
+            )
+            let cellHeight = max(
+                (layout.gridHeight - verticalSpacing * CGFloat(max(rowCount - 1, 0))) / CGFloat(rowCount),
+                0
+            )
+
+            VStack(alignment: .center, spacing: verticalSpacing) {
+                ForEach(0..<rowCount, id: \.self) { rowIndex in
+                    HStack(alignment: .top, spacing: horizontalSpacing) {
+                        ForEach(0..<columnCount, id: \.self) { columnIndex in
+                            let localIndex = rowIndex * columnCount + columnIndex
+
+                            if pageItems.indices.contains(localIndex) {
+                                launcherGridPageItem(
+                                    pageItems[localIndex],
+                                    localIndex: localIndex,
+                                    pageStart: pageStart,
+                                    layout: layout,
+                                    canReorder: canReorder,
+                                    allowHeavyWork: allowHeavyWork
+                                )
+                                .frame(width: cellWidth, height: cellHeight, alignment: .top)
+                            } else {
+                                Color.clear
+                                    .frame(width: cellWidth, height: cellHeight)
+                                    .allowsHitTesting(false)
+                            }
+                        }
+                    }
+                    .frame(height: cellHeight, alignment: .top)
+                }
+            }
+        } else {
+            LazyVGrid(
+                columns: layout.gridColumns,
+                alignment: .center,
+                spacing: layout.iconSpacing
+            ) {
+                ForEach(Array(pageItems.enumerated()), id: \.element.id) { localIndex, item in
+                    launcherGridPageItem(
+                        item,
+                        localIndex: localIndex,
+                        pageStart: pageStart,
+                        layout: layout,
+                        canReorder: canReorder,
+                        allowHeavyWork: allowHeavyWork
+                    )
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func launcherGridPageItem(
+        _ item: LauncherItem,
+        localIndex: Int,
+        pageStart: Int,
+        layout: LauncherLayoutMetrics,
+        canReorder: Bool,
+        allowHeavyWork: Bool
+    ) -> some View {
+        let globalIndex = pageStart + localIndex
+        let isLaunching = launchingItemID == item.id
+        let isFolderBeingOpened = activeFolder?.id == item.id
+        let isRenamingApp = renamingAppID == item.id
+        let shouldShowSearchSelection = isRenamingApp == false && isSearchResultSelected(item: item, globalIndex: globalIndex)
+
+        let cell = launcherGridCellContent(
+            item: item,
+            layout: layout,
+            isLaunching: isLaunching,
+            isFolderBeingOpened: isFolderBeingOpened,
+            isRenamingApp: isRenamingApp,
+            allowHeavyWork: allowHeavyWork
+        )
+
+        let decoratedCell = cell
+            .background(alignment: .center) {
+                if shouldShowSearchSelection {
+                    searchSelectionTile(layout: layout)
+                        .allowsHitTesting(false)
+                        .transition(.opacity)
+                }
+            }
+            .contentShape(Rectangle())
+            .contextMenu {
+                itemContextMenu(for: item)
+            }
+
+        let liftEffect = shouldRasterizeGridPages
+            ? ArrangementEffect(scale: 1, offset: 0, shadowOpacity: 0, shadowRadius: 0, shadowYOffset: 0)
+            : gridArrangementEffect(for: item)
+        let animatedCell = decoratedCell
+            .scaleEffect(liftEffect.scale)
+            .offset(y: liftEffect.offset)
+            .shadow(
+                color: Color.black.opacity(liftEffect.shadowOpacity),
+                radius: liftEffect.shadowRadius,
+                y: liftEffect.shadowYOffset
+            )
+            .animation(reorderLiftAnimation, value: liftEffect)
+
+        if canReorder && isRenamingApp == false {
+            if shouldStartMultiSelectionDrag(for: item) {
+                animatedCell
+                    .onDrag {
+                        enterPerformanceShedding(duration: 0.6)
+                        draggedItem = item
+                        captureDragOrigin(for: item)
+                        isPerformingMultiSelectionDrag = true
+                        return NSItemProvider(object: NSString(string: item.id.uuidString))
+                    } preview: {
+                        multiSelectionDragPreview(layout: layout)
+                    }
+            } else {
+                animatedCell
+                    .onDrag {
+                        enterPerformanceShedding(duration: 0.6)
+                        draggedItem = item
+                        captureDragOrigin(for: item)
+                        return NSItemProvider(object: NSString(string: item.id.uuidString))
+                    } preview: {
+                        dragPreview(for: item, layout: layout)
+                    }
+            }
+        } else {
+            animatedCell
+        }
     }
 
     @ViewBuilder
@@ -761,6 +851,7 @@ struct LauncherView: View {
     @State private var isScrollGestureActive = false
     @State private var pendingScrollDelta: CGFloat = 0
     @State private var scrollUpdateScheduled = false
+    @State private var lastPagerInteractionSource: PagerInteractionSource = .drag
     @State private var queuedPageDelta: Int = 0
     @State private var visiblePagesTask: Task<Void, Never>?
     @State private var prewarmedPageTokens: Set<Int> = []
@@ -1515,6 +1606,7 @@ struct LauncherView: View {
         let width = pagerViewportWidth
         guard width > 0 else { return }
         beginPagerInteraction(pageSpan: width)
+        lastPagerInteractionSource = .scroll
         if isUnderInteractionPressure == false {
             enterPerformanceShedding(duration: 0.55, cancelHeavyWork: false)
         }
@@ -1562,7 +1654,8 @@ struct LauncherView: View {
         }()
 
         var delta = 0
-        let allowDouble = (absVelocity > highVelocityThreshold && absProgress > 0.8) || absProgress > doubleProgressThreshold
+        let allowDouble = lastPagerInteractionSource == .drag
+            && ((absVelocity > highVelocityThreshold && absProgress > 0.8) || absProgress > doubleProgressThreshold)
 
         if allowDouble {
             delta = 2 * directionSign
@@ -1774,7 +1867,35 @@ struct LauncherView: View {
     private func visiblePageIndices(total: Int) -> [Int] {
         guard total > 0 else { return [] }
         let current = clampPageIndex(currentPage)
-        return [current - 1, current, current + 1].filter { $0 >= 0 && $0 < total }
+        guard usesCoherentVerticalPagingRenderer else {
+            return [current - 1, current, current + 1].filter { $0 >= 0 && $0 < total }
+        }
+
+        let isPaging = isPageSwitchAnimationActive || abs(pagerDragOffset) > 0.01 || isScrollGestureActive
+        guard isPaging else {
+            return [current - 1, current, current + 1].filter { $0 >= 0 && $0 < total }
+        }
+
+        let directionalNeighbor: Int? = {
+            if pagerDragOffset > 0.01 {
+                return current - 1
+            }
+            if pagerDragOffset < -0.01 {
+                return current + 1
+            }
+
+            switch pageDirection {
+            case .forward:
+                return current - 1
+            case .backward:
+                return current + 1
+            }
+        }()
+
+        return [directionalNeighbor, current]
+            .compactMap { $0 }
+            .filter { $0 >= 0 && $0 < total }
+            .sorted()
     }
 
     /// Flattens mixed launcher items into a simple app list.
@@ -3358,7 +3479,6 @@ struct LauncherView: View {
         let spacing = max(layout.iconDimension * 0.035, 2)
         let padding = spacing * 1.05
         let tileSize = max(((layout.iconDimension * 0.9) - padding * 2 - spacing * 2) / 3, 9)
-        let columns = Array(repeating: GridItem(.fixed(tileSize), spacing: spacing, alignment: .center), count: 3)
         let isSnapPreviewTarget = folder.id == folderSnapPreviewTargetID
         let disableAnimations = isPageSwitchAnimationActive || abs(pagerDragOffset) > 0.1
         let folderIconAnimation = disableAnimations ? nil : folderOpenAnimation
@@ -3369,14 +3489,21 @@ struct LauncherView: View {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
 
-            LazyVGrid(columns: columns, alignment: .center, spacing: spacing) {
-                ForEach(previews, id: \.id) { app in
-                    folderTile(for: app, layout: layout, allowHeavyWork: allowHeavyWork)
-                        .frame(width: tileSize, height: tileSize)
-                }
-                ForEach(0..<max(0, 9 - previews.count), id: \.self) { _ in
-                    Color.clear
-                        .frame(width: tileSize, height: tileSize)
+            VStack(alignment: .center, spacing: spacing) {
+                ForEach(0..<3, id: \.self) { rowIndex in
+                    HStack(alignment: .top, spacing: spacing) {
+                        ForEach(0..<3, id: \.self) { columnIndex in
+                            let previewIndex = rowIndex * 3 + columnIndex
+
+                            if previews.indices.contains(previewIndex) {
+                                folderTile(for: previews[previewIndex], layout: layout, allowHeavyWork: allowHeavyWork)
+                                    .frame(width: tileSize, height: tileSize)
+                            } else {
+                                Color.clear
+                                    .frame(width: tileSize, height: tileSize)
+                            }
+                        }
+                    }
                 }
             }
             .padding(padding)
@@ -3399,6 +3526,7 @@ struct LauncherView: View {
         .environment(\.colorScheme, colorScheme)
         .animation(nil, value: searchControlsExpanded)
         .animation(nil, value: currentPage)
+        .compositingGroup()
         .transaction { transaction in
             if disableAnimations {
                 transaction.animation = nil
@@ -3442,10 +3570,6 @@ struct LauncherView: View {
         }
         .compositingGroup()
         .animation(nil, value: resolvedIcon?.hash ?? 0)
-        .onAppear {
-            guard allowHeavyWork else { return }
-            requestHighQualityIconIfNeeded(for: app, layout: layout)
-        }
     }
 
     /// Chooses currently displayable icon for app tile (base or high-quality override).

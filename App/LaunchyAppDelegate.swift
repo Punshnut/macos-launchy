@@ -1692,7 +1692,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         orderedItems = arrangedItems
         pageSizes = arrangedSizes
-        let didChange = orderedItems != previousItems || pageSizes != previousPageSizes
+        let didChange = launcherItemsDiffer(previousItems, orderedItems) || pageSizes != previousPageSizes
         LaunchyLogger.log("refreshLauncherItems: totalLauncherItems=\(orderedItems.count), pages=\(pageSizes.count)")
         if shouldPreheatIcons {
             preheatIconsForCurrentLayout()
@@ -1702,6 +1702,50 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             performAutoBackupIfAllowed(reason: "refresh-no-change", now: now)
         }
         return didChange
+    }
+
+    /// Detects meaningful catalog changes even when stable UUID identities are preserved across rescans.
+    private func launcherItemsDiffer(_ lhs: [LauncherItem], _ rhs: [LauncherItem]) -> Bool {
+        guard lhs.count == rhs.count else { return true }
+        return zip(lhs, rhs).contains { previous, current in
+            launcherItemMatches(previous, current) == false
+        }
+    }
+
+    /// Compares launcher-item content instead of relying on identity-only `Equatable`.
+    private func launcherItemMatches(_ lhs: LauncherItem, _ rhs: LauncherItem) -> Bool {
+        switch (lhs, rhs) {
+        case (.app(let lhsApp), .app(let rhsApp)):
+            return appItemMatches(lhsApp, rhsApp)
+        case (.folder(let lhsFolder), .folder(let rhsFolder)):
+            return folderItemMatches(lhsFolder, rhsFolder)
+        default:
+            return false
+        }
+    }
+
+    /// Treats renames and bundle moves as changes so the launcher view refreshes immediately.
+    private func appItemMatches(_ lhs: AppItem, _ rhs: AppItem) -> Bool {
+        lhs.id == rhs.id
+            && lhs.displayName == rhs.displayName
+            && lhs.localizedDisplayName == rhs.localizedDisplayName
+            && lhs.customName == rhs.customName
+            && lhs.bundleIdentifier == rhs.bundleIdentifier
+            && lhs.bundleURL?.path == rhs.bundleURL?.path
+            && lhs.isUserApplication == rhs.isUserApplication
+            && lhs.isCoreServiceApplication == rhs.isCoreServiceApplication
+            && lhs.hasCustomIcon == rhs.hasCustomIcon
+    }
+
+    /// Recursively compares folder names and contents while keeping folder identity stable.
+    private func folderItemMatches(_ lhs: FolderItem, _ rhs: FolderItem) -> Bool {
+        guard lhs.id == rhs.id, lhs.name == rhs.name, lhs.apps.count == rhs.apps.count else {
+            return false
+        }
+
+        return zip(lhs.apps, rhs.apps).allSatisfy { previous, current in
+            appItemMatches(previous, current)
+        }
     }
 
     /// Preheats icon variants for likely-visible content in the active launcher mode.

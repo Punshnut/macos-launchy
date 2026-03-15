@@ -417,6 +417,37 @@ struct LauncherView: View {
         content.compositingGroup()
     }
 
+    @ViewBuilder
+    private func dragEdgePagingOverlay(canReorder: Bool) -> some View {
+        let isEnabled = canReorder && isDragEdgePagingEnabled
+
+        HStack(spacing: 0) {
+            dragEdgePagingZone(pageDelta: -1, isEnabled: isEnabled)
+            Spacer(minLength: 0)
+            dragEdgePagingZone(pageDelta: 1, isEnabled: isEnabled)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .allowsHitTesting(isEnabled)
+    }
+
+    @ViewBuilder
+    private func dragEdgePagingZone(pageDelta: Int, isEnabled: Bool) -> some View {
+        Color.clear
+            .frame(width: dragEdgePagingZoneWidth)
+            .contentShape(Rectangle())
+            .onDrop(
+                of: [.text],
+                delegate: EdgePagingDropDelegate(
+                    pageDelta: pageDelta,
+                    isEnabled: { isEnabled },
+                    onHoverChange: updateDragEdgePaging(for:),
+                    onPerformDrop: { delta in
+                        performDragEdgeDrop(pageDelta: delta)
+                    }
+                )
+            )
+    }
+
     /// Renders one launcher page and configures per-page drop targets.
     @ViewBuilder
     private func launcherGridPage(
@@ -771,6 +802,8 @@ struct LauncherView: View {
     private let pagerButtonHitPadding: CGFloat = 12
     private let pagerButtonHitSize: CGFloat = 44
     private let pagerButtonHitExpansion: CGFloat = 12
+    private let dragEdgePagingInterval: TimeInterval = 1.0
+    private let dragEdgePagingZoneWidth: CGFloat = 56
     private var performanceTuning: PerformanceTuning {
         PerformanceCapabilityLayer.shared.tuning(for: hostingWindow()?.screen)
     }
@@ -861,6 +894,8 @@ struct LauncherView: View {
     @State private var folderPagerViewportWidth: CGFloat = 1
     @State private var folderLastPagerDragDate: Date?
     @State private var pendingDropPage: Int?
+    @State private var activeDragEdgePagingDelta: Int?
+    @State private var dragEdgePagingToken: UInt = 0
     @State private var folderLiveReorderTargetIndex: Int?
     @State private var folderPreviewMatchingDisabled = false
     @State private var lastPerformanceCapability: PerformanceCapability?
@@ -993,6 +1028,7 @@ struct LauncherView: View {
                 return
             }
             if newValue == nil {
+                stopDragEdgePaging()
                 pendingFolderRenameID = nil
                 activeFolderFrame = .zero
                 folderDragContext = nil
@@ -1017,6 +1053,7 @@ struct LauncherView: View {
                 activeFolderPageCount = 0
                 folderLiveReorderTargetIndex = nil
             } else if let folder = newValue {
+                stopDragEdgePaging()
                 lastActiveFolderID = folder.id
                 scheduleFolderIconWaveToggle(false, delay: 0, animated: false)
                 cancelFolderPreviewMatchRelease()
@@ -1035,6 +1072,7 @@ struct LauncherView: View {
         .onChange(of: searchText) { newValue in
             prewarmedPageTokens.removeAll()
             if newValue.isEmpty {
+                stopDragEdgePaging()
                 currentPage = 0
                 pageDirection = .forward
                 pagerDragOffset = 0
@@ -1052,6 +1090,7 @@ struct LauncherView: View {
         }
         .onChange(of: draggedItem) { newItem in
             if newItem == nil {
+                stopDragEdgePaging()
                 folderSnapPreviewTargetID = nil
                 dragOriginIndex = nil
                 dragOriginItemsSnapshot = nil
@@ -1227,6 +1266,8 @@ struct LauncherView: View {
             if let folder = activeFolder ?? closingFolder {
                 folderOverlay(for: folder, layout: layout)
             }
+
+            dragEdgePagingOverlay(canReorder: canReorder)
         }
         .transaction { transaction in
             if isScrollGestureActive {
@@ -1317,6 +1358,14 @@ struct LauncherView: View {
 
     private var isReorderDragActive: Bool {
         draggedItem != nil || draggedFolderApp != nil
+    }
+
+    private var isDragEdgePagingEnabled: Bool {
+        draggedItem != nil
+            && activeFolder == nil
+            && searchText.isEmpty
+            && pageCount > 1
+            && isClosingLauncher == false
     }
 
     private var shouldCaptureArrowKeys: Bool {
@@ -5150,9 +5199,74 @@ struct LauncherView: View {
         }
     }
 
+    /// Starts or stops timed paging while a drag is held against a screen edge.
+    private func updateDragEdgePaging(for delta: Int?) {
+        guard delta != activeDragEdgePagingDelta else { return }
+        stopDragEdgePaging()
+        guard let delta else { return }
+        guard isDragEdgePagingEnabled else { return }
+        guard clampPageIndex(currentPage + delta) != currentPage else { return }
+        activeDragEdgePagingDelta = delta
+        scheduleDragEdgePagingTick(for: delta)
+    }
+
+    /// Cancels any in-flight timed edge-paging callbacks.
+    private func stopDragEdgePaging() {
+        dragEdgePagingToken &+= 1
+        activeDragEdgePagingDelta = nil
+    }
+
+    /// Schedules the next one-page edge scroll after the configured hold interval.
+    private func scheduleDragEdgePagingTick(for delta: Int) {
+        dragEdgePagingToken &+= 1
+        let token = dragEdgePagingToken
+        DispatchQueue.main.asyncAfter(deadline: .now() + dragEdgePagingInterval) { [self] in
+            handleDragEdgePagingTick(token: token, delta: delta)
+        }
+    }
+
+    /// Advances one page while the drag remains pinned to the same edge zone.
+    private func handleDragEdgePagingTick(token: UInt, delta: Int) {
+        guard token == dragEdgePagingToken else { return }
+        guard activeDragEdgePagingDelta == delta else { return }
+        guard isDragEdgePagingEnabled else {
+            stopDragEdgePaging()
+            return
+        }
+
+        let target = clampPageIndex(currentPage + delta)
+        guard target != currentPage else {
+            stopDragEdgePaging()
+            return
+        }
+
+        requestPageShift(delta)
+
+        guard activeDragEdgePagingDelta == delta else { return }
+        scheduleDragEdgePagingTick(for: delta)
+    }
+
     /// Moves to the next page if possible.
     private func pageForward() {
         requestPageShift(1)
+    }
+
+    /// Applies a page-level move when the drag is dropped directly on an edge zone.
+    private func performDragEdgeDrop(pageDelta _: Int) -> Bool {
+        stopDragEdgePaging()
+        guard let draggedItem else { return false }
+
+        let targetPage = clampPageIndex(currentPage)
+        pendingDropPage = targetPage
+        let insertionIndex = pageDropInsertionIndex(for: targetPage)
+        let finalIndex = reorderItem(
+            draggedItem,
+            to: insertionIndex,
+            targetPageHint: targetPage
+        )
+        updatePageAfterDrop(at: finalIndex)
+        self.draggedItem = nil
+        return true
     }
 
     /// Hides the launcher when the blurred background is clicked.

@@ -246,6 +246,42 @@ struct PageReorderDropDelegate: DropDelegate {
     }
 }
 
+/// Tracks drag hover over a left/right edge zone and relays timed paging control to the parent view.
+struct EdgePagingDropDelegate: DropDelegate {
+    let pageDelta: Int
+    var isEnabled: () -> Bool
+    var onHoverChange: (Int?) -> Void
+    var onPerformDrop: (Int) -> Bool
+
+    /// Starts timed edge paging when a drag enters an eligible zone.
+    func dropEntered(info: DropInfo) {
+        guard isEnabled() else { return }
+        onHoverChange(pageDelta)
+    }
+
+    /// Keeps move semantics active while refreshing hover ownership for the edge zone.
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        guard isEnabled() else {
+            onHoverChange(nil)
+            return nil
+        }
+        onHoverChange(pageDelta)
+        return DropProposal(operation: .move)
+    }
+
+    /// Cancels timed edge paging once the drag leaves the zone.
+    func dropExited(info: DropInfo) {
+        onHoverChange(nil)
+    }
+
+    /// Falls back to a page-level move if the user drops directly on the edge zone.
+    func performDrop(info: DropInfo) -> Bool {
+        defer { onHoverChange(nil) }
+        guard isEnabled() else { return false }
+        return onPerformDrop(pageDelta)
+    }
+}
+
 /// Reorders items as the cursor moves across the grid, so neighbors slide aside in real time.
 struct GridReorderDropDelegate: DropDelegate {
     let layout: LauncherLayoutMetrics

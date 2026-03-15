@@ -82,6 +82,7 @@ struct GridReorderDropDelegate: DropDelegate {
     var dragReferenceItems: () -> [LauncherItem]
     var consumePendingModifierPreviewReset: () -> Bool
     var restoreDraggedLayoutSnapshot: () -> Void
+    var performLiveSwapPreview: (LauncherItem, Int) -> Int?
     var performLiveReorder: (LauncherItem, Int, Bool) -> Int?
     var onModifierStateChange: ((DragModifierMode) -> Void)?
 
@@ -222,9 +223,8 @@ struct GridReorderDropDelegate: DropDelegate {
                 return
             }
             guard lastLiveReorderTargetIndex.wrappedValue != targetItemIndex else { return }
-            restoreDraggedLayoutSnapshot()
             lastLiveReorderTargetIndex.wrappedValue = targetItemIndex
-            _ = performLiveReorder(draggedItem, targetItemIndex, true)
+            _ = performLiveSwapPreview(draggedItem, targetItemIndex)
             return
         }
 

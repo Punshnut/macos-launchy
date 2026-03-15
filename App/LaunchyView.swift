@@ -492,6 +492,13 @@ struct LauncherView: View {
                     return shouldConsume
                 },
                 restoreDraggedLayoutSnapshot: restoreDraggedLayoutSnapshot,
+                performLiveSwapPreview: { item, targetIndex in
+                    previewSwapItem(
+                        item,
+                        to: targetIndex,
+                        animation: liveReorderSpringAnimation
+                    )
+                },
                 performLiveReorder: { item, targetIndex, preferSwap in
                     reorderItem(
                         item,
@@ -1305,7 +1312,7 @@ struct LauncherView: View {
     }
 
     private var isArrangementEditingActive: Bool {
-        isMultiSelectModeActive || draggedItem != nil || isRenamingItem || isEditingFolderName
+        isMultiSelectModeActive || draggedItem != nil || draggedFolderApp != nil || isRenamingItem || isEditingFolderName
     }
 
     private var isReorderDragActive: Bool {
@@ -2065,6 +2072,37 @@ struct LauncherView: View {
         DispatchQueue.main.async {
             forceNoGridAnimationDuringDragReset = false
         }
+    }
+
+    /// Builds an animated two-tile preview swap from the original drag snapshot.
+    @discardableResult
+    private func previewSwapItem(
+        _ item: LauncherItem,
+        to targetIndex: Int,
+        animation: Animation? = nil
+    ) -> Int? {
+        guard let snapshot = dragOriginItemsSnapshot else {
+            return reorderItem(
+                item,
+                to: targetIndex,
+                preferSwap: true,
+                animated: true,
+                animation: animation
+            )
+        }
+        guard let originalIndex = snapshot.firstIndex(of: item) else { return nil }
+        guard snapshot.indices.contains(targetIndex), targetIndex != originalIndex else { return nil }
+
+        var updated = snapshot
+        updated.swapAt(originalIndex, targetIndex)
+
+        withAnimation(animation ?? liveReorderSpringAnimation) {
+            orderedItems = updated
+            if let sizes = dragOriginPageSizesSnapshot {
+                pageSizes = sizes
+            }
+        }
+        return targetIndex
     }
 
     /// Snaps currently dragged item back to captured origin slot.
@@ -3187,6 +3225,8 @@ struct LauncherView: View {
         guard isClosingLauncher == false else { return false }
         guard launchingItemID != id else { return false }
         guard draggedItem?.id != id else { return false }
+        guard draggedFolderApp?.id != id else { return false }
+        guard currentDraggedApp()?.id != id else { return false }
         return true
     }
 

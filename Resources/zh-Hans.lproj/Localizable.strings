@@ -23,7 +23,7 @@
 "Instant search" = "即时搜索";
 "The search bar narrows results as you type, then Enter launches the first match." = "搜索栏会随着输入收窄结果，按回车便能启动首个匹配项。";
 "Rearrange easily" = "轻松重新排列";
-"Drag icons to reorder pages. Hold Option or Shift while dragging to create folders." = "拖动图标即可重新安排页面。拖拽时按住 Option 或 Shift，即可创建文件夹。";
+"Drag icons to reorder pages. Hold Option or Shift while dragging to create folders." = "拖动图标即可重新排列页面。拖拽时按住 Shift 可交换项目位置，按住 Option 可创建文件夹。";
 "Name folders fast" = "快速命名文件夹";
 "Drop onto another app to make a folder, then rename it inline." = "拖到另一个应用即可创建文件夹，随后直接重命名。";
 "Right-click for power" = "右键释放能力";

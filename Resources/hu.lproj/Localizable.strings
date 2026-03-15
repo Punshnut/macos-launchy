@@ -23,7 +23,7 @@
 "Instant search" = "Azonnali keresés";
 "The search bar narrows results as you type, then Enter launches the first match." = "A keresősáv szűkíti a találatokat gépelés közben, majd az Enter elindítja az első egyezést.";
 "Rearrange easily" = "Könnyű átrendezés";
-"Drag icons to reorder pages. Hold Option or Shift while dragging to create folders." = "Húzd az ikonokat az oldalak átrendezéséhez. Mappák létrehozásához húzás közben tartsd lenyomva az Option vagy Shift gombot.";
+"Drag icons to reorder pages. Hold Option or Shift while dragging to create folders." = "Húzd az ikonokat az oldalak átrendezéséhez. Húzás közben tartsd lenyomva a Shiftet az elemek felcseréléséhez, vagy az Optiont mappák létrehozásához.";
 "Name folders fast" = "Gyors mappaelnevezés";
 "Drop onto another app to make a folder, then rename it inline." = "Dobd rá egy másik alkalmazásra, hogy mappát hozz létre, majd nevezd át közvetlenül.";
 "Right-click for power" = "Jobb kattintás a plusz lehetőségekért";

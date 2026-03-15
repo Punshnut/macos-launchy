@@ -460,7 +460,7 @@ struct LauncherView: View {
                 pageItemCount: itemCountOnPage,
                 items: $orderedItems,
                 draggedItem: $draggedItem,
-                shouldSuppressReorder: { isDragReorderSuppressed() },
+                dragModifierMode: { currentDragModifierMode() },
                 performReorder: { item, targetIndex, preferSwap in
                     pendingDropPage = pageIndex
                     return reorderItem(
@@ -485,10 +485,18 @@ struct LauncherView: View {
                     folderSnapPreviewTargetID = previewID
                 },
                 lastLiveReorderTargetIndex: $lastLiveReorderTargetIndex,
-                performLiveReorder: { item, targetIndex in
+                dragReferenceItems: { dragOriginItemsSnapshot ?? orderedItems },
+                consumePendingModifierPreviewReset: {
+                    let shouldConsume = pendingModifierPreviewReset
+                    pendingModifierPreviewReset = false
+                    return shouldConsume
+                },
+                restoreDraggedLayoutSnapshot: restoreDraggedLayoutSnapshot,
+                performLiveReorder: { item, targetIndex, preferSwap in
                     reorderItem(
                         item,
                         to: targetIndex,
+                        preferSwap: preferSwap,
                         animated: true,
                         animation: liveReorderSpringAnimation
                     )
@@ -770,8 +778,13 @@ struct LauncherView: View {
     @State private var orderedItems: [LauncherItem]
     @State private var draggedItem: LauncherItem?
     @State private var dragOriginIndex: Int?
+    @State private var dragOriginItemsSnapshot: [LauncherItem]?
+    @State private var dragOriginPageSizesSnapshot: [Int]?
     @State private var isPerformingMultiSelectionDrag = false
     @State private var isDragModifierSnapActive = false
+    @State private var activeDragModifierMode: DragModifierMode = .normal
+    @State private var pendingModifierPreviewReset = false
+    @State private var forceNoGridAnimationDuringDragReset = false
     @State private var currentPage: Int = 0
     @State private var isClosingLauncher = false
     @State private var searchText = ""
@@ -796,7 +809,7 @@ struct LauncherView: View {
     @State private var activeFolderFrame: CGRect = .zero
     @State private var folderHoverWorkItem: DispatchWorkItem?
     @State private var folderHoverTargetID: UUID?
-    @State private var folderHoverWithSuppressedReorder = false
+    @State private var folderHoverInModifierMode = false
     @State private var folderSnapPreviewTargetID: UUID?
     @State private var lastLiveReorderTargetIndex: Int?
     @State private var suppressGridAnimation = false
@@ -1034,7 +1047,12 @@ struct LauncherView: View {
             if newItem == nil {
                 folderSnapPreviewTargetID = nil
                 dragOriginIndex = nil
+                dragOriginItemsSnapshot = nil
+                dragOriginPageSizesSnapshot = nil
                 isDragModifierSnapActive = false
+                pendingModifierPreviewReset = false
+                activeDragModifierMode = .normal
+                forceNoGridAnimationDuringDragReset = false
                 isPerformingMultiSelectionDrag = false
                 lastLiveReorderTargetIndex = nil
                 folderLiveReorderTargetIndex = nil
@@ -1337,6 +1355,9 @@ struct LauncherView: View {
 
     private var activeGridAnimation: Animation? {
         if isPageSwitchAnimationActive {
+            return nil
+        }
+        if forceNoGridAnimationDuringDragReset {
             return nil
         }
         if draggedItem != nil {
@@ -1984,32 +2005,65 @@ struct LauncherView: View {
         }
     }
 
-    /// Detects modifier keys that disable live reordering during a drag.
-    private func isDragReorderSuppressed() -> Bool {
+    /// Resolves the active drag modifier behavior for root-grid drags.
+    private func currentDragModifierMode() -> DragModifierMode {
         if isMultiSelectionDragActive {
-            return true
+            return .folderMerge
         }
 
         let flags = NSApp?.currentEvent?.modifierFlags.intersection(.deviceIndependentFlagsMask) ?? []
-        return flags.contains(.shift) || flags.contains(.option)
+        if flags.contains(.option) {
+            return .folderMerge
+        }
+        if flags.contains(.shift) {
+            return .swap
+        }
+        return .normal
     }
 
-    /// Reacts to modifier changes that switch between reorder and merge drag behavior.
-    private func handleDragModifierChange(_ active: Bool) {
+    /// Reacts to modifier changes that switch between reorder, swap, and folder-merge drag behavior.
+    private func handleDragModifierChange(_ mode: DragModifierMode) {
         guard draggedItem != nil else {
             isDragModifierSnapActive = false
+            pendingModifierPreviewReset = false
+            activeDragModifierMode = .normal
             return
         }
         guard isMultiSelectionDragActive == false else {
             return
         }
 
-        if active {
-            guard isDragModifierSnapActive == false else { return }
+        guard mode != activeDragModifierMode else { return }
+        activeDragModifierMode = mode
+
+        if mode.suppressesLiveReorder {
             isDragModifierSnapActive = true
-            snapDraggedItemToOrigin()
+            lastLiveReorderTargetIndex = nil
+            pendingModifierPreviewReset = mode == .swap
+            restoreDraggedLayoutSnapshot()
         } else {
             isDragModifierSnapActive = false
+            pendingModifierPreviewReset = false
+        }
+    }
+
+    /// Restores the captured layout snapshot for the current drag so modifier modes start from a stable grid.
+    private func restoreDraggedLayoutSnapshot() {
+        guard let snapshot = dragOriginItemsSnapshot else {
+            snapDraggedItemToOrigin()
+            return
+        }
+
+        forceNoGridAnimationDuringDragReset = true
+        let transaction = Transaction(animation: nil)
+        withTransaction(transaction) {
+            orderedItems = snapshot
+            if let sizes = dragOriginPageSizesSnapshot {
+                pageSizes = sizes
+            }
+        }
+        DispatchQueue.main.async {
+            forceNoGridAnimationDuringDragReset = false
         }
     }
 
@@ -2030,7 +2084,11 @@ struct LauncherView: View {
     /// Captures initial drag index for modifier-triggered snapback.
     private func captureDragOrigin(for item: LauncherItem) {
         dragOriginIndex = orderedItems.firstIndex(of: item)
+        dragOriginItemsSnapshot = orderedItems
+        dragOriginPageSizesSnapshot = activePageSizes(for: orderedItems.count)
         isDragModifierSnapActive = false
+        activeDragModifierMode = .normal
+        pendingModifierPreviewReset = false
         lastLiveReorderTargetIndex = nil
     }
 
@@ -2259,13 +2317,13 @@ struct LauncherView: View {
         }
         guard dragged.id != target.id else { return }
 
-        let suppressReorder = isDragReorderSuppressed()
-        if folderHoverTargetID == target.id && folderHoverWithSuppressedReorder == suppressReorder {
+        let isModifierMode = currentDragModifierMode() == .folderMerge
+        if folderHoverTargetID == target.id && folderHoverInModifierMode == isModifierMode {
             return
         }
 
         cancelFolderHover()
-        folderHoverWithSuppressedReorder = suppressReorder
+        folderHoverInModifierMode = isModifierMode
 
         let action: () -> Void
         let delay: TimeInterval
@@ -2273,9 +2331,9 @@ struct LauncherView: View {
         switch target {
         case .app:
             action = { mergeItemsIfNeeded(dragged: dragged, onto: target) }
-            delay = suppressReorder ? 1.0 : 0.6
+            delay = isModifierMode ? 1.0 : 0.6
         case .folder(let folder):
-            if suppressReorder {
+            if isModifierMode {
                 action = { openFolderForDrag(folder, draggedItem: dragged) }
                 delay = 1.0
             } else {
@@ -2298,7 +2356,7 @@ struct LauncherView: View {
         folderHoverWorkItem?.cancel()
         folderHoverWorkItem = nil
         folderHoverTargetID = nil
-        folderHoverWithSuppressedReorder = false
+        folderHoverInModifierMode = false
     }
 
     /// Combines the dragged item with the target item to form or append to a folder.

@@ -86,7 +86,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 ## Quick tips
 
 - **Right-click any icon** for rename, move, hide, Finder reveal, or folder shortcuts.
-- **Drag apps together while holding Shift or Option** as you release to create a folder or drop into one without disturbing the grid; or use right-click to place apps exactly where you want.
+- **Hold Shift while dragging** to swap two icons without the grid reshuffling; hold `Option` to create a folder or drop into one without disturbing the grid.
 - **Floaty mode** keeps the quick palette feel; assign a hotkey to jump between fullscreen and HUD instantly instead of mouse-only taps.
 - **Use the Visuals tab** to pick standard, light blur, transparent, or solid color backgrounds (with a color palette) and decide if icons auto-fill gaps.
 - **Hidden Apps** tab lets you include ~/Applications, mute noisy tools, or pin hidden entries to the top for quick toggling.

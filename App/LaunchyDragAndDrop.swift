@@ -1,5 +1,15 @@
 import SwiftUI
 
+enum DragModifierMode {
+    case normal
+    case swap
+    case folderMerge
+
+    var suppressesLiveReorder: Bool {
+        self != .normal
+    }
+}
+
 /// Enables dropping items onto the grid background or pager buttons to move across pages.
 struct PageReorderDropDelegate: DropDelegate {
     let targetPage: Int
@@ -60,7 +70,7 @@ struct GridReorderDropDelegate: DropDelegate {
     let pageItemCount: Int
     @Binding var items: [LauncherItem]
     @Binding var draggedItem: LauncherItem?
-    var shouldSuppressReorder: () -> Bool
+    var dragModifierMode: () -> DragModifierMode
     var performReorder: (LauncherItem, Int, Bool) -> Int?
     var afterReorder: (Int?) -> Void
     var performFolderDrop: ([LauncherItem], LauncherItem) -> Void
@@ -69,20 +79,23 @@ struct GridReorderDropDelegate: DropDelegate {
     var onFolderHoverExit: () -> Void
     var onFolderSnapPreviewChange: (UUID?) -> Void
     var lastLiveReorderTargetIndex: Binding<Int?>
-    var performLiveReorder: (LauncherItem, Int) -> Int?
-    var onModifierStateChange: ((Bool) -> Void)?
+    var dragReferenceItems: () -> [LauncherItem]
+    var consumePendingModifierPreviewReset: () -> Bool
+    var restoreDraggedLayoutSnapshot: () -> Void
+    var performLiveReorder: (LauncherItem, Int, Bool) -> Int?
+    var onModifierStateChange: ((DragModifierMode) -> Void)?
 
     /// Captures modifier state early so folder-merge previews appear immediately.
     func dropEntered(info: DropInfo) {
-        let modifiersActive = shouldSuppressReorder()
-        onModifierStateChange?(modifiersActive)
+        let modifierMode = dragModifierMode()
+        onModifierStateChange?(modifierMode)
         handleHover(info)
     }
 
     /// Continuously updates hover affordances and optional live reordering.
     func dropUpdated(info: DropInfo) -> DropProposal? {
-        let modifiersActive = shouldSuppressReorder()
-        onModifierStateChange?(modifiersActive)
+        let modifierMode = dragModifierMode()
+        onModifierStateChange?(modifierMode)
         handleHover(info)
         applyLiveReorder(info)
         return DropProposal(operation: .move)
@@ -90,7 +103,7 @@ struct GridReorderDropDelegate: DropDelegate {
 
     /// Clears transient hover/reorder state when leaving the grid.
     func dropExited(info: DropInfo) {
-        onModifierStateChange?(false)
+        onModifierStateChange?(.normal)
         onFolderSnapPreviewChange(nil)
         onFolderHoverExit()
         lastLiveReorderTargetIndex.wrappedValue = nil
@@ -102,15 +115,19 @@ struct GridReorderDropDelegate: DropDelegate {
             draggedItem = nil
             onFolderSnapPreviewChange(nil)
             lastLiveReorderTargetIndex.wrappedValue = nil
-            onModifierStateChange?(false)
+            onModifierStateChange?(.normal)
         }
         guard let draggedItem else { return false }
 
         let targetIndex = targetIndex(for: info.location)
-        let modifiersActive = shouldSuppressReorder()
+        let modifierMode = dragModifierMode()
         let targetItemIndex = itemIndex(for: info.location)
         let targetItem = targetItemIndex.flatMap { index in
             items.indices.contains(index) ? items[index] : nil
+        }
+        let referenceItems = dragReferenceItems()
+        let swapTargetItem = targetItemIndex.flatMap { index in
+            referenceItems.indices.contains(index) ? referenceItems[index] : nil
         }
 
         if isMultiSelectionDragActive() {
@@ -125,7 +142,7 @@ struct GridReorderDropDelegate: DropDelegate {
             return true
         }
 
-        if modifiersActive, let targetItem {
+        if modifierMode == .folderMerge, let targetItem {
             let shouldMerge: Bool
             switch (draggedItem, targetItem) {
             case (.app, _):
@@ -137,14 +154,37 @@ struct GridReorderDropDelegate: DropDelegate {
             }
 
             if shouldMerge {
-                // With Option/Shift held, treat a drop onto another item as a folder create/append instead of a reorder.
+                // With Option held, treat a drop onto another item as a folder create/append instead of a reorder.
                 onFolderHoverExit()
                 performFolderDrop([draggedItem], targetItem)
                 return true
             }
         }
 
-        let finalIndex = performReorder(draggedItem, targetIndex, false)
+        let finalIndex: Int?
+        if modifierMode == .swap {
+            guard let targetItemIndex,
+                  items.indices.contains(targetItemIndex),
+                  let currentDraggedIndex = items.firstIndex(of: draggedItem) else {
+                afterReorder(nil)
+                return true
+            }
+
+            if currentDraggedIndex == targetItemIndex {
+                afterReorder(targetItemIndex)
+                return true
+            }
+
+            guard let targetItem = swapTargetItem,
+                  targetItem.id != draggedItem.id else {
+                afterReorder(nil)
+                return true
+            }
+
+            finalIndex = performReorder(draggedItem, targetItemIndex, true)
+        } else {
+            finalIndex = performReorder(draggedItem, targetIndex, false)
+        }
         afterReorder(finalIndex)
 
         return true
@@ -160,10 +200,34 @@ struct GridReorderDropDelegate: DropDelegate {
     /// Performs non-destructive live reordering while hovering over occupied cells.
     private func applyLiveReorder(_ info: DropInfo) {
         guard let draggedItem else { return }
-        guard shouldSuppressReorder() == false else {
+        let modifierMode = dragModifierMode()
+
+        if modifierMode == .folderMerge {
+            restoreDraggedLayoutSnapshot()
             lastLiveReorderTargetIndex.wrappedValue = nil
             return
         }
+
+        if modifierMode == .swap {
+            if consumePendingModifierPreviewReset() {
+                restoreDraggedLayoutSnapshot()
+                lastLiveReorderTargetIndex.wrappedValue = nil
+                return
+            }
+            guard let targetItemIndex = itemIndex(for: info.location),
+                  let targetItem = swapTargetItem(at: targetItemIndex, draggedItem: draggedItem),
+                  targetItem.id != draggedItem.id else {
+                restoreDraggedLayoutSnapshot()
+                lastLiveReorderTargetIndex.wrappedValue = nil
+                return
+            }
+            guard lastLiveReorderTargetIndex.wrappedValue != targetItemIndex else { return }
+            restoreDraggedLayoutSnapshot()
+            lastLiveReorderTargetIndex.wrappedValue = targetItemIndex
+            _ = performLiveReorder(draggedItem, targetItemIndex, true)
+            return
+        }
+
         if isLocationInEmptySlot(info.location) {
             lastLiveReorderTargetIndex.wrappedValue = nil
             return
@@ -171,7 +235,15 @@ struct GridReorderDropDelegate: DropDelegate {
         let targetIndex = targetIndex(for: info.location)
         guard lastLiveReorderTargetIndex.wrappedValue != targetIndex else { return }
         lastLiveReorderTargetIndex.wrappedValue = targetIndex
-        _ = performLiveReorder(draggedItem, targetIndex)
+        _ = performLiveReorder(draggedItem, targetIndex, false)
+    }
+
+    /// Resolves the hovered swap target from the original drag snapshot rather than the animated live layout.
+    private func swapTargetItem(at index: Int, draggedItem: LauncherItem) -> LauncherItem? {
+        let referenceItems = dragReferenceItems()
+        guard referenceItems.indices.contains(index) else { return nil }
+        let targetItem = referenceItems[index]
+        return targetItem.id == draggedItem.id ? nil : targetItem
     }
 
     /// Shows a folder snap hint when modifier keys indicate we should merge instead of reorder.
@@ -181,7 +253,7 @@ struct GridReorderDropDelegate: DropDelegate {
             return
         }
 
-        guard shouldSuppressReorder() else {
+        guard dragModifierMode() == .folderMerge else {
             onFolderSnapPreviewChange(nil)
             return
         }

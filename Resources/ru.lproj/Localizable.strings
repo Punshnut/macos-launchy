@@ -23,7 +23,7 @@
 "Instant search" = "Мгновенный поиск";
 "The search bar narrows results as you type, then Enter launches the first match." = "Строка поиска сужает результаты по мере ввода, а Enter запускает первый совпавший элемент.";
 "Rearrange easily" = "Легко переставлять";
-"Drag icons to reorder pages. Hold Option or Shift while dragging to create folders." = "Перетаскивайте иконки, чтобы менять порядок страниц. Удерживайте Option или Shift при перетаскивании, чтобы создавать папки.";
+"Drag icons to reorder pages. Hold Option or Shift while dragging to create folders." = "Перетаскивайте значки, чтобы менять порядок страниц. Удерживайте Shift при перетаскивании, чтобы менять элементы местами, или Option, чтобы создавать папки.";
 "Name folders fast" = "Быстро называйте папки";
 "Drop onto another app to make a folder, then rename it inline." = "Перетащите на другое приложение, чтобы создать папку, затем переименуйте её на месте.";
 "Right-click for power" = "Правый клик для возможностей";

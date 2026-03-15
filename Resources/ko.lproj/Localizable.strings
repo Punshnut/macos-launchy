@@ -23,7 +23,7 @@
 "Instant search" = "즉석 검색";
 "The search bar narrows results as you type, then Enter launches the first match." = "검색창은 입력할 때 결과를 좁히고 Enter는 첫 번째 일치를 실행합니다.";
 "Rearrange easily" = "손쉬운 재배열";
-"Drag icons to reorder pages. Hold Option or Shift while dragging to create folders." = "아이콘을 드래그하여 페이지 순서를 변경하세요. 드래그 중 Option 또는 Shift를 누르면 폴더를 만들 수 있습니다.";
+"Drag icons to reorder pages. Hold Option or Shift while dragging to create folders." = "아이콘을 드래그하여 페이지 순서를 변경하세요. 항목을 서로 바꾸려면 드래그하는 동안 Shift를 누르고, 폴더를 만들려면 Option을 누르세요.";
 "Name folders fast" = "빠른 폴더 이름 지정";
 "Drop onto another app to make a folder, then rename it inline." = "다른 앱 위에 드롭해서 폴더를 만들고 즉시 이름을 바꾸세요.";
 "Right-click for power" = "우클릭으로 기능";

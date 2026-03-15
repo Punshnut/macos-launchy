@@ -21,6 +21,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 ## Highlights to showcase
 
 - Responsive grid: 7x5 pages with cached icons, optional `~/Applications` scan, silky animations, and folder nesting that feels instant even on huge libraries.
+- Drag precision: hold `Shift` while dragging to swap two icons directly, or hold `Option` to create folders and drop into them without the grid reshuffling underneath you.
 - Context-aware menus: Smart actions for folders, Dock/menu bar items, status updates, and quick cleanup (hide, delete alias, move) without cracking open Finder.
 - Visual vibes: Blur, transparent, or solid backdrops with a curated color palette (no more boring gray). Drop in your own wallpaper for a custom “mission control.”
 - Presence control: Launch at login, hide/show Dock and menu bar icons independently, keep Launchy on every Space or just the ones you pick.

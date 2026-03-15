@@ -23,7 +23,7 @@
 "Instant search" = "Välitön haku";
 "The search bar narrows results as you type, then Enter launches the first match." = "Hakupalkki kaventaa tuloksia kirjoittaessasi, ja Enter käynnistää ensimmäisen osuman.";
 "Rearrange easily" = "Järjestä helposti";
-"Drag icons to reorder pages. Hold Option or Shift while dragging to create folders." = "Vedä kuvakkeita järjestääksesi sivut uudelleen. Pidä Option tai Shift painettuna vedon aikana luodaksesi kansioita.";
+"Drag icons to reorder pages. Hold Option or Shift while dragging to create folders." = "Vedä kuvakkeita järjestääksesi sivut uudelleen. Pidä Shift pohjassa vetäessäsi vaihtaaksesi kohteiden paikkaa tai Option pohjassa luodaksesi kansioita.";
 "Name folders fast" = "Nimeä kansiot nopeasti";
 "Drop onto another app to make a folder, then rename it inline." = "Pudota toisen sovelluksen päälle luodaksesi kansion, ja nimeä se sitten suoraan.";
 "Right-click for power" = "Oikea klikkaus tuo lisää";

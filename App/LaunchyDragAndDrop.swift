@@ -10,6 +10,190 @@ enum DragModifierMode {
     }
 }
 
+private struct GridDropTargetResolver {
+    let columns: Int
+    let rows: Int
+    let spacing: CGFloat
+    let gridSize: CGSize
+    let contentInsets: EdgeInsets
+
+    init(
+        columns: Int,
+        rows: Int,
+        spacing: CGFloat,
+        gridSize: CGSize,
+        contentInsets: EdgeInsets = EdgeInsets()
+    ) {
+        self.columns = max(columns, 1)
+        self.rows = max(rows, 1)
+        self.spacing = max(spacing, 0)
+        self.gridSize = gridSize
+        self.contentInsets = contentInsets
+    }
+
+    private var capacity: Int {
+        columns * rows
+    }
+
+    private var contentSize: CGSize {
+        CGSize(
+            width: max(gridSize.width - contentInsets.leading - contentInsets.trailing, 1),
+            height: max(gridSize.height - contentInsets.top - contentInsets.bottom, 1)
+        )
+    }
+
+    private var cellSize: CGSize {
+        let width = max(
+            (contentSize.width - spacing * CGFloat(max(columns - 1, 0))) / CGFloat(columns),
+            1
+        )
+        let height = max(
+            (contentSize.height - spacing * CGFloat(max(rows - 1, 0))) / CGFloat(rows),
+            1
+        )
+        return CGSize(width: width, height: height)
+    }
+
+    func insertionSlotIndex(for location: CGPoint, occupiedSlotCount: Int) -> Int {
+        guard capacity > 0 else { return 0 }
+
+        let boundedOccupiedCount = max(min(occupiedSlotCount, capacity), 0)
+        let candidateRange: ClosedRange<Int>
+        if boundedOccupiedCount < capacity {
+            candidateRange = 0...boundedOccupiedCount
+        } else {
+            candidateRange = 0...(capacity - 1)
+        }
+
+        let dragRect = draggedTileRect(for: location)
+        let pointer = adjustedPoint(for: location)
+        var bestIndex = 0
+        var bestScore = slotScore(
+            for: slotFrame(at: 0),
+            dragRect: dragRect,
+            pointer: pointer
+        )
+
+        for candidate in candidateRange.dropFirst() {
+            let score = slotScore(
+                for: slotFrame(at: candidate),
+                dragRect: dragRect,
+                pointer: pointer
+            )
+            if score.isBetter(than: bestScore) {
+                bestIndex = candidate
+                bestScore = score
+            }
+        }
+
+        return bestIndex
+    }
+
+    func hoveredItemIndex(for location: CGPoint, visibleItemCount: Int) -> Int? {
+        guard capacity > 0 else { return nil }
+        let boundedVisibleCount = max(min(visibleItemCount, capacity), 0)
+        guard boundedVisibleCount > 0 else { return nil }
+
+        let dragRect = draggedTileRect(for: location)
+        let pointer = adjustedPoint(for: location)
+        let candidateFrames = (0..<boundedVisibleCount).map { index in
+            (index: index, frame: slotFrame(at: index))
+        }
+
+        let overlappingCandidates = candidateFrames.filter { candidate in
+            candidate.frame.intersection(dragRect).isNull == false
+                || candidate.frame.contains(pointer)
+        }
+
+        guard overlappingCandidates.isEmpty == false else { return nil }
+
+        var bestCandidate = overlappingCandidates[0]
+        var bestScore = slotScore(
+            for: bestCandidate.frame,
+            dragRect: dragRect,
+            pointer: pointer
+        )
+
+        for candidate in overlappingCandidates.dropFirst() {
+            let score = slotScore(
+                for: candidate.frame,
+                dragRect: dragRect,
+                pointer: pointer
+            )
+            if score.isBetter(than: bestScore) {
+                bestCandidate = candidate
+                bestScore = score
+            }
+        }
+
+        return bestCandidate.index
+    }
+
+    private func adjustedPoint(for location: CGPoint) -> CGPoint {
+        let adjustedX = location.x - contentInsets.leading
+        let adjustedY = location.y - contentInsets.top
+        return CGPoint(
+            x: min(max(adjustedX, 0), contentSize.width),
+            y: min(max(adjustedY, 0), contentSize.height)
+        )
+    }
+
+    private func draggedTileRect(for location: CGPoint) -> CGRect {
+        let center = adjustedPoint(for: location)
+        let size = cellSize
+        return CGRect(
+            x: center.x - size.width / 2,
+            y: center.y - size.height / 2,
+            width: size.width,
+            height: size.height
+        )
+    }
+
+    private func slotFrame(at index: Int) -> CGRect {
+        let boundedIndex = max(min(index, max(capacity - 1, 0)), 0)
+        let row = boundedIndex / columns
+        let column = boundedIndex % columns
+        let size = cellSize
+        return CGRect(
+            x: CGFloat(column) * (size.width + spacing),
+            y: CGFloat(row) * (size.height + spacing),
+            width: size.width,
+            height: size.height
+        )
+    }
+
+    private func slotScore(for frame: CGRect, dragRect: CGRect, pointer: CGPoint) -> SlotScore {
+        let overlap = frame.intersection(dragRect)
+        let overlapArea = overlap.isNull ? 0 : overlap.width * overlap.height
+        let center = CGPoint(x: frame.midX, y: frame.midY)
+        let distance = squaredDistance(from: center, to: CGPoint(x: dragRect.midX, y: dragRect.midY))
+        let pointerDistance = squaredDistance(from: center, to: pointer)
+        return SlotScore(overlapArea: overlapArea, centerDistance: distance, pointerDistance: pointerDistance)
+    }
+
+    private func squaredDistance(from lhs: CGPoint, to rhs: CGPoint) -> CGFloat {
+        let deltaX = lhs.x - rhs.x
+        let deltaY = lhs.y - rhs.y
+        return deltaX * deltaX + deltaY * deltaY
+    }
+
+    private struct SlotScore {
+        let overlapArea: CGFloat
+        let centerDistance: CGFloat
+        let pointerDistance: CGFloat
+
+        func isBetter(than other: SlotScore) -> Bool {
+            if overlapArea != other.overlapArea {
+                return overlapArea > other.overlapArea
+            }
+            if centerDistance != other.centerDistance {
+                return centerDistance < other.centerDistance
+            }
+            return pointerDistance < other.pointerDistance
+        }
+    }
+}
+
 /// Enables dropping items onto the grid background or pager buttons to move across pages.
 struct PageReorderDropDelegate: DropDelegate {
     let targetPage: Int
@@ -270,29 +454,10 @@ struct GridReorderDropDelegate: DropDelegate {
 
     /// Maps a drop location to a linear index within the current page.
     private func linearIndex(for location: CGPoint) -> Int {
-        let location = adjustedLocation(location)
-        let columns = layout.columnsPerPage
-        let rows = layout.rowsPerPage
-
-        let totalSpacingX = layout.iconSpacing * CGFloat(columns - 1)
-        let totalSpacingY = layout.iconSpacing * CGFloat(rows - 1)
-
-        let cellWidth = max((gridSize.width - totalSpacingX) / CGFloat(columns), 1)
-        let cellHeight = max((gridSize.height - totalSpacingY) / CGFloat(rows), 1)
-
-        let clampedX = min(max(location.x, 0), gridSize.width - 0.001)
-        let clampedY = min(max(location.y, 0), gridSize.height - 0.001)
-
-        let column = min(
-            max(Int((clampedX / (cellWidth + layout.iconSpacing)).rounded(.down)), 0),
-            columns - 1
+        gridResolver.insertionSlotIndex(
+            for: location,
+            occupiedSlotCount: effectivePageItemCount
         )
-        let row = min(
-            max(Int((clampedY / (cellHeight + layout.iconSpacing)).rounded(.down)), 0),
-            rows - 1
-        )
-
-        return linearIndexInPage(row: row, column: column)
     }
 
     private var effectivePageItemCount: Int {
@@ -330,35 +495,10 @@ struct GridReorderDropDelegate: DropDelegate {
 
     /// Computes the visible cell index under the pointer for the active page.
     private func indexInCurrentPage(for location: CGPoint) -> Int? {
-        let location = adjustedLocation(location)
-        let columns = layout.columnsPerPage
-        let rows = layout.rowsPerPage
-
-        let totalSpacingX = layout.iconSpacing * CGFloat(columns - 1)
-        let totalSpacingY = layout.iconSpacing * CGFloat(rows - 1)
-
-        let cellWidth = max((gridSize.width - totalSpacingX) / CGFloat(columns), 1)
-        let cellHeight = max((gridSize.height - totalSpacingY) / CGFloat(rows), 1)
-
-        let clampedX = min(max(location.x, 0), gridSize.width - 0.001)
-        let clampedY = min(max(location.y, 0), gridSize.height - 0.001)
-
-        let column = min(
-            max(Int((clampedX / (cellWidth + layout.iconSpacing)).rounded(.down)), 0),
-            columns - 1
+        gridResolver.hoveredItemIndex(
+            for: location,
+            visibleItemCount: visibleItemCount
         )
-        let row = min(
-            max(Int((clampedY / (cellHeight + layout.iconSpacing)).rounded(.down)), 0),
-            rows - 1
-        )
-
-        let linearIndex = row * columns + column
-        return linearIndex < visibleItemCount ? linearIndex : nil
-    }
-
-    /// Align drop coordinates with the visually shifted grid.
-    private func adjustedLocation(_ location: CGPoint) -> CGPoint {
-        location
     }
 
     private var visibleItemCount: Int {
@@ -386,13 +526,24 @@ struct GridReorderDropDelegate: DropDelegate {
         guard boundedPageItemCount > 0 else { return pageStartIndex }
         return pageStartIndex + boundedPageItemCount - 1
     }
+
+    private var gridResolver: GridDropTargetResolver {
+        GridDropTargetResolver(
+            columns: layout.columnsPerPage,
+            rows: layout.rowsPerPage,
+            spacing: layout.iconSpacing,
+            gridSize: gridSize
+        )
+    }
 }
 
 /// Reorders apps inside an open folder overlay.
 struct FolderReorderDropDelegate: DropDelegate {
     let columns: Int
+    let maxRows: Int
     let spacing: CGFloat
     let gridSize: CGSize
+    let contentInsets: EdgeInsets
     let pageStartIndex: Int
     let pageItemCount: Int
     @Binding var draggedApp: AppItem?
@@ -451,23 +602,22 @@ struct FolderReorderDropDelegate: DropDelegate {
 
     /// Maps folder-grid pointer position to an absolute insertion index.
     private func targetIndex(for location: CGPoint) -> Int {
-        let rows = max(1, Int(ceil(Double(max(pageItemCount, 1)) / Double(columns))))
-
-        let totalSpacingX = spacing * CGFloat(columns - 1)
-        let totalSpacingY = spacing * CGFloat(rows - 1)
-
-        let cellWidth = max((gridSize.width - totalSpacingX) / CGFloat(columns), 1)
-        let cellHeight = max((gridSize.height - totalSpacingY) / CGFloat(max(rows, 1)), 1)
-
-        let clampedX = min(max(location.x, 0), gridSize.width - 0.001)
-        let clampedY = min(max(location.y, 0), gridSize.height - 0.001)
-
-        let column = min(max(Int((clampedX / (cellWidth + spacing)).rounded(.down)), 0), columns - 1)
-        let row = max(Int((clampedY / (cellHeight + spacing)).rounded(.down)), 0)
-
-        let linearIndex = row * columns + column
-        let bounded = min(max(linearIndex, 0), max(pageItemCount, 0))
+        let bounded = gridResolver.insertionSlotIndex(
+            for: location,
+            occupiedSlotCount: pageItemCount
+        )
         return pageStartIndex + bounded
+    }
+
+    private var gridResolver: GridDropTargetResolver {
+        let rowsNeeded = Int(ceil(Double(max(pageItemCount + 1, 1)) / Double(max(columns, 1))))
+        return GridDropTargetResolver(
+            columns: columns,
+            rows: max(1, min(maxRows, rowsNeeded)),
+            spacing: spacing,
+            gridSize: gridSize,
+            contentInsets: contentInsets
+        )
     }
 }
 

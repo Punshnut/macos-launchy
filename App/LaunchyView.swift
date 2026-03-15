@@ -4343,8 +4343,10 @@ struct LauncherView: View {
                 of: [.text],
                 delegate: FolderReorderDropDelegate(
                     columns: columns.count,
+                    maxRows: overlayLayout.maxRows,
                     spacing: overlayLayout.spacing,
                     gridSize: gridProxy.size,
+                    contentInsets: gridInsets,
                     pageStartIndex: pageStartIndex,
                     pageItemCount: pageApps.count,
                     draggedApp: $draggedFolderApp,

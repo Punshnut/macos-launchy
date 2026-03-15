@@ -27,7 +27,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 - Presence control: Launch at login, hide/show Dock and menu bar icons independently, keep Launchy on every Space or just the ones you pick.
 - Keyboard flow: Arrow paging, `Return` to launch, `Cmd` + `,` for settings, `Control` + number for direct page jumps, type-to-find everywhere, and shortcut hints so you never guess.
 - Everywhere shortcuts: Hot corners and user-defined global hotkeys keep Launchy a flick away; a single chord flips fullscreen ⇄ Floaty so you can move from browsing to laser-focused picking.
-- Localization built in: English + packs for ES/LatAm, Italian, German, French, Portuguese (EU/BR), Ukrainian, Russian, Hindi, Bahasa Indonesia, Vietnamese, Turkish, Simplified Chinese, Japanese, Korean, Thai, Hausa, Kiswahili, and Arabic. Translators welcome - strings are easy to contribute.
+- Localization built in: English; European languages including Spanish (Spain), Catalan, Italian, German, French, Portuguese (Portugal), Ukrainian, Russian, Polish, Greek, Dutch, Swedish, Czech, Hungarian, Finnish, and Irish; Asian languages including Filipino/Tagalog, Hindi, Bahasa Indonesia, Vietnamese, Turkish, Simplified Chinese, Japanese, Korean, Thai, Bengali, Urdu, Tamil, Telugu, Malay, and Burmese; Americas support including Portuguese (Brazil) and Spanish (LatAm); plus Arabic, Persian, Kiswahili, Hausa, Amharic, and Yoruba. Translation fixes and new language contributions are welcome.
 
 ## Get started in seconds
 

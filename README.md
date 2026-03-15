@@ -39,9 +39,6 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
     <p>🇦🇪 العربية (الفصحى الحديثة)<br>🇮🇷 فارسی<br>🇹🇿 Kiswahili<br>🇳🇬 Hausa<br>🇪🇹 አማርኛ<br>🇳🇬 Yorùbá</p>
   </details>
 </div>
-<p align="center">
-  <sub>Spanish ships in both 🇲🇽 LatAm and 🇪🇸 Spain variants - the Americas card highlights LatAm while Europe lists the Iberian pack.</sub>
-</p>
 
 <p align="center">
   <img src="Media/ScreenshotFullscreenMode.png" alt="Launchy Screenshot Fullscreen Mode" width="600">

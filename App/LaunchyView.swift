@@ -784,6 +784,7 @@ struct LauncherView: View {
     private let fullscreenGridEntranceAnimation = Animation.spring(response: 0.28, dampingFraction: 0.92, blendDuration: 0.14)
     private let fullscreenGridEntranceTranslation: CGFloat = 18
     private static let pageSwitchDuration: TimeInterval = 0.085
+    private static let maxQueuedPageShiftCount = 2
     private static let pageSwitchResponse: Double = 0.22
     private static let pageSwitchDamping: Double = 0.88
     private let pageSwitchAnimation = Animation.interactiveSpring(
@@ -907,7 +908,7 @@ struct LauncherView: View {
     @State private var pendingScrollDelta: CGFloat = 0
     @State private var scrollUpdateScheduled = false
     @State private var lastPagerInteractionSource: PagerInteractionSource = .drag
-    @State private var queuedPageDelta: Int = 0
+    @State private var queuedPageShifts: [Int] = []
     @State private var visiblePagesTask: Task<Void, Never>?
     @State private var prewarmedPageTokens: Set<Int> = []
     @State private var hasRecordedFirstPageRender = false
@@ -1406,7 +1407,9 @@ struct LauncherView: View {
     /// Calculates the current offset for the paged grid stack.
     private func pageOffset(for page: Int, pageSpan: CGFloat) -> CGFloat {
         let current = clampPageIndex(currentPage)
-        return pixelAlign(CGFloat(page - current) * pageSpan + pagerDragOffset)
+        let alignedSpan = pixelAlignedPageSpan(pageSpan)
+        let baseOffset = pixelAlign(pagerDragOffset)
+        return baseOffset + CGFloat(page - current) * alignedSpan
     }
 
     private var activeGridAnimation: Animation? {
@@ -1635,15 +1638,7 @@ struct LauncherView: View {
                 if draggedItem == nil {
                     suppressGridAnimation = false
                 }
-                if queuedPageDelta != 0, pageCount > 0 {
-                    let delta = queuedPageDelta
-                    queuedPageDelta = 0
-                    let target = clampPageIndex(currentPage + delta)
-                    let direction: PageShiftDirection = target >= currentPage ? .forward : .backward
-                    if target != currentPage {
-                        performAnimatedPageSwitch(to: target, direction: direction)
-                    }
-                }
+                drainQueuedPageShiftIfNeeded()
             }
         }
     }
@@ -1899,6 +1894,9 @@ struct LauncherView: View {
 
     /// Computes per-page opacity based on pager offset to soften transitions.
     private func folderPageOpacity(for page: Int, pageWidth: CGFloat) -> Double {
+        if page == activeFolderPage {
+            return 1
+        }
         guard pageWidth > 0 else { return page == activeFolderPage ? 1 : 0 }
         let dragProgress = folderPagerDragOffset / pageWidth
         let distance = abs(CGFloat(page - activeFolderPage) + dragProgress)
@@ -1918,14 +1916,45 @@ struct LauncherView: View {
         return min(max(index, 0), pageCount - 1)
     }
 
+    /// Aligns page widths to device pixels so adjacent pages keep a stable seam.
+    private func pixelAlignedPageSpan(_ span: CGFloat) -> CGFloat {
+        pixelAlign(max(span, 1))
+    }
+
+    /// Resolves the page that should stay attached to the current page during a transition.
+    private func pagingCompanionPage(current: Int, total: Int, dragOffset: CGFloat, isPaging: Bool) -> Int? {
+        guard total > 1 else { return nil }
+        guard isPaging else { return nil }
+
+        let candidate: Int? = {
+            if dragOffset > 0.01 {
+                return current - 1
+            }
+            if dragOffset < -0.01 {
+                return current + 1
+            }
+
+            switch pageDirection {
+            case .forward:
+                return current - 1
+            case .backward:
+                return current + 1
+            }
+        }()
+
+        guard let candidate, candidate >= 0, candidate < total else { return nil }
+        return candidate
+    }
+
     /// Computes how visible a page should be based on its proximity to the active page and drag offset.
     private func pageOpacity(for page: Int, pageSpan: CGFloat) -> Double {
-        if page == currentPage {
+        let current = clampPageIndex(currentPage)
+        if page == current {
             return 1
         }
         let span = max(pageSpan, 1)
         let dragProgress = pagerDragOffset / span
-        let distance = abs(CGFloat(page - currentPage) + dragProgress)
+        let distance = abs(CGFloat(page - current) + dragProgress)
         let visibility = max(0, 1 - distance)
         return Double(min(1, visibility))
     }
@@ -1953,25 +1982,13 @@ struct LauncherView: View {
             return [current - 1, current, current + 1].filter { $0 >= 0 && $0 < total }
         }
 
-        let directionalNeighbor: Int? = {
-            if pagerDragOffset > 0.01 {
-                return current - 1
-            }
-            if pagerDragOffset < -0.01 {
-                return current + 1
-            }
-
-            switch pageDirection {
-            case .forward:
-                return current - 1
-            case .backward:
-                return current + 1
-            }
-        }()
-
-        return [directionalNeighbor, current]
+        return [pagingCompanionPage(
+            current: current,
+            total: total,
+            dragOffset: pagerDragOffset,
+            isPaging: isPaging
+        ), current]
             .compactMap { $0 }
-            .filter { $0 >= 0 && $0 < total }
             .sorted()
     }
 
@@ -4928,9 +4945,7 @@ struct LauncherView: View {
                 changeFolderPage(direction == .up ? .backward : .forward)
                 return
             }
-            let shift: PageShiftDirection = direction == .up ? .backward : .forward
-            let target = shift == .forward ? min(currentPage + 1, pageCount - 1) : max(currentPage - 1, 0)
-            performAnimatedPageSwitch(to: target, direction: shift)
+            requestPageShift(direction == .down ? 1 : -1)
             return
         }
         handleVerticalArrowNavigation(direction)
@@ -5175,27 +5190,60 @@ struct LauncherView: View {
         guard pageCount > 0 else { return }
         let bounded = min(max(targetPage, 0), pageCount - 1)
         guard bounded != currentPage else { return }
+        queuedPageShifts.removeAll()
         let dir: PageShiftDirection = bounded >= currentPage ? .forward : .backward
         performAnimatedPageSwitch(to: bounded, direction: dir)
     }
 
-    /// Coalesces rapid keyboard-triggered page shifts while an animation is in flight.
+    /// Queues one-step page shifts so rapid input chains smoothly without multi-page skips.
     private func requestPageShift(_ delta: Int) {
         guard pageCount > 0 else { return }
         guard delta != 0 else { return }
 
         if isPageSwitchAnimationActive {
-            // Accumulate the most recent intent but keep jumps small so staging stays stable.
-            let cappedDelta = max(min(queuedPageDelta + delta, 2), -2)
-            queuedPageDelta = cappedDelta
+            enqueueQueuedPageShifts(for: delta)
             return
         }
 
-        queuedPageDelta = 0
-        let target = clampPageIndex(currentPage + delta)
+        queuedPageShifts.removeAll()
+        let step = delta > 0 ? 1 : -1
+        let target = clampPageIndex(currentPage + step)
         let direction: PageShiftDirection = target >= currentPage ? .forward : .backward
         if target != currentPage {
             performAnimatedPageSwitch(to: target, direction: direction)
+        }
+    }
+
+    /// Buffers additional single-page steps while a transition is already underway.
+    private func enqueueQueuedPageShifts(for delta: Int) {
+        let step = delta > 0 ? 1 : -1
+
+        for _ in 0..<abs(delta) {
+            guard queuedPageShifts.count < Self.maxQueuedPageShiftCount else { break }
+            let projectedPage = queuedPageShifts.reduce(currentPage) { partial, queuedStep in
+                clampPageIndex(partial + queuedStep)
+            }
+            let nextProjectedPage = clampPageIndex(projectedPage + step)
+            guard nextProjectedPage != projectedPage else { break }
+            queuedPageShifts.append(step)
+        }
+    }
+
+    /// Starts the next queued page step once the current transition has settled.
+    private func drainQueuedPageShiftIfNeeded() {
+        guard isPageSwitchAnimationActive == false else { return }
+        guard pageCount > 0 else {
+            queuedPageShifts.removeAll()
+            return
+        }
+
+        while queuedPageShifts.isEmpty == false {
+            let step = queuedPageShifts.removeFirst()
+            let target = clampPageIndex(currentPage + step)
+            guard target != currentPage else { continue }
+            let direction: PageShiftDirection = target >= currentPage ? .forward : .backward
+            performAnimatedPageSwitch(to: target, direction: direction)
+            return
         }
     }
 

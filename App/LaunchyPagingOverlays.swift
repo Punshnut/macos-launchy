@@ -302,7 +302,6 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
         var isEnabled: Bool = true {
             didSet {
                 if isEnabled == false {
-                    stopRepeating()
                     stopMonitoring()
                 } else {
                     startMonitoringIfNeeded()
@@ -320,11 +319,8 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
         private let onEscape: () -> Void
         private let onPageShortcut: ((Int) -> Void)?
         private let onVerticalNavigation: ((VerticalArrowDirection) -> Void)?
-        private let repeatInterval: TimeInterval = 0.5 // Hold-to-repeat cadence.
         private var keyDownMonitor: EventMonitorToken?
         private var keyUpMonitor: EventMonitorToken?
-        private var repeatTimer: Timer?
-        private var repeatingDirection: ArrowDirection?
 
         init(
             shouldCaptureArrowKeys: @escaping () -> Bool,
@@ -364,13 +360,12 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             }
         }
 
-        /// Removes key monitors and cancels any key-repeat timer.
+        /// Removes key monitors.
         func stopMonitoring() {
             keyDownMonitor?.invalidate()
             keyUpMonitor?.invalidate()
             keyDownMonitor = nil
             keyUpMonitor = nil
-            stopRepeating()
         }
 
         /// Handles page shortcuts, arrow navigation, and Escape capture.
@@ -390,7 +385,6 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
 
             if event.keyCode == Self.escapeKeyCode {
                 guard shouldHandleEscape() else { return event }
-                stopRepeating()
                 onEscape()
                 return nil
             }
@@ -401,19 +395,14 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             }
             guard shouldCaptureArrowKeys() else { return event }
 
-            if event.isARepeat {
-                return nil
-            }
-
-            beginRepeating(direction)
+            trigger(direction)
             return nil
         }
 
-        /// Stops repeat behavior when relevant navigation keys are released.
+        /// Swallows key-up events for captured navigation keys.
         private func handleKeyUp(_ event: NSEvent) -> NSEvent? {
             if event.keyCode == Self.escapeKeyCode {
                 guard shouldHandleEscape() else { return event }
-                stopRepeating()
                 return nil
             }
 
@@ -422,16 +411,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
                 return event
             }
             guard shouldCaptureArrowKeys() else { return event }
-            stopRepeating(for: direction)
             return nil
-        }
-
-        /// Starts hold-to-repeat for the supplied navigation direction.
-        private func beginRepeating(_ direction: ArrowDirection) {
-            stopRepeating()
-            trigger(direction)
-            repeatingDirection = direction
-            startTimer()
         }
 
         /// Routes directional input to horizontal/vertical navigation callbacks.
@@ -446,36 +426,6 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
             case .down:
                 onVerticalNavigation?(.down)
             }
-        }
-
-        /// Creates and registers a repeating timer on the main run loop.
-        private func startTimer() {
-            let timer = Timer(timeInterval: repeatInterval, repeats: true) { [weak self] _ in
-                Task { @MainActor [weak self] in
-                    self?.fireRepeat()
-                }
-            }
-            repeatTimer = timer
-            RunLoop.main.add(timer, forMode: .common)
-        }
-
-        /// Fires one repeat tick when navigation is still active.
-        private func fireRepeat() {
-            guard isEnabled, let direction = repeatingDirection else {
-                stopRepeating()
-                return
-            }
-            trigger(direction)
-        }
-
-        /// Stops repeat timer, optionally only for a specific direction.
-        private func stopRepeating(for direction: ArrowDirection? = nil) {
-            if let direction, repeatingDirection != direction {
-                return
-            }
-            repeatTimer?.invalidate()
-            repeatTimer = nil
-            repeatingDirection = nil
         }
 
         private enum ArrowDirection {

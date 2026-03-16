@@ -302,6 +302,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 applicationDiscovery.handleAppearanceChange(NSApp.effectiveAppearance)
+                NotificationCenter.default.post(name: .launcherShouldPurgeVisualCaches, object: nil)
                 if launcherWindowManager?.window?.isVisible == true {
                     prefetchMinimalIconsForVisibleLauncher()
                 }

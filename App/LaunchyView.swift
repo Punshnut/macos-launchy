@@ -121,9 +121,14 @@ private final class FolderPreviewCache: @unchecked Sendable {
     }
 
     /// Builds deterministic cache key for app preview icon variant.
-    func cacheKey(for app: AppItem, dimension: CGFloat, quality: IconRenderQuality) -> String {
+    func cacheKey(
+        for app: AppItem,
+        dimension: CGFloat,
+        quality: IconRenderQuality,
+        appearanceToken: String
+    ) -> String {
         let rounded = Int(dimension.rounded())
-        return "\(app.bundleIdentifier)|\(rounded)|\(quality.rawValue)"
+        return "\(app.bundleIdentifier)|\(rounded)|\(quality.rawValue)|\(appearanceToken)"
     }
 
     /// Reads cached preview icon for key if available.
@@ -1023,6 +1028,9 @@ struct LauncherView: View {
             cancelPendingHighQualityRequests()
             purgeFolderPreviewCache()
         }
+        .onChange(of: colorScheme) { _ in
+            resetVisualCachesForAppearanceChange()
+        }
         .onChange(of: activeFolder) { newValue in
             if shouldSkipActiveFolderChangeEffects {
                 shouldSkipActiveFolderChangeEffects = false
@@ -1478,7 +1486,13 @@ struct LauncherView: View {
     private func folderPreviewIcon(for app: AppItem, layout: LauncherLayoutMetrics) -> NSImage? {
         let request = folderTileIconRequest(for: layout)
         let cache = Self.folderPreviewCache
-        let key = cache.cacheKey(for: app, dimension: request.dimension, quality: request.quality)
+        let appearanceToken = currentAppearanceToken()
+        let key = cache.cacheKey(
+            for: app,
+            dimension: request.dimension,
+            quality: request.quality,
+            appearanceToken: appearanceToken
+        )
         if let cached = cache.cachedIcon(for: key) {
             return cached
         }
@@ -1495,11 +1509,19 @@ struct LauncherView: View {
         let apps = Array(folder.apps.prefix(9))
         guard apps.isEmpty == false else { return }
         let cache = Self.folderPreviewCache
-        let keys = apps.map { cache.cacheKey(for: $0, dimension: request.dimension, quality: request.quality) }
+        let appearanceToken = currentAppearanceToken()
+        let keys = apps.map {
+            cache.cacheKey(
+                for: $0,
+                dimension: request.dimension,
+                quality: request.quality,
+                appearanceToken: appearanceToken
+            )
+        }
         let missing = keys.contains { cache.cachedIcon(for: $0) == nil }
         guard missing else { return }
 
-        let token = "\(folder.id.uuidString)|\(Int(request.dimension.rounded()))|\(apps.map(\.id).hashValue)"
+        let token = "\(folder.id.uuidString)|\(appearanceToken)|\(Int(request.dimension.rounded()))|\(apps.map(\.id).hashValue)"
         guard cache.beginWarmupIfNeeded(token: token) else { return }
 
         let provider: @Sendable (AppItem, CGFloat, IconRenderQuality, CGFloat) -> NSImage? = iconProvider
@@ -1524,6 +1546,17 @@ struct LauncherView: View {
     /// Clears transient folder preview cache when inputs/limits change.
     private func purgeFolderPreviewCache() {
         Self.folderPreviewCache.purge()
+    }
+
+    /// Derives a stable token for theme-sensitive view caches.
+    private func currentAppearanceToken() -> String {
+        colorScheme == .dark ? "dark" : "light"
+    }
+
+    /// Clears icon caches that can retain stale light/dark variants across appearance changes.
+    private func resetVisualCachesForAppearanceChange() {
+        purgeHighQualityOverrides()
+        purgeFolderPreviewCache()
     }
 
     /// Computes icon dimension for deferred high-quality replacement requests.

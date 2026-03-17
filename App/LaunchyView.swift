@@ -1573,7 +1573,6 @@ struct LauncherView: View {
     /// Starts phase one of page switching (immediate state updates before deferred settle).
     private func beginPageSwitchPhase1() {
         lastPageChangeDate = Date()
-        beginPageSwitchAnimation()
         suppressGridAnimation = true
     }
 
@@ -1611,6 +1610,15 @@ struct LauncherView: View {
         let startingPage = currentPage
         let initialOffset = handoffOffset ?? (direction == .forward ? span : -span)
 
+        if handoffOffset == nil, abs(targetPage - startingPage) == 1 {
+            performGestureDrivenPageSwitch(
+                to: targetPage,
+                direction: direction,
+                pageSpan: span
+            )
+            return
+        }
+
         if startingPage != targetPage {
             let step = targetPage > startingPage ? 1 : -1
             for page in stride(from: startingPage + step, through: targetPage, by: step) {
@@ -1629,9 +1637,64 @@ struct LauncherView: View {
         pagerDragOffset = pixelAlign(initialOffset)
         beginPageSwitchPhase1()
         schedulePageSwitchPhase2()
+        beginPageSwitchAnimation()
 
         withAnimation(pageSwitchAnimation) {
             pagerDragOffset = 0
+        }
+
+        DispatchQueue.main.async {
+            let commitID = Self.beginSignpost("PageSwitchCommit")
+            Self.endSignpost("PageSwitchCommit", id: commitID)
+            if hasRecordedFirstPageSwitchCommit == false {
+                let firstCommitID = Self.beginSignpost("FirstPageSwitchCommit")
+                Self.endSignpost("FirstPageSwitchCommit", id: firstCommitID)
+                hasRecordedFirstPageSwitchCommit = true
+            }
+        }
+
+        Self.endSignpost("PageSwitchTrigger", id: completionSignpostID)
+    }
+
+    /// Completes a gesture-driven page switch without remapping pages until the slide fully settles.
+    private func performGestureDrivenPageSwitch(
+        to targetPage: Int,
+        direction: PageShiftDirection,
+        pageSpan: CGFloat
+    ) {
+        guard pageCount > 0 else { return }
+        guard targetPage != currentPage else { return }
+        assert(Thread.isMainThread, "Page switches must run on the main thread to avoid extra view invalidations.")
+
+        let startingPage = currentPage
+        let span = max(pageSpan, 1)
+        let finalOffset = pixelAlign(CGFloat(startingPage - targetPage) * span)
+
+        if startingPage != targetPage {
+            let step = targetPage > startingPage ? 1 : -1
+            for page in stride(from: startingPage + step, through: targetPage, by: step) {
+                prewarmPageIfNeeded(page)
+            }
+        }
+
+        let completionSignpostID = Self.beginSignpost("PageSwitchTrigger")
+        pageSwitchSignpostID = Self.beginSignpost("PageSwitch")
+
+        let transaction = Transaction(animation: nil)
+        withTransaction(transaction) {
+            pageDirection = direction
+            pagerDragOffset = pixelAlign(pagerDragOffset)
+        }
+
+        beginPageSwitchPhase1()
+        schedulePageSwitchPhase2()
+        beginPageSwitchAnimation {
+            currentPage = targetPage
+            pagerDragOffset = 0
+        }
+
+        withAnimation(pageSwitchAnimation) {
+            pagerDragOffset = finalOffset
         }
 
         DispatchQueue.main.async {
@@ -1673,22 +1736,25 @@ struct LauncherView: View {
     }
 
     /// Kicks off page transition animation bookkeeping.
-    private func beginPageSwitchAnimation() {
+    private func beginPageSwitchAnimation(finalize: (() -> Void)? = nil) {
         pageSwitchAnimationToken &+= 1
         let token = pageSwitchAnimationToken
         isPageSwitchAnimationActive = true
         let cooldown = Self.pageSwitchDuration + 0.04
         DispatchQueue.main.asyncAfter(deadline: .now() + cooldown) { [self] in
             guard token == pageSwitchAnimationToken else { return }
-            if abs(pagerDragOffset) < 0.5 {
-                isPageSwitchAnimationActive = false
-                Self.endSignpost("PageSwitch", id: pageSwitchSignpostID)
-                pageSwitchSignpostID = .invalid
-                if draggedItem == nil {
-                    suppressGridAnimation = false
-                }
-                drainQueuedPageShiftIfNeeded()
+            let transaction = Transaction(animation: nil)
+            withTransaction(transaction) {
+                finalize?()
+                pagerDragOffset = 0
             }
+            isPageSwitchAnimationActive = false
+            Self.endSignpost("PageSwitch", id: pageSwitchSignpostID)
+            pageSwitchSignpostID = .invalid
+            if draggedItem == nil {
+                suppressGridAnimation = false
+            }
+            drainQueuedPageShiftIfNeeded()
         }
     }
 
@@ -1710,7 +1776,6 @@ struct LauncherView: View {
     /// Records the active viewport span so scroll-based gestures map 1:1 with page distance.
     private func beginPagerInteraction(pageSpan: CGFloat) {
         pagerViewportWidth = max(pageSpan, 1)
-        prewarmAdjacentPagesIfNeeded()
     }
 
     /// Finalizes a drag-based page interaction using the predicted end state to capture velocity.
@@ -1761,14 +1826,14 @@ struct LauncherView: View {
         let projectedProgress = projectedDelta / normalizedWidth
         let cappedProjectedAssist: CGFloat
         if lastPagerInteractionSource == .drag {
-            cappedProjectedAssist = max(min(projectedProgress, 0.24), -0.24)
+            cappedProjectedAssist = max(min(projectedProgress, 0.18), -0.18)
         } else {
             cappedProjectedAssist = 0
         }
         let completionProgress = liveProgress + cappedProjectedAssist
-        let snapThreshold: CGFloat = 0.11
-        let recentSnapThreshold: CGFloat = 0.085
-        let deliberateLongGestureThreshold: CGFloat = 1.18
+        let snapThreshold: CGFloat = 0.09
+        let recentSnapThreshold: CGFloat = 0.065
+        let deliberateLongGestureThreshold: CGFloat = 1.45
         let absLiveProgress = abs(liveProgress)
         let absCompletionProgress = abs(completionProgress)
         let recentDrag = (lastPagerDragDate.map { Date().timeIntervalSince($0) < 0.12 }) ?? false
@@ -1781,7 +1846,7 @@ struct LauncherView: View {
 
         var deltaMagnitude = 0
         if absLiveProgress >= deliberateLongGestureThreshold {
-            deltaMagnitude = min(2, Int(floor(absLiveProgress)) + 1)
+            deltaMagnitude = min(2, Int(absLiveProgress.rounded(.down)) + 1)
         } else if absCompletionProgress >= snapThreshold || (recentDrag && absLiveProgress >= recentSnapThreshold) {
             deltaMagnitude = 1
         }
@@ -1801,12 +1866,10 @@ struct LauncherView: View {
             Self.endSignpost("PagerCompletionTrigger", id: signpostID)
         } else {
             let signpostID = Self.beginSignpost("PagerCompletionTrigger")
-            let handoffOffset = pagerDragOffset + CGFloat(targetPage - currentPage) * normalizedWidth
-            performAnimatedPageSwitch(
+            performGestureDrivenPageSwitch(
                 to: targetPage,
                 direction: direction,
-                spanOverride: pageSpan,
-                handoffOffset: handoffOffset
+                pageSpan: normalizedWidth
             )
             Self.endSignpost("PagerCompletionTrigger", id: signpostID)
         }
@@ -1815,7 +1878,7 @@ struct LauncherView: View {
 
     /// Constrains live offsets so we keep neighbors in memory but avoid excessive empty space.
     private func clampPagerOffset(_ offset: CGFloat, pageSpan: CGFloat) -> CGFloat {
-        let limit = pageSpan * 1.1
+        let limit = pageSpan * 2.05
         let bounded = max(min(offset, limit), -limit)
 
         if currentPage == 0 && bounded > 0 {
@@ -2018,16 +2081,27 @@ struct LauncherView: View {
         return candidate
     }
 
-    /// Computes how visible a page should be based on its proximity to the active page and drag offset.
+    /// Keeps pages fully opaque while they remain on-screen so outgoing/incoming grids read as one slide.
     private func pageOpacity(for page: Int, pageSpan: CGFloat) -> Double {
         let current = clampPageIndex(currentPage)
-        if page == current {
-            return 1
+        guard isPagerTransitionActive else {
+            return page == current ? 1 : 0
         }
+
         let span = max(pageSpan, 1)
         let dragProgress = pagerDragOffset / span
-        let distance = abs(CGFloat(page - current) + dragProgress)
-        let visibility = max(0, 1 - distance)
+        let translatedDistance = abs(CGFloat(page - current) + dragProgress)
+        if translatedDistance <= 1 {
+            if page == current {
+                return 1
+            }
+
+            let overlap = max(0, 1 - translatedDistance)
+            let visibility = overlap * overlap * (3 - 2 * overlap)
+            return Double(min(1, visibility))
+        }
+        let fadeRange: CGFloat = 0.08
+        let visibility = max(0, 1 - ((translatedDistance - 1) / fadeRange))
         return Double(min(1, visibility))
     }
 
@@ -2108,12 +2182,6 @@ struct LauncherView: View {
         let apps = Self.collectApps(from: items)
         guard apps.isEmpty == false else { return }
         onPageSwitchPrewarm(apps)
-    }
-
-    /// Triggers low-cost prewarm pass for neighboring pages.
-    private func prewarmAdjacentPagesIfNeeded() {
-        prewarmPageIfNeeded(currentPage - 1)
-        prewarmPageIfNeeded(currentPage + 1)
     }
 
     /// Starts first-page render timing instrumentation once.

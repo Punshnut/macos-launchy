@@ -1915,9 +1915,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                     pageCapacity: config.pageCapacity
                 )
             },
-            onVisiblePagesChanged: { [weak self] apps in
-                self?.warmVisiblePageIcons(apps)
-            },
             onPageSwitchPrewarm: { [weak self] apps in
                 self?.prewarmLikelyPageIcons(apps)
             },

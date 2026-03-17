@@ -332,7 +332,8 @@ struct LauncherView: View {
         let sizes = displayPageSizes
         let totalPages = max(sizes.count, 1)
         let pageIndices = visiblePageIndices(total: totalPages)
-        let isTransitioning = isPageSwitchAnimationActive || abs(pagerDragOffset) > 0.01
+        let isTransitioning = isPagerTransitionActive
+        let transitionPages = Set(pageIndices)
 
         let dragGesture = DragGesture(minimumDistance: 2)
             .onChanged { value in
@@ -362,7 +363,7 @@ struct LauncherView: View {
                 let pageItems = itemsForPage(pageIndex, sizes: sizes)
                 let pageStart = pageStartIndex(for: pageIndex, sizes: sizes)
                 let itemCountOnPage = sizes.indices.contains(pageIndex) ? sizes[pageIndex] : 0
-                let allowHeavyWork = isTransitioning ? (pageIndex == currentPage) : true
+                let allowHeavyWork = isTransitioning ? transitionPages.contains(pageIndex) : true
 
                 launcherGridPage(
                     layout: layout,
@@ -1420,6 +1421,10 @@ struct LauncherView: View {
         return baseOffset + CGFloat(page - current) * alignedSpan
     }
 
+    private var isPagerTransitionActive: Bool {
+        isPageSwitchAnimationActive || abs(pagerDragOffset) > 0.01 || isScrollGestureActive
+    }
+
     private var activeGridAnimation: Animation? {
         if isPageSwitchAnimationActive {
             return nil
@@ -1591,16 +1596,27 @@ struct LauncherView: View {
     }
 
     /// Applies a directional page change using a staged offset so both pages move coherently.
-    private func performAnimatedPageSwitch(to targetPage: Int, direction: PageShiftDirection, spanOverride: CGFloat? = nil) {
+    private func performAnimatedPageSwitch(
+        to targetPage: Int,
+        direction: PageShiftDirection,
+        spanOverride: CGFloat? = nil,
+        handoffOffset: CGFloat? = nil
+    ) {
         guard pageCount > 0 else { return }
         guard targetPage != currentPage else { return }
         assert(Thread.isMainThread, "Page switches must run on the main thread to avoid extra view invalidations.")
         // Performance guardrail: keep page switch animations centralized here to avoid nested transactions.
 
         let span = max(spanOverride ?? pagerViewportWidth, 1)
-        let initialOffset = direction == .forward ? span : -span
+        let startingPage = currentPage
+        let initialOffset = handoffOffset ?? (direction == .forward ? span : -span)
 
-        prewarmPageIfNeeded(targetPage)
+        if startingPage != targetPage {
+            let step = targetPage > startingPage ? 1 : -1
+            for page in stride(from: startingPage + step, through: targetPage, by: step) {
+                prewarmPageIfNeeded(page)
+            }
+        }
 
         let completionSignpostID = Self.beginSignpost("PageSwitchTrigger")
         pageSwitchSignpostID = Self.beginSignpost("PageSwitch")
@@ -1610,7 +1626,7 @@ struct LauncherView: View {
 
         // Move to the target page immediately, start it offset offscreen, then slide it in.
         currentPage = targetPage
-        pagerDragOffset = initialOffset
+        pagerDragOffset = pixelAlign(initialOffset)
         beginPageSwitchPhase1()
         schedulePageSwitchPhase2()
 
@@ -1741,36 +1757,36 @@ struct LauncherView: View {
         }
 
         let normalizedWidth = max(pageSpan, 1)
-        let totalOffset = pagerDragOffset + projectedDelta
-        let progress = totalOffset / normalizedWidth
-        let snapThreshold: CGFloat = 0.07
-        let fastThreshold: CGFloat = 0.15
-        let doubleProgressThreshold: CGFloat = 1.5
-        let highVelocityThreshold: CGFloat = 1.05
-        let velocity = projectedDelta / normalizedWidth
-        let absVelocity = abs(velocity)
-        let absProgress = abs(progress)
+        let liveProgress = pagerDragOffset / normalizedWidth
+        let projectedProgress = projectedDelta / normalizedWidth
+        let cappedProjectedAssist: CGFloat
+        if lastPagerInteractionSource == .drag {
+            cappedProjectedAssist = max(min(projectedProgress, 0.24), -0.24)
+        } else {
+            cappedProjectedAssist = 0
+        }
+        let completionProgress = liveProgress + cappedProjectedAssist
+        let snapThreshold: CGFloat = 0.11
+        let recentSnapThreshold: CGFloat = 0.085
+        let deliberateLongGestureThreshold: CGFloat = 1.18
+        let absLiveProgress = abs(liveProgress)
+        let absCompletionProgress = abs(completionProgress)
         let recentDrag = (lastPagerDragDate.map { Date().timeIntervalSince($0) < 0.12 }) ?? false
         let directionSign: Int = {
-            if absVelocity > 0.15 {
-                return velocity > 0 ? 1 : -1
+            if absCompletionProgress > 0.001 {
+                return completionProgress > 0 ? 1 : -1
             }
-            return progress > 0 ? 1 : -1
+            return liveProgress > 0 ? 1 : -1
         }()
 
-        var delta = 0
-        let allowDouble = lastPagerInteractionSource == .drag
-            && ((absVelocity > highVelocityThreshold && absProgress > 0.8) || absProgress > doubleProgressThreshold)
-
-        if allowDouble {
-            delta = 2 * directionSign
-        } else if absProgress > fastThreshold {
-            delta = 1 * directionSign
-        } else if absProgress > snapThreshold || (recentDrag && absProgress > 0.06) {
-            delta = 1 * directionSign
+        var deltaMagnitude = 0
+        if absLiveProgress >= deliberateLongGestureThreshold {
+            deltaMagnitude = min(2, Int(floor(absLiveProgress)) + 1)
+        } else if absCompletionProgress >= snapThreshold || (recentDrag && absLiveProgress >= recentSnapThreshold) {
+            deltaMagnitude = 1
         }
 
-        let targetPage = clampPageIndex(currentPage - delta)
+        let targetPage = clampPageIndex(currentPage - directionSign * deltaMagnitude)
         let direction: PageShiftDirection = targetPage >= currentPage ? .forward : .backward
 
         if targetPage == currentPage {
@@ -1785,7 +1801,13 @@ struct LauncherView: View {
             Self.endSignpost("PagerCompletionTrigger", id: signpostID)
         } else {
             let signpostID = Self.beginSignpost("PagerCompletionTrigger")
-            performAnimatedPageSwitch(to: targetPage, direction: direction, spanOverride: pageSpan)
+            let handoffOffset = pagerDragOffset + CGFloat(targetPage - currentPage) * normalizedWidth
+            performAnimatedPageSwitch(
+                to: targetPage,
+                direction: direction,
+                spanOverride: pageSpan,
+                handoffOffset: handoffOffset
+            )
             Self.endSignpost("PagerCompletionTrigger", id: signpostID)
         }
         lastPagerDragDate = nil
@@ -1954,6 +1976,23 @@ struct LauncherView: View {
         pixelAlign(max(span, 1))
     }
 
+    /// Resolves the signed direction of the active pager motion.
+    private func pagerMotionDirectionSign() -> Int {
+        if pagerDragOffset > 0.01 {
+            return -1
+        }
+        if pagerDragOffset < -0.01 {
+            return 1
+        }
+
+        switch pageDirection {
+        case .forward:
+            return -1
+        case .backward:
+            return 1
+        }
+    }
+
     /// Resolves the page that should stay attached to the current page during a transition.
     private func pagingCompanionPage(current: Int, total: Int, dragOffset: CGFloat, isPaging: Bool) -> Int? {
         guard total > 1 else { return nil }
@@ -2006,22 +2045,34 @@ struct LauncherView: View {
     private func visiblePageIndices(total: Int) -> [Int] {
         guard total > 0 else { return [] }
         let current = clampPageIndex(currentPage)
-        guard usesCoherentVerticalPagingRenderer else {
+        guard isPagerTransitionActive else {
             return [current - 1, current, current + 1].filter { $0 >= 0 && $0 < total }
         }
 
-        let isPaging = isPageSwitchAnimationActive || abs(pagerDragOffset) > 0.01 || isScrollGestureActive
-        guard isPaging else {
-            return [current - 1, current, current + 1].filter { $0 >= 0 && $0 < total }
+        let pageSpan = max(pagerViewportWidth, 1)
+        let extraReach = min(2, max(1, Int(floor(abs(pagerDragOffset) / pageSpan)) + 1))
+        let direction = pagerMotionDirectionSign()
+        let directionalPages: [Int] = {
+            if direction > 0 {
+                return (0...extraReach).map { current + $0 }
+            } else {
+                return (0...extraReach).map { current - $0 }
+            }
+        }()
+
+        if usesCoherentVerticalPagingRenderer {
+            return Array(Set([current, pagingCompanionPage(
+                current: current,
+                total: total,
+                dragOffset: pagerDragOffset,
+                isPaging: true
+            )].compactMap { $0 } + directionalPages))
+                .filter { $0 >= 0 && $0 < total }
+                .sorted()
         }
 
-        return [pagingCompanionPage(
-            current: current,
-            total: total,
-            dragOffset: pagerDragOffset,
-            isPaging: isPaging
-        ), current]
-            .compactMap { $0 }
+        return Array(Set(directionalPages))
+            .filter { $0 >= 0 && $0 < total }
             .sorted()
     }
 

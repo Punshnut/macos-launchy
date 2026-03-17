@@ -109,6 +109,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         private let onNextPage: () -> Void
         private var scrollMonitor: EventMonitorToken?
         private var hasActivePagedScroll = false
+        private var isIgnoringPreciseMomentum = false
 
         init(
             pagingOrientation: PagingOrientation,
@@ -159,6 +160,17 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
                 return
             }
 
+            let isPrecise = event.hasPreciseScrollingDeltas
+            if isPrecise, event.phase.contains(.began) {
+                isIgnoringPreciseMomentum = false
+            }
+            if isPrecise, isIgnoringPreciseMomentum {
+                if event.momentumPhase.contains(.ended) || event.momentumPhase.contains(.cancelled) {
+                    isIgnoringPreciseMomentum = false
+                }
+                return
+            }
+
             let primaryDelta = pagingOrientation == .vertical ? event.scrollingDeltaY : event.scrollingDeltaX
             if abs(primaryDelta) > 0.01 {
                 hasActivePagedScroll = true
@@ -168,16 +180,28 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
                         deltaY: event.scrollingDeltaY,
                         phase: event.phase,
                         momentumPhase: event.momentumPhase,
-                        isPrecise: event.hasPreciseScrollingDeltas
+                        isPrecise: isPrecise
                     )
                 )
             }
 
-            if event.hasPreciseScrollingDeltas == false {
+            if isPrecise == false {
                 processDiscretePagingScroll(delta: primaryDelta)
             }
 
-            if event.phase.contains(.ended) || event.momentumPhase.contains(.ended) {
+            if isPrecise, event.phase.contains(.ended) {
+                if hasActivePagedScroll {
+                    onScrollEnd()
+                }
+                hasActivePagedScroll = false
+                isIgnoringPreciseMomentum = true
+                return
+            }
+
+            if event.phase.contains(.ended)
+                || event.phase.contains(.cancelled)
+                || event.momentumPhase.contains(.ended)
+                || event.momentumPhase.contains(.cancelled) {
                 if hasActivePagedScroll {
                     onScrollEnd()
                 }
@@ -208,6 +232,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         /// Clears in-progress scroll gesture tracking.
         private func resetState() {
             hasActivePagedScroll = false
+            isIgnoringPreciseMomentum = false
         }
 
         private enum PageDirection {

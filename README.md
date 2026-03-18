@@ -1,8 +1,5 @@
 # Launchy
 
-> **Important:** On macOS 26.3, use Launchy **0.5.3** or newer. If Launchy fails to open after a macOS update, manually copy `Launchy.app` into `/Applications` again.
-I'm currently working on a new feature and performance update which will be available for download mid march.
-
 Launchy is the open-source Launchpad alternative macOS users have been waiting for. Fullscreen mode mirrors the classic Launchpad experience but adds richer controls, while Floaty Mode doubles as a HUD with fast toggles that match the new macOS design without changing the behavior you rely on. It scans your apps, caches icons, and keeps a responsive grid ready on every Space - a universal binary that runs natively on both Apple Silicon (M‑series) and Intel Macs, all completely free.
 
 <p align="center">
@@ -43,6 +40,8 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 <p align="center">
   <img src="Media/ScreenshotFullscreenMode.png" alt="Launchy Screenshot Fullscreen Mode" width="600">
 </p>
+
+> **Important:** On macOS 26.3, use Launchy **0.5.3** or newer. If Launchy fails to open after a macOS update, manually copy `Launchy.app` into `/Applications` again.
 
 ## Highlights
 

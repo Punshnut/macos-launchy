@@ -35,6 +35,11 @@ private enum PagerInteractionSource {
     case scroll
 }
 
+private struct PendingPagerAnimationFinalization: Equatable {
+    let logicalPage: Int?
+    let terminalOffset: CGFloat
+}
+
 private struct RemovedAppContext {
     var items: [LauncherItem]
     var app: AppItem
@@ -793,6 +798,7 @@ struct LauncherView: View {
     private static let maxQueuedPageShiftCount = 2
     private static let pageSwitchResponse: Double = 0.22
     private static let pageSwitchDamping: Double = 0.88
+    private static let pageSwitchFallbackDuration: TimeInterval = 0.18
     private let pageSwitchAnimation = Animation.interactiveSpring(
         response: Self.pageSwitchResponse,
         dampingFraction: Self.pageSwitchDamping,
@@ -910,6 +916,7 @@ struct LauncherView: View {
     @State private var pageSwitchAnimationToken: UInt = 0
     @State private var pageSwitchPhase2Token: UInt = 0
     @State private var pageSwitchSignpostID: OSSignpostID = .invalid
+    @State private var pendingPagerAnimationFinalization: PendingPagerAnimationFinalization?
     @State private var isScrollGestureActive = false
     @State private var pendingScrollDelta: CGFloat = 0
     @State private var scrollUpdateScheduled = false
@@ -1156,6 +1163,9 @@ struct LauncherView: View {
         .onChange(of: currentPage) { _ in
             alignSearchSelectionWithCurrentPageIfNeeded()
             notifyVisiblePagesChanged()
+        }
+        .onChange(of: pagerDragOffset) { _ in
+            completePageSwitchIfReady()
         }
         .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { notification in
             guard let window = notification.object as? NSWindow,
@@ -1637,7 +1647,12 @@ struct LauncherView: View {
         pagerDragOffset = pixelAlign(initialOffset)
         beginPageSwitchPhase1()
         schedulePageSwitchPhase2()
-        beginPageSwitchAnimation()
+        beginPageSwitchAnimation(
+            finalization: PendingPagerAnimationFinalization(
+                logicalPage: nil,
+                terminalOffset: 0
+            )
+        )
 
         withAnimation(pageSwitchAnimation) {
             pagerDragOffset = 0
@@ -1688,10 +1703,12 @@ struct LauncherView: View {
 
         beginPageSwitchPhase1()
         schedulePageSwitchPhase2()
-        beginPageSwitchAnimation {
-            currentPage = targetPage
-            pagerDragOffset = 0
-        }
+        beginPageSwitchAnimation(
+            finalization: PendingPagerAnimationFinalization(
+                logicalPage: targetPage,
+                terminalOffset: finalOffset
+            )
+        )
 
         withAnimation(pageSwitchAnimation) {
             pagerDragOffset = finalOffset
@@ -1736,26 +1753,40 @@ struct LauncherView: View {
     }
 
     /// Kicks off page transition animation bookkeeping.
-    private func beginPageSwitchAnimation(finalize: (() -> Void)? = nil) {
+    private func beginPageSwitchAnimation(finalization: PendingPagerAnimationFinalization) {
         pageSwitchAnimationToken &+= 1
         let token = pageSwitchAnimationToken
         isPageSwitchAnimationActive = true
-        let cooldown = Self.pageSwitchDuration + 0.04
-        DispatchQueue.main.asyncAfter(deadline: .now() + cooldown) { [self] in
+        pendingPagerAnimationFinalization = finalization
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.pageSwitchFallbackDuration) { [self] in
             guard token == pageSwitchAnimationToken else { return }
-            let transaction = Transaction(animation: nil)
-            withTransaction(transaction) {
-                finalize?()
-                pagerDragOffset = 0
-            }
-            isPageSwitchAnimationActive = false
-            Self.endSignpost("PageSwitch", id: pageSwitchSignpostID)
-            pageSwitchSignpostID = .invalid
-            if draggedItem == nil {
-                suppressGridAnimation = false
-            }
-            drainQueuedPageShiftIfNeeded()
+            completePageSwitchIfReady(force: true)
         }
+    }
+
+    /// Finishes page-switch state once the animated offset is close to its terminal value.
+    private func completePageSwitchIfReady(force: Bool = false) {
+        guard isPageSwitchAnimationActive else { return }
+        guard let finalization = pendingPagerAnimationFinalization else { return }
+
+        let tolerance = max(1.5, pixelAlignedPageSpan(pagerViewportWidth) * 0.015)
+        guard force || abs(pagerDragOffset - finalization.terminalOffset) <= tolerance else { return }
+
+        pendingPagerAnimationFinalization = nil
+        let transaction = Transaction(animation: nil)
+        withTransaction(transaction) {
+            if let logicalPage = finalization.logicalPage {
+                currentPage = logicalPage
+            }
+            pagerDragOffset = 0
+        }
+        isPageSwitchAnimationActive = false
+        Self.endSignpost("PageSwitch", id: pageSwitchSignpostID)
+        pageSwitchSignpostID = .invalid
+        if draggedItem == nil {
+            suppressGridAnimation = false
+        }
+        drainQueuedPageShiftIfNeeded()
     }
 
     /// Temporarily backs off heavy work (like hi-res icon loads) while the user is interacting.
@@ -1810,7 +1841,8 @@ struct LauncherView: View {
 
         isScrollGestureActive = true
         let scale: CGFloat = 1.0
-        queueScrollDelta(primaryDelta * scale, pageSpan: width)
+        flushPendingScrollDelta(pageSpan: width)
+        applyPagerScrollDelta(primaryDelta * scale, pageSpan: width)
 
     }
 
@@ -1826,14 +1858,14 @@ struct LauncherView: View {
         let projectedProgress = projectedDelta / normalizedWidth
         let cappedProjectedAssist: CGFloat
         if lastPagerInteractionSource == .drag {
-            cappedProjectedAssist = max(min(projectedProgress, 0.18), -0.18)
+            cappedProjectedAssist = max(min(projectedProgress, 0.12), -0.12)
         } else {
             cappedProjectedAssist = 0
         }
         let completionProgress = liveProgress + cappedProjectedAssist
-        let snapThreshold: CGFloat = 0.09
-        let recentSnapThreshold: CGFloat = 0.065
-        let deliberateLongGestureThreshold: CGFloat = 1.45
+        let snapThreshold: CGFloat = 0.072
+        let recentSnapThreshold: CGFloat = 0.052
+        let deliberateLongGestureThreshold: CGFloat = 1.7
         let absLiveProgress = abs(liveProgress)
         let absCompletionProgress = abs(completionProgress)
         let recentDrag = (lastPagerDragDate.map { Date().timeIntervalSince($0) < 0.12 }) ?? false
@@ -1846,7 +1878,7 @@ struct LauncherView: View {
 
         var deltaMagnitude = 0
         if absLiveProgress >= deliberateLongGestureThreshold {
-            deltaMagnitude = min(2, Int(absLiveProgress.rounded(.down)) + 1)
+            deltaMagnitude = min(2, max(1, Int(absLiveProgress.rounded(.down))))
         } else if absCompletionProgress >= snapThreshold || (recentDrag && absLiveProgress >= recentSnapThreshold) {
             deltaMagnitude = 1
         }
@@ -2092,15 +2124,11 @@ struct LauncherView: View {
         let dragProgress = pagerDragOffset / span
         let translatedDistance = abs(CGFloat(page - current) + dragProgress)
         if translatedDistance <= 1 {
-            if page == current {
-                return 1
-            }
-
-            let overlap = max(0, 1 - translatedDistance)
-            let visibility = overlap * overlap * (3 - 2 * overlap)
-            return Double(min(1, visibility))
+            let visibility = max(0, 1 - translatedDistance)
+            let minimumVisibleOpacity: CGFloat = 0
+            return Double(minimumVisibleOpacity + (1 - minimumVisibleOpacity) * visibility)
         }
-        let fadeRange: CGFloat = 0.08
+        let fadeRange: CGFloat = 0.12
         let visibility = max(0, 1 - ((translatedDistance - 1) / fadeRange))
         return Double(min(1, visibility))
     }
@@ -2124,28 +2152,25 @@ struct LauncherView: View {
         }
 
         let pageSpan = max(pagerViewportWidth, 1)
-        let extraReach = min(2, max(1, Int(floor(abs(pagerDragOffset) / pageSpan)) + 1))
         let direction = pagerMotionDirectionSign()
-        let directionalPages: [Int] = {
-            if direction > 0 {
-                return (0...extraReach).map { current + $0 }
-            } else {
-                return (0...extraReach).map { current - $0 }
+        let progress = abs(pagerDragOffset) / pageSpan
+        let extraReach = progress >= 1.02 ? min(2, Int(progress.rounded(.down))) : 0
+        var pages = [current]
+        if let companion = pagingCompanionPage(
+            current: current,
+            total: total,
+            dragOffset: pagerDragOffset,
+            isPaging: true
+        ) {
+            pages.append(companion)
+        }
+        if extraReach > 0 {
+            for step in 2...(extraReach + 1) {
+                pages.append(current + direction * step)
             }
-        }()
-
-        if usesCoherentVerticalPagingRenderer {
-            return Array(Set([current, pagingCompanionPage(
-                current: current,
-                total: total,
-                dragOffset: pagerDragOffset,
-                isPaging: true
-            )].compactMap { $0 } + directionalPages))
-                .filter { $0 >= 0 && $0 < total }
-                .sorted()
         }
 
-        return Array(Set(directionalPages))
+        return Array(Set(pages))
             .filter { $0 >= 0 && $0 < total }
             .sorted()
     }
@@ -5020,6 +5045,10 @@ struct LauncherView: View {
     /// Accumulates scroll delta for coalesced page navigation processing.
     private func queueScrollDelta(_ delta: CGFloat, pageSpan: CGFloat) {
         guard delta != 0 else { return }
+        if scrollCoalescingNanoseconds == 0 {
+            applyPagerScrollDelta(delta, pageSpan: pageSpan)
+            return
+        }
         pendingScrollDelta += delta
         guard scrollUpdateScheduled == false else { return }
         scrollUpdateScheduled = true
@@ -5035,14 +5064,20 @@ struct LauncherView: View {
         }
     }
 
+    /// Applies one live pager delta immediately, preserving a continuous gesture-to-animation handoff.
+    private func applyPagerScrollDelta(_ delta: CGFloat, pageSpan: CGFloat) {
+        guard delta != 0 else { return }
+        pagerDragOffset = clampPagerOffset(pagerDragOffset + delta, pageSpan: pageSpan)
+        lastPagerDragDate = Date()
+    }
+
     /// Applies buffered scroll deltas to page offset and navigation state.
     private func applyPendingScrollDelta(pageSpan: CGFloat) {
         scrollUpdateScheduled = false
         let delta = pendingScrollDelta
         pendingScrollDelta = 0
         guard delta != 0 else { return }
-        pagerDragOffset = clampPagerOffset(pagerDragOffset + delta, pageSpan: pageSpan)
-        lastPagerDragDate = Date()
+        applyPagerScrollDelta(delta, pageSpan: pageSpan)
     }
 
     /// Forces immediate application of buffered scroll deltas.

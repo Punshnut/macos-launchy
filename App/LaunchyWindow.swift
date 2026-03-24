@@ -6,7 +6,7 @@ final class LauncherWindowController: NSWindowController {
     private static let preferredFloatyContentSize = NSSize(width: 1040, height: 830)
     private let launcherContentHost: NSHostingController<LauncherView>
     private let launcherMode: LauncherMode
-    private let entranceContentOffset: CGFloat = 32
+    private let entranceContentOffset: CGFloat = 48
     private let entranceAnimationDuration: TimeInterval = 0.34
     private let hideAnimationDuration: TimeInterval = 0.25
     private var entranceContentOrigin: NSPoint = .zero

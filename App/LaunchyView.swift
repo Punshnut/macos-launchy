@@ -261,7 +261,7 @@ struct LauncherView: View {
     private let wiggleAnchor = UnitPoint(x: 0.5, y: 0.2)
     private var fullscreenGridEntranceScale: CGFloat {
         guard launcherMode == .fullscreen else { return 1 }
-        return 0.97 + 0.03 * CGFloat(fullscreenGridEntranceProgress)
+        return 0.95 + 0.05 * CGFloat(fullscreenGridEntranceProgress)
     }
     private var isVerticalPaging: Bool { pagingOrientation == .vertical }
 
@@ -751,7 +751,7 @@ struct LauncherView: View {
 
     private var fullscreenGridEntranceOpacity: Double {
         guard launcherMode == .fullscreen else { return 1 }
-        return 0.45 + 0.55 * fullscreenGridEntranceProgress
+        return fullscreenGridEntranceProgress
     }
 
     private var fullscreenGridEntranceSaturation: Double {
@@ -792,8 +792,8 @@ struct LauncherView: View {
     private let liveReorderSpringAnimation = Animation.interactiveSpring(response: 0.2, dampingFraction: 0.78, blendDuration: 0.12)
     private let folderReorderAnimation = Animation.interactiveSpring(response: 0.23, dampingFraction: 0.8, blendDuration: 0.12)
     private let reorderLiftAnimation = Animation.spring(response: 0.26, dampingFraction: 0.82, blendDuration: 0.1)
-    private let fullscreenGridEntranceAnimation = Animation.spring(response: 0.28, dampingFraction: 0.92, blendDuration: 0.14)
-    private let fullscreenGridEntranceTranslation: CGFloat = 18
+    private let fullscreenGridEntranceAnimation = Animation.spring(response: 0.34, dampingFraction: 0.82, blendDuration: 0.12)
+    private let fullscreenGridEntranceTranslation: CGFloat = 50
     private static let pageSwitchDuration: TimeInterval = 0.085
     private static let maxQueuedPageShiftCount = 2
     private static let pageSwitchResponse: Double = 0.22
@@ -1275,7 +1275,7 @@ struct LauncherView: View {
                         }
                     }
                     .opacity(gridBlendOpacity)
-                    .animation(.easeOut(duration: Self.folderOpenDuration), value: isFolderOverlayVisible)
+                    .animation(.easeInOut(duration: 0.30), value: isFolderOverlayVisible)
                 }
                 .animation(nil, value: searchControlsExpanded)
                 .padding(.horizontal, layout.horizontalPadding)
@@ -4741,8 +4741,8 @@ struct LauncherView: View {
     private func folderOverlay(for folder: FolderItem, layout: LauncherLayoutMetrics) -> some View {
         GeometryReader { proxy in
             let overlayLayout = folderOverlayLayout(for: folder, containerSize: proxy.size, layout: layout)
-            let overlayOpacity: Double = isFolderClosing ? 0 : (folderIconWaveToggle ? 1 : 0)
-            let dimOpacity: Double = isFolderClosing ? 0 : (folderIconWaveToggle ? 0.2 : 0)
+            let overlayOpacity: Double = folderIconWaveToggle ? 1 : 0
+            let dimOpacity: Double = folderIconWaveToggle ? 0.2 : 0
 
             ZStack {
                 LauncherBackgroundLayer(
@@ -4755,7 +4755,7 @@ struct LauncherView: View {
                 Color.black
                     .opacity(dimOpacity)
                     .ignoresSafeArea()
-                    .animation(.easeOut(duration: Self.folderOpenDuration), value: isFolderClosing)
+                    .animation(folderOpenAnimation, value: folderIconWaveToggle)
 
                 ScrollWheelPagerOverlay(
                     isEnabled: isFolderGesturePagingEnabled,
@@ -4831,7 +4831,6 @@ struct LauncherView: View {
                 .background(cardChrome)
                 .opacity(overlayOpacity)
                 .animation(folderOpenAnimation, value: folderIconWaveToggle)
-                .animation(.easeOut(duration: Self.folderOpenDuration), value: isFolderClosing)
                 .anchorPreference(key: FolderFramePreference.self, value: .bounds) { anchor in
                     proxy[anchor]
                 }
@@ -5298,14 +5297,17 @@ struct LauncherView: View {
         let signpostID = Self.beginSignpost("FolderOverlayClose")
         if animated {
             folderCloseWorkItem?.cancel()
+            enterPerformanceShedding(duration: Self.folderOpenDuration + 0.1, cancelHeavyWork: false)
+            // Fade icons in sync with the overlay card (mirrors open animation)
+            scheduleFolderIconWaveToggle(false, delay: 0, animated: true)
             withAnimation(.easeOut(duration: Self.folderOpenDuration)) {
                 isFolderClosing = true
             }
             let workItem = DispatchWorkItem { [self] in
-                withAnimation(.easeOut(duration: Self.folderOpenDuration)) {
-                    isFolderClosing = false
+                isFolderClosing = false
+                withAnimation(.easeInOut(duration: 0.35)) {
+                    activeFolder = nil   // isFolderOverlayVisible → false → gridBlendOpacity 0.6→1.0
                 }
-                activeFolder = nil
                 folderCloseWorkItem = nil
                 closingFolder = nil
                 Self.endSignpost("FolderOverlayClose", id: signpostID)

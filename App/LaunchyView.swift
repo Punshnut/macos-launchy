@@ -1779,13 +1779,13 @@ struct LauncherView: View {
                 currentPage = logicalPage
             }
             pagerDragOffset = 0
+            isPageSwitchAnimationActive = false
+            if draggedItem == nil {
+                suppressGridAnimation = false
+            }
         }
-        isPageSwitchAnimationActive = false
         Self.endSignpost("PageSwitch", id: pageSwitchSignpostID)
         pageSwitchSignpostID = .invalid
-        if draggedItem == nil {
-            suppressGridAnimation = false
-        }
         drainQueuedPageShiftIfNeeded()
     }
 
@@ -1824,9 +1824,6 @@ struct LauncherView: View {
         guard width > 0 else { return }
         beginPagerInteraction(pageSpan: width)
         lastPagerInteractionSource = .scroll
-        if isUnderInteractionPressure == false {
-            enterPerformanceShedding(duration: 0.55, cancelHeavyWork: false)
-        }
 
         let isDiscrete = event.isPrecise == false
         let primaryDelta = isVerticalPaging ? -event.deltaY : event.deltaX
@@ -1836,7 +1833,21 @@ struct LauncherView: View {
             isScrollGestureActive = false
             pagerDragOffset = 0
             lastPagerDragDate = Date()
+            if isUnderInteractionPressure == false {
+                enterPerformanceShedding(duration: 0.55, cancelHeavyWork: false)
+            }
             return
+        }
+
+        // Prewarm both neighbors at gesture start so icon loading completes before the companion page
+        // enters the view hierarchy, avoiding synchronous main-thread icon rendering on the first frame.
+        if isScrollGestureActive == false {
+            prewarmPageIfNeeded(currentPage - 1)
+            prewarmPageIfNeeded(currentPage + 1)
+        }
+
+        if isUnderInteractionPressure == false {
+            enterPerformanceShedding(duration: 0.55, cancelHeavyWork: false)
         }
 
         isScrollGestureActive = true

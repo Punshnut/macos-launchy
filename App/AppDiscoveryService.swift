@@ -468,11 +468,12 @@ final class AppDiscoveryService {
             }
         }
 
-        cacheReleaseQueue.sync {
-            preparedCacheReleaseTask?.cancel()
-            iconCacheReleaseTask?.cancel()
-            preparedCacheReleaseTask = preparedTask
-            iconCacheReleaseTask = iconTask
+        cacheReleaseQueue.async { [weak self] in
+            guard let self else { return }
+            self.preparedCacheReleaseTask?.cancel()
+            self.iconCacheReleaseTask?.cancel()
+            self.preparedCacheReleaseTask = preparedTask
+            self.iconCacheReleaseTask = iconTask
         }
     }
 

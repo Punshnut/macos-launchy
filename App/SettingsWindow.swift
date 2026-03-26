@@ -37,11 +37,8 @@ struct SettingsWindow: View {
             VStack(spacing: 0) {
                 topChromeSpacer
                 tabBar
-                Divider()
-                    .opacity(0.08)
-                    .overlay(Color.white.opacity(0.08))
                 ScrollView(.vertical, showsIndicators: true) {
-                    VStack(spacing: 10) {
+                    VStack(spacing: 8) {
                         tabContent
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -231,7 +228,7 @@ struct SettingsWindow: View {
                 )
             }
         ) {
-            VStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 8) {
                 launchAtLoginToggle
                 panelDivider
                 launcherLayoutPicker
@@ -242,11 +239,7 @@ struct SettingsWindow: View {
                 panelDivider
                 pagingOrientationPicker
                 panelDivider
-                iconVisibilitySection
-                panelDivider
-                dockMenuSection
-                panelDivider
-                autoGapToggle
+                iconBehaviorListSection
             }
         }
     }
@@ -259,7 +252,7 @@ struct SettingsWindow: View {
             title: String(localized: "Keyboard"),
             subtitle: String(localized: "Global shortcuts and quick reset tools.")
         ) {
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 8) {
                 hotkeySection
                 hotCornerSection
                 panelDivider
@@ -267,6 +260,8 @@ struct SettingsWindow: View {
                 panelDivider
                 backupSection
             }
+            .frame(maxWidth: 540)
+            .frame(maxWidth: .infinity, alignment: .center)
         }
     }
 
@@ -329,6 +324,8 @@ struct SettingsWindow: View {
             }
             .labelsHidden()
             .pickerStyle(.segmented)
+            .frame(maxWidth: 320)
+            .frame(maxWidth: .infinity, alignment: .center)
 
             Text(String(localized: "Add a layout toggle shortcut below to flip modes instantly from anywhere."))
                 .font(.caption)
@@ -387,21 +384,18 @@ struct SettingsWindow: View {
                     .clipShape(Capsule())
             }
 
-            HStack {
-                Spacer()
-                Picker("", selection: Binding(
-                    get: { settingsStore.settingsSnapshot.pagingOrientation },
-                    set: { settingsStore.setPagingOrientation($0) }
-                )) {
-                    ForEach(PagingOrientation.allCases, id: \.self) { orientation in
-                        Text(orientation.displayName).tag(orientation)
-                    }
+            Picker("", selection: Binding(
+                get: { settingsStore.settingsSnapshot.pagingOrientation },
+                set: { settingsStore.setPagingOrientation($0) }
+            )) {
+                ForEach(PagingOrientation.allCases, id: \.self) { orientation in
+                    Text(orientation.displayName).tag(orientation)
                 }
-                .labelsHidden()
-                .pickerStyle(.segmented)
-                .frame(width: 220)
-                Spacer()
             }
+            .labelsHidden()
+            .pickerStyle(.segmented)
+            .frame(maxWidth: 220)
+            .frame(maxWidth: .infinity, alignment: .center)
 
             Text(String(localized: "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty."))
                 .font(.caption)
@@ -409,35 +403,88 @@ struct SettingsWindow: View {
         }
     }
 
-    private var iconVisibilitySection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Toggle(String(localized: "Hide Dock icon"), isOn: Binding(
-                get: { settingsStore.settingsSnapshot.isDockIconHidden },
-                set: { settingsStore.setDockIconHidden($0) }
-            ))
+    private var iconBehaviorListSection: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text(String(localized: "Hide Dock icon"))
+                Spacer()
+                Toggle("", isOn: Binding(
+                    get: { settingsStore.settingsSnapshot.isDockIconHidden },
+                    set: { settingsStore.setDockIconHidden($0) }
+                ))
+                .toggleStyle(.switch)
+                .labelsHidden()
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
 
-            Toggle(String(localized: "Hide menu bar icon"), isOn: Binding(
-                get: { settingsStore.settingsSnapshot.isMenuBarIconHidden },
-                set: { settingsStore.setMenuBarIconHidden($0) }
-            ))
+            Divider().overlay(Color.white.opacity(0.06))
+
+            HStack {
+                Text(String(localized: "Hide menu bar icon"))
+                Spacer()
+                Toggle("", isOn: Binding(
+                    get: { settingsStore.settingsSnapshot.isMenuBarIconHidden },
+                    set: { settingsStore.setMenuBarIconHidden($0) }
+                ))
+                .toggleStyle(.switch)
+                .labelsHidden()
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
 
             Text(String(localized: "If both icons are hidden, Launchy keeps the toggle shortcut enabled so you can still open it."))
                 .font(.caption)
                 .foregroundStyle(.secondary)
-        }
-    }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 14)
+                .padding(.bottom, 10)
 
-    private var dockMenuSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Toggle(String(localized: "Group folders after apps in Dock menu"), isOn: Binding(
-                get: { settingsStore.settingsSnapshot.sortsDockMenuFoldersLast },
-                set: { settingsStore.setSortsDockMenuFoldersLast($0) }
-            ))
+            Divider().overlay(Color.white.opacity(0.06))
 
-            Text(String(localized: "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon."))
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(String(localized: "Group folders after apps in Dock menu"))
+                    Text(String(localized: "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon."))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer()
+                Toggle("", isOn: Binding(
+                    get: { settingsStore.settingsSnapshot.sortsDockMenuFoldersLast },
+                    set: { settingsStore.setSortsDockMenuFoldersLast($0) }
+                ))
+                .toggleStyle(.switch)
+                .labelsHidden()
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+
+            Divider().overlay(Color.white.opacity(0.06))
+
+            HStack {
+                Text(String(localized: "Icons move up when there's space"))
+                Spacer()
+                Toggle("", isOn: Binding(
+                    get: { settingsStore.settingsSnapshot.fillsGapsAutomatically },
+                    set: { settingsStore.setFillsGapsAutomatically($0) }
+                ))
+                .toggleStyle(.switch)
+                .labelsHidden()
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
         }
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(Color.white.opacity(0.10), lineWidth: 0.8)
+                )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     private var backgroundStyleSection: some View {
@@ -456,6 +503,8 @@ struct SettingsWindow: View {
             }
             .labelsHidden()
             .pickerStyle(.segmented)
+            .frame(maxWidth: 400)
+            .frame(maxWidth: .infinity, alignment: .center)
 
             if settingsStore.settingsSnapshot.backgroundStylePreference == .solid {
                 solidColorPalette
@@ -487,14 +536,6 @@ struct SettingsWindow: View {
                 }
             }
         }
-    }
-
-    private var autoGapToggle: some View {
-        Toggle(String(localized: "Icons move up when there's space"), isOn: Binding(
-            get: { settingsStore.settingsSnapshot.fillsGapsAutomatically },
-            set: { settingsStore.setFillsGapsAutomatically($0) }
-        ))
-        .toggleStyle(.switch)
     }
 
     private var hotkeySection: some View {
@@ -750,7 +791,7 @@ struct SettingsWindow: View {
             title: String(localized: "About Launchy"),
             subtitle: String(localized: "Version details, credits, and useful links.")
         ) {
-            VStack(spacing: 22) {
+            VStack(spacing: 14) {
                 aboutHeader
                 panelDivider
                 aboutLinks
@@ -764,13 +805,13 @@ struct SettingsWindow: View {
     }
 
     private var aboutHeader: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 8) {
             (applicationIconImage() ?? Image(systemName: "app"))
                 .resizable()
                 .scaledToFit()
-                .frame(width: 96, height: 96)
-                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                .shadow(color: Color.black.opacity(0.25), radius: 10, x: 0, y: 6)
+                .frame(width: 80, height: 80)
+                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .shadow(color: Color.black.opacity(0.22), radius: 8, x: 0, y: 4)
 
             Text(appDisplayName())
                 .font(.title2)
@@ -789,25 +830,34 @@ struct SettingsWindow: View {
     }
 
     private var aboutLinks: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(spacing: 0) {
             aboutLinkRow(
                 icon: "link",
                 title: String(localized: "Project Website"),
                 urlString: "https://feuerbacher.me/projects/launchy"
             )
-
+            Divider().overlay(Color.white.opacity(0.08))
             aboutLinkRow(
                 icon: "sparkle.magnifyingglass",
                 title: String(localized: "Report an Issue"),
                 urlString: "https://github.com/Punshnut/macos-launchy/issues"
             )
-
+            Divider().overlay(Color.white.opacity(0.08))
             aboutLinkRow(
                 icon: "envelope",
                 title: String(localized: "Support Email"),
                 urlString: "https://github.com/Punshnut/macos-launchy"
             )
         }
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(Color.white.opacity(0.10), lineWidth: 0.8)
+                )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 
     @ViewBuilder
@@ -815,36 +865,31 @@ struct SettingsWindow: View {
     private func aboutLinkRow(icon: String, title: String, urlString: String) -> some View {
         if let url = URL(string: urlString) {
             Link(destination: url) {
-                HStack(spacing: 10) {
+                HStack(spacing: 12) {
                     Image(systemName: icon)
-                        .frame(width: 20)
+                        .frame(width: 18)
+                        .foregroundColor(.secondary)
                     Text(title)
                     Spacer()
                     Image(systemName: "arrow.up.right")
                         .imageScale(.small)
                         .foregroundColor(.secondary)
                 }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.white.opacity(0.04))
-                )
+                .padding(.vertical, 11)
+                .padding(.horizontal, 14)
             }
             .buttonStyle(.plain)
         }
     }
 
     private var aboutActions: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 10) {
             Button {
                 openIntroduction()
             } label: {
                 Label(String(localized: "Revisit Introduction..."), systemImage: "sparkles")
             }
             .buttonStyle(.bordered)
-
-            Spacer()
 
             Button {
                 if let url = URL(string: "https://github.com/Punshnut/macos-launchy") {
@@ -855,11 +900,11 @@ struct SettingsWindow: View {
             }
             .buttonStyle(.borderedProminent)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 
     private var aboutSupportCallout: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 10) {
                 Image(systemName: "heart.fill")
                     .foregroundColor(Color(red: 1.0, green: 0.38, blue: 0.38))
@@ -918,10 +963,10 @@ struct SettingsWindow: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(16)
+        .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(
                     LinearGradient(
                         colors: [
@@ -933,7 +978,7 @@ struct SettingsWindow: View {
                     )
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
                         .stroke(Color.white.opacity(0.12), lineWidth: 0.8)
                 )
         )
@@ -953,7 +998,7 @@ struct SettingsWindow: View {
         customIcon: (() -> AnyView)? = nil,
         @ViewBuilder content: () -> Content
     ) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top, spacing: 12) {
                 Group {
                     if let customIcon {
@@ -983,7 +1028,7 @@ struct SettingsWindow: View {
 
             content()
         }
-        .padding(14)
+        .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 18, style: .continuous)

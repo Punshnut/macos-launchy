@@ -61,13 +61,21 @@ enum SettingsWindowHostManager {
             forContentRect: NSRect(origin: .zero, size: targetContentSize)
         ).size
 
-        let anchorPoint = NSPoint(x: currentFrame.midX, y: currentFrame.maxY)
+        let anchorPoint = NSPoint(x: currentFrame.midX, y: currentFrame.midY)
         let newOrigin = NSPoint(
             x: anchorPoint.x - targetFrameSize.width / 2,
-            y: anchorPoint.y - targetFrameSize.height
+            y: anchorPoint.y - targetFrameSize.height / 2
         )
         let newFrame = NSRect(origin: newOrigin, size: targetFrameSize)
-        window.setFrame(newFrame, display: true, animate: animated)
+        if animated {
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.36
+                context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                window.animator().setFrame(newFrame, display: true)
+            }
+        } else {
+            window.setFrame(newFrame, display: true, animate: false)
+        }
     }
 
     /// Applies shared visual styling for the settings host window.
@@ -92,6 +100,11 @@ enum SettingsWindowAppKitBridge {
     /// Opens an external URL through NSWorkspace.
     static func openURL(_ url: URL) {
         NSWorkspace.shared.open(url)
+    }
+
+    /// Fires a short alignment haptic pulse for tab selection feedback.
+    static func performTabSelectionHaptic() {
+        NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .default)
     }
 }
 

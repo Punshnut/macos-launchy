@@ -165,52 +165,38 @@ struct SettingsWindow: View {
     // MARK: - Tabs
 
     private var tabBar: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 6) {
             ForEach(SettingsTab.allCases) { tab in
                 tabButton(for: tab)
             }
         }
+        .padding(5)
+        .background(
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(Color.primary.opacity(0.06))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .stroke(Color.white.opacity(0.10), lineWidth: 0.5)
+                )
+        )
         .padding(.horizontal, 16)
         .padding(.top, 10)
         .padding(.bottom, 6)
     }
 
-    /// Renders a sidebar tab button with active-state styling.
+    /// Renders a sidebar tab button. Hover state is owned locally by `TabButtonView`
+    /// so only the individual pill re-renders on hover, not the whole settings view.
     private func tabButton(for tab: SettingsTab) -> some View {
-        let isSelected = coordinator.activeTab == tab
-        return Button {
+        TabButtonView(
+            tab: tab,
+            isSelected: coordinator.activeTab == tab,
+            namespace: tabSelectionNamespace
+        ) {
+            SettingsWindowAppKitBridge.performTabSelectionHaptic()
             withAnimation(.spring(response: 0.28, dampingFraction: 0.85)) {
                 coordinator.selectTab(tab)
             }
-        } label: {
-            HStack(spacing: 10) {
-                Image(systemName: tab.iconName)
-                    .font(.system(size: 16, weight: .semibold))
-                Text(tab.title)
-                    .font(.system(size: 15, weight: .semibold))
-            }
-            .foregroundColor(isSelected ? Color.accentColor : Color.primary)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 5)
-            .background(
-                ZStack {
-                    if isSelected {
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(Color.accentColor.opacity(0.22))
-                            .matchedGeometryEffect(id: "tabSelection", in: tabSelectionNamespace)
-                    }
-                }
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(
-                        isSelected ? Color.accentColor : Color.white.opacity(0.12),
-                        lineWidth: isSelected ? 1.6 : 1
-                    )
-            )
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(Text(tab.title))
     }
 
     @ViewBuilder
@@ -356,24 +342,28 @@ struct SettingsWindow: View {
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
-            Slider(
-                value: Binding(
-                    get: { settingsStore.settingsSnapshot.iconSizePreference.sliderPosition },
-                    set: { settingsStore.setIconSizePreference(IconSizePreference.fromSliderPosition($0)) }
-                ),
-                in: 0...2,
-                step: 1
-            )
+            VStack(spacing: 3) {
+                Slider(
+                    value: Binding(
+                        get: { settingsStore.settingsSnapshot.iconSizePreference.sliderPosition },
+                        set: { settingsStore.setIconSizePreference(IconSizePreference.fromSliderPosition($0)) }
+                    ),
+                    in: 0...2,
+                    step: 1
+                )
 
-            HStack {
-                Text(IconSizePreference.small.displayName)
-                Spacer()
-                Text(IconSizePreference.medium.displayName)
-                Spacer()
-                Text(IconSizePreference.large.displayName)
+                HStack {
+                    Text(IconSizePreference.small.displayName)
+                    Spacer()
+                    Text(IconSizePreference.medium.displayName)
+                    Spacer()
+                    Text(IconSizePreference.large.displayName)
+                }
+                .font(.caption)
+                .foregroundColor(.secondary)
             }
-            .font(.caption)
-            .foregroundColor(.secondary)
+            .frame(maxWidth: 320)
+            .frame(maxWidth: .infinity, alignment: .center)
 
             Text(String(localized: "Large icon size applies to fullscreen only; floaty uses medium."))
                 .font(.caption)
@@ -397,16 +387,21 @@ struct SettingsWindow: View {
                     .clipShape(Capsule())
             }
 
-            Picker("", selection: Binding(
-                get: { settingsStore.settingsSnapshot.pagingOrientation },
-                set: { settingsStore.setPagingOrientation($0) }
-            )) {
-                ForEach(PagingOrientation.allCases, id: \.self) { orientation in
-                    Text(orientation.displayName).tag(orientation)
+            HStack {
+                Spacer()
+                Picker("", selection: Binding(
+                    get: { settingsStore.settingsSnapshot.pagingOrientation },
+                    set: { settingsStore.setPagingOrientation($0) }
+                )) {
+                    ForEach(PagingOrientation.allCases, id: \.self) { orientation in
+                        Text(orientation.displayName).tag(orientation)
+                    }
                 }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+                .frame(width: 220)
+                Spacer()
             }
-            .labelsHidden()
-            .pickerStyle(.segmented)
 
             Text(String(localized: "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty."))
                 .font(.caption)
@@ -1244,6 +1239,68 @@ enum WindowControlKind: CaseIterable, Identifiable {
         case .minimize: return "minus"
         case .zoom:     return "plus"
         }
+    }
+}
+
+/// Self-contained tab button whose hover state is local, preventing full-view re-renders.
+private struct TabButtonView: View {
+    let tab: SettingsTab
+    let isSelected: Bool
+    let namespace: Namespace.ID
+    let onTap: () -> Void
+
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 8) {
+                Image(systemName: tab.iconName)
+                    .font(.system(size: 15, weight: .semibold))
+                Text(tab.title)
+                    .font(.system(size: 14, weight: .semibold))
+            }
+            .foregroundColor(
+                isSelected ? Color.accentColor : Color.primary.opacity(isHovered ? 0.92 : 0.68)
+            )
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(
+                ZStack {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(Color.accentColor.opacity(0.22))
+                            .matchedGeometryEffect(id: "tabSelection", in: namespace)
+                    } else if isHovered {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(Color.primary.opacity(0.10))
+                    }
+                }
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(
+                        isSelected ? Color.accentColor.opacity(0.50) : Color.clear,
+                        lineWidth: 1.5
+                    )
+            )
+        }
+        .buttonStyle(TabPressStyle())
+        .onHover { hovering in
+            withAnimation(.spring(response: 0.18, dampingFraction: 0.80)) {
+                isHovered = hovering
+            }
+        }
+        .accessibilityLabel(Text(tab.title))
+    }
+}
+
+/// Flat press style: scales down slightly and dims — no shadows.
+private struct TabPressStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.93 : 1.0)
+            .opacity(configuration.isPressed ? 0.75 : 1.0)
+            .animation(.spring(response: 0.15, dampingFraction: 0.72), value: configuration.isPressed)
     }
 }
 

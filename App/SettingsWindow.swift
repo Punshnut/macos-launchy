@@ -31,7 +31,7 @@ struct SettingsWindow: View {
 
     var body: some View {
         ZStack {
-            outerBackgroundView
+            FrostedBackgroundView(material: .hudWindow)
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
@@ -47,15 +47,6 @@ struct SettingsWindow: View {
                 }
             }
             .frame(minWidth: 640, minHeight: 560)
-            .background(
-                FrostedBackgroundView(material: .hudWindow)
-                    .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .stroke(borderStrokeColor, lineWidth: 1)
-                    .allowsHitTesting(false)
-            )
             .overlay(
                 HostingWindowFinder { window in
                     hostingWindow = window
@@ -63,9 +54,6 @@ struct SettingsWindow: View {
                 }
                 .allowsHitTesting(false)
             )
-            .padding(.horizontal, 6)
-            .padding(.bottom, 6)
-            .padding(.top, 6)
             .overlay(alignment: .topLeading) {
                 windowControls
                     .padding(.top, topChromeControlInset)
@@ -73,6 +61,13 @@ struct SettingsWindow: View {
                     .padding(.trailing, 22)
             }
         }
+        .ignoresSafeArea(.all, edges: .top)
+        .overlay(
+            RoundedRectangle(cornerRadius: 32, style: .continuous)
+                .stroke(borderStrokeColor, lineWidth: 1)
+                .allowsHitTesting(false)
+                .ignoresSafeArea()
+        )
         .onChange(of: coordinator.activeTab) { newValue in
             resizeWindow(for: newValue, animated: true)
         }
@@ -91,7 +86,6 @@ struct SettingsWindow: View {
             .frame(height: topChromeHeight)
             .overlay(alignment: .center) {
                 topBarTitle
-                    .padding(.top, 6)
                     .padding(.horizontal, 60)
             }
     }
@@ -135,12 +129,13 @@ struct SettingsWindow: View {
         .padding(5)
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.primary.opacity(0.06))
+                .fill(Color.primary.opacity(0.09))
                 .overlay(
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
                         .stroke(Color.white.opacity(0.10), lineWidth: 0.5)
                 )
         )
+        .shadow(color: Color.black.opacity(0.08), radius: 4, y: 2)
         .padding(.horizontal, 16)
         .padding(.top, 10)
         .padding(.bottom, 6)
@@ -1087,19 +1082,11 @@ struct SettingsWindow: View {
     }
 
     private var topChromeHeight: CGFloat {
-        34
+        36
     }
 
     private var topChromeControlInset: CGFloat {
-        12
-    }
-
-    @ViewBuilder
-    private var outerBackgroundView: some View {
-        let cornerRadius: CGFloat = 32
-        FrostedBackgroundView(material: .hudWindow)
-            .overlay(Color.white.opacity(0.06))
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+        7
     }
 
     /// Reads bundle display name with a safe fallback for previews/tests.
@@ -1278,8 +1265,9 @@ private struct TabButtonView: View {
                 ZStack {
                     if isSelected {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(Color.accentColor.opacity(0.22))
+                            .fill(Color.accentColor.opacity(0.28))
                             .matchedGeometryEffect(id: "tabSelection", in: namespace)
+                            .shadow(color: Color.accentColor.opacity(0.25), radius: 5, y: 2)
                     } else if isHovered {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
                             .fill(Color.primary.opacity(0.10))

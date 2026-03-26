@@ -553,7 +553,6 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         window.titleVisibility = .hidden
         window.isMovableByWindowBackground = true
         window.isOpaque = false
-        window.toolbarStyle = .unifiedCompact
         window.isReleasedWhenClosed = false
         window.level = .statusBar
         window.collectionBehavior.insert(.fullScreenAuxiliary)

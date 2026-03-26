@@ -1237,7 +1237,7 @@ enum WindowControlKind: CaseIterable, Identifiable {
         switch self {
         case .close:    return "xmark"
         case .minimize: return "minus"
-        case .zoom:     return "plus"
+        case .zoom:     return ""
         }
     }
 }
@@ -1304,6 +1304,28 @@ private struct TabPressStyle: ButtonStyle {
     }
 }
 
+private struct ZoomHoverIcon: View {
+    var body: some View {
+        Canvas { ctx, size in
+            let t: CGFloat = 3.5
+            var ul = Path()
+            ul.move(to: .init(x: 0, y: t))
+            ul.addLine(to: .init(x: 0, y: 0))
+            ul.addLine(to: .init(x: t, y: 0))
+            ul.closeSubpath()
+            var lr = Path()
+            lr.move(to: .init(x: size.width - t, y: size.height))
+            lr.addLine(to: .init(x: size.width, y: size.height))
+            lr.addLine(to: .init(x: size.width, y: size.height - t))
+            lr.closeSubpath()
+            let shade = GraphicsContext.Shading.color(Color.black.opacity(0.45))
+            ctx.fill(ul, with: shade)
+            ctx.fill(lr, with: shade)
+        }
+        .frame(width: 6, height: 6)
+    }
+}
+
 struct WindowControlDot: View {
     let kind: WindowControlKind
     let action: () -> Void
@@ -1313,12 +1335,16 @@ struct WindowControlDot: View {
         Button(action: action) {
             Circle()
                 .fill(kind.color)
-                .frame(width: 12, height: 12)
+                .frame(width: 14, height: 14)
                 .overlay {
                     if isHovering {
-                        Image(systemName: kind.symbolName)
-                            .font(.system(size: 6, weight: .black))
-                            .foregroundColor(Color.black.opacity(0.65))
+                        if kind == .zoom {
+                            ZoomHoverIcon()
+                        } else {
+                            Image(systemName: kind.symbolName)
+                                .font(.system(size: 7, weight: .semibold))
+                                .foregroundColor(Color.black.opacity(0.65))
+                        }
                     }
                 }
                 .overlay(

@@ -102,9 +102,6 @@ struct IntroductionWindow: View {
 
     var body: some View {
         ZStack {
-            outerBackground
-                .ignoresSafeArea()
-
             VStack(spacing: 0) {
                 topBar
                 Divider()
@@ -128,8 +125,6 @@ struct IntroductionWindow: View {
                 }
                 .allowsHitTesting(false)
             )
-            .padding(.horizontal, 10)
-            .padding(.vertical, 10)
         }
         .onAppear {
             currentStep = max(0, min(initialStep, steps.count - 1))
@@ -137,22 +132,6 @@ struct IntroductionWindow: View {
         .onChange(of: resetToken) { _ in
             currentStep = max(0, min(initialStep, steps.count - 1))
         }
-    }
-
-    private var outerBackground: some View {
-        let gradient = LinearGradient(
-            colors: [
-                Color.black.opacity(0.4),
-                Color.black.opacity(0.25),
-                Color.black.opacity(0.4)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        return gradient
-            .overlay(Color.white.opacity(0.02))
-            .background(Color.clear)
-            .blur(radius: 0.4)
     }
 
     private var topBar: some View {
@@ -352,7 +331,7 @@ struct IntroductionWindow: View {
         guard let window else { return }
         window.isOpaque = false
         window.backgroundColor = .clear
-        window.applyRoundedCorners(radius: 32)
+        window.applyRoundedCorners(radius: 26)
     }
 }
 
@@ -361,7 +340,7 @@ final class IntroductionWindowController: NSWindowController {
     static let shared = IntroductionWindowController()
     private var hostingController: NSHostingController<IntroductionWindow>?
 
-    private let defaultWindowSize = NSSize(width: 760, height: 580)
+    private let defaultWindowSize = NSSize(width: 720, height: 540)
 
     /// Builds (or rebuilds) the introduction window and presents it.
     func present(
@@ -385,7 +364,7 @@ final class IntroductionWindowController: NSWindowController {
 
         if let host = hostingController, let window {
             host.rootView = buildView()
-            window.applyRoundedCorners(radius: 32)
+            window.applyRoundedCorners(radius: 26)
             center(window: window)
             showWindow(nil)
             window.makeKeyAndOrderFront(nil)

@@ -40,6 +40,7 @@ struct SettingsWindow: View {
                 ScrollView(.vertical, showsIndicators: true) {
                     VStack(spacing: 8) {
                         tabContent
+                            .transaction { $0.animation = nil }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 16)
@@ -198,7 +199,6 @@ struct SettingsWindow: View {
                 iconSizeSlider
                 panelDivider
                 pagingOrientationPicker
-                panelDivider
                 iconBehaviorListSection
             }
         }
@@ -753,11 +753,8 @@ struct SettingsWindow: View {
         ) {
             VStack(spacing: 14) {
                 aboutHeader
-                panelDivider
                 aboutLinks
-                panelDivider
                 aboutSupportCallout
-                panelDivider
                 aboutActions
             }
             .frame(maxWidth: .infinity, alignment: .center)

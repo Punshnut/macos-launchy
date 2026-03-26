@@ -68,6 +68,12 @@ enum SettingsWindowHostManager {
         )
         let newFrame = NSRect(origin: newOrigin, size: targetFrameSize)
         if animated {
+            // Cancel any in-flight frame animation before starting a new one
+            NSAnimationContext.beginGrouping()
+            NSAnimationContext.current.duration = 0
+            window.animator().setFrame(window.frame, display: false)
+            NSAnimationContext.endGrouping()
+
             NSAnimationContext.runAnimationGroup { context in
                 context.duration = 0.36
                 context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)

@@ -41,10 +41,10 @@ enum SettingsTab: Int, CaseIterable, Identifiable {
 /// Centralizes sizing constants for the settings window so both SwiftUI and AppKit code agree.
 struct SettingsWindowMetrics {
     static let defaultContentWidth: CGFloat = 900
-    static let visualsHeight: CGFloat = 767
-    static let shortcutsHeight: CGFloat = 614
-    static let hiddenAppsHeight: CGFloat = 642
-    static let aboutHeight: CGFloat = 682
+    static let visualsHeight: CGFloat = 754
+    static let shortcutsHeight: CGFloat = 605
+    static let hiddenAppsHeight: CGFloat = 632
+    static let aboutHeight: CGFloat = 625
     static let minimumContentSize = CGSize(width: 640, height: 520)
 
     static var defaultContentSize: CGSize {

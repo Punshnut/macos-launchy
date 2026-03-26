@@ -26,6 +26,7 @@ tmp.iconset
 # Local development tooling metadata
 .vscode/
 .sandbox-home/
+/.claude/
 
 # Xcode derived data
 DerivedData/

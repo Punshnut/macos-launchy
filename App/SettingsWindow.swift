@@ -41,12 +41,12 @@ struct SettingsWindow: View {
                     .opacity(0.08)
                     .overlay(Color.white.opacity(0.08))
                 ScrollView(.vertical, showsIndicators: true) {
-                    VStack(spacing: 16) {
+                    VStack(spacing: 10) {
                         tabContent
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 20)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 14)
                 }
             }
             .frame(minWidth: 640, minHeight: 560)
@@ -94,7 +94,7 @@ struct SettingsWindow: View {
             .frame(height: topChromeHeight)
             .overlay(alignment: .center) {
                 topBarTitle
-                    .padding(.top, 8)
+                    .padding(.top, 6)
                     .padding(.horizontal, 60)
             }
     }
@@ -165,14 +165,14 @@ struct SettingsWindow: View {
     // MARK: - Tabs
 
     private var tabBar: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 10) {
             ForEach(SettingsTab.allCases) { tab in
                 tabButton(for: tab)
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 18)
-        .padding(.bottom, 10)
+        .padding(.horizontal, 16)
+        .padding(.top, 10)
+        .padding(.bottom, 6)
     }
 
     /// Renders a sidebar tab button with active-state styling.
@@ -190,8 +190,8 @@ struct SettingsWindow: View {
                     .font(.system(size: 15, weight: .semibold))
             }
             .foregroundColor(isSelected ? Color.accentColor : Color.primary)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 7)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 5)
             .background(
                 ZStack {
                     if isSelected {
@@ -245,7 +245,7 @@ struct SettingsWindow: View {
                 )
             }
         ) {
-            VStack(spacing: 18) {
+            VStack(spacing: 10) {
                 launchAtLoginToggle
                 panelDivider
                 launcherLayoutPicker
@@ -273,7 +273,7 @@ struct SettingsWindow: View {
             title: String(localized: "Keyboard"),
             subtitle: String(localized: "Global shortcuts and quick reset tools.")
         ) {
-            VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 10) {
                 hotkeySection
                 hotCornerSection
                 panelDivider
@@ -328,7 +328,7 @@ struct SettingsWindow: View {
     }
 
     private var launcherLayoutPicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             Text(String(localized: "Launcher layout"))
                 .font(.subheadline)
                 .fontWeight(.semibold)
@@ -351,7 +351,7 @@ struct SettingsWindow: View {
     }
 
     private var iconSizeSlider: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             Text(String(localized: "Icon size"))
                 .font(.subheadline)
                 .fontWeight(.semibold)
@@ -382,7 +382,7 @@ struct SettingsWindow: View {
     }
 
     private var pagingOrientationPicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
                 Text(String(localized: "Paging direction"))
                     .font(.subheadline)
@@ -415,7 +415,7 @@ struct SettingsWindow: View {
     }
 
     private var iconVisibilitySection: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 4) {
             Toggle(String(localized: "Hide Dock icon"), isOn: Binding(
                 get: { settingsStore.settingsSnapshot.isDockIconHidden },
                 set: { settingsStore.setDockIconHidden($0) }
@@ -433,7 +433,7 @@ struct SettingsWindow: View {
     }
 
     private var dockMenuSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 4) {
             Toggle(String(localized: "Group folders after apps in Dock menu"), isOn: Binding(
                 get: { settingsStore.settingsSnapshot.sortsDockMenuFoldersLast },
                 set: { settingsStore.setSortsDockMenuFoldersLast($0) }
@@ -446,7 +446,7 @@ struct SettingsWindow: View {
     }
 
     private var backgroundStyleSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 6) {
             Text(String(localized: "Background style"))
                 .font(.subheadline)
                 .fontWeight(.semibold)
@@ -525,7 +525,7 @@ struct SettingsWindow: View {
     }
 
     private var hotCornerSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 6) {
             Toggle(String(localized: "Enable hot corner toggle"), isOn: Binding(
                 get: { settingsStore.settingsSnapshot.hotCornerEnabled },
                 set: { settingsStore.setHotCornerEnabled($0) }
@@ -562,7 +562,7 @@ struct SettingsWindow: View {
     }
 
     private var resetSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 6) {
             Button {
                 confirmArrangementReset()
             } label: {
@@ -578,7 +578,7 @@ struct SettingsWindow: View {
     }
 
     private var backupSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             Text(String(localized: "Back up & Restore"))
                 .font(.subheadline)
                 .fontWeight(.semibold)
@@ -617,7 +617,7 @@ struct SettingsWindow: View {
             .textCase(.uppercase)
             .foregroundColor(Color.primary.opacity(0.65))
             .padding(.horizontal, 20)
-            .padding(.vertical, 12)
+            .padding(.vertical, 8)
             .background(
                 LinearGradient(
                     colors: [
@@ -722,7 +722,7 @@ struct SettingsWindow: View {
             .labelsHidden()
         }
         .padding(.horizontal, 20)
-        .padding(.vertical, 12)
+        .padding(.vertical, 9)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -949,7 +949,6 @@ struct SettingsWindow: View {
     private var panelDivider: some View {
         Divider()
             .overlay(Color.white.opacity(0.08))
-            .padding(.vertical, 1)
     }
 
     private func settingsPanel<Content: View>(
@@ -959,7 +958,7 @@ struct SettingsWindow: View {
         customIcon: (() -> AnyView)? = nil,
         @ViewBuilder content: () -> Content
     ) -> some View {
-        VStack(alignment: .leading, spacing: 18) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
                 Group {
                     if let customIcon {
@@ -989,7 +988,7 @@ struct SettingsWindow: View {
 
             content()
         }
-        .padding(18)
+        .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
@@ -1186,7 +1185,7 @@ private struct HotkeyRecorderRow: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
-        .padding(12)
+        .padding(10)
         .background(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .fill(.ultraThinMaterial)
@@ -1238,23 +1237,39 @@ enum WindowControlKind: CaseIterable, Identifiable {
             return Color(red: 0.19, green: 0.81, blue: 0.29)
         }
     }
+
+    var symbolName: String {
+        switch self {
+        case .close:    return "xmark"
+        case .minimize: return "minus"
+        case .zoom:     return "plus"
+        }
+    }
 }
 
 struct WindowControlDot: View {
     let kind: WindowControlKind
     let action: () -> Void
+    @State private var isHovering = false
 
     var body: some View {
         Button(action: action) {
             Circle()
                 .fill(kind.color)
                 .frame(width: 12, height: 12)
+                .overlay {
+                    if isHovering {
+                        Image(systemName: kind.symbolName)
+                            .font(.system(size: 6, weight: .black))
+                            .foregroundColor(Color.black.opacity(0.65))
+                    }
+                }
                 .overlay(
-                    Circle()
-                        .stroke(Color.white.opacity(0.18), lineWidth: 0.5)
+                    Circle().stroke(Color.black.opacity(0.12), lineWidth: 0.5)
                 )
         }
         .buttonStyle(.plain)
+        .onHover { isHovering = $0 }
     }
 }
 

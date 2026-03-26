@@ -112,23 +112,6 @@ struct SettingsWindow: View {
         let isDark = colorScheme == .dark
         let titleColor = isDark ? Color.white.opacity(0.96) : Color.primary.opacity(0.9)
         let subtitleColor = isDark ? Color.white.opacity(0.75) : Color.primary.opacity(0.55)
-        let capsuleFill = LinearGradient(
-            colors: isDark
-                ? [Color.black.opacity(0.62), Color.black.opacity(0.45)]
-                : [Color.white.opacity(0.95), Color.white.opacity(0.85)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        let capsuleHighlight = LinearGradient(
-            colors: isDark
-                ? [Color.white.opacity(0.08), Color.white.opacity(0.02)]
-                : [Color.white.opacity(0.35), Color.white.opacity(0.15)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        let capsuleStroke = isDark ? Color.white.opacity(0.18) : Color.black.opacity(0.08)
-        let outerGlow = isDark ? Color.white.opacity(0.18) : Color.white.opacity(0.35)
-        let shadowColor = isDark ? Color.black.opacity(0.55) : Color.black.opacity(0.18)
 
         return HStack(spacing: 8) {
             Text(appDisplayName())
@@ -138,24 +121,6 @@ struct SettingsWindow: View {
                 .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .foregroundColor(subtitleColor)
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 6)
-        .background(
-            ZStack {
-                Capsule(style: .continuous)
-                    .fill(capsuleFill)
-                Capsule(style: .continuous)
-                    .fill(capsuleHighlight)
-                    .blendMode(.screen)
-                Capsule(style: .continuous)
-                    .strokeBorder(capsuleStroke, lineWidth: 1)
-                Capsule(style: .continuous)
-                    .stroke(outerGlow, lineWidth: 0.8)
-                    .blur(radius: 4)
-                    .opacity(0.35)
-            }
-        )
-        .shadow(color: shadowColor, radius: 12, y: 6)
         .allowsHitTesting(false)
     }
 

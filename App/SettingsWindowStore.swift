@@ -319,8 +319,19 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         isDormant = false
         settingsSnapshot = LauncherSettingsPersistence.loadSettings()
         arrangementResetSorting = LauncherSettingsPersistence.arrangementResetSorting()
+        syncLoginItemStateFromSystem()
         observeSettingsChanges()
         reloadApps()
+    }
+
+    /// Reconciles the stored launch-at-login flag with the authoritative state from System Settings.
+    /// Called on window open so the toggle always reflects what the user set in System Settings.
+    private func syncLoginItemStateFromSystem() {
+        guard #available(macOS 13.0, *) else { return }
+        let systemEnabled = LaunchAtLoginManager.isCurrentlyEnabled
+        guard settingsSnapshot.launchesAtLogin != systemEnabled else { return }
+        settingsSnapshot.launchesAtLogin = systemEnabled
+        LauncherSettingsPersistence.setLaunchAtLogin(systemEnabled)
     }
 
     /// Reloads the latest settings payload from persistence.

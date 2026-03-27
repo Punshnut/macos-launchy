@@ -90,6 +90,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
+        syncLoginItemStateFromSystem()
+
         if suppressLauncherRevealOnNextActivation {
             suppressLauncherRevealOnNextActivation = false
             return
@@ -202,6 +204,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         // Prime defaults and load persisted settings before wiring anything else.
         LauncherSettingsPersistence.registerDefaults()
         currentSettings = LauncherSettingsPersistence.loadSettings()
+        syncLoginItemStateFromSystem()
         configureApplicationDirectoryMonitoring()
         applicationDiscovery.handleAppearanceChange(NSApp.effectiveAppearance)
         LaunchAtLoginManager.setEnabled(currentSettings.launchesAtLogin)
@@ -231,6 +234,17 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         setupMemoryPressureMonitoring()
         setupMemoryMaintenanceTimer()
         prepareAutoBackupDirectoryIfNeeded()
+    }
+
+    /// Reconciles the stored launch-at-login preference with the authoritative state from System Settings.
+    /// Silently corrects the persisted flag when the user toggled it in System Settings without
+    /// using Launchy's own UI, so the in-app toggle stays honest.
+    private func syncLoginItemStateFromSystem() {
+        guard #available(macOS 13.0, *) else { return }
+        let systemEnabled = LaunchAtLoginManager.isCurrentlyEnabled
+        guard currentSettings.launchesAtLogin != systemEnabled else { return }
+        currentSettings.launchesAtLogin = systemEnabled
+        LauncherSettingsPersistence.setLaunchAtLogin(systemEnabled)
     }
 
     /// Double-checks that unused menu bar items are stripped even if AppKit rebuilds the menu.

@@ -9,6 +9,13 @@ enum LaunchAtLoginManager {
         category: "LaunchAtLogin"
     )
 
+    /// Returns whether Launchy is currently registered as a login item according to the system.
+    /// This reflects the ground truth from System Settings, not the stored preference.
+    @available(macOS 13.0, *)
+    static var isCurrentlyEnabled: Bool {
+        SMAppService.mainApp.status == .enabled
+    }
+
     /// Attempts to update the login item state using the best API available for the platform.
     static func setEnabled(_ shouldEnableLoginItem: Bool) {
         if #available(macOS 13.0, *) {

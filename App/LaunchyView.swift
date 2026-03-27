@@ -143,7 +143,7 @@ private final class FolderPreviewCache: @unchecked Sendable {
 
     /// Stores preview icon with a lightweight pixel-based cost estimate.
     func store(_ icon: NSImage, for key: String) {
-        let cost = Int(icon.size.width * icon.size.height)
+        let cost = Int(icon.size.width * icon.size.height) * 4
         cache.setObject(icon, forKey: key as NSString, cost: cost)
     }
 

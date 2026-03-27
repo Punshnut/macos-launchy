@@ -498,9 +498,13 @@ final class AppDiscoveryService {
         // Never render below 1:1 – avoids upscaling/blurriness on non-retina displays.
         let minimum = Int(ceil(max(targetDimension, 1)))
         let target = max(Int(ceil(scaledTarget)), minimum)
-        // Cap must also honour the minimum so a tight quality cap can't negate the fix.
-        let effectiveCap = max(Self.scaledPixelCap(for: quality), minimum)
-        return min(target, effectiveCap)
+        // On non-retina displays iconResolutionScale causes sub-1:1 rendering, so allow the
+        // cap to match 1:1 density. On retina the scale factor already exceeds 1:1, so the
+        // memory cap applies as-is and must not be raised (that was the memory regression).
+        let cap = effectiveScale * Self.iconResolutionScale < 1
+            ? max(Self.scaledPixelCap(for: quality), minimum)
+            : Self.scaledPixelCap(for: quality)
+        return min(target, cap)
     }
 
     /// Applies the global resolution scale to a quality tier's hard pixel cap.

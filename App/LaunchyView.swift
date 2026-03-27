@@ -4534,7 +4534,7 @@ struct LauncherView: View {
         pageApps: [AppItem]
     ) -> some View {
         let columnCount = max(1, overlayLayout.columns)
-        let columns = Array(repeating: GridItem(.flexible(), spacing: overlayLayout.spacing, alignment: .center), count: columnCount)
+        let columns = Array(repeating: GridItem(.flexible(), spacing: overlayLayout.spacing, alignment: .top), count: columnCount)
         let tileSize = layout.iconDimension
         let gridInsets = overlayLayout.gridInsets
 
@@ -4820,8 +4820,12 @@ struct LauncherView: View {
                 .scaleEffect(0.96 + 0.04 * folderOverlayOpenProgress)
                 .offset(y: (1 - folderOverlayOpenProgress) * 10)
                 .background(
-                    searchBarBackgroundMaterial()
-                        .clipShape(cardShape)
+                    VisualEffectBackground(
+                        material: .hudWindow,
+                        blendingMode: .withinWindow,
+                        appearance: NSAppearance(named: .vibrantDark)
+                    )
+                    .clipShape(cardShape)
                 )
                 .overlay(
                     cardShape

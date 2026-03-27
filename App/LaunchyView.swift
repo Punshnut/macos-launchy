@@ -3831,14 +3831,22 @@ struct LauncherView: View {
         let spacing = max(layout.iconDimension * 0.035, 2)
         let padding = spacing * 1.05
         let tileSize = max(((layout.iconDimension * 0.9) - padding * 2 - spacing * 2) / 3, 9)
+        let folderCornerRadius: CGFloat = min(layout.iconDimension * 0.24, 28)
         let isSnapPreviewTarget = folder.id == folderSnapPreviewTargetID
         let disableAnimations = isPageSwitchAnimationActive || abs(pagerDragOffset) > 0.1
         let folderIconAnimation = disableAnimations ? nil : folderOpenAnimation
 
         return ZStack {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
+            RoundedRectangle(cornerRadius: folderCornerRadius, style: .continuous)
                 .fill(Color(nsColor: .quaternaryLabelColor).opacity(0.35))
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
+            LinearGradient(
+                colors: [Color.white.opacity(0.09), Color.black.opacity(0.04)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .clipShape(RoundedRectangle(cornerRadius: folderCornerRadius, style: .continuous))
+            .allowsHitTesting(false)
+            RoundedRectangle(cornerRadius: folderCornerRadius, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
 
             VStack(alignment: .center, spacing: spacing) {
@@ -3848,7 +3856,7 @@ struct LauncherView: View {
                             let previewIndex = rowIndex * 3 + columnIndex
 
                             if previews.indices.contains(previewIndex) {
-                                folderTile(for: previews[previewIndex], layout: layout, allowHeavyWork: allowHeavyWork)
+                                folderTile(for: previews[previewIndex], tileSize: tileSize, layout: layout, allowHeavyWork: allowHeavyWork)
                                     .frame(width: tileSize, height: tileSize)
                             } else {
                                 Color.clear
@@ -3862,7 +3870,7 @@ struct LauncherView: View {
             .animation(folderIconAnimation, value: folderIconWaveToggle)
 
             if isSnapPreviewTarget {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                RoundedRectangle(cornerRadius: folderCornerRadius, style: .continuous)
                     .stroke(Color.accentColor.opacity(0.85), lineWidth: 2)
                     .shadow(color: Color.accentColor.opacity(0.35), radius: 12, y: 0)
                     .blendMode(.screen)
@@ -3898,19 +3906,21 @@ struct LauncherView: View {
     @ViewBuilder
     private func folderTile(
         for app: AppItem,
+        tileSize: CGFloat,
         layout: LauncherLayoutMetrics,
         allowHeavyWork: Bool
     ) -> some View {
+        let tileCornerRadius = max(tileSize * 0.22, 2)
         let resolvedIcon = folderPreviewIcon(for: app, layout: layout)
         Group {
             if let icon = resolvedIcon {
                 Image(nsImage: icon)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: tileCornerRadius, style: .continuous))
             } else {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    RoundedRectangle(cornerRadius: tileCornerRadius, style: .continuous)
                         .fill(Color.white.opacity(0.15))
                     Image(systemName: "app.fill")
                         .resizable()

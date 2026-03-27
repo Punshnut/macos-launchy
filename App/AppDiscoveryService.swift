@@ -493,9 +493,14 @@ final class AppDiscoveryService {
         quality: IconRenderQuality,
         screenScale: CGFloat
     ) -> Int {
-        let scaledTarget = max(targetDimension, 1) * max(screenScale, 1) * Self.iconResolutionScale
-        let scaled = Int(ceil(scaledTarget))
-        return min(max(scaled, 1), Self.scaledPixelCap(for: quality))
+        let effectiveScale = max(screenScale, 1)
+        let scaledTarget = max(targetDimension, 1) * effectiveScale * Self.iconResolutionScale
+        // Never render below 1:1 – avoids upscaling/blurriness on non-retina displays.
+        let minimum = Int(ceil(max(targetDimension, 1)))
+        let target = max(Int(ceil(scaledTarget)), minimum)
+        // Cap must also honour the minimum so a tight quality cap can't negate the fix.
+        let effectiveCap = max(Self.scaledPixelCap(for: quality), minimum)
+        return min(target, effectiveCap)
     }
 
     /// Applies the global resolution scale to a quality tier's hard pixel cap.

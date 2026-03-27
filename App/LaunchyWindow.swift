@@ -121,11 +121,7 @@ final class LauncherWindowController: NSWindowController {
     func presentWindow(skipEntranceAnimation: Bool = false) {
         guard let window else { return }
         LaunchyLogger.log("LauncherWindowController presentWindow: start mode=\(launcherMode) visible=\(window.isVisible) skip=\(skipEntranceAnimation)")
-        if launcherMode == .floaty && window.isVisible == false {
-            // Avoid touching screen/size logic before the panel is on-screen.
-        } else {
-            updateFrameForPreferredScreenIfNeeded()
-        }
+        updateFrameForPreferredScreenIfNeeded()
         let originalFrame = window.frame
         // Floaty frequently failed to reappear when its entrance animation left alpha at 0, so skip animation there.
         let shouldAnimateEntrance = window.isVisible == false

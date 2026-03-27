@@ -37,7 +37,16 @@ enum SettingsWindowHostManager {
         guard let window = hostingWindow as? NSWindow else { return }
         switch kind {
         case .close:
-            window.performClose(nil)
+            NSAnimationContext.runAnimationGroup({ context in
+                context.duration = 0.15
+                context.timingFunction = CAMediaTimingFunction(name: .easeIn)
+                window.animator().alphaValue = 0
+            }, completionHandler: {
+                DispatchQueue.main.async {
+                    window.close()
+                    window.alphaValue = 1
+                }
+            })
         case .minimize:
             window.performMiniaturize(nil)
         case .zoom:
@@ -583,9 +592,15 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     func showWindowAndActivate() {
         guard let window else { return }
         centerWindowOnPreferredScreen()
+        window.alphaValue = 0
         showWindow(nil)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.2
+            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            window.animator().alphaValue = 1
+        }
     }
 
     /// Selects a tab before presenting and activating the settings window.
@@ -618,6 +633,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
 
     /// Forwards close events to observers on the main actor.
     func windowWillClose(_ notification: Notification) {
+        window?.alphaValue = 1
         Task { @MainActor in
             onClose?()
         }

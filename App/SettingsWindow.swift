@@ -88,6 +88,7 @@ struct SettingsWindow: View {
             .overlay(alignment: .center) {
                 topBarTitle
                     .padding(.horizontal, 60)
+                    .padding(.top, 6)
             }
     }
 
@@ -330,19 +331,9 @@ struct SettingsWindow: View {
 
     private var pagingOrientationPicker: some View {
         VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 6) {
-                Text(String(localized: "Paging direction"))
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                Text(String(localized: "Beta"))
-                    .font(.caption2)
-                    .fontWeight(.bold)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(Color.accentColor.opacity(0.15))
-                    .foregroundColor(Color.accentColor)
-                    .clipShape(Capsule())
-            }
+            Text(String(localized: "Paging direction"))
+                .font(.subheadline)
+                .fontWeight(.semibold)
 
             Picker("", selection: Binding(
                 get: { settingsStore.settingsSnapshot.pagingOrientation },

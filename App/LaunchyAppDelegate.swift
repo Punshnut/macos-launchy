@@ -67,6 +67,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private let elevatedMemoryThreshold: UInt64 = 650 * 1024 * 1024
     private let criticalMemoryThreshold: UInt64 = 850 * 1024 * 1024
     private var lastLauncherVisibilityChange = Date()
+    private var needsRefreshOnNextShow = false
 
     /// Bootstraps settings, items, and window state.
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -286,8 +287,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            Task { @MainActor in
-                guard let self = self, NSApp.isActive else { return }
+            MainActor.assumeIsolated {
+                guard let self, NSApp.isActive else { return }
                 self.removeDefaultMainMenuItems()
             }
         }
@@ -771,13 +772,16 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
 
         applicationDirectoryMonitor = ApplicationDirectoryMonitor(
-            directories: directories,
-            pollingInterval: 12
+            directories: directories
         ) { [weak self] in
             Task { @MainActor in
                 guard let self else { return }
                 let isVisible = self.launcherWindowManager?.window?.isVisible == true
-                let didChange = self.refreshLauncherItems(shouldPreheatIcons: isVisible)
+                guard isVisible else {
+                    self.needsRefreshOnNextShow = true
+                    return
+                }
+                let didChange = self.refreshLauncherItems(shouldPreheatIcons: true)
                 if didChange {
                     self.launcherWindowManager?.update(rootView: self.buildLauncherView())
                 }
@@ -1251,6 +1255,16 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private func markLauncherDidShow() {
         applicationDiscovery.applyCacheLimitScaling(1)
         lastLauncherVisibilityChange = Date()
+        if needsRefreshOnNextShow {
+            needsRefreshOnNextShow = false
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                let didChange = self.refreshLauncherItems(shouldPreheatIcons: true)
+                if didChange {
+                    self.launcherWindowManager?.update(rootView: self.buildLauncherView())
+                }
+            }
+        }
     }
 
     /// Records hide timestamp and performs post-hide housekeeping.

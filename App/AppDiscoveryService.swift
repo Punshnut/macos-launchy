@@ -179,7 +179,7 @@ final class AppDiscoveryService {
         let bundleIDs = Set(apps.map(\.bundleIdentifier))
         evictMissingBundleCaches(keeping: bundleIDs)
         for app in apps {
-            invalidateIfBundleUpdated(app, force: true)
+            invalidateIfBundleUpdated(app)
         }
     }
 

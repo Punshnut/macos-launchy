@@ -15,6 +15,7 @@ final class HotCornerMonitor {
     private var configuredCorner: HotCornerPosition = .bottomRight
     private var hasPromptedForInputMonitoring = false
     private var isMonitoringEnabled = false
+    private nonisolated(unsafe) var isEvalPending = false
 
     init(trigger: @escaping () -> Void) {
         self.trigger = trigger
@@ -55,7 +56,10 @@ final class HotCornerMonitor {
     private func startMonitoringIfNeeded() {
         guard globalMouseMonitor == nil else { return }
         let globalToken = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] _ in
-            Task { @MainActor in
+            guard let self, !self.isEvalPending else { return }
+            self.isEvalPending = true
+            DispatchQueue.main.async { [weak self] in
+                self?.isEvalPending = false
                 self?.evaluateCursorLocation()
             }
         }
@@ -65,8 +69,12 @@ final class HotCornerMonitor {
 
         guard localMouseMonitor == nil else { return }
         let localToken = NSEvent.addLocalMonitorForEvents(matching: .mouseMoved) { [weak self] event in
-            Task { @MainActor in
-                self?.evaluateCursorLocation()
+            if let self, !self.isEvalPending {
+                self.isEvalPending = true
+                DispatchQueue.main.async { [weak self] in
+                    self?.isEvalPending = false
+                    self?.evaluateCursorLocation()
+                }
             }
             return event
         }

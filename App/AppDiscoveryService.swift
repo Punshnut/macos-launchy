@@ -357,11 +357,13 @@ final class AppDiscoveryService {
             .compactMap { $0 as? URL }
             .filter { $0.pathExtension == "app" }
             .compactMap { bundleURL in
-                buildAppItem(
-                    from: bundleURL,
-                    isCoreService: isCoreServicesDirectory,
-                    onMissingIdentifier: { _ in missingIdentifierCount += 1 }
-                )
+                autoreleasepool {
+                    buildAppItem(
+                        from: bundleURL,
+                        isCoreService: isCoreServicesDirectory,
+                        onMissingIdentifier: { _ in missingIdentifierCount += 1 }
+                    )
+                }
             }
 
         let directoryName = searchDirectory.lastPathComponent
@@ -651,10 +653,13 @@ final class AppDiscoveryService {
 
     /// Rough cost estimate used to bound NSCache memory usage for icons.
     private func imageCost(_ image: NSImage) -> Int {
+        if let rep = image.representations.first as? NSBitmapImageRep {
+            let pixels = rep.pixelsWide * rep.pixelsHigh
+            return max(pixels * 4, 1)
+        }
         let size = image.size
         let pixels = Int(size.width * size.height)
-        let bytesPerPixel = 4
-        return max(pixels * bytesPerPixel, 1)
+        return max(pixels * 4, 1)
     }
 
     /// Compares the bundle icon to the generic system app icon to flag placeholder-only apps.
@@ -940,7 +945,7 @@ final class AppDiscoveryService {
             bundleURL: bundleURL,
             isUserApplication: isUserApplication(bundleURL),
             isCoreServiceApplication: isCoreService,
-            hasCustomIcon: hasCustomIcon(for: bundleURL)
+            hasCustomIcon: isCoreService ? hasCustomIcon(for: bundleURL) : true
         )
     }
 

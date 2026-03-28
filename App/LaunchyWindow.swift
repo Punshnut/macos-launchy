@@ -123,11 +123,19 @@ final class LauncherWindowController: NSWindowController {
         LaunchyLogger.log("LauncherWindowController presentWindow: start mode=\(launcherMode) visible=\(window.isVisible) skip=\(skipEntranceAnimation)")
         updateFrameForPreferredScreenIfNeeded()
         let originalFrame = window.frame
-        // Floaty frequently failed to reappear when its entrance animation left alpha at 0, so skip animation there.
+        // Floaty entrance: simple alpha fade only — no content-view offset to avoid the alpha-stuck-at-0 race that bit us before.
+        let shouldAnimateFloatyEntrance = window.isVisible == false
+            && skipEntranceAnimation == false
+            && launcherMode == .floaty
+        // Fullscreen entrance: combined alpha + fly-in offset.
         let shouldAnimateEntrance = window.isVisible == false
             && skipEntranceAnimation == false
             && launcherMode == .fullscreen
 
+        if shouldAnimateFloatyEntrance {
+            window.animationBehavior = .none
+            window.alphaValue = 0
+        }
         if shouldAnimateEntrance {
             prepareForEntranceAnimation(window: window, originalFrame: originalFrame)
         }
@@ -147,6 +155,9 @@ final class LauncherWindowController: NSWindowController {
             NotificationCenter.default.post(name: .launcherShouldAnimateGridEntrance, object: nil)
         }
 
+        if shouldAnimateFloatyEntrance {
+            runFloatyEntranceAnimation(window: window)
+        }
         if shouldAnimateEntrance {
             runEntranceAnimation(window: window, originalFrame: originalFrame)
         }
@@ -224,6 +235,21 @@ final class LauncherWindowController: NSWindowController {
                 window.alphaValue = 1
                 self.launcherContentHost.view.setFrameOrigin(self.entranceContentOrigin)
                 self.launcherContentHost.view.alphaValue = 1
+            }
+        }
+    }
+
+    /// Fades the floaty window in with a simple alpha transition (no content-view offset).
+    /// animationBehavior must already be set to .none before calling this so the system fade doesn't fight us.
+    private func runFloatyEntranceAnimation(window: NSWindow) {
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = entranceAnimationDuration
+            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            window.animator().alphaValue = 1
+        } completionHandler: {
+            Task { @MainActor in
+                window.alphaValue = 1
+                window.animationBehavior = .utilityWindow
             }
         }
     }

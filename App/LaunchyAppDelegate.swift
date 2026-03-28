@@ -75,7 +75,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         LaunchyLogger.log("applicationDidFinishLaunching")
         bootstrapApplication()
         enforceMinimalMainMenu()
-        scheduleFloatyStartupPresentationIfNeeded()
         scheduleRunloopProbes(label: "post-launch")
     }
 
@@ -445,7 +444,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             hasUsedFloatyFallback = false
             pendingFloatyVisibilityCheckID = nil
         }
-        shouldAutoPresentOnFirstActivation = mode == .floaty || (currentSettings.isDockIconHidden && currentSettings.isMenuBarIconHidden)
+        shouldAutoPresentOnFirstActivation = currentSettings.isDockIconHidden && currentSettings.isMenuBarIconHidden
         let shouldActivateApp = shouldPresentWindow && (modeChanged || launcherWindowManager?.window?.isVisible == true)
         updateActivationPolicy(for: mode, shouldActivate: shouldActivateApp)
 
@@ -559,7 +558,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             guard let window = controller?.window else { return }
             let isOnscreen = window.occlusionState.contains(.visible)
             let alpha = window.alphaValue
-            guard alpha < 0.9 || isOnscreen == false else { return }
+            // Only nudge if alpha is truly stuck near zero — not during an in-progress fade-in animation.
+            guard alpha < 0.1 || isOnscreen == false else { return }
 
             window.alphaValue = 1
             window.makeKeyAndOrderFront(nil)

@@ -5747,7 +5747,13 @@ struct LauncherView: View {
             .background(searchFieldBackground(isFloaty: isFloaty, layout: layout))
             .overlay(
                 RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous)
-                    .strokeBorder(isMultiSelectModeActive ? Color.accentColor.opacity(0.7) : Color.white.opacity(isFloaty ? 0.4 : 0.25), lineWidth: isMultiSelectModeActive ? 2 : 1)
+                    .strokeBorder(
+                        isMultiSelectModeActive ? Color.accentColor.opacity(0.7) :
+                            isFloaty
+                                ? (usesDarkSearchBarAppearance ? Color.white.opacity(0.4) : Color.black.opacity(0.18))
+                                : Color.white.opacity(0.25),
+                        lineWidth: isMultiSelectModeActive ? 2 : 1
+                    )
             )
             .overlay(alignment: .trailing) {
                 searchBarTrailingDecorations()
@@ -5900,7 +5906,7 @@ struct LauncherView: View {
                 .background(
                     Circle()
                         .strokeBorder(
-                            isMultiSelectModeActive ? Color.accentColor.opacity(0.9) : Color.white.opacity(0.4),
+                            isMultiSelectModeActive ? Color.accentColor.opacity(0.9) : searchBarForegroundColor().opacity(0.4),
                             lineWidth: isMultiSelectModeActive ? 2.2 : 1
                         )
                 )
@@ -6069,7 +6075,13 @@ struct LauncherView: View {
 
     /// Whether the search bar should use the darker tinted style.
     private var usesDarkSearchBarAppearance: Bool {
-        backgroundStylePreference == .standard || backgroundStylePreference == .transparent
+        if backgroundStylePreference == .transparent { return true }
+        if backgroundStylePreference == .standard {
+            // Floaty in light system appearance uses a light window background, so match it.
+            if launcherMode == .floaty && colorScheme == .light { return false }
+            return true
+        }
+        return false
     }
 
     /// Picks an icon label color that keeps adequate contrast against the selected background.

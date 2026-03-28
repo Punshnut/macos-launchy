@@ -934,6 +934,7 @@ struct LauncherView: View {
     @FocusState private var isAppNameFieldFocused: Bool
     @FocusState private var isSearchFieldFocused: Bool
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.layoutDirection) private var layoutDirection
 
     init(
         itemCatalog: [LauncherItem],
@@ -4404,13 +4405,22 @@ struct LauncherView: View {
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel(pageIndicatorTitle)
             } else {
+                let isRTL = layoutDirection == .rightToLeft
+                let leftSymbol    = isRTL ? nextSymbol     : previousSymbol
+                let rightSymbol   = isRTL ? previousSymbol : nextSymbol
+                let leftAction    = isRTL ? pageForward    : pageBackward
+                let rightAction   = isRTL ? pageBackward   : pageForward
+                let leftDisabled  = isRTL ? nextDisabled   : previousDisabled
+                let rightDisabled = isRTL ? previousDisabled : nextDisabled
+                let leftTarget    = isRTL ? currentPage + 1 : currentPage - 1
+                let rightTarget   = isRTL ? currentPage - 1 : currentPage + 1
                 HStack(spacing: pagerSpacing) {
                     pagerChevronButton(
-                        systemName: previousSymbol,
-                        disabled: previousDisabled,
+                        systemName: leftSymbol,
+                        disabled: leftDisabled,
                         canReorder: canReorder,
-                        targetPage: currentPage - 1,
-                        action: pageBackward
+                        targetPage: leftTarget,
+                        action: leftAction
                     )
 
                     pagerDots(
@@ -4422,11 +4432,11 @@ struct LauncherView: View {
                     }
 
                     pagerChevronButton(
-                        systemName: nextSymbol,
-                        disabled: nextDisabled,
+                        systemName: rightSymbol,
+                        disabled: rightDisabled,
                         canReorder: canReorder,
-                        targetPage: currentPage + 1,
-                        action: pageForward
+                        targetPage: rightTarget,
+                        action: rightAction
                     )
                 }
                 .frame(maxWidth: .infinity)
@@ -5744,7 +5754,7 @@ struct LauncherView: View {
             .onSubmit {
                 launchSearchResultIfPossible()
             }
-            .padding(.leading, 18)
+            .padding(.leading, 38)
             .padding(.trailing, 14)
             .frame(width: layout.searchBarWidth, height: layout.searchBarHeight)
             .background(searchFieldBackground(isFloaty: isFloaty, layout: layout))
@@ -5760,6 +5770,9 @@ struct LauncherView: View {
             )
             .overlay(alignment: .trailing) {
                 searchBarTrailingDecorations()
+            }
+            .overlay(alignment: .leading) {
+                searchBarLeadingMagnifier()
             }
             .shadow(color: .black.opacity(isFloaty ? 0.22 : 0.2), radius: isFloaty ? 20 : 12, y: isFloaty ? 10 : 4)
             .shadow(color: Color.white.opacity(isFloaty ? (colorScheme == .dark ? 0.16 : 0.26) : 0), radius: isFloaty ? 2.4 : 0, y: isFloaty ? 1 : 0)
@@ -5895,6 +5908,18 @@ struct LauncherView: View {
         .frame(width: showSearchLoadingIndicator && isEmpty == false ? 32 : 18, height: 18, alignment: .trailing)
         .animation(searchBarIconTransition, value: isEmpty)
         .animation(searchBarIconTransition, value: showSearchLoadingIndicator)
+    }
+
+    @ViewBuilder
+    /// Magnifier icon on the leading edge of the search bar; fades out while typing.
+    private func searchBarLeadingMagnifier() -> some View {
+        Image(systemName: "magnifyingglass")
+            .font(.system(size: 16, weight: .semibold))
+            .foregroundColor(searchBarForegroundColor().opacity(0.45))
+            .padding(.leading, 12)
+            .opacity(searchText.isEmpty ? 1 : 0)
+            .scaleEffect(searchText.isEmpty ? 1 : 0.6, anchor: .leading)
+            .animation(searchBarIconTransition, value: searchText.isEmpty)
     }
 
     /// Toggles multi-select mode from search/control area.

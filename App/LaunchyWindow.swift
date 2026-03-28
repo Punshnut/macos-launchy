@@ -258,6 +258,12 @@ final class LauncherWindowController: NSWindowController {
     }
 }
 
+/// Returns true when every scalar in the string is a typeable (printable, non-control)
+/// character suitable for direct insertion into a search field.
+private func isTypeableCharacter(_ string: String) -> Bool {
+    string.unicodeScalars.allSatisfy { $0.value >= 0x20 && $0.value != 0x7F && $0.value < 0xF700 }
+}
+
 /// Non-activating floating panel for the "floaty" launcher mode.
 final class FloatyLauncherWindow: NSPanel {
     static let entranceSlideOffset: CGFloat = 32
@@ -341,7 +347,13 @@ final class FloatyLauncherWindow: NSPanel {
             return
         }
         guard event.keyCode == 123 || event.keyCode == 124 else {
-            super.keyDown(with: event)
+            if !(firstResponder is NSText),
+               let chars = event.characters,
+               isTypeableCharacter(chars) {
+                NotificationCenter.default.post(name: .launcherTypeAheadInput, object: chars)
+            } else {
+                super.keyDown(with: event)
+            }
             return
         }
     }
@@ -394,7 +406,13 @@ final class FullscreenLauncherWindow: NSPanel {
             return
         }
         guard event.keyCode == 123 || event.keyCode == 124 else {
-            super.keyDown(with: event)
+            if !(firstResponder is NSText),
+               let chars = event.characters,
+               isTypeableCharacter(chars) {
+                NotificationCenter.default.post(name: .launcherTypeAheadInput, object: chars)
+            } else {
+                super.keyDown(with: event)
+            }
             return
         }
     }

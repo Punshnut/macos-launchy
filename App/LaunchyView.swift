@@ -7,6 +7,8 @@ extension Notification.Name {
     static let launcherShouldRefocusSearch = Notification.Name("launchyLauncherShouldRefocusSearch")
     /// Triggers the fullscreen grid fly-in animation when the launcher appears.
     static let launcherShouldAnimateGridEntrance = Notification.Name("launchyLauncherShouldAnimateGridEntrance")
+    /// Carries a printable character typed before the search field was ready to accept input.
+    static let launcherTypeAheadInput = Notification.Name("launchyLauncherTypeAheadInput")
     /// Indicates the launcher window became visible.
     static let launcherDidShow = Notification.Name("launchyLauncherDidShow")
     /// Indicates the launcher window was fully hidden.
@@ -1303,6 +1305,11 @@ struct LauncherView: View {
             ensureSearchFieldCaretHidden()
         }
         .onReceive(NotificationCenter.default.publisher(for: .launcherShouldRefocusSearch)) { _ in
+            focusSearchFieldIfAppropriate()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .launcherTypeAheadInput)) { notification in
+            guard let chars = notification.object as? String, !chars.isEmpty else { return }
+            searchText += chars
             focusSearchFieldIfAppropriate()
         }
         .onReceive(NotificationCenter.default.publisher(for: .launcherShouldAnimateGridEntrance)) { _ in

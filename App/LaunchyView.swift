@@ -1078,14 +1078,22 @@ struct LauncherView: View {
             } else if let folder = newValue {
                 stopDragEdgePaging()
                 lastActiveFolderID = folder.id
-                scheduleFolderIconWaveToggle(false, delay: 0, animated: false)
+                // folderIconWaveToggle being true means the overlay is already visible —
+                // this is a data sync (app moved in/out of folder), not a fresh open.
+                // Skip the opening animation resets so the overlay stays visible.
+                let isFreshOpen = folderIconWaveToggle == false
+                if isFreshOpen {
+                    scheduleFolderIconWaveToggle(false, delay: 0, animated: false)
+                }
                 cancelFolderPreviewMatchRelease()
                 folderNameDraft = folder.name
                 isEditingFolderName = false
                 folderPreviewMatchingDisabled = false
                 launchingItemID = nil
-                activeFolderPage = 0
-                activeFolderPageCount = 1
+                if isFreshOpen {
+                    activeFolderPage = 0
+                    activeFolderPageCount = 1
+                }
                 isFolderClosing = false
                 folderCloseWorkItem?.cancel()
                 folderCloseWorkItem = nil
@@ -6631,8 +6639,10 @@ struct LauncherView: View {
         updated[folderIndex] = .folder(folder)
         withAnimation(gridSpringAnimation) {
             orderedItems = updated
+            updateFilteredItems(using: updated)
         }
         if activeFolder?.id == folder.id {
+            shouldSkipActiveFolderChangeEffects = true
             activeFolder = folder
         }
         ensureCurrentPageWithinBounds()
@@ -6739,6 +6749,7 @@ struct LauncherView: View {
                     } else {
                         workingItems[folderIndex] = .folder(folder)
                         if activeFolder?.id == folder.id {
+                            shouldSkipActiveFolderChangeEffects = true
                             activeFolder = folder
                         }
                     }
@@ -6791,6 +6802,7 @@ struct LauncherView: View {
 
         withAnimation(gridSpringAnimation) {
             orderedItems = workingItems
+            updateFilteredItems(using: workingItems)
         }
         pageSizes = finalSizes
         ensureCurrentPageWithinBounds()
@@ -6819,6 +6831,7 @@ struct LauncherView: View {
 
         withAnimation(gridSpringAnimation) {
             orderedItems = items
+            updateFilteredItems(using: items)
         }
         pageSizes = finalSizes
         ensureCurrentPageWithinBounds()
@@ -6991,6 +7004,7 @@ struct LauncherView: View {
                 items.insert(.folder(folder), at: folderIndex)
                 insertionIndex = folderIndex + 1
                 if activeFolder?.id == folder.id {
+                    shouldSkipActiveFolderChangeEffects = true
                     activeFolder = folder
                 }
                 return RemovedAppContext(

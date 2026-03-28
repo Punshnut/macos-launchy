@@ -271,9 +271,17 @@ struct SettingsWindow: View {
 
     private var launcherLayoutPicker: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(String(localized: "Launcher layout"))
-                .font(.subheadline)
-                .fontWeight(.semibold)
+            HStack(spacing: 6) {
+                Text(String(localized: "Launcher layout"))
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                Text("BETA")
+                    .font(.system(size: 7, weight: .bold))
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+                    .background(.quaternary, in: Capsule())
+            }
 
             Picker("", selection: Binding(
                 get: { settingsStore.settingsSnapshot.selectedLauncherMode },

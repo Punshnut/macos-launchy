@@ -30,6 +30,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var appearanceChangeObserver: NSObjectProtocol?
     private var appearanceObservation: NSKeyValueObservation?
     private var isTrimmingMainMenu = false
+    private var lastMenuTrimDate: Date = .distantPast
     private var applicationDirectoryMonitor: ApplicationDirectoryMonitor?
     private let coreServicesFolderID = UUID(uuidString: "E5F3D7F7-CCE6-4A3E-9EA1-357C39B58F9A")!
     private let systemToolsFolderID = UUID(uuidString: "B7291F1D-45DF-46A0-B84F-8B05626DD3C0")!
@@ -211,7 +212,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         LaunchyLogger.log("bootstrap: loading apps (hidden=\(currentSettings.hiddenBundleIDs.count) scanUser=\(currentSettings.shouldScanUserApplicationsFolder))")
         // Discover apps using the latest hidden/background choices so the first render is accurate.
-        refreshLauncherItems()
+        // Skip icon preheating here — icons will be loaded on first launcher show, avoiding unnecessary
+        // CPU burn at startup when the window may never appear.
+        refreshLauncherItems(shouldPreheatIcons: false)
 
         LaunchyLogger.log("bootstrap: applying launcher mode")
         // Prepare the launcher window in the background so the hotkey can surface it instantly.
@@ -337,6 +340,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Keeps only the application menu so no extra menus appear.
     private func removeDefaultMainMenuItems() {
         guard isTrimmingMainMenu == false else { return }
+        let now = Date()
+        guard now.timeIntervalSince(lastMenuTrimDate) >= 1.0 else { return }
         guard let mainMenu = NSApp.mainMenu,
               mainMenu.items.count > 1,
               let appMenuItem = mainMenu.items.first else {
@@ -351,6 +356,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let trimmedMenu = NSMenu(title: "")
         trimmedMenu.addItem(appMenuItem)
         NSApp.mainMenu = trimmedMenu
+        lastMenuTrimDate = now
     }
 
     /// Responds to system memory pressure by trimming caches and canceling warmups.
@@ -451,7 +457,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         // macOS 26.3 can hang while constructing hidden SwiftUI windows during launch.
         if shouldPresentWindow == false, launcherWindowManager == nil {
             LaunchyLogger.log("applyLauncherMode: deferring hidden window construction")
-            preheatIconsForCurrentLayout()
             scheduleRunloopProbes(label: "post-apply-\(mode.rawValue)")
             return
         }

@@ -140,11 +140,11 @@ final class LauncherWindowController: NSWindowController {
             prepareForEntranceAnimation(window: window, originalFrame: originalFrame)
         }
 
-        bringWindowToFront(window)
-        launcherContentHost.view.frame = window.contentView?.bounds ?? originalFrame
         if launcherMode == .floaty {
             window.applyRoundedCorners(radius: 32)
         }
+        bringWindowToFront(window)
+        launcherContentHost.view.frame = window.contentView?.bounds ?? originalFrame
         window.makeFirstResponder(launcherContentHost.view)
         NotificationCenter.default.post(name: .launcherShouldRefocusSearch, object: nil)
         DispatchQueue.main.async {
@@ -156,7 +156,10 @@ final class LauncherWindowController: NSWindowController {
         }
 
         if shouldAnimateFloatyEntrance {
-            runFloatyEntranceAnimation(window: window)
+            DispatchQueue.main.async { [weak self, weak window] in
+                guard let self, let window else { return }
+                self.runFloatyEntranceAnimation(window: window)
+            }
         }
         if shouldAnimateEntrance {
             runEntranceAnimation(window: window, originalFrame: originalFrame)

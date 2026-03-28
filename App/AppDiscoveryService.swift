@@ -79,7 +79,7 @@ final class AppDiscoveryService {
     private static let maximumIconDimension: CGFloat = CGFloat(256) * iconResolutionScale
     private static let iconCacheCountLimit = 200
     private static let preparedIconCacheCountLimit = 260
-    private static let iconCacheCostLimit = 12_000_000
+    private static let iconCacheCostLimit = 60_000_000
     private static let preparedIconCacheCostLimit = 16_000_000
     private static let preparedIconCacheIdleReleaseInterval: TimeInterval = 65
     private static let iconCacheIdleReleaseInterval: TimeInterval = 300
@@ -653,9 +653,11 @@ final class AppDiscoveryService {
 
     /// Rough cost estimate used to bound NSCache memory usage for icons.
     private func imageCost(_ image: NSImage) -> Int {
-        if let rep = image.representations.first as? NSBitmapImageRep {
-            let pixels = rep.pixelsWide * rep.pixelsHigh
-            return max(pixels * 4, 1)
+        // NSWorkspace app icons carry 7+ bitmap representations (16–1024px).
+        // Summing all reps gives NSCache an accurate cost so it can enforce limits correctly.
+        let bitmapReps = image.representations.compactMap { $0 as? NSBitmapImageRep }
+        if !bitmapReps.isEmpty {
+            return bitmapReps.reduce(0) { $0 + max($1.pixelsWide * $1.pixelsHigh * 4, 1) }
         }
         let size = image.size
         let pixels = Int(size.width * size.height)

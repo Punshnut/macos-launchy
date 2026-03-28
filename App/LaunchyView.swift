@@ -242,6 +242,7 @@ struct LauncherView: View {
     /// Whether items should collapse upward to fill earlier gaps.
     var fillsGapsAutomatically: Bool = true
     /// Callback fired when the user requests to open settings from a context menu.
+    var onToggleLauncherModeRequested: (() -> Void)?
     var onSettingsRequested: (() -> Void)?
     /// Callback fired when the user requests app info/about.
     var onAppInfoRequested: (() -> Void)?
@@ -943,6 +944,7 @@ struct LauncherView: View {
         gridConfiguration: LauncherGridConfiguration = LauncherGridConfiguration.configuration(for: .small, mode: .floaty),
         pagingOrientation: PagingOrientation = .horizontal,
         fillsGapsAutomatically: Bool = true,
+        onToggleLauncherModeRequested: (() -> Void)? = nil,
         onSettingsRequested: (() -> Void)? = nil,
         onAppInfoRequested: (() -> Void)? = nil,
         onItemOrderChange: (([LauncherItem], [Int]) -> Void)? = nil,
@@ -958,6 +960,7 @@ struct LauncherView: View {
         self.gridConfiguration = gridConfiguration
         self.pagingOrientation = pagingOrientation
         self.fillsGapsAutomatically = fillsGapsAutomatically
+        self.onToggleLauncherModeRequested = onToggleLauncherModeRequested
         self.onSettingsRequested = onSettingsRequested
         self.onAppInfoRequested = onAppInfoRequested
         self.onItemOrderChange = onItemOrderChange
@@ -6353,6 +6356,10 @@ struct LauncherView: View {
 
         Button(String(localized: "Create Folder")) {
             createEmptyFolder(onPage: currentPage, promptForName: true)
+        }
+
+        Button(String(localized: "Toggle Floaty Panel")) {
+            onToggleLauncherModeRequested?()
         }
 
         Button(String(localized: "Settings...")) {

@@ -72,7 +72,7 @@ struct LauncherLayoutMetrics {
 
     /// Max width of the search bar given surrounding padding.
     var searchBarWidth: CGFloat {
-        let cap: CGFloat = launcherMode == .floaty ? 560 : 620
+        let cap: CGFloat = launcherMode == .floaty ? 320 : 440
         let available = max(containerSize.width - horizontalPadding * 2, 320)
         return min(cap, available)
     }

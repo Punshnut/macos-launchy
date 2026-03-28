@@ -1926,6 +1926,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             gridConfiguration: config,
             pagingOrientation: currentSettings.pagingOrientation,
             fillsGapsAutomatically: currentSettings.fillsGapsAutomatically,
+            onToggleLauncherModeRequested: { [weak self] in
+                self?.toggleLauncherModeShortcut()
+            },
             onSettingsRequested: { [weak self] in
                 self?.showSettingsWindow()
             },

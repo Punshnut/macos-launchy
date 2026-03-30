@@ -38,7 +38,7 @@ Launchy is the free open-source Launchpad alternative macOS users have been wait
 </div>
 
 <p align="center">
-  <img src="Media/ScreenshotFullscreenMode.png" alt="Launchy Screenshot Fullscreen Mode" width="600">
+  <img src="Media/ScreenshotFullscreenMode.jpeg" alt="Launchy Screenshot Fullscreen Mode" width="600">
 </p>
 
 > **Important:** On macOS 26.3, use Launchy **0.5.3** or newer. If Launchy fails to open after a macOS update, manually copy `Launchy.app` into `/Applications` again.

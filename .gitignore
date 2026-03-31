@@ -27,6 +27,7 @@ tmp.iconset
 .vscode/
 .sandbox-home/
 /.claude/
+/.out/
 
 # Xcode derived data
 DerivedData/

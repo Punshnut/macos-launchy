@@ -1,6 +1,7 @@
 # Launchy Launchpad
 
-Launchy is the free open-source Launchpad alternative macOS users have been waiting for. Fullscreen mode mirrors the classic Launchpad experience but adds richer controls, while Floaty Mode doubles as a HUD with fast toggles that match the new macOS design without changing the behavior you rely on. It scans your apps, caches icons, and keeps a responsive grid ready on every Space - a universal binary that runs natively on both Apple Silicon (M‑series) and Intel Macs.
+Launchy Launchpad is the free open-source Launchpad alternative macOS users have been waiting for. Fullscreen mode mirrors the classic Launchpad experience but adds richer controls, while Floaty Mode doubles as a HUD with fast toggles that match the new macOS design without changing the behavior you rely on. 
+It scans your apps, caches icons, and keeps a responsive grid ready on every Space - a universal binary that runs natively on both Apple Silicon (M‑series) and Intel Macs.
 
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-native-000000?style=flat&logo=apple" alt="macOS native">
@@ -19,6 +20,7 @@ Launchy is the free open-source Launchpad alternative macOS users have been wait
 </p>
 
 <div align="center">
+  <p><strong>ships with 40 languages built-in</strong></p>
   <details>
     <summary>🇪🇸 🇮🇹 🇩🇪 🇫🇷 🇵🇹 🇺🇦 🇷🇺 🇵🇱 🇬🇷 🇳🇱 🇸🇪 🇨🇿 🇭🇺 🇪🇸 🇫🇮 🇮🇪 Europe (16)</summary>
     <p>🇪🇸 Español (España)<br>🇮🇹 Italiano<br>🇩🇪 Deutsch<br>🇫🇷 Français<br>🇵🇹 Português (Portugal)<br>🇺🇦 Українська<br>🇷🇺 Русский<br>🇵🇱 Polski<br>🇬🇷 Ελληνικά<br>🇳🇱 Nederlands<br>🇸🇪 Svenska<br>🇨🇿 Čeština<br>🇭🇺 Magyar<br>🇪🇸 Català<br>🇫🇮 Suomi<br>🇮🇪 Gaeilge</p>
@@ -27,21 +29,20 @@ Launchy is the free open-source Launchpad alternative macOS users have been wait
     <summary>🇵🇭 🇮🇳 🇮🇩 🇻🇳 🇹🇷 🇨🇳 🇯🇵 🇰🇷 🇹🇭 🇧🇩 🇵🇰 🇮🇳 🇮🇳 🇲🇾 🇲🇲 Asia (15)</summary>
     <p>🇵🇭 Filipino / Tagalog<br>🇮🇳 हिन्दी<br>🇮🇩 Bahasa Indonesia<br>🇻🇳 Tiếng Việt<br>🇹🇷 Türkçe<br>🇨🇳 中文（简体）<br>🇯🇵 日本語<br>🇰🇷 한국어 (대한민국)<br>🇹🇭 ภาษาไทย<br>🇧🇩 বাংলা<br>🇵🇰 اُردُو<br>🇮🇳 தமிழ்<br>🇮🇳 తెలుగు<br>🇲🇾 Bahasa Melayu<br>🇲🇲 မြန်မာ</p>
   </details>
+    <details>
+    <summary>🇦🇪 🇮🇷 🇹🇿 🇳🇬 🇪🇹 🇳🇬 Middle East & Africa (6)</summary>
+    <p>🇦🇪 العربية (الفصحى الحديثة)<br>🇮🇷 فارسی<br>🇹🇿 Kiswahili<br>🇳🇬 Hausa<br>🇪🇹 አማርኛ<br>🇳🇬 Yorùbá</p>
+  </details>
   <details>
     <summary>🇧🇷 🇲🇽 🇺🇸 Americas (3)</summary>
     <p>🇧🇷 Português (Brasil)<br>🇲🇽 Español (LatAm)<br>🇺🇸 English</p>
   </details>
-  <details>
-    <summary>🇦🇪 🇮🇷 🇹🇿 🇳🇬 🇪🇹 🇳🇬 Middle East & Africa (6)</summary>
-    <p>🇦🇪 العربية (الفصحى الحديثة)<br>🇮🇷 فارسی<br>🇹🇿 Kiswahili<br>🇳🇬 Hausa<br>🇪🇹 አማርኛ<br>🇳🇬 Yorùbá</p>
-  </details>
 </div>
+<br>
 
 <p align="center">
   <img src="Media/ScreenshotFullscreenMode.jpeg" alt="Launchy Screenshot Fullscreen Mode" width="600">
 </p>
-
-> **Important:** On macOS 26.3, use Launchy **0.5.3** or newer. If Launchy fails to open after a macOS update, manually copy `Launchy.app` into `/Applications` again.
 
 ## Highlights
 

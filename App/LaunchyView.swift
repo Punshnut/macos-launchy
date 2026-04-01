@@ -1252,9 +1252,9 @@ struct LauncherView: View {
             .ignoresSafeArea()
 
             if launcherMode == .floaty {
-                let sheen = Color.white.opacity(colorScheme == .dark ? 0.16 : 0.34)
-                let glow = Color(red: 0.64, green: 0.78, blue: 0.98).opacity(colorScheme == .dark ? 0.22 : 0.32)
-                let depth = Color(red: 0.33, green: 0.45, blue: 0.74).opacity(colorScheme == .dark ? 0.16 : 0.24)
+                let sheen = Color.white.opacity(colorScheme == .dark ? 0.16 : 0.08)
+                let glow = Color(red: 0.64, green: 0.78, blue: 0.98).opacity(colorScheme == .dark ? 0.13 : 0.12)
+                let depth = Color(red: 0.33, green: 0.45, blue: 0.74).opacity(colorScheme == .dark ? 0.09 : 0.08)
                 LinearGradient(
                     colors: [sheen, glow, depth],
                     startPoint: .topLeading,
@@ -1262,6 +1262,11 @@ struct LauncherView: View {
                 )
                 .blendMode(.screen)
                 .ignoresSafeArea()
+
+                if colorScheme == .dark {
+                    Color.black.opacity(0.10)
+                        .ignoresSafeArea()
+                }
             }
 
             VStack(spacing: 0) {
@@ -5664,8 +5669,8 @@ struct LauncherView: View {
             .fill(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(colorScheme == .dark ? 0.12 : 0.24),
-                        Color.white.opacity(colorScheme == .dark ? 0.04 : 0.12)
+                        Color.white.opacity(colorScheme == .dark ? 0.12 : 0.08),
+                        Color.white.opacity(colorScheme == .dark ? 0.04 : 0.03)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -5682,8 +5687,8 @@ struct LauncherView: View {
             .strokeBorder(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(colorScheme == .dark ? 0.42 : 0.55),
-                        Color.white.opacity(colorScheme == .dark ? 0.16 : 0.28)
+                        Color.white.opacity(colorScheme == .dark ? 0.42 : 0.28),
+                        Color.white.opacity(colorScheme == .dark ? 0.16 : 0.10)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -5692,7 +5697,7 @@ struct LauncherView: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(Color.black.opacity(colorScheme == .dark ? 0.30 : 0.12), lineWidth: 0.6)
+                    .strokeBorder(Color.black.opacity(colorScheme == .dark ? 0.30 : 0.20), lineWidth: 0.6)
                     .blendMode(.overlay)
             )
     }
@@ -5798,18 +5803,18 @@ struct LauncherView: View {
                     searchBarBackgroundMaterial()
                     LinearGradient(
                         colors: [
-                            Color.white.opacity(colorScheme == .dark ? 0.18 : 0.42),
-                            Color(red: 0.76, green: 0.86, blue: 0.99).opacity(colorScheme == .dark ? 0.18 : 0.32),
-                            Color(red: 0.54, green: 0.66, blue: 0.88).opacity(colorScheme == .dark ? 0.16 : 0.26)
+                            Color.white.opacity(colorScheme == .dark ? 0.18 : 0.14),
+                            Color(red: 0.76, green: 0.86, blue: 0.99).opacity(colorScheme == .dark ? 0.18 : 0.14),
+                            Color(red: 0.54, green: 0.66, blue: 0.88).opacity(colorScheme == .dark ? 0.16 : 0.10)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
-                    Color.white.opacity(colorScheme == .dark ? 0.08 : 0.62)
+                    Color.white.opacity(colorScheme == .dark ? 0.08 : 0.10)
                         .blendMode(.screen)
                 }
                 .overlay(
-                    shape.strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.36 : 0.58), lineWidth: 0.9)
+                    shape.strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.36 : 0.28), lineWidth: 0.9)
                 )
                 .overlay(
                     shape.strokeBorder(Color.black.opacity(colorScheme == .dark ? 0.28 : 0.12), lineWidth: 0.6)

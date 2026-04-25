@@ -357,8 +357,8 @@ final class SettingsWindowStore: NSObject, ObservableObject {
             entries.append(
                 folderEntry(
                     id: HiddenSpecialEntryIdentifiers.coreServicesFolder,
-                    title: String(localized: "macOS"),
-                    subtitle: String(localized: "Finder, Siri, Spotlight, Game Center, and other CoreServices utilities from /System/Library/CoreServices."),
+                    title: String(localized: "SysCategoryMacOSLabel"),
+                    subtitle: String(localized: "SysCategoryMacOSBody"),
                     isHidden: hiddenSpecialIDs.contains(HiddenSpecialEntryIdentifiers.coreServicesFolder)
                 )
             )
@@ -369,8 +369,8 @@ final class SettingsWindowStore: NSObject, ObservableObject {
             entries.append(
                 folderEntry(
                     id: HiddenSpecialEntryIdentifiers.systemToolsFolder,
-                    title: String(localized: "macOS system tools"),
-                    subtitle: String(localized: "Placeholder utilities without custom icons are grouped here."),
+                    title: String(localized: "SysCategoryMacOSTitle"),
+                    subtitle: String(localized: "SysCategoryPlaceholderBody"),
                     isHidden: hiddenSpecialIDs.contains(HiddenSpecialEntryIdentifiers.systemToolsFolder)
                 )
             )

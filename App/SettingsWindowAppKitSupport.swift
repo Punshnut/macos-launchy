@@ -193,11 +193,11 @@ final class SettingsWindowAlertPresenter {
     ) -> ArrangementResetSorting? {
         let alert = NSAlert()
         alert.alertStyle = .informational
-        alert.messageText = String(localized: "How should the grid be sorted after reset?")
-        alert.informativeText = String(localized: "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps).")
+        alert.messageText = String(localized: "ResetSortDialogTitle")
+        alert.informativeText = String(localized: "ResetSortDialogBody")
         alert.addButton(withTitle: ArrangementResetSorting.alphabetical.displayName)
         alert.addButton(withTitle: ArrangementResetSorting.discovery.displayName)
-        alert.addButton(withTitle: String(localized: "Cancel"))
+        alert.addButton(withTitle: String(localized: "CommonCancelButton"))
 
         let defaultIndex = initialSorting == .discovery ? 1 : 0
         alert.buttons[defaultIndex].keyEquivalent = "\r"
@@ -229,10 +229,10 @@ final class SettingsWindowAlertPresenter {
     private static func resetAlert() -> NSAlert {
         let alert = NSAlert()
         alert.alertStyle = .warning
-        alert.messageText = String(localized: "Reset icon arrangement?")
-        alert.informativeText = String(localized: "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept.")
-        alert.addButton(withTitle: String(localized: "Reset"))
-        alert.addButton(withTitle: String(localized: "Cancel"))
+        alert.messageText = String(localized: "ResetArrangementDialogTitle")
+        alert.informativeText = String(localized: "ResetSortDialogNote")
+        alert.addButton(withTitle: String(localized: "SettingsShortcutResetButton"))
+        alert.addButton(withTitle: String(localized: "CommonCancelButton"))
         return alert
     }
 
@@ -241,11 +241,11 @@ final class SettingsWindowAlertPresenter {
     private static func sortingAlert(initialSorting: ArrangementResetSorting) -> NSAlert {
         let alert = NSAlert()
         alert.alertStyle = .informational
-        alert.messageText = String(localized: "How should the grid be sorted after reset?")
-        alert.informativeText = String(localized: "Choose Alphabetical (A → Z) or Discovery order (as Launchy finds apps).")
+        alert.messageText = String(localized: "ResetSortDialogTitle")
+        alert.informativeText = String(localized: "ResetSortDialogBody")
         alert.addButton(withTitle: ArrangementResetSorting.alphabetical.displayName)
         alert.addButton(withTitle: ArrangementResetSorting.discovery.displayName)
-        alert.addButton(withTitle: String(localized: "Cancel"))
+        alert.addButton(withTitle: String(localized: "CommonCancelButton"))
 
         let defaultIndex = initialSorting == .discovery ? 1 : 0
         alert.buttons[defaultIndex].keyEquivalent = "\r"
@@ -315,7 +315,7 @@ final class HotkeyRecorderTextField: NSTextField {
         didSet { updateDisplay() }
     }
 
-    var placeholderText: String = String(localized: "Click to record") {
+    var placeholderText: String = String(localized: "SettingsShortcutClickToRecord") {
         didSet { updateDisplay() }
     }
 
@@ -480,7 +480,7 @@ final class HotkeyRecorderTextField: NSTextField {
     private func updateDisplay() {
         if isRecording {
             stringValue = ""
-            placeholderString = String(localized: "Press shortcut...")
+            placeholderString = String(localized: "SettingsShortcutPlaceholder")
             return
         }
 
@@ -563,7 +563,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
             backing: .buffered,
             defer: false
         )
-        window.title = String(localized: "Launchy Settings")
+        window.title = String(localized: "SettingsWindowTitle")
         window.titlebarAppearsTransparent = true
         window.titleVisibility = .hidden
         window.isMovableByWindowBackground = true

@@ -180,7 +180,7 @@ enum LauncherItem: Identifiable, Hashable {
 /// Simple grouping of multiple apps into a single launcher cell.
 struct FolderItem: Identifiable, Hashable {
     static var defaultName: String {
-        String(localized: "unnamed")
+        String(localized: "FolderDefaultName")
     }
 
     let id: UUID
@@ -205,9 +205,9 @@ enum LauncherMode: String, CaseIterable, Hashable, Codable {
     var displayName: String {
         switch self {
         case .fullscreen:
-            return String(localized: "Fullscreen")
+            return String(localized: "LayoutFullscreen")
         case .floaty:
-            return String(localized: "Floaty Panel")
+            return String(localized: "LayoutFloatyPanel")
         }
     }
 
@@ -247,13 +247,13 @@ enum HotCornerPosition: String, CaseIterable, Hashable, Codable {
     var displayName: String {
         switch self {
         case .topLeft:
-            return String(localized: "Top Left")
+            return String(localized: "HotCornerTopLeft")
         case .topRight:
-            return String(localized: "Top Right")
+            return String(localized: "HotCornerTopRight")
         case .bottomLeft:
-            return String(localized: "Bottom Left")
+            return String(localized: "HotCornerBottomLeft")
         case .bottomRight:
-            return String(localized: "Bottom Right")
+            return String(localized: "HotCornerBottomRight")
         }
     }
 }
@@ -267,11 +267,11 @@ enum IconSizePreference: String, CaseIterable, Hashable, Codable {
     var displayName: String {
         switch self {
         case .small:
-            return String(localized: "Small (Original)")
+            return String(localized: "IconSizeSmall")
         case .medium:
-            return String(localized: "Medium")
+            return String(localized: "IconSizeMedium")
         case .large:
-            return String(localized: "Large")
+            return String(localized: "IconSizeLarge")
         }
     }
 
@@ -309,9 +309,9 @@ enum PagingOrientation: String, CaseIterable, Hashable, Codable {
     var displayName: String {
         switch self {
         case .horizontal:
-            return String(localized: "Horizontal")
+            return String(localized: "PagingDirectionHorizontal")
         case .vertical:
-            return String(localized: "Vertical")
+            return String(localized: "PagingDirectionVertical")
         }
     }
 }
@@ -325,9 +325,9 @@ enum ArrangementResetSorting: String, CaseIterable, Hashable, Codable {
     var displayName: String {
         switch self {
         case .alphabetical:
-            return String(localized: "Alphabetical")
+            return String(localized: "SortOrderAlphabetical")
         case .discovery:
-            return String(localized: "Discovery order")
+            return String(localized: "SortOrderDiscovery")
         }
     }
 
@@ -335,9 +335,9 @@ enum ArrangementResetSorting: String, CaseIterable, Hashable, Codable {
     var summary: String {
         switch self {
         case .alphabetical:
-            return String(localized: "A → Z by app name")
+            return String(localized: "SortOrderAlphabeticalDetail")
         case .discovery:
-            return String(localized: "As Launchy finds them")
+            return String(localized: "SortOrderDiscoveryDetail")
         }
     }
 }
@@ -362,18 +362,18 @@ struct LauncherSettings: Hashable, Codable {
         /// User-facing label.
         var displayName: String {
             switch self {
-            case .system: return String(localized: "System")
-            case .graphite: return String(localized: "Graphite")
-            case .indigo: return String(localized: "Indigo")
-            case .blue: return String(localized: "Blue")
-            case .cyan: return String(localized: "Cyan")
-            case .teal: return String(localized: "Teal")
-            case .green: return String(localized: "Green")
-            case .mint: return String(localized: "Mint")
-            case .yellow: return String(localized: "Yellow")
-            case .orange: return String(localized: "Orange")
-            case .purple: return String(localized: "Purple")
-            case .pink: return String(localized: "Pink")
+            case .system: return String(localized: "AccentColorSystem")
+            case .graphite: return String(localized: "AccentColorGraphite")
+            case .indigo: return String(localized: "AccentColorIndigo")
+            case .blue: return String(localized: "AccentColorBlue")
+            case .cyan: return String(localized: "AccentColorCyan")
+            case .teal: return String(localized: "AccentColorTeal")
+            case .green: return String(localized: "AccentColorGreen")
+            case .mint: return String(localized: "AccentColorMint")
+            case .yellow: return String(localized: "AccentColorYellow")
+            case .orange: return String(localized: "AccentColorOrange")
+            case .purple: return String(localized: "AccentColorPurple")
+            case .pink: return String(localized: "AccentColorPink")
             }
         }
 
@@ -419,13 +419,13 @@ struct LauncherSettings: Hashable, Codable {
         var displayName: String {
             switch self {
             case .standard:
-                return String(localized: "Standard")
+                return String(localized: "BackgroundStyleStandard")
             case .light:
-                return String(localized: "Light Blur")
+                return String(localized: "BackgroundStyleLightBlur")
             case .transparent:
-                return String(localized: "Transparent")
+                return String(localized: "BackgroundStyleTransparent")
             case .solid:
-                return String(localized: "Solid Color")
+                return String(localized: "BackgroundStyleSolidColor")
             }
         }
 

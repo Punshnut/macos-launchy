@@ -855,8 +855,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         guard let data = try? encoder.encode(payload) else {
             presentBackupAlert(
-                messageText: String(localized: "Export failed"),
-                informativeText: String(localized: "Could not encode backup payload."),
+                messageText: String(localized: "BackupExportFailedTitle"),
+                informativeText: String(localized: "BackupEncodeErrorBody"),
                 style: .critical,
                 window: window
             )
@@ -882,14 +882,14 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             do {
                 try data.write(to: targetURL, options: .atomic)
                 self.presentBackupAlert(
-                    messageText: String(localized: "Backup saved"),
+                    messageText: String(localized: "BackupSavedTitle"),
                     informativeText: String(localized: "Your launcher layout and settings were saved to \(targetURL.lastPathComponent)."),
                     style: .informational,
                     window: window
                 )
             } catch {
                 self.presentBackupAlert(
-                    messageText: String(localized: "Export failed"),
+                    messageText: String(localized: "BackupExportFailedTitle"),
                     informativeText: error.localizedDescription,
                     style: .critical,
                     window: window
@@ -924,14 +924,14 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                 let payload = try JSONDecoder().decode(LauncherBackupPayload.self, from: data)
                 try self.applyImportedBackup(payload)
                 self.presentBackupAlert(
-                    messageText: String(localized: "Backup restored"),
-                    informativeText: String(localized: "Launchy reloaded your apps, folders, and settings. Missing apps were skipped; new apps were added to the end."),
+                    messageText: String(localized: "BackupRestoredTitle"),
+                    informativeText: String(localized: "BackupRestoredBody"),
                     style: .informational,
                     window: window
                 )
             } catch {
                 self.presentBackupAlert(
-                    messageText: String(localized: "Restore failed"),
+                    messageText: String(localized: "BackupRestoreFailedTitle"),
                     informativeText: error.localizedDescription,
                     style: .critical,
                     window: window
@@ -952,7 +952,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private func applyImportedBackup(_ payload: LauncherBackupPayload) throws {
         guard payload.version <= LauncherBackupPayload.currentVersion else {
             throw NSError(domain: "LaunchyBackup", code: 1, userInfo: [
-                NSLocalizedDescriptionKey: String(localized: "This backup was created by a newer version of Launchy.")
+                NSLocalizedDescriptionKey: String(localized: "BackupVersionMismatchBody")
             ])
         }
 
@@ -1975,31 +1975,31 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Builds the menu shown from the status bar icon, mixing launcher content and app controls.
     private func buildStatusBarMenu() -> NSMenu {
         let menu = NSMenu()
-        let showItem = NSMenuItem(title: String(localized: "Show Launcher"), action: #selector(showLauncherFromStatusItem(_:)), keyEquivalent: "")
+        let showItem = NSMenuItem(title: String(localized: "MenuItemShowLauncher"), action: #selector(showLauncherFromStatusItem(_:)), keyEquivalent: "")
         showItem.target = self
         menu.addItem(showItem)
 
         let toggleFloatyItem = NSMenuItem(
-            title: String(localized: "Toggle Floaty Panel"),
+            title: String(localized: "SettingsFloatyToggleLabel"),
             action: #selector(toggleLauncherModeMenuItem(_:)),
             keyEquivalent: ""
         )
         toggleFloatyItem.target = self
         menu.addItem(toggleFloatyItem)
 
-        let settingsItem = NSMenuItem(title: String(localized: "Settings..."), action: #selector(openSettingsFromStatusItem(_:)), keyEquivalent: ",")
+        let settingsItem = NSMenuItem(title: String(localized: "MenuItemSettings"), action: #selector(openSettingsFromStatusItem(_:)), keyEquivalent: ",")
         settingsItem.target = self
         menu.addItem(settingsItem)
 
         menu.addItem(.separator())
 
-        let updateItem = NSMenuItem(title: String(localized: "Check for Updates..."), action: #selector(checkForUpdatesFromStatusItem(_:)), keyEquivalent: "")
+        let updateItem = NSMenuItem(title: String(localized: "MenuItemCheckUpdates"), action: #selector(checkForUpdatesFromStatusItem(_:)), keyEquivalent: "")
         updateItem.target = self
         menu.addItem(updateItem)
 
         menu.addItem(.separator())
 
-        let quitItem = NSMenuItem(title: String(localized: "Quit Launchy"), action: #selector(quitFromStatusItem(_:)), keyEquivalent: "q")
+        let quitItem = NSMenuItem(title: String(localized: "MenuItemQuitLaunchy"), action: #selector(quitFromStatusItem(_:)), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
 
@@ -2022,7 +2022,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let sortedItems = dockMenuItems()
 
         guard sortedItems.isEmpty == false else {
-            let placeholder = NSMenuItem(title: String(localized: "No applications available"), action: nil, keyEquivalent: "")
+            let placeholder = NSMenuItem(title: String(localized: "SettingsNoAppsAvailable"), action: nil, keyEquivalent: "")
             placeholder.isEnabled = false
             menu.addItem(placeholder)
             return false
@@ -2088,7 +2088,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
 
         if sortedApps.isEmpty {
-            let placeholder = NSMenuItem(title: String(localized: "No applications available"), action: nil, keyEquivalent: "")
+            let placeholder = NSMenuItem(title: String(localized: "SettingsNoAppsAvailable"), action: nil, keyEquivalent: "")
             placeholder.isEnabled = false
             submenu.addItem(placeholder)
         } else {

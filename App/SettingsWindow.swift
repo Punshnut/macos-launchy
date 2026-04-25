@@ -177,8 +177,8 @@ struct SettingsWindow: View {
     private var visualsTab: some View {
         settingsPanel(
             icon: "rocket.launch.fill",
-            title: String(localized: "Launcher"),
-            subtitle: String(localized: "Launch at login, layouts, and background styling."),
+            title: String(localized: "SettingsLauncherSectionTitle"),
+            subtitle: String(localized: "SettingsLauncherSectionBody"),
             customIcon: {
                 AnyView(
                     (applicationIconImage() ?? Image(systemName: "app"))
@@ -210,8 +210,8 @@ struct SettingsWindow: View {
     private var shortcutsTab: some View {
         settingsPanel(
             icon: "keyboard.fill",
-            title: String(localized: "Keyboard"),
-            subtitle: String(localized: "Global shortcuts and quick reset tools.")
+            title: String(localized: "SettingsKeyboardSectionTitle"),
+            subtitle: String(localized: "SettingsKeyboardSectionBody")
         ) {
             VStack(alignment: .leading, spacing: 8) {
                 hotkeySection
@@ -231,8 +231,8 @@ struct SettingsWindow: View {
     private var hiddenAppsTab: some View {
         settingsPanel(
             icon: "eye.slash.fill",
-            title: String(localized: "Hidden Apps"),
-            subtitle: String(localized: "Choose which applications stay out of the launcher grid.")
+            title: String(localized: "SettingsTabHiddenApps"),
+            subtitle: String(localized: "SettingsHiddenAppsSectionBody")
         ) {
             VStack(spacing: 16) {
                 userApplicationsFolderToggle
@@ -249,20 +249,20 @@ struct SettingsWindow: View {
             .path
 
         return VStack(alignment: .leading, spacing: 6) {
-            Toggle(String(localized: "Include user Applications folder"), isOn: Binding(
+            Toggle(String(localized: "SettingsUserAppsFolderToggle"), isOn: Binding(
                 get: { settingsStore.settingsSnapshot.shouldScanUserApplicationsFolder },
                 set: { settingsStore.setShouldScanUserApplicationsFolder($0) }
             ))
             .toggleStyle(.switch)
 
-            Text(String(format: String(localized: "Launchy searches %@ for apps when enabled."), userApplicationsPath))
+            Text(String(format: String(localized: "SettingsUserAppsFolderBody"), userApplicationsPath))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
     }
 
     private var launchAtLoginToggle: some View {
-        Toggle(String(localized: "Launch at login"), isOn: Binding(
+        Toggle(String(localized: "SettingsLaunchAtLoginToggle"), isOn: Binding(
             get: { settingsStore.settingsSnapshot.launchesAtLogin },
             set: { settingsStore.setLaunchAtLogin($0) }
         ))
@@ -272,7 +272,7 @@ struct SettingsWindow: View {
     private var launcherLayoutPicker: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
-                Text(String(localized: "Launcher layout"))
+                Text(String(localized: "SettingsLayoutPickerLabel"))
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 Text("BETA")
@@ -296,7 +296,7 @@ struct SettingsWindow: View {
             .frame(maxWidth: 320)
             .frame(maxWidth: .infinity, alignment: .center)
 
-            Text(String(localized: "Add a layout toggle shortcut below to flip modes instantly from anywhere."))
+            Text(String(localized: "SettingsLayoutPickerHelpText"))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -304,7 +304,7 @@ struct SettingsWindow: View {
 
     private var iconSizeSlider: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(String(localized: "Icon size"))
+            Text(String(localized: "SettingsIconSizeLabel"))
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
@@ -331,7 +331,7 @@ struct SettingsWindow: View {
             .frame(maxWidth: 320)
             .frame(maxWidth: .infinity, alignment: .center)
 
-            Text(String(localized: "Large icon size applies to fullscreen only; floaty uses medium."))
+            Text(String(localized: "SettingsIconSizeLargeNote"))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -339,7 +339,7 @@ struct SettingsWindow: View {
 
     private var pagingOrientationPicker: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(String(localized: "Paging direction"))
+            Text(String(localized: "SettingsPagingDirectionLabel"))
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
@@ -356,7 +356,7 @@ struct SettingsWindow: View {
             .frame(maxWidth: 220)
             .frame(maxWidth: .infinity, alignment: .center)
 
-            Text(String(localized: "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty."))
+            Text(String(localized: "SettingsPagingDirectionBody"))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -365,7 +365,7 @@ struct SettingsWindow: View {
     private var iconBehaviorListSection: some View {
         VStack(spacing: 0) {
             HStack {
-                Text(String(localized: "Hide Dock icon"))
+                Text(String(localized: "SettingsDockIconToggle"))
                 Spacer()
                 Toggle("", isOn: Binding(
                     get: { settingsStore.settingsSnapshot.isDockIconHidden },
@@ -380,7 +380,7 @@ struct SettingsWindow: View {
             Divider().overlay(Color.white.opacity(0.06))
 
             HStack {
-                Text(String(localized: "Hide menu bar icon"))
+                Text(String(localized: "SettingsMenuBarIconToggle"))
                 Spacer()
                 Toggle("", isOn: Binding(
                     get: { settingsStore.settingsSnapshot.isMenuBarIconHidden },
@@ -392,7 +392,7 @@ struct SettingsWindow: View {
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
 
-            Text(String(localized: "If both icons are hidden, Launchy keeps the toggle shortcut enabled so you can still open it."))
+            Text(String(localized: "SettingsIconsHiddenHelpText"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -403,8 +403,8 @@ struct SettingsWindow: View {
 
             HStack(alignment: .top, spacing: 12) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(String(localized: "Group folders after apps in Dock menu"))
-                    Text(String(localized: "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon."))
+                    Text(String(localized: "SettingsDockFolderGroupToggle"))
+                    Text(String(localized: "SettingsDockFolderGroupBody"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -423,7 +423,7 @@ struct SettingsWindow: View {
             Divider().overlay(Color.white.opacity(0.06))
 
             HStack {
-                Text(String(localized: "Icons move up when there's space"))
+                Text(String(localized: "SettingsIconsFloatToggle"))
                 Spacer()
                 Toggle("", isOn: Binding(
                     get: { settingsStore.settingsSnapshot.fillsGapsAutomatically },
@@ -448,7 +448,7 @@ struct SettingsWindow: View {
 
     private var backgroundStyleSection: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(String(localized: "Background style"))
+            Text(String(localized: "SettingsBackgroundStyleLabel"))
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
@@ -473,7 +473,7 @@ struct SettingsWindow: View {
 
     private var solidColorPalette: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(String(localized: "Solid color"))
+            Text(String(localized: "SettingsSolidColorPickerLabel"))
                 .font(.caption)
                 .foregroundColor(.secondary)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 32), spacing: 12)], spacing: 12) {
@@ -500,19 +500,19 @@ struct SettingsWindow: View {
     private var hotkeySection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HotkeyRecorderRow(
-                title: String(localized: "Toggle Launchy"),
-                message: String(localized: "Works everywhere. Press Delete to clear or Reset to restore Cmd+Shift+Space."),
+                title: String(localized: "SettingsToggleLaunchyLabel"),
+                message: String(localized: "SettingsToggleLaunchyBody"),
                 hotkey: settingsStore.settingsSnapshot.launcherHotkey,
-                placeholder: String(localized: "Click to record"),
+                placeholder: String(localized: "SettingsShortcutClickToRecord"),
                 onChange: { settingsStore.setLauncherHotkey($0) },
                 onReset: { settingsStore.resetLauncherHotkeyToDefault() }
             )
 
             HotkeyRecorderRow(
-                title: String(localized: "Switch fullscreen <-> floaty"),
-                message: String(localized: "Pick a shortcut if you want to flip layouts quickly. Leave empty to disable."),
+                title: String(localized: "SettingsLayoutToggleShortcutLabel"),
+                message: String(localized: "SettingsLayoutToggleShortcutBody"),
                 hotkey: settingsStore.settingsSnapshot.layoutToggleHotkey,
-                placeholder: String(localized: "Add shortcut"),
+                placeholder: String(localized: "SettingsAddShortcutButton"),
                 onChange: { settingsStore.setLayoutToggleHotkey($0) },
                 showResetButton: false
             )
@@ -521,19 +521,19 @@ struct SettingsWindow: View {
 
     private var hotCornerSection: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Toggle(String(localized: "Enable hot corner toggle"), isOn: Binding(
+            Toggle(String(localized: "SettingsHotCornerToggle"), isOn: Binding(
                 get: { settingsStore.settingsSnapshot.hotCornerEnabled },
                 set: { settingsStore.setHotCornerEnabled($0) }
             ))
             .toggleStyle(.switch)
 
-            Text(String(localized: "Move the cursor into the selected corner to show or hide Launchy."))
+            Text(String(localized: "SettingsHotCornerBody"))
                 .font(.caption)
                 .foregroundColor(.secondary)
 
             if settingsStore.settingsSnapshot.hotCornerEnabled {
                 HStack {
-                    Text(String(localized: "Corner"))
+                    Text(String(localized: "SettingsHotCornerPickerLabel"))
                         .font(.subheadline)
                         .fontWeight(.semibold)
                     Spacer()
@@ -549,7 +549,7 @@ struct SettingsWindow: View {
                     .pickerStyle(.menu)
                 }
 
-                Text(String(localized: "macOS may prompt for Input Monitoring the first time you enable this; if it doesn’t, add Launchy in System Settings → Privacy & Security → Input Monitoring."))
+                Text(String(localized: "SettingsHotCornerPermissionNote"))
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -561,12 +561,12 @@ struct SettingsWindow: View {
             Button {
                 confirmArrangementReset()
             } label: {
-                Label(String(localized: "Reset icon arrangement..."), systemImage: "arrow.counterclockwise.circle")
+                Label(String(localized: "SettingsResetArrangementButton"), systemImage: "arrow.counterclockwise.circle")
             }
             .buttonStyle(.borderedProminent)
             .tint(.red)
 
-            Text(String(localized: "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden."))
+            Text(String(localized: "SettingsResetArrangementBody"))
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -574,11 +574,11 @@ struct SettingsWindow: View {
 
     private var backupSection: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(String(localized: "Back up & Restore"))
+            Text(String(localized: "BackupRestoreSectionTitle"))
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
-            Text(String(localized: "Save your icon grid, folders, custom names, hidden apps, and settings to a single file. Restore to migrate or recover your layout."))
+            Text(String(localized: "BackupRestoreSectionBody"))
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -587,14 +587,14 @@ struct SettingsWindow: View {
                 Button {
                     settingsStore.exportBackup(hostingWindow: hostingWindow)
                 } label: {
-                    Label(String(localized: "Export backup..."), systemImage: "arrow.down.doc.fill")
+                    Label(String(localized: "BackupExportButton"), systemImage: "arrow.down.doc.fill")
                 }
                 .buttonStyle(.borderedProminent)
 
                 Button {
                     settingsStore.importBackup(hostingWindow: hostingWindow)
                 } label: {
-                    Label(String(localized: "Restore backup..."), systemImage: "arrow.up.doc.fill")
+                    Label(String(localized: "BackupRestoreButton"), systemImage: "arrow.up.doc.fill")
                 }
                 .buttonStyle(.bordered)
             }
@@ -604,9 +604,9 @@ struct SettingsWindow: View {
     private var hiddenAppsList: some View {
         VStack(spacing: 0) {
             HStack {
-                Text(String(localized: "Application"))
+                Text(String(localized: "SettingsHiddenAppsColumnApp"))
                 Spacer(minLength: 0)
-                Text(String(localized: "Hidden"))
+                Text(String(localized: "SettingsHiddenAppsColumnHidden"))
             }
             .font(.system(size: 11, weight: .semibold, design: .rounded))
             .textCase(.uppercase)
@@ -672,7 +672,7 @@ struct SettingsWindow: View {
     }
 
     private var hiddenAppsOrderToggle: some View {
-        Toggle(String(localized: "Show hidden apps first"), isOn: Binding(
+        Toggle(String(localized: "SettingsShowHiddenAppsFirstToggle"), isOn: Binding(
             get: { settingsStore.settingsSnapshot.showHiddenAppsFirst },
             set: { settingsStore.setShowHiddenAppsFirst($0) }
         ))
@@ -686,7 +686,7 @@ struct SettingsWindow: View {
             Image(systemName: "app")
                 .font(.system(size: 30, weight: .medium))
                 .foregroundColor(.secondary)
-            Text(String(localized: "Scanning for applications..."))
+            Text(String(localized: "SettingsScanningAppsStatus"))
                 .multilineTextAlignment(.center)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -747,8 +747,8 @@ struct SettingsWindow: View {
     private var aboutTab: some View {
         settingsPanel(
             icon: "info.circle.fill",
-            title: String(localized: "About Launchy"),
-            subtitle: String(localized: "Version details, credits, and useful links.")
+            title: String(localized: "SettingsAboutTitle"),
+            subtitle: String(localized: "SettingsAboutBody")
         ) {
             VStack(spacing: 14) {
                 aboutHeader
@@ -789,19 +789,19 @@ struct SettingsWindow: View {
         VStack(spacing: 0) {
             aboutLinkRow(
                 icon: "link",
-                title: String(localized: "Project Website"),
+                title: String(localized: "SettingsAboutWebsiteButton"),
                 urlString: "https://feuerbacher.me/projects/launchy"
             )
             Divider().overlay(Color.white.opacity(0.08))
             aboutLinkRow(
                 icon: "sparkle.magnifyingglass",
-                title: String(localized: "Report an Issue"),
+                title: String(localized: "SettingsAboutReportIssueButton"),
                 urlString: "https://github.com/Punshnut/macos-launchy/issues"
             )
             Divider().overlay(Color.white.opacity(0.08))
             aboutLinkRow(
                 icon: "envelope",
-                title: String(localized: "Support Email"),
+                title: String(localized: "SettingsAboutSupportEmailButton"),
                 urlString: "https://github.com/Punshnut/macos-launchy"
             )
         }
@@ -843,7 +843,7 @@ struct SettingsWindow: View {
             Button {
                 openIntroduction()
             } label: {
-                Label(String(localized: "Revisit Introduction..."), systemImage: "sparkles")
+                Label(String(localized: "SettingsAboutRevisitIntroButton"), systemImage: "sparkles")
             }
             .buttonStyle(.bordered)
 
@@ -852,7 +852,7 @@ struct SettingsWindow: View {
                     SettingsWindowAppKitBridge.openURL(url)
                 }
             } label: {
-                Label(String(localized: "View on GitHub"), systemImage: "chevron.right.circle")
+                Label(String(localized: "SettingsAboutGitHubButton"), systemImage: "chevron.right.circle")
             }
             .buttonStyle(.borderedProminent)
         }
@@ -872,9 +872,9 @@ struct SettingsWindow: View {
                     )
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(String(localized: "Support Launchy"))
+                    Text(String(localized: "SettingsAboutSupportTitle"))
                         .font(.headline)
-                    Text(String(localized: "If Launchy helps your flow, consider fueling its next release."))
+                    Text(String(localized: "SettingsAboutSupportBody"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -888,7 +888,7 @@ struct SettingsWindow: View {
                 HStack(spacing: 10) {
                     Image(systemName: "cup.and.saucer.fill")
                         .imageScale(.medium)
-                    Text(String(localized: "Donate on Ko-fi"))
+                    Text(String(localized: "SettingsAboutDonateButton"))
                         .fontWeight(.semibold)
                     Spacer()
                     Image(systemName: "arrow.up.right")
@@ -1095,7 +1095,7 @@ struct SettingsWindow: View {
         let rawVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
             ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
             ?? "--"
-        return String(format: String(localized: "Version %@"), rawVersion)
+        return String(format: String(localized: "SettingsAboutVersionFormat"), rawVersion)
     }
 
     /// Resolves developer attribution text for About.
@@ -1103,7 +1103,7 @@ struct SettingsWindow: View {
         if let copyright = Bundle.main.object(forInfoDictionaryKey: "NSHumanReadableCopyright") as? String {
             return copyright
         }
-        return String(localized: "Built by the Launchy team")
+        return String(localized: "SettingsAboutBuiltByLabel")
     }
 
     /// Retrieves the app icon through AppKit bridge helpers.
@@ -1146,7 +1146,7 @@ private struct HotkeyRecorderRow: View {
 
                 HStack(spacing: 6) {
                     if showResetButton, let onReset {
-                        Button(String(localized: "Reset")) {
+                        Button(String(localized: "SettingsShortcutResetButton")) {
                             cancelToken += 1
                             onReset()
                         }
@@ -1154,7 +1154,7 @@ private struct HotkeyRecorderRow: View {
                         .buttonStyle(.bordered)
                     }
 
-                    Button(String(localized: "Clear")) {
+                    Button(String(localized: "SettingsShortcutClearButton")) {
                         cancelToken += 1
                         onChange(nil)
                     }

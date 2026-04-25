@@ -30,8 +30,8 @@ struct IntroductionWindow: View {
         [
             IntroStep(
                 id: 0,
-                title: String(localized: "Floaty or fullscreen"),
-                subtitle: String(localized: "Pick the layout that fits the moment. Floaty hovers above your desktop, while fullscreen feels like classic Launchpad."),
+                title: String(localized: "IntroLayoutSlideTitle"),
+                subtitle: String(localized: "IntroLayoutSlideBody"),
                 iconName: "rectangle.3.group",
                 accent: LinearGradient(
                     colors: [Color.blue.opacity(0.85), Color.purple.opacity(0.75)],
@@ -39,15 +39,15 @@ struct IntroductionWindow: View {
                     endPoint: .bottomTrailing
                 ),
                 bullets: [
-                    IntroBullet(iconName: "sparkles", title: String(localized: "Floaty mode"), detail: String(localized: "A panel that stays light and quick. Hide the Dock icon if you want a minimal feel.")),
-                    IntroBullet(iconName: "macwindow.on.rectangle", title: String(localized: "Fullscreen mode"), detail: String(localized: "Fill the screen for a focused, grid-first workflow.")),
-                    IntroBullet(iconName: "bolt.fill", title: String(localized: "Flip instantly"), detail: String(localized: "Add a layout toggle shortcut in Settings to jump between modes anytime."))
+                    IntroBullet(iconName: "sparkles", title: String(localized: "IntroLayoutFloatyLabel"), detail: String(localized: "IntroLayoutFloatyBody")),
+                    IntroBullet(iconName: "macwindow.on.rectangle", title: String(localized: "IntroLayoutFullscreenLabel"), detail: String(localized: "IntroLayoutFullscreenBody")),
+                    IntroBullet(iconName: "bolt.fill", title: String(localized: "IntroLayoutFlipInstantlyLabel"), detail: String(localized: "IntroLayoutFlipInstantlyBody"))
                 ]
             ),
             IntroStep(
                 id: 1,
-                title: String(localized: "Hotkeys you control"),
-                subtitle: String(localized: "Launchy ships with Cmd+Shift+Space, but you can set your own shortcuts in Settings > Keyboard."),
+                title: String(localized: "IntroHotkeysSlideTitle"),
+                subtitle: String(localized: "IntroHotkeysSlideBody"),
                 iconName: "keyboard",
                 accent: LinearGradient(
                     colors: [Color.cyan.opacity(0.9), Color.green.opacity(0.8)],
@@ -55,15 +55,15 @@ struct IntroductionWindow: View {
                     endPoint: .bottomTrailing
                 ),
                 bullets: [
-                    IntroBullet(iconName: "command", title: String(localized: "Toggle Launchy anywhere"), detail: String(localized: "Record the shortcut you want to open or hide the launcher.")),
-                    IntroBullet(iconName: "arrow.left.arrow.right.circle", title: String(localized: "Layout toggle"), detail: String(localized: "Set an optional hotkey to swap floaty and fullscreen on demand.")),
-                    IntroBullet(iconName: "arrow.counterclockwise", title: String(localized: "Reset friendly"), detail: String(localized: "Use Reset in Settings if you ever want the defaults back."))
+                    IntroBullet(iconName: "command", title: String(localized: "IntroHotkeysToggleLabel"), detail: String(localized: "IntroHotkeysToggleBody")),
+                    IntroBullet(iconName: "arrow.left.arrow.right.circle", title: String(localized: "IntroHotkeysLayoutToggleLabel"), detail: String(localized: "IntroHotkeysLayoutToggleBody")),
+                    IntroBullet(iconName: "arrow.counterclockwise", title: String(localized: "IntroHotkeysResetFriendlyLabel"), detail: String(localized: "IntroHotkeysResetFriendlyBody"))
                 ]
             ),
             IntroStep(
                 id: 2,
-                title: String(localized: "Search & organize"),
-                subtitle: String(localized: "Type to filter instantly, drag to reorder, and build folders when you need them."),
+                title: String(localized: "IntroSearchSlideTitle"),
+                subtitle: String(localized: "IntroSearchSlideBody"),
                 iconName: "magnifyingglass",
                 accent: LinearGradient(
                     colors: [Color.orange.opacity(0.9), Color.pink.opacity(0.8)],
@@ -71,15 +71,15 @@ struct IntroductionWindow: View {
                     endPoint: .bottomTrailing
                 ),
                 bullets: [
-                    IntroBullet(iconName: "text.magnifyingglass", title: String(localized: "Instant search"), detail: String(localized: "The search bar narrows results as you type, then Enter launches the first match.")),
-                    IntroBullet(iconName: "hand.point.up.left.fill", title: String(localized: "Rearrange easily"), detail: String(localized: "Drag icons to reorder pages. Hold Option or Shift while dragging to create folders.")),
-                    IntroBullet(iconName: "folder.fill.badge.plus", title: String(localized: "Name folders fast"), detail: String(localized: "Drop onto another app to make a folder, then rename it inline."))
+                    IntroBullet(iconName: "text.magnifyingglass", title: String(localized: "IntroSearchInstantLabel"), detail: String(localized: "IntroSearchInstantBody")),
+                    IntroBullet(iconName: "hand.point.up.left.fill", title: String(localized: "IntroSearchRearrangeLabel"), detail: String(localized: "IntroSearchRearrangeBody")),
+                    IntroBullet(iconName: "folder.fill.badge.plus", title: String(localized: "IntroSearchFolderNameLabel"), detail: String(localized: "IntroSearchFolderNameBody"))
                 ]
             ),
             IntroStep(
                 id: 3,
-                title: String(localized: "Right-click for power"),
-                subtitle: String(localized: "Context menus unlock more control wherever you click."),
+                title: String(localized: "IntroContextMenuSlideTitle"),
+                subtitle: String(localized: "IntroContextMenuSlideBody"),
                 iconName: "cursorarrow.click",
                 accent: LinearGradient(
                     colors: [Color.indigo.opacity(0.85), Color.blue.opacity(0.8)],
@@ -87,9 +87,9 @@ struct IntroductionWindow: View {
                     endPoint: .bottomTrailing
                 ),
                 bullets: [
-                    IntroBullet(iconName: "ellipsis.circle", title: String(localized: "App actions"), detail: String(localized: "Right-click any app to rename it, move pages, hide it, or jump into folders.")),
-                    IntroBullet(iconName: "folder.fill", title: String(localized: "Folder tools"), detail: String(localized: "Rename, reorder, and move folders between pages with the same menu.")),
-                    IntroBullet(iconName: "plus.rectangle.on.rectangle", title: String(localized: "Blank canvas"), detail: String(localized: "Right-click the background to drop in a new folder whenever you need one."))
+                    IntroBullet(iconName: "ellipsis.circle", title: String(localized: "IntroContextMenuAppActionsLabel"), detail: String(localized: "IntroContextMenuAppActionsBody")),
+                    IntroBullet(iconName: "folder.fill", title: String(localized: "IntroContextMenuFolderToolsLabel"), detail: String(localized: "IntroContextMenuFolderToolsBody")),
+                    IntroBullet(iconName: "plus.rectangle.on.rectangle", title: String(localized: "IntroContextMenuBlankCanvasLabel"), detail: String(localized: "IntroContextMenuBlankCanvasBody"))
                 ]
             )
         ]
@@ -143,9 +143,9 @@ struct IntroductionWindow: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                     .shadow(color: .black.opacity(0.25), radius: 6, y: 3)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(String(localized: "Meet Launchy"))
+                    Text(String(localized: "IntroWindowTitle"))
                         .font(.system(size: 16, weight: .heavy, design: .rounded))
-                    Text(String(localized: "A quick tour of the essentials"))
+                    Text(String(localized: "IntroWindowSubtitle"))
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
                         .foregroundColor(.secondary)
                 }
@@ -267,7 +267,7 @@ struct IntroductionWindow: View {
             Button {
                 finishEarly()
             } label: {
-                Label(String(localized: "Skip intro"), systemImage: "forward.end")
+                Label(String(localized: "IntroSkipButton"), systemImage: "forward.end")
             }
             .buttonStyle(.plain)
             .foregroundColor(.secondary)
@@ -275,7 +275,7 @@ struct IntroductionWindow: View {
             Spacer()
 
             if currentStep > 0 {
-                Button(String(localized: "Back")) {
+                Button(String(localized: "IntroBackButton")) {
                     currentStep = max(currentStep - 1, 0)
                 }
                 .buttonStyle(.bordered)
@@ -297,8 +297,8 @@ struct IntroductionWindow: View {
 
     private var nextButtonTitle: String {
         currentStep == steps.count - 1
-        ? String(localized: "Start using Launchy")
-        : String(localized: "Next")
+        ? String(localized: "IntroStartButton")
+        : String(localized: "IntroNextButton")
     }
 
     /// Advances the intro carousel or finishes when on the last step.

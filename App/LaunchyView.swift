@@ -2824,10 +2824,10 @@ struct LauncherView: View {
     private var pageIndicatorTitle: String {
         if filteredItemList.isEmpty {
             return orderedItems.isEmpty
-            ? String(localized: "No items found")
-            : String(localized: "No matching items")
+            ? String(localized: "GridNoItemsFoundLabel")
+            : String(localized: "GridNoMatchingItemsLabel")
         }
-        return String(localized: "Page \(currentPage + 1) of \(pageCount)")
+        return String.localizedStringWithFormat(String(localized: "GridPageIndicatorFormat"), currentPage + 1, pageCount)
     }
 
     /// Resolves effective page sizes for current item count and fill-gaps mode.
@@ -4950,14 +4950,14 @@ struct LauncherView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 32, weight: .light))
                 .foregroundColor(primaryForeground)
-            Text(orderedItems.isEmpty ? String(localized: "No items found") : String(localized: "No matching items"))
+            Text(orderedItems.isEmpty ? String(localized: "GridNoItemsFoundLabel") : String(localized: "GridNoMatchingItemsLabel"))
                 .font(.title3)
                 .foregroundColor(primaryForeground)
             if orderedItems.isEmpty == false && searchText.isEmpty == false {
-                Text(String(localized: "Try a different search term."))
+                Text(String(localized: "GridSearchEmptyHint"))
                     .foregroundColor(secondaryForeground)
             } else if orderedItems.isEmpty {
-                Text(String(localized: "Launchy has not indexed any applications yet."))
+                Text(String(localized: "GridNotIndexedLabel"))
                     .foregroundColor(secondaryForeground)
             }
         }
@@ -5758,7 +5758,7 @@ struct LauncherView: View {
 
     /// Builds text field row for search with mode-aware sizing.
     private func searchFieldBody(layout: LauncherLayoutMetrics, isFloaty: Bool) -> some View {
-        TextField(String(localized: "Search"), text: $searchText)
+        TextField(String(localized: "GridSearchLabel"), text: $searchText)
             .textFieldStyle(.plain)
             .font(.system(size: layout.searchBarFontSize, weight: .medium))
             .foregroundColor(searchBarForegroundColor())
@@ -5857,7 +5857,7 @@ struct LauncherView: View {
             .contentShape(Rectangle())
             .opacity(isSearchControlsVisible ? 0 : 1)
             .allowsHitTesting(!isSearchControlsVisible)
-            .help(searchText.isEmpty ? String(localized: "More actions") : String(localized: "Clear search text"))
+            .help(searchText.isEmpty ? String(localized: "GridMoreActionsButton") : String(localized: "GridSearchClearButton"))
 
             HStack(spacing: 12) {
                 Button {
@@ -5870,7 +5870,7 @@ struct LauncherView: View {
                         .foregroundColor(searchBarForegroundColor().opacity(0.85))
                 }
                 .buttonStyle(.plain)
-                .help(String(localized: "Launchy info"))
+                .help(String(localized: "StatusBarInfoButton"))
 
                 multiSelectToggleControl()
 
@@ -5884,7 +5884,7 @@ struct LauncherView: View {
                         .foregroundColor(searchBarForegroundColor().opacity(0.85))
                 }
                 .buttonStyle(.plain)
-                .help(String(localized: "Launcher settings"))
+                .help(String(localized: "StatusBarLauncherSettingsButton"))
             }
             .padding(.trailing, 14)
             .opacity(isSearchControlsVisible ? 1 : 0)
@@ -5954,7 +5954,7 @@ struct LauncherView: View {
         }
         .buttonStyle(.plain)
         .contentShape(Circle())
-        .help(isMultiSelectModeActive ? String(localized: "Exit multi-select mode") : String(localized: "Enter multi-select mode"))
+        .help(isMultiSelectModeActive ? String(localized: "GridExitMultiSelectButton") : String(localized: "GridEnterMultiSelectButton"))
     }
 
     /// Toggles expansion state for compact search controls.
@@ -6200,30 +6200,30 @@ struct LauncherView: View {
     /// Context menu for app/folder items with move/rename/group actions.
     @ViewBuilder
     private func itemContextMenu(for item: LauncherItem) -> some View {
-        Button(String(localized: "Open")) {
+        Button(String(localized: "ItemActionOpen")) {
             openItem(item)
         }
 
         switch item {
         case .app(let app):
-            Button(String(localized: "Rename App")) {
+            Button(String(localized: "ItemActionRenameApp")) {
                 beginAppRename(app)
             }
 
-            Button(String(localized: "Show in Finder")) {
+            Button(String(localized: "ItemActionShowInFinder")) {
                 showInFinder(app)
             }
             .disabled(app.bundleURL == nil)
 
-            Menu(String(localized: "Move to Folder")) {
+            Menu(String(localized: "ItemActionMoveToFolder")) {
                 folderMoveMenu(for: multiSelectAppTargets(for: item))
             }
 
-            Menu(String(localized: "Move to Page")) {
+            Menu(String(localized: "ItemActionMoveToPage")) {
                 pageMoveMenu(for: item)
             }
 
-            Button(String(localized: "Hide App")) {
+            Button(String(localized: "ItemActionHideApp")) {
                 hideApp(app)
                 finalizeBulkSelectionAction()
             }
@@ -6232,33 +6232,33 @@ struct LauncherView: View {
                multiSelectedItemIDs.contains(app.id),
                canCreateFolderFromSelection
             {
-                Button(String(localized: "Create Folder with Selection")) {
+                Button(String(localized: "ItemActionCreateFolderWithSelection")) {
                     createFolderFromSelection(promptForName: true)
                 }
             }
 
             if isMultiSelectModeActive == false || multiSelectedItemIDs.contains(app.id) == false {
-                Button(String(localized: "Create Folder with App")) {
+                Button(String(localized: "ItemActionCreateFolderWithApp")) {
                     createFolder(from: app, promptForName: true)
                 }
             }
         case .folder(let folder):
-            Button(String(localized: "Folder Details")) {
+            Button(String(localized: "ItemActionFolderDetails")) {
                 showItemDetails(item)
             }
 
-            Button(String(localized: "Rename Folder")) {
+            Button(String(localized: "ItemActionRenameFolder")) {
                 beginFolderRename(folder)
             }
 
             if isMultiSelectModeActive {
-                Button(String(localized: "Add Selection to Folder")) {
+                Button(String(localized: "ItemActionAddSelectionToFolder")) {
                     mergeMultiSelection(into: .folder(folder))
                 }
                 .disabled(canAddSelection(to: folder) == false)
             }
 
-            Menu(String(localized: "Move to Page")) {
+            Menu(String(localized: "ItemActionMoveToPage")) {
                 pageMoveMenu(for: item)
             }
         }
@@ -6281,10 +6281,10 @@ struct LauncherView: View {
         }
 
         if apps.isEmpty {
-            Button(String(localized: "No apps selected")) { }
+            Button(String(localized: "ItemNoAppsSelected")) { }
                 .disabled(true)
         } else if sortedFolders.isEmpty {
-            Button(String(localized: "No folders available")) { }
+            Button(String(localized: "ItemMoveToFolderNoneAvailable")) { }
                 .disabled(true)
         } else {
             ForEach(sortedFolders, id: \.folder.id) { entry in
@@ -6303,7 +6303,7 @@ struct LauncherView: View {
         var options: [PageInsertionOption] = [
             PageInsertionOption(
                 insertionIndex: 0,
-                title: String(localized: "Insert at Beginning")
+                title: String(localized: "ItemActionInsertAtBeginning")
             )
         ]
         if pageCount > 1 {
@@ -6314,7 +6314,7 @@ struct LauncherView: View {
                     PageInsertionOption(
                         insertionIndex: gap,
                         title: String.localizedStringWithFormat(
-                            String(localized: "Insert between Page %lld and %lld"),
+                            String(localized: "ItemActionInsertBetweenPagesFormat"),
                             start,
                             end
                         )
@@ -6325,7 +6325,7 @@ struct LauncherView: View {
         options.append(
             PageInsertionOption(
                 insertionIndex: pageCount,
-                title: String(localized: "Insert at End")
+                title: String(localized: "ItemActionInsertAtEnd")
             )
         )
         return options
@@ -6353,7 +6353,7 @@ struct LauncherView: View {
             let shouldDisable = usesFolderOverlay ? pageIsFull : onPage
             Button(
                 String.localizedStringWithFormat(
-                    String(localized: "Page %lld"),
+                    String(localized: "ItemPageLabel"),
                     targetPage + 1
                 )
             ) {
@@ -6369,7 +6369,7 @@ struct LauncherView: View {
 
         Divider()
 
-        Menu(String(localized: "Create New Page")) {
+        Menu(String(localized: "ItemActionCreateNewPage")) {
             ForEach(insertionOptions) { option in
                 Button(option.title) {
                     if usesFolderOverlay, let first = targets.first {
@@ -6387,20 +6387,20 @@ struct LauncherView: View {
     @ViewBuilder
     private func backgroundContextMenu() -> some View {
         if isMultiSelectModeActive && canCreateFolderFromSelection {
-            Button(String(localized: "Create Folder with Selection")) {
+            Button(String(localized: "ItemActionCreateFolderWithSelection")) {
                 createFolderFromSelection(promptForName: true)
             }
         }
 
-        Button(String(localized: "Create Folder")) {
+        Button(String(localized: "ItemActionCreateFolder")) {
             createEmptyFolder(onPage: currentPage, promptForName: true)
         }
 
-        Button(String(localized: "Toggle Floaty Panel")) {
+        Button(String(localized: "SettingsFloatyToggleLabel")) {
             onToggleLauncherModeRequested?()
         }
 
-        Button(String(localized: "Settings...")) {
+        Button(String(localized: "MenuItemSettings")) {
             Task { @MainActor in
                 onSettingsRequested?()
             }
@@ -6434,7 +6434,7 @@ struct LauncherView: View {
         }
 
         alert.informativeText = lines.joined(separator: "\n")
-        alert.addButton(withTitle: String(localized: "OK"))
+        alert.addButton(withTitle: String(localized: "CommonOKButton"))
         presentModalAlert(alert)
     }
 
@@ -6444,8 +6444,8 @@ struct LauncherView: View {
         alert.alertStyle = .informational
         alert.messageText = folder.name.isEmpty ? FolderItem.defaultName : folder.name
         let appList = folder.apps.map { "- \($0.resolvedDisplayName)" }.joined(separator: "\n")
-        alert.informativeText = appList.isEmpty ? String(localized: "Folder is empty.") : String(localized: "Apps:\n\(appList)")
-        alert.addButton(withTitle: String(localized: "OK"))
+        alert.informativeText = appList.isEmpty ? String(localized: "ItemDetailFolderEmptyLabel") : String(format: String(localized: "ItemDetailAppsFormat"), appList)
+        alert.addButton(withTitle: String(localized: "CommonOKButton"))
         presentModalAlert(alert)
     }
 

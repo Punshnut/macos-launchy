@@ -27,13 +27,13 @@ enum SettingsTab: Int, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .visuals:
-            return String(localized: "Visuals")
+            return String(localized: "SettingsTabVisuals")
         case .shortcuts:
-            return String(localized: "Shortcuts")
+            return String(localized: "SettingsTabShortcuts")
         case .hiddenApps:
-            return String(localized: "Hidden Apps")
+            return String(localized: "SettingsTabHiddenApps")
         case .about:
-            return String(localized: "About")
+            return String(localized: "SettingsTabAbout")
         }
     }
 }

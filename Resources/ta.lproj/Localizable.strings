@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Launchy-க்கு வரவேற்கிறோம்";
 "ScaffoldReadyBody" = "இந்த SwiftUI ஸ்காஃபோல்ட் உங்கள் கருத்துகளுக்கு தயாராக உள்ளது.";
 "ScaffoldCounterButton" = "கௌண்டரை உயர்த்தவும்";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "பின்";
 "IntroStartButton" = "Launchy-யை பயன்படுத்த தொடங்குங்கள்";
 "IntroNextButton" = "அடுத்து";
+
+// Settings
+"SettingsWindowTitle" = "Launchy அமைப்புகள்";
 "SettingsTabVisuals" = "விசுவல்ஸ்";
 "SettingsTabShortcuts" = "சுருக்குவழிகள்";
 "SettingsTabAbout" = "பற்றி";
+"SettingsTabHiddenApps" = "மறைக்கப்பட்ட ஆப்கள்";
+"SettingsLauncherSectionTitle" = "லாஞ்சர்";
+"SettingsLauncherSectionBody" = "லாகின் போது துவக்குதல், லேஅவுட்கள், மற்றும் பின்னணி அலங்காரம்.";
+"SettingsLaunchAtLoginToggle" = "லாகினில் துவக்கு";
 "LayoutFullscreen" = "முழுத்திரை";
 "LayoutFloatyPanel" = "ஃப்ளோட்டி பேனல்";
+"SettingsLayoutPickerLabel" = "லாஞ்சர் லேஅவுட்";
+"SettingsLayoutPickerHelpText" = "எங்கிருந்தும் உடனடியாக பயன்முறைகளை மாற்ற கீழே லேஅவுட் டோகுள் சுருக்குவழியைச் சேர்க்கவும்.";
+"SettingsDockIconToggle" = "Dock ஐகானை மறைக்கவும்";
+"SettingsMenuBarIconToggle" = "மெனு பார் ஐகானை மறைக்கவும்";
+"SettingsIconsHiddenHelpText" = "இரண்டும் மறைக்கப்பட்டால், நீங்கள் இன்னும் திறக்க முடிவதற்கு Launchy டோகுள் சுருக்குவழியை செயல்பட வைக்கும்.";
+"SettingsBackgroundStyleLabel" = "பின்னணி பாணி";
+"SettingsSolidColorPickerLabel" = "திட நிறம்";
+"BackgroundStyleStandard" = "ஸ்டாண்டர்டு";
+"BackgroundStyleLightBlur" = "லைட் ப்ளர்";
+"BackgroundStyleTransparent" = "தெளிவு";
+"BackgroundStyleSolidColor" = "திடமான நிறம்";
 "AccentColorSystem" = "சிஸ்டம்";
 "AccentColorGraphite" = "கிராஃபைட்";
 "AccentColorIndigo" = "இண்டிகோ";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "ஆரஞ்சு";
 "AccentColorPink" = "பிங்க்";
 "AccentColorPurple" = "ஊதா";
-"BackgroundStyleStandard" = "ஸ்டாண்டர்டு";
-"BackgroundStyleLightBlur" = "லைட் ப்ளர்";
-"BackgroundStyleTransparent" = "தெளிவு";
-"BackgroundStyleSolidColor" = "திடமான நிறம்";
-"FolderDefaultName" = "பெயரிடப்படாதது";
-"SettingsLauncherSectionTitle" = "லாஞ்சர்";
-"SettingsLauncherSectionBody" = "லாகின் போது துவக்குதல், லேஅவுட்கள், மற்றும் பின்னணி அலங்காரம்.";
-"SettingsKeyboardSectionTitle" = "கீபோர்டு";
-"SettingsKeyboardSectionBody" = "குளோபல் சுருக்குவழிகள் மற்றும் விரைவு ரீசெட் கருவிகள்.";
-"SettingsTabHiddenApps" = "மறைக்கப்பட்ட ஆப்கள்";
-"SettingsHiddenAppsSectionBody" = "லாஞ்சர் கிரிட்-இல் இருந்து வெளியே இருக்க வேண்டிய ஆப்புகளை தேர்வு செய்யுங்கள்.";
-"SettingsUserAppsFolderToggle" = "பயனர் Applications கோப்புறையைச் சேர்க்கவும்";
-"SettingsUserAppsFolderBody" = "செயல்படுத்தப்பட்டால் Launchy %@-ல் ஆப்புகளை தேடுகிறது.";
-"SettingsLaunchAtLoginToggle" = "லாகினில் துவக்கு";
-"SettingsLayoutPickerLabel" = "லாஞ்சர் லேஅவுட்";
-"HotCornerTopLeft" = "மேல் இடது";
-"HotCornerTopRight" = "மேல் வலம்";
-"HotCornerBottomLeft" = "கீழ் இடது";
-"HotCornerBottomRight" = "கீழ் வலம்";
-"SettingsLayoutPickerHelpText" = "எங்கிருந்தும் உடனடியாக பயன்முறைகளை மாற்ற கீழே லேஅவுட் டோகுள் சுருக்குவழியைச் சேர்க்கவும்.";
-"SettingsDockIconToggle" = "Dock ஐகானை மறைக்கவும்";
-"SettingsMenuBarIconToggle" = "மெனு பார் ஐகானை மறைக்கவும்";
-"SettingsIconsHiddenHelpText" = "இரண்டும் மறைக்கப்பட்டால், நீங்கள் இன்னும் திறக்க முடிவதற்கு Launchy டோகுள் சுருக்குவழியை செயல்பட வைக்கும்.";
-"SettingsBackgroundStyleLabel" = "பின்னணி பாணி";
-"SettingsSolidColorPickerLabel" = "திட நிறம்";
 "SettingsIconsFloatToggle" = "இடம் இருந்தால் ஐகான்கள் மேலே நகரும்";
 "SettingsHotCornerToggle" = "ஹாட் கார்னர் டோகுள் இயக்கவும்";
 "SettingsHotCornerBody" = "Launchy-யை காட்ட அல்லது மறைக்க கர்சரை தேர்ந்தெடுத்த மூலையில் நகர்த்தவும்.";
 "SettingsHotCornerPickerLabel" = "மூலை";
 "SettingsHotCornerPermissionNote" = "இதனை முதன்முறையாக இயக்கும்போது macOS Input Monitoring-க்கு அனுமதி கேட்கலாம்; கேட்காவிட்டால் System Settings → Privacy & Security → Input Monitoring-இல் Launchy-யை சேர்க்கவும்.";
+"HotCornerTopLeft" = "மேல் இடது";
+"HotCornerTopRight" = "மேல் வலம்";
+"HotCornerBottomLeft" = "கீழ் இடது";
+"HotCornerBottomRight" = "கீழ் வலம்";
+"SettingsUserAppsFolderToggle" = "பயனர் Applications கோப்புறையைச் சேர்க்கவும்";
+"SettingsUserAppsFolderBody" = "செயல்படுத்தப்பட்டால் Launchy %@-ல் ஆப்புகளை தேடுகிறது.";
+"FolderDefaultName" = "பெயரிடப்படாதது";
+"SettingsKeyboardSectionTitle" = "கீபோர்டு";
+"SettingsKeyboardSectionBody" = "குளோபல் சுருக்குவழிகள் மற்றும் விரைவு ரீசெட் கருவிகள்.";
 "SettingsToggleLaunchyLabel" = "Launchy-யை டோகுள் செய்யவும்";
 "SettingsToggleLaunchyBody" = "எங்கும் வேலை செய்கிறது. அழிக்க Delete ஐ அழுத்தவும் அல்லது Cmd+Shift+Space-ஐ மீட்டமைக்க Reset அழுத்தவும்.";
 "SettingsShortcutClickToRecord" = "பதிவு செய்ய கிளிக் செய்யவும்";
 "SettingsShortcutResetButton" = "ரீசெட்";
 "SettingsShortcutClearButton" = "அழி";
+"SettingsShortcutPlaceholder" = "சுருக்குவழியை அழுத்தவும்...";
 "SettingsLayoutToggleShortcutLabel" = "முழுத்திரை <-> ஃப்ளோட்டி மாற்று";
 "SettingsFloatyToggleLabel" = "ஃப்ளோட்டி பேனலை டோகுள் செய்யவும்";
 "SettingsLayoutToggleShortcutBody" = "வேகமாக லேஅவுட்களை மாற்ற ஒரு சுருக்குவழியை தேர்வு செய்யுங்கள். முடக்க வேண்டுமெனில் காலியாக விடுங்கள்.";
 "SettingsAddShortcutButton" = "சுருக்குவழி சேர்க்கவும்";
 "SettingsResetArrangementButton" = "ஐகான் அமைப்பை ரீசெட் செய்யவும்...";
 "SettingsResetArrangementBody" = "சேமித்த வரிசை மற்றும் கோப்புறைகளை அகற்றி, பக்கங்களை புதிதாக உருவாக்குகிறது. தனிப்பயன் பெயர்களும் மறைந்த பயன்பாடுகளும் நீடிக்கும்.";
+"ResetArrangementDialogTitle" = "ஐகான் அமைப்பை ரீசெட் செய்யலாமா?";
+"ResetArrangementDialogBody" = "இது உங்கள் சேமித்த வரிசை, கோப்புறைகள் மற்றும் பக்க அமைப்பை நீக்கும். தொடர RESET என টাইப் செய்யவும்.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "லாஞ்சர் கிரிட்-இல் இருந்து வெளியே இருக்க வேண்டிய ஆப்புகளை தேர்வு செய்யுங்கள்.";
 "SettingsHiddenAppsColumnApp" = "ஆப்";
 "SettingsHiddenAppsColumnHidden" = "மறைக்கப்பட்டது";
 "SettingsShowHiddenAppsFirstToggle" = "மறைக்கப்பட்ட ஆப்களை முதலில் காட்டவும்";
 "SettingsScanningAppsStatus" = "ஆப்புகளை ஸ்கேன் செய்கிறது...";
+"SettingsNoAppsAvailable" = "எந்த ஆப்பும் கிடைக்கவில்லை";
 "SettingsAboutTitle" = "Launchy பற்றி";
 "SettingsAboutBody" = "பதிப்பு விவரங்கள், நன்றிகள், மற்றும் பயனுள்ள இணைப்புகள்.";
+"SettingsAboutVersionFormat" = "பதிப்பு %@";
+"SettingsAboutBuiltByLabel" = "Launchy அணியால் உருவாக்கப்பட்டது";
 "SettingsAboutWebsiteButton" = "திட்ட இணையதளம்";
 "SettingsAboutReportIssueButton" = "பிரச்சினை அறிக்கையிடவும்";
 "SettingsAboutSupportEmailButton" = "ஆதரவு மின்னஞ்சல்";
 "SettingsAboutRevisitIntroButton" = "அறிமுகத்தை மீண்டும் பாருங்கள்...";
 "SettingsAboutGitHubButton" = "GitHub-இல் பார்க்கவும்";
-"ResetArrangementDialogTitle" = "ஐகான் அமைப்பை ரீசெட் செய்யலாமா?";
-"ResetArrangementDialogBody" = "இது உங்கள் சேமித்த வரிசை, கோப்புறைகள் மற்றும் பக்க அமைப்பை நீக்கும். தொடர RESET என টাইப் செய்யவும்.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "ரத்து";
-"SettingsShortcutPlaceholder" = "சுருக்குவழியை அழுத்தவும்...";
-"SettingsAboutVersionFormat" = "பதிப்பு %@";
-"SettingsAboutBuiltByLabel" = "Launchy அணியால் உருவாக்கப்பட்டது";
-"SettingsWindowTitle" = "Launchy அமைப்புகள்";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "லாஞ்சர் அமைப்புகள்";
 "StatusBarInfoButton" = "Launchy தகவல்";
 "StatusBarSettingsButton" = "அமைப்புகள்";
 "MenuItemSettings" = "அமைப்புகள்...";
+"MenuItemShowLauncher" = "லாஞ்சரை காட்டவும்";
 "MenuItemCheckUpdates" = "புதுப்பிப்புகளை சரிபார்க்கவும்...";
+"MenuItemQuitLaunchy" = "Launchy-யை வெளியேறு";
 "DebugMenuLabel" = "டிபக்";
 "DebugMenuReloadApps" = "ஆப்களை மீண்டும் ஏற்று";
 "DebugMenuResetSettings" = "அமைப்புகளை ரீசெட் செய்யவும்";
 "DebugMenuToggleStyles" = "சோதனை பின்னணி பாணிகளை டோகுள் செய்யவும்";
-"MenuItemShowLauncher" = "லாஞ்சரை காட்டவும்";
-"MenuItemQuitLaunchy" = "Launchy-யை வெளியேறு";
-"GridNoItemsFoundLabel" = "எதுவும் கிடைக்கவில்லை";
-"GridNoMatchingItemsLabel" = "பொருந்தும் எதுவும் இல்லை";
-"GridEnterMultiSelectButton" = "பல தேர்வு முறைக்கு செல்லவும்";
-"GridExitMultiSelectButton" = "பல தேர்வு முறையிலிருந்து வெளியேறவும்";
-"SettingsNoAppsAvailable" = "எந்த ஆப்பும் கிடைக்கவில்லை";
-"ItemNoAppsSelected" = "எந்த ஆப்பும் தேர்ந்தெடுக்கப்படவில்லை";
-"GridPageIndicatorFormat" = "பக்கம் %lld / %lld";
-"GridSearchEmptyHint" = "வேறு தேடல் சொல்லை முயற்சிக்கவும்.";
-"GridNotIndexedLabel" = "Launchy இன்னும் எந்த ஆப்புகளையும் குறியிடவில்லை.";
+
+// Grid
 "GridSearchPlaceholder" = "ஆப்களை தேடுங்கள்";
 "GridSearchLabel" = "தேடு";
 "GridSearchClearButton" = "தேடல் உரையை அழி";
+"GridSearchEmptyHint" = "வேறு தேடல் சொல்லை முயற்சிக்கவும்.";
+"GridNotIndexedLabel" = "Launchy இன்னும் எந்த ஆப்புகளையும் குறியிடவில்லை.";
+"GridNoItemsFoundLabel" = "எதுவும் கிடைக்கவில்லை";
+"GridNoMatchingItemsLabel" = "பொருந்தும் எதுவும் இல்லை";
+"GridPageIndicatorFormat" = "பக்கம் %lld / %lld";
+"GridEnterMultiSelectButton" = "பல தேர்வு முறைக்கு செல்லவும்";
+"GridExitMultiSelectButton" = "பல தேர்வு முறையிலிருந்து வெளியேறவும்";
 "GridMoreActionsButton" = "கூடுதல் செயல்கள்";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "ஆப்பின் பெயரை மாற்றவும்";
 "ItemRenameAppPromptBody" = "இந்த ஆப்புக்கான தனிப்பயன் பெயரை உள்ளிடவும். ரீசெட் செய்ய காலியாக விடுங்கள்.";
 "ItemActionShowInFinder" = "Finder-இல் காண்பி";
+"ItemActionHideApp" = "ஆப்பை மறைக்கவும்";
 "ItemActionMoveToFolder" = "கோப்புறைக்கு நகர்த்து";
+"ItemMoveToFolderNoneAvailable" = "கோப்புறைகள் இல்லை";
 "ItemActionMoveToPage" = "பக்கத்திற்கு நகர்த்து";
 "ItemActionCreateNewPage" = "புதிய பக்கத்தை உருவாக்கு";
 "ItemActionInsertAtBeginning" = "தொடக்கத்தில் சேர்க்கவும்";
 "ItemActionInsertBetweenPagesFormat" = "பக்கம் %lld மற்றும் %lld இடையில் சேர்க்கவும்";
 "ItemActionInsertAtEnd" = "முடிவில் சேர்க்கவும்";
-"ItemActionHideApp" = "ஆப்பை மறைக்கவும்";
+"ItemPageLabel" = "பக்கம் %lld";
 "ItemActionCreateFolderWithApp" = "ஆப்புடன் கோப்புறையை உருவாக்கு";
+"ItemActionCreateFolder" = "கோப்புறை உருவாக்கு";
 "ItemActionFolderDetails" = "கோப்புறை விவரங்கள்";
 "ItemActionRenameFolder" = "கோப்புறை பெயர் மாற்றவும்";
 "ItemRenameFolderPromptBody" = "இந்த கோப்புறைக்கு பெயர் உள்ளிடவும்.";
-"ItemMoveToFolderNoneAvailable" = "கோப்புறைகள் இல்லை";
-"ItemPageLabel" = "பக்கம் %lld";
-"ItemActionCreateFolder" = "கோப்புறை உருவாக்கு";
 "ItemDetailBundleIDFormat" = "பண்டில் ஐடி: %@";
 "ItemDetailLocationFormat" = "இருப்பிடம்: %@";
 "ItemDetailCustomNameFormat" = "தனிப்பயன் பெயர்: %@";
-"CommonOKButton" = "சரி";
 "ItemDetailFolderEmptyLabel" = "கோப்புறை காலியாக உள்ளது.";
 "ItemDetailAppsFormat" = "ஆப்கள்:\n%@";
+"ItemNoAppsSelected" = "எந்த ஆப்பும் தேர்ந்தெடுக்கப்படவில்லை";
+"CommonCancelButton" = "ரத்து";
+"CommonOKButton" = "சரி";
 "CommonSaveButton" = "சேமி";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "கண்டுப்பிடிப்பு வரிசை";
 "SortOrderAlphabeticalDetail" = "பயன்பாட்டு பெயரின் அடிப்படையில் A → Z";
 "SortOrderDiscoveryDetail" = "Launchy காணும் வரிசையில்";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "காப்பு எடு & மீட்டமை";
 "BackupRestoreSectionBody" = "உங்கள் ஐகான் கட்டம், கோப்புறைகள், தனிப்பயன் பெயர்கள், மறைக்கப்பட்ட செயலிகள், அமைப்புகளை ஒரு கோப்பில் சேமிக்கவும். அமைப்பை மாற்ற அல்லது மீட்டமைக்க மீட்டமைத்தைப் பயன்படுத்து.";
@@ -206,3 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Dock மெனுவில் செயலிகளுக்கு பின் கோப்புறைகளை குழுவாக்கு";
 "SettingsDockFolderGroupBody" = "Dock ஐகானை வலது சொடுக்கு செய்வதில் தனித்த செயலிகள் முதலில் அகரவரிசையில், கோப்புறைகள் அவற்றின் கீழ் அகரவரிசையில் காண்பிக்கப்படும்.";
+

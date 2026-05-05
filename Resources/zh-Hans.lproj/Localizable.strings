@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "欢迎使用 Launchy";
 "ScaffoldReadyBody" = "这个 SwiftUI 构架已为你的创意准备妥当。";
 "ScaffoldCounterButton" = "增加计数器";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "返回";
 "IntroStartButton" = "开始使用 Launchy";
 "IntroNextButton" = "下一步";
+
+// Settings
+"SettingsWindowTitle" = "Launchy 设置";
 "SettingsTabVisuals" = "视觉";
 "SettingsTabShortcuts" = "快捷键";
 "SettingsTabAbout" = "关于";
+"SettingsTabHiddenApps" = "隐藏的应用";
+"SettingsLauncherSectionTitle" = "启动器";
+"SettingsLauncherSectionBody" = "开机启动、布局和背景样式。";
+"SettingsLaunchAtLoginToggle" = "开机启动";
 "LayoutFullscreen" = "全屏";
 "LayoutFloatyPanel" = "浮层面板";
+"SettingsLayoutPickerLabel" = "启动器布局";
+"SettingsLayoutPickerHelpText" = "在下方添加布局切换快捷键，即可随时在任何地方切换模式。";
+"SettingsDockIconToggle" = "隐藏 Dock 图标";
+"SettingsMenuBarIconToggle" = "隐藏菜单栏图标";
+"SettingsIconsHiddenHelpText" = "若同时隐藏，Launchy 会保持切换快捷键可用，确保你仍能打开它。";
+"SettingsBackgroundStyleLabel" = "背景样式";
+"SettingsSolidColorPickerLabel" = "纯色";
+"BackgroundStyleStandard" = "标准";
+"BackgroundStyleLightBlur" = "轻模糊";
+"BackgroundStyleTransparent" = "透明";
+"BackgroundStyleSolidColor" = "纯色";
 "AccentColorSystem" = "系统";
 "AccentColorGraphite" = "石墨";
 "AccentColorIndigo" = "靛蓝";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "橙色";
 "AccentColorPink" = "粉色";
 "AccentColorPurple" = "紫色";
-"BackgroundStyleStandard" = "标准";
-"BackgroundStyleLightBlur" = "轻模糊";
-"BackgroundStyleTransparent" = "透明";
-"BackgroundStyleSolidColor" = "纯色";
-"FolderDefaultName" = "未命名";
-"SettingsLauncherSectionTitle" = "启动器";
-"SettingsLauncherSectionBody" = "开机启动、布局和背景样式。";
-"SettingsKeyboardSectionTitle" = "键盘";
-"SettingsKeyboardSectionBody" = "全局快捷键与快速重置工具。";
-"SettingsTabHiddenApps" = "隐藏的应用";
-"SettingsHiddenAppsSectionBody" = "选择哪些应用不显示在启动器网格中。";
-"SettingsUserAppsFolderToggle" = "包含用户的“应用程序”文件夹";
-"SettingsUserAppsFolderBody" = "启用后，Launchy 会在 %@ 中搜索应用。";
-"SettingsLaunchAtLoginToggle" = "开机启动";
-"SettingsLayoutPickerLabel" = "启动器布局";
-"HotCornerTopLeft" = "左上";
-"HotCornerTopRight" = "右上";
-"HotCornerBottomLeft" = "左下";
-"HotCornerBottomRight" = "右下";
-"SettingsLayoutPickerHelpText" = "在下方添加布局切换快捷键，即可随时在任何地方切换模式。";
-"SettingsDockIconToggle" = "隐藏 Dock 图标";
-"SettingsMenuBarIconToggle" = "隐藏菜单栏图标";
-"SettingsIconsHiddenHelpText" = "若同时隐藏，Launchy 会保持切换快捷键可用，确保你仍能打开它。";
-"SettingsBackgroundStyleLabel" = "背景样式";
-"SettingsSolidColorPickerLabel" = "纯色";
 "SettingsIconsFloatToggle" = "有空间时图标会自动上移";
 "SettingsHotCornerToggle" = "启用热角切换";
 "SettingsHotCornerBody" = "将光标移到选定角落以显示或隐藏 Launchy。";
 "SettingsHotCornerPickerLabel" = "角落";
 "SettingsHotCornerPermissionNote" = "首次启用时，macOS 可能会请求输入监控；如果没有，请在系统设置 → 隐私与安全性 → 输入监控中添加 Launchy。";
+"HotCornerTopLeft" = "左上";
+"HotCornerTopRight" = "右上";
+"HotCornerBottomLeft" = "左下";
+"HotCornerBottomRight" = "右下";
+"SettingsUserAppsFolderToggle" = "包含用户的“应用程序”文件夹";
+"SettingsUserAppsFolderBody" = "启用后，Launchy 会在 %@ 中搜索应用。";
+"FolderDefaultName" = "未命名";
+"SettingsKeyboardSectionTitle" = "键盘";
+"SettingsKeyboardSectionBody" = "全局快捷键与快速重置工具。";
 "SettingsToggleLaunchyLabel" = "切换 Launchy";
 "SettingsToggleLaunchyBody" = "适用于所有位置。按 Delete 清除，或按 Reset 恢复 Cmd+Shift+Space。";
 "SettingsShortcutClickToRecord" = "点击以记录";
 "SettingsShortcutResetButton" = "重置";
 "SettingsShortcutClearButton" = "清除";
+"SettingsShortcutPlaceholder" = "按下快捷键...";
 "SettingsLayoutToggleShortcutLabel" = "切换 全屏 <-> Floaty";
 "SettingsFloatyToggleLabel" = "切换 Floaty 面板";
 "SettingsLayoutToggleShortcutBody" = "如果想快速切换布局，选定快捷键。留空则禁用。";
 "SettingsAddShortcutButton" = "添加快捷键";
 "SettingsResetArrangementButton" = "重置图标排列...";
 "SettingsResetArrangementBody" = "删除已保存的顺序和文件夹，并从头重建页面。自定义名称和隐藏的应用将被保留。";
+"ResetArrangementDialogTitle" = "重置图标排列？";
+"ResetArrangementDialogBody" = "这会删除保存的排序、文件夹与页面布局。输入 RESET 继续。";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "选择哪些应用不显示在启动器网格中。";
 "SettingsHiddenAppsColumnApp" = "应用";
 "SettingsHiddenAppsColumnHidden" = "隐藏";
 "SettingsShowHiddenAppsFirstToggle" = "优先显示隐藏的应用";
 "SettingsScanningAppsStatus" = "正在扫描应用...";
+"SettingsNoAppsAvailable" = "暂无可用应用";
 "SettingsAboutTitle" = "关于 Launchy";
 "SettingsAboutBody" = "版本详情、致谢与有用链接。";
+"SettingsAboutVersionFormat" = "版本 %@";
+"SettingsAboutBuiltByLabel" = "由 Launchy 团队打造";
 "SettingsAboutWebsiteButton" = "项目网站";
 "SettingsAboutReportIssueButton" = "报告问题";
 "SettingsAboutSupportEmailButton" = "支持邮箱";
 "SettingsAboutRevisitIntroButton" = "重新查看介绍...";
 "SettingsAboutGitHubButton" = "在 GitHub 查看";
-"ResetArrangementDialogTitle" = "重置图标排列？";
-"ResetArrangementDialogBody" = "这会删除保存的排序、文件夹与页面布局。输入 RESET 继续。";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "取消";
-"SettingsShortcutPlaceholder" = "按下快捷键...";
-"SettingsAboutVersionFormat" = "版本 %@";
-"SettingsAboutBuiltByLabel" = "由 Launchy 团队打造";
-"SettingsWindowTitle" = "Launchy 设置";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "启动器设置";
 "StatusBarInfoButton" = "Launchy 信息";
 "StatusBarSettingsButton" = "设置";
 "MenuItemSettings" = "设置...";
+"MenuItemShowLauncher" = "显示启动器";
 "MenuItemCheckUpdates" = "检查更新...";
+"MenuItemQuitLaunchy" = "退出 Launchy";
 "DebugMenuLabel" = "调试";
 "DebugMenuReloadApps" = "重新加载应用";
 "DebugMenuResetSettings" = "重置设置";
 "DebugMenuToggleStyles" = "切换测试背景样式";
-"MenuItemShowLauncher" = "显示启动器";
-"MenuItemQuitLaunchy" = "退出 Launchy";
-"GridNoItemsFoundLabel" = "未找到项目";
-"GridNoMatchingItemsLabel" = "没有匹配的项目";
-"GridEnterMultiSelectButton" = "进入多选模式";
-"GridExitMultiSelectButton" = "退出多选模式";
-"SettingsNoAppsAvailable" = "暂无可用应用";
-"ItemNoAppsSelected" = "未选择任何应用";
-"GridPageIndicatorFormat" = "第 %lld / %lld 页";
-"GridSearchEmptyHint" = "尝试不同的搜索词。";
-"GridNotIndexedLabel" = "Launchy 还未索引任何应用。";
+
+// Grid
 "GridSearchPlaceholder" = "搜索应用";
 "GridSearchLabel" = "搜索";
 "GridSearchClearButton" = "清除搜索内容";
+"GridSearchEmptyHint" = "尝试不同的搜索词。";
+"GridNotIndexedLabel" = "Launchy 还未索引任何应用。";
+"GridNoItemsFoundLabel" = "未找到项目";
+"GridNoMatchingItemsLabel" = "没有匹配的项目";
+"GridPageIndicatorFormat" = "第 %lld / %lld 页";
+"GridEnterMultiSelectButton" = "进入多选模式";
+"GridExitMultiSelectButton" = "退出多选模式";
 "GridMoreActionsButton" = "更多操作";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "重命名应用";
 "ItemRenameAppPromptBody" = "为该应用输入自定义名称。留空则恢复原状。";
 "ItemActionShowInFinder" = "在 Finder 中显示";
+"ItemActionHideApp" = "隐藏应用";
 "ItemActionMoveToFolder" = "移到文件夹";
+"ItemMoveToFolderNoneAvailable" = "暂无可用文件夹";
 "ItemActionMoveToPage" = "移到页面";
 "ItemActionCreateNewPage" = "新建页面";
 "ItemActionInsertAtBeginning" = "插入到开头";
 "ItemActionInsertBetweenPagesFormat" = "插入到第 %lld 和第 %lld 页之间";
 "ItemActionInsertAtEnd" = "插入到末尾";
-"ItemActionHideApp" = "隐藏应用";
+"ItemPageLabel" = "第 %lld 页";
 "ItemActionCreateFolderWithApp" = "创建包含应用的文件夹";
+"ItemActionCreateFolder" = "创建文件夹";
 "ItemActionFolderDetails" = "文件夹详情";
 "ItemActionRenameFolder" = "重命名文件夹";
 "ItemRenameFolderPromptBody" = "为此文件夹输入名称。";
-"ItemMoveToFolderNoneAvailable" = "暂无可用文件夹";
-"ItemPageLabel" = "第 %lld 页";
-"ItemActionCreateFolder" = "创建文件夹";
 "ItemDetailBundleIDFormat" = "Bundle ID：%@";
 "ItemDetailLocationFormat" = "位置：%@";
 "ItemDetailCustomNameFormat" = "自定义名称：%@";
-"CommonOKButton" = "确定";
 "ItemDetailFolderEmptyLabel" = "文件夹为空。";
 "ItemDetailAppsFormat" = "应用：\n%@";
+"ItemNoAppsSelected" = "未选择任何应用";
+"CommonCancelButton" = "取消";
+"CommonOKButton" = "确定";
 "CommonSaveButton" = "保存";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "发现顺序";
 "SortOrderAlphabeticalDetail" = "按应用名称 A → Z";
 "SortOrderDiscoveryDetail" = "按 Launchy 的发现顺序";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "备份与恢复";
 "BackupRestoreSectionBody" = "将图标网格、文件夹、自定义名称、隐藏的应用和设置保存到一个文件。恢复即可迁移或找回布局。";
@@ -206,3 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "在 Dock 菜单中将文件夹排列在应用之后";
 "SettingsDockFolderGroupBody" = "右键 Dock 图标时，先按字母顺序列出独立应用，其下按字母顺序列出文件夹。";
+

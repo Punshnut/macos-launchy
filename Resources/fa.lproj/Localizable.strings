@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "به Launchy خوش آمدید";
 "ScaffoldReadyBody" = "این اسکفلد SwiftUI آمادهٔ ایده‌های شماست.";
 "ScaffoldCounterButton" = "افزایش شمارنده";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "بازگشت";
 "IntroStartButton" = "شروع استفاده از Launchy";
 "IntroNextButton" = "بعدی";
+
+// Settings
+"SettingsWindowTitle" = "تنظیمات Launchy";
 "SettingsTabVisuals" = "ظاهر";
 "SettingsTabShortcuts" = "میانبرها";
 "SettingsTabAbout" = "درباره";
+"SettingsTabHiddenApps" = "برنامه‌های پنهان";
+"SettingsLauncherSectionTitle" = "لانچر";
+"SettingsLauncherSectionBody" = "اجرای هنگام ورود، چیدمان‌ها و سبک پس‌زمینه.";
+"SettingsLaunchAtLoginToggle" = "اجرا هنگام ورود";
 "LayoutFullscreen" = "تمام‌صفحه";
 "LayoutFloatyPanel" = "پنل شناور";
+"SettingsLayoutPickerLabel" = "چیدمان لانچر";
+"SettingsLayoutPickerHelpText" = "در پایین یک میانبر تعویض چیدمان اضافه کنید تا از هرجا فوری بین حالت‌ها جابه‌جا شوید.";
+"SettingsDockIconToggle" = "مخفی کردن آیکن Dock";
+"SettingsMenuBarIconToggle" = "مخفی کردن آیکن نوار منو";
+"SettingsIconsHiddenHelpText" = "اگر هر دو آیکن مخفی شوند، Launchy میانبر تعویض را فعال نگه می‌دارد تا هنوز بتوانید آن را باز کنید.";
+"SettingsBackgroundStyleLabel" = "سبک پس‌زمینه";
+"SettingsSolidColorPickerLabel" = "رنگ یکدست";
+"BackgroundStyleStandard" = "استاندارد";
+"BackgroundStyleLightBlur" = "محو ملایم";
+"BackgroundStyleTransparent" = "شفاف";
+"BackgroundStyleSolidColor" = "رنگ یکدست";
 "AccentColorSystem" = "سیستم";
 "AccentColorGraphite" = "گرافیت";
 "AccentColorIndigo" = "نیلی";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "نارنجی";
 "AccentColorPink" = "صورتی";
 "AccentColorPurple" = "بنفش";
-"BackgroundStyleStandard" = "استاندارد";
-"BackgroundStyleLightBlur" = "محو ملایم";
-"BackgroundStyleTransparent" = "شفاف";
-"BackgroundStyleSolidColor" = "رنگ یکدست";
-"FolderDefaultName" = "بی‌نام";
-"SettingsLauncherSectionTitle" = "لانچر";
-"SettingsLauncherSectionBody" = "اجرای هنگام ورود، چیدمان‌ها و سبک پس‌زمینه.";
-"SettingsKeyboardSectionTitle" = "صفحه‌کلید";
-"SettingsKeyboardSectionBody" = "میانبرهای سراسری و ابزارهای بازنشانی سریع.";
-"SettingsTabHiddenApps" = "برنامه‌های پنهان";
-"SettingsHiddenAppsSectionBody" = "انتخاب کنید کدام برنامه‌ها بیرون از شبکهٔ لانچر بمانند.";
-"SettingsUserAppsFolderToggle" = "شامل پوشهٔ Applications کاربر";
-"SettingsUserAppsFolderBody" = "Launchy هنگام فعال بودن، %@ را برای برنامه‌ها جست‌وجو می‌کند.";
-"SettingsLaunchAtLoginToggle" = "اجرا هنگام ورود";
-"SettingsLayoutPickerLabel" = "چیدمان لانچر";
-"HotCornerTopLeft" = "بالا چپ";
-"HotCornerTopRight" = "بالا راست";
-"HotCornerBottomLeft" = "پایین چپ";
-"HotCornerBottomRight" = "پایین راست";
-"SettingsLayoutPickerHelpText" = "در پایین یک میانبر تعویض چیدمان اضافه کنید تا از هرجا فوری بین حالت‌ها جابه‌جا شوید.";
-"SettingsDockIconToggle" = "مخفی کردن آیکن Dock";
-"SettingsMenuBarIconToggle" = "مخفی کردن آیکن نوار منو";
-"SettingsIconsHiddenHelpText" = "اگر هر دو آیکن مخفی شوند، Launchy میانبر تعویض را فعال نگه می‌دارد تا هنوز بتوانید آن را باز کنید.";
-"SettingsBackgroundStyleLabel" = "سبک پس‌زمینه";
-"SettingsSolidColorPickerLabel" = "رنگ یکدست";
 "SettingsIconsFloatToggle" = "وقتی جا باشد آیکن‌ها بالا می‌روند";
 "SettingsHotCornerToggle" = "فعال کردن تعویض با گوشهٔ داغ";
 "SettingsHotCornerBody" = "نشانگر را به گوشهٔ انتخاب‌شده ببرید تا Launchy نمایش داده یا پنهان شود.";
 "SettingsHotCornerPickerLabel" = "گوشه";
 "SettingsHotCornerPermissionNote" = "macOS ممکن است در اولین فعال‌سازی درخواست Input Monitoring کند؛ اگر نکرد، Launchy را در System Settings → Privacy & Security → Input Monitoring اضافه کنید.";
+"HotCornerTopLeft" = "بالا چپ";
+"HotCornerTopRight" = "بالا راست";
+"HotCornerBottomLeft" = "پایین چپ";
+"HotCornerBottomRight" = "پایین راست";
+"SettingsUserAppsFolderToggle" = "شامل پوشهٔ Applications کاربر";
+"SettingsUserAppsFolderBody" = "Launchy هنگام فعال بودن، %@ را برای برنامه‌ها جست‌وجو می‌کند.";
+"FolderDefaultName" = "بی‌نام";
+"SettingsKeyboardSectionTitle" = "صفحه‌کلید";
+"SettingsKeyboardSectionBody" = "میانبرهای سراسری و ابزارهای بازنشانی سریع.";
 "SettingsToggleLaunchyLabel" = "روشن/خاموش کردن Launchy";
 "SettingsToggleLaunchyBody" = "همه‌جا کار می‌کند. برای پاک کردن Delete را بزنید یا برای بازگردانی Cmd+Shift+Space از Reset استفاده کنید.";
 "SettingsShortcutClickToRecord" = "برای ضبط کلیک کنید";
 "SettingsShortcutResetButton" = "بازنشانی";
 "SettingsShortcutClearButton" = "پاک کردن";
+"SettingsShortcutPlaceholder" = "میانبر را فشار دهید...";
 "SettingsLayoutToggleShortcutLabel" = "تعویض تمام‌صفحه <-> شناور";
 "SettingsFloatyToggleLabel" = "روشن/خاموش کردن پنل شناور";
 "SettingsLayoutToggleShortcutBody" = "اگر می‌خواهید سریع چیدمان‌ها را عوض کنید یک میانبر انتخاب کنید. برای غیرفعال‌سازی خالی بگذارید.";
 "SettingsAddShortcutButton" = "افزودن میانبر";
 "SettingsResetArrangementButton" = "بازنشانی چیدمان آیکن‌ها...";
 "SettingsResetArrangementBody" = "ترتیب و پوشه‌های ذخیره‌شده را حذف می‌کند و صفحات را از نو می‌سازد. نام‌های سفارشی و برنامه‌های مخفی حفظ می‌شوند.";
+"ResetArrangementDialogTitle" = "چیدمان آیکن‌ها بازنشانی شود؟";
+"ResetArrangementDialogBody" = "این کار ترتیب ذخیره‌شده، پوشه‌ها و چیدمان صفحه‌ها را حذف می‌کند. برای ادامه RESET را تایپ کنید.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "انتخاب کنید کدام برنامه‌ها بیرون از شبکهٔ لانچر بمانند.";
 "SettingsHiddenAppsColumnApp" = "برنامه";
 "SettingsHiddenAppsColumnHidden" = "پنهان";
 "SettingsShowHiddenAppsFirstToggle" = "نمایش برنامه‌های پنهان در ابتدا";
 "SettingsScanningAppsStatus" = "در حال جست‌وجوی برنامه‌ها...";
+"SettingsNoAppsAvailable" = "هیچ برنامه‌ای در دسترس نیست";
 "SettingsAboutTitle" = "درباره Launchy";
 "SettingsAboutBody" = "جزئیات نسخه، اعتبارها و لینک‌های مفید.";
+"SettingsAboutVersionFormat" = "نسخه %@";
+"SettingsAboutBuiltByLabel" = "ساخته‌شده توسط تیم Launchy";
 "SettingsAboutWebsiteButton" = "وب‌سایت پروژه";
 "SettingsAboutReportIssueButton" = "گزارش مشکل";
 "SettingsAboutSupportEmailButton" = "ایمیل پشتیبانی";
 "SettingsAboutRevisitIntroButton" = "بازدید دوبارهٔ معرفی...";
 "SettingsAboutGitHubButton" = "مشاهده در GitHub";
-"ResetArrangementDialogTitle" = "چیدمان آیکن‌ها بازنشانی شود؟";
-"ResetArrangementDialogBody" = "این کار ترتیب ذخیره‌شده، پوشه‌ها و چیدمان صفحه‌ها را حذف می‌کند. برای ادامه RESET را تایپ کنید.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "لغو";
-"SettingsShortcutPlaceholder" = "میانبر را فشار دهید...";
-"SettingsAboutVersionFormat" = "نسخه %@";
-"SettingsAboutBuiltByLabel" = "ساخته‌شده توسط تیم Launchy";
-"SettingsWindowTitle" = "تنظیمات Launchy";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "تنظیمات لانچر";
 "StatusBarInfoButton" = "اطلاعات Launchy";
 "StatusBarSettingsButton" = "تنظیمات";
 "MenuItemSettings" = "تنظیمات...";
+"MenuItemShowLauncher" = "نمایش لانچر";
 "MenuItemCheckUpdates" = "بررسی به‌روزرسانی‌ها...";
+"MenuItemQuitLaunchy" = "خروج از Launchy";
 "DebugMenuLabel" = "اشکال‌زدایی";
 "DebugMenuReloadApps" = "بارگذاری دوباره برنامه‌ها";
 "DebugMenuResetSettings" = "بازنشانی تنظیمات";
 "DebugMenuToggleStyles" = "تعویض سبک‌های پس‌زمینهٔ آزمایشی";
-"MenuItemShowLauncher" = "نمایش لانچر";
-"MenuItemQuitLaunchy" = "خروج از Launchy";
-"GridNoItemsFoundLabel" = "هیچ موردی پیدا نشد";
-"GridNoMatchingItemsLabel" = "مورد مطابقی نیست";
-"GridEnterMultiSelectButton" = "ورود به حالت انتخاب چندگانه";
-"GridExitMultiSelectButton" = "خروج از حالت انتخاب چندگانه";
-"SettingsNoAppsAvailable" = "هیچ برنامه‌ای در دسترس نیست";
-"ItemNoAppsSelected" = "هیچ برنامه‌ای انتخاب نشده";
-"GridPageIndicatorFormat" = "صفحه %lld از %lld";
-"GridSearchEmptyHint" = "عبارت جست‌وجوی دیگری را امتحان کنید.";
-"GridNotIndexedLabel" = "Launchy هنوز هیچ برنامه‌ای را فهرست نکرده است.";
+
+// Grid
 "GridSearchPlaceholder" = "جست‌وجوی برنامه‌ها";
 "GridSearchLabel" = "جست‌وجو";
 "GridSearchClearButton" = "پاک کردن متن جست‌وجو";
+"GridSearchEmptyHint" = "عبارت جست‌وجوی دیگری را امتحان کنید.";
+"GridNotIndexedLabel" = "Launchy هنوز هیچ برنامه‌ای را فهرست نکرده است.";
+"GridNoItemsFoundLabel" = "هیچ موردی پیدا نشد";
+"GridNoMatchingItemsLabel" = "مورد مطابقی نیست";
+"GridPageIndicatorFormat" = "صفحه %lld از %lld";
+"GridEnterMultiSelectButton" = "ورود به حالت انتخاب چندگانه";
+"GridExitMultiSelectButton" = "خروج از حالت انتخاب چندگانه";
 "GridMoreActionsButton" = "عملیات بیشتر";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "تغییر نام برنامه";
 "ItemRenameAppPromptBody" = "برای این برنامه نام سفارشی وارد کنید. برای بازنشانی خالی بگذارید.";
 "ItemActionShowInFinder" = "نمایش در Finder";
+"ItemActionHideApp" = "پنهان کردن برنامه";
 "ItemActionMoveToFolder" = "انتقال به پوشه";
+"ItemMoveToFolderNoneAvailable" = "هیچ پوشه‌ای در دسترس نیست";
 "ItemActionMoveToPage" = "انتقال به صفحه";
 "ItemActionCreateNewPage" = "ایجاد صفحه جدید";
 "ItemActionInsertAtBeginning" = "درج در ابتدا";
 "ItemActionInsertBetweenPagesFormat" = "درج بین صفحه %lld و %lld";
 "ItemActionInsertAtEnd" = "درج در انتها";
-"ItemActionHideApp" = "پنهان کردن برنامه";
+"ItemPageLabel" = "صفحه %lld";
 "ItemActionCreateFolderWithApp" = "ایجاد پوشه با برنامه";
+"ItemActionCreateFolder" = "ایجاد پوشه";
 "ItemActionFolderDetails" = "جزئیات پوشه";
 "ItemActionRenameFolder" = "تغییر نام پوشه";
 "ItemRenameFolderPromptBody" = "نامی برای این پوشه وارد کنید.";
-"ItemMoveToFolderNoneAvailable" = "هیچ پوشه‌ای در دسترس نیست";
-"ItemPageLabel" = "صفحه %lld";
-"ItemActionCreateFolder" = "ایجاد پوشه";
 "ItemDetailBundleIDFormat" = "شناسه بسته: %@";
 "ItemDetailLocationFormat" = "مکان: %@";
 "ItemDetailCustomNameFormat" = "نام سفارشی: %@";
-"CommonOKButton" = "تأیید";
 "ItemDetailFolderEmptyLabel" = "پوشه خالی است.";
 "ItemDetailAppsFormat" = "برنامه‌ها:\n%@";
+"ItemNoAppsSelected" = "هیچ برنامه‌ای انتخاب نشده";
+"CommonCancelButton" = "لغو";
+"CommonOKButton" = "تأیید";
 "CommonSaveButton" = "ذخیره";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "ترتیب کشف";
 "SortOrderAlphabeticalDetail" = "A → Z بر اساس نام برنامه";
 "SortOrderDiscoveryDetail" = "همان‌طور که Launchy پیدا می‌کند";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "پشتیبان‌گیری و بازیابی";
 "BackupRestoreSectionBody" = "شبکه آیکون، پوشه‌ها، نام‌های سفارشی، برنامه‌های مخفی و تنظیمات را در یک فایل ذخیره کنید. برای مهاجرت یا بازیابی چیدمان بازگردانی کنید.";
@@ -206,5 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "گروه‌بندی پوشه‌ها بعد از برنامه‌ها در منوی داک";
 "SettingsDockFolderGroupBody" = "ابتدا برنامه‌های تکی را به ترتیب الفبا نشان می‌دهد و پوشه‌ها را زیر آن هنگام راست‌کلیک روی آیکون داک.";
-"SettingsDockFolderGroupToggle" = "Group folders after apps in Dock menu";
-"SettingsDockFolderGroupBody" = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";
+

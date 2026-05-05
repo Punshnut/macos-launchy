@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Benvenuto in Launchy";
 "ScaffoldReadyBody" = "Questo progetto base SwiftUI è pronto per le tue idee.";
 "ScaffoldCounterButton" = "Aumenta contatore";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "Indietro";
 "IntroStartButton" = "Inizia a usare Launchy";
 "IntroNextButton" = "Avanti";
+
+// Settings
+"SettingsWindowTitle" = "Impostazioni Launchy";
 "SettingsTabVisuals" = "Aspetto";
 "SettingsTabShortcuts" = "Scorciatoie";
 "SettingsTabAbout" = "Informazioni";
+"SettingsTabHiddenApps" = "App nascoste";
+"SettingsLauncherSectionTitle" = "Launcher";
+"SettingsLauncherSectionBody" = "Avvio all’accesso, layout e stile dello sfondo.";
+"SettingsLaunchAtLoginToggle" = "Avvia all’accesso";
 "LayoutFullscreen" = "Schermo intero";
 "LayoutFloatyPanel" = "Pannello flottante";
+"SettingsLayoutPickerLabel" = "Layout del launcher";
+"SettingsLayoutPickerHelpText" = "Aggiungi qui sotto un comando per cambiare modalità all’istante da qualsiasi punto.";
+"SettingsDockIconToggle" = "Nascondi icona nel Dock";
+"SettingsMenuBarIconToggle" = "Nascondi icona nella barra dei menu";
+"SettingsIconsHiddenHelpText" = "Se entrambe le icone sono nascoste, Launchy mantiene attiva la scorciatoia così puoi continuare ad aprirlo.";
+"SettingsBackgroundStyleLabel" = "Stile dello sfondo";
+"SettingsSolidColorPickerLabel" = "Colore pieno";
+"BackgroundStyleStandard" = "Standard";
+"BackgroundStyleLightBlur" = "Sfocatura leggera";
+"BackgroundStyleTransparent" = "Trasparente";
+"BackgroundStyleSolidColor" = "Colore pieno";
 "AccentColorSystem" = "Sistema";
 "AccentColorGraphite" = "Grafite";
 "AccentColorIndigo" = "Indaco";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "Arancione";
 "AccentColorPink" = "Rosa";
 "AccentColorPurple" = "Viola";
-"BackgroundStyleStandard" = "Standard";
-"BackgroundStyleLightBlur" = "Sfocatura leggera";
-"BackgroundStyleTransparent" = "Trasparente";
-"BackgroundStyleSolidColor" = "Colore pieno";
-"FolderDefaultName" = "senza nome";
-"SettingsLauncherSectionTitle" = "Launcher";
-"SettingsLauncherSectionBody" = "Avvio all’accesso, layout e stile dello sfondo.";
-"SettingsKeyboardSectionTitle" = "Tastiera";
-"SettingsKeyboardSectionBody" = "Scorciatoie globali e strumenti rapidi di ripristino.";
-"SettingsTabHiddenApps" = "App nascoste";
-"SettingsHiddenAppsSectionBody" = "Scegli quali applicazioni escludere dalla griglia del launcher.";
-"SettingsUserAppsFolderToggle" = "Includi la cartella Applicazioni dell'utente";
-"SettingsUserAppsFolderBody" = "Launchy cerca le app in %@ quando è abilitato.";
-"SettingsLaunchAtLoginToggle" = "Avvia all’accesso";
-"SettingsLayoutPickerLabel" = "Layout del launcher";
-"HotCornerTopLeft" = "In alto a sinistra";
-"HotCornerTopRight" = "In alto a destra";
-"HotCornerBottomLeft" = "In basso a sinistra";
-"HotCornerBottomRight" = "In basso a destra";
-"SettingsLayoutPickerHelpText" = "Aggiungi qui sotto un comando per cambiare modalità all’istante da qualsiasi punto.";
-"SettingsDockIconToggle" = "Nascondi icona nel Dock";
-"SettingsMenuBarIconToggle" = "Nascondi icona nella barra dei menu";
-"SettingsIconsHiddenHelpText" = "Se entrambe le icone sono nascoste, Launchy mantiene attiva la scorciatoia così puoi continuare ad aprirlo.";
-"SettingsBackgroundStyleLabel" = "Stile dello sfondo";
-"SettingsSolidColorPickerLabel" = "Colore pieno";
 "SettingsIconsFloatToggle" = "Le icone salgono quando c’è spazio";
 "SettingsHotCornerToggle" = "Abilita hot corner";
 "SettingsHotCornerBody" = "Sposta il cursore nell’angolo selezionato per mostrare o nascondere Launchy.";
 "SettingsHotCornerPickerLabel" = "Angolo";
 "SettingsHotCornerPermissionNote" = "macOS potrebbe richiedere il Monitoraggio input al primo avvio; in caso contrario, aggiungi Launchy in Impostazioni di sistema → Privacy e sicurezza → Monitoraggio input.";
+"HotCornerTopLeft" = "In alto a sinistra";
+"HotCornerTopRight" = "In alto a destra";
+"HotCornerBottomLeft" = "In basso a sinistra";
+"HotCornerBottomRight" = "In basso a destra";
+"SettingsUserAppsFolderToggle" = "Includi la cartella Applicazioni dell'utente";
+"SettingsUserAppsFolderBody" = "Launchy cerca le app in %@ quando è abilitato.";
+"FolderDefaultName" = "senza nome";
+"SettingsKeyboardSectionTitle" = "Tastiera";
+"SettingsKeyboardSectionBody" = "Scorciatoie globali e strumenti rapidi di ripristino.";
 "SettingsToggleLaunchyLabel" = "Attiva/disattiva Launchy";
 "SettingsToggleLaunchyBody" = "Funziona ovunque. Premi Canc per azzerare o Ripristina per tornare a Cmd+Shift+Spazio.";
 "SettingsShortcutClickToRecord" = "Clicca per registrare";
 "SettingsShortcutResetButton" = "Ripristina";
 "SettingsShortcutClearButton" = "Pulisci";
+"SettingsShortcutPlaceholder" = "Premi la scorciatoia...";
 "SettingsLayoutToggleShortcutLabel" = "Passa schermo intero <-> flottante";
 "SettingsFloatyToggleLabel" = "Alterna il pannello Floaty";
 "SettingsLayoutToggleShortcutBody" = "Scegli una scorciatoia per cambiare layout rapidamente. Lascia vuoto per disattivare.";
 "SettingsAddShortcutButton" = "Aggiungi scorciatoia";
 "SettingsResetArrangementButton" = "Ripristina disposizione icone...";
 "SettingsResetArrangementBody" = "Elimina l’ordine e le cartelle salvate e ricostruisce le pagine. I nomi personalizzati e le app nascoste rimangono.";
+"ResetArrangementDialogTitle" = "Ripristinare la disposizione delle icone?";
+"ResetArrangementDialogBody" = "Questo elimina ordine salvato, cartelle e layout delle pagine. Digita RESET per continuare.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "Scegli quali applicazioni escludere dalla griglia del launcher.";
 "SettingsHiddenAppsColumnApp" = "Applicazione";
 "SettingsHiddenAppsColumnHidden" = "Nascosta";
 "SettingsShowHiddenAppsFirstToggle" = "Mostra prima le app nascoste";
 "SettingsScanningAppsStatus" = "Ricerca delle applicazioni...";
+"SettingsNoAppsAvailable" = "Nessuna app disponibile";
 "SettingsAboutTitle" = "Informazioni su Launchy";
 "SettingsAboutBody" = "Dettagli versione, crediti e link utili.";
+"SettingsAboutVersionFormat" = "Versione %@";
+"SettingsAboutBuiltByLabel" = "Creato dal team Launchy";
 "SettingsAboutWebsiteButton" = "Sito del progetto";
 "SettingsAboutReportIssueButton" = "Segnala un problema";
 "SettingsAboutSupportEmailButton" = "Email di supporto";
 "SettingsAboutRevisitIntroButton" = "Rivedi l’introduzione...";
 "SettingsAboutGitHubButton" = "Vedi su GitHub";
-"ResetArrangementDialogTitle" = "Ripristinare la disposizione delle icone?";
-"ResetArrangementDialogBody" = "Questo elimina ordine salvato, cartelle e layout delle pagine. Digita RESET per continuare.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "Annulla";
-"SettingsShortcutPlaceholder" = "Premi la scorciatoia...";
-"SettingsAboutVersionFormat" = "Versione %@";
-"SettingsAboutBuiltByLabel" = "Creato dal team Launchy";
-"SettingsWindowTitle" = "Impostazioni Launchy";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "Impostazioni del launcher";
 "StatusBarInfoButton" = "Informazioni su Launchy";
 "StatusBarSettingsButton" = "Impostazioni";
 "MenuItemSettings" = "Impostazioni...";
+"MenuItemShowLauncher" = "Mostra launcher";
 "MenuItemCheckUpdates" = "Cerca aggiornamenti...";
+"MenuItemQuitLaunchy" = "Esci da Launchy";
 "DebugMenuLabel" = "Debug";
 "DebugMenuReloadApps" = "Ricarica app";
 "DebugMenuResetSettings" = "Ripristina impostazioni";
 "DebugMenuToggleStyles" = "Alterna stili di sfondo di prova";
-"MenuItemShowLauncher" = "Mostra launcher";
-"MenuItemQuitLaunchy" = "Esci da Launchy";
-"GridNoItemsFoundLabel" = "Nessun elemento trovato";
-"GridNoMatchingItemsLabel" = "Nessun elemento corrispondente";
-"GridEnterMultiSelectButton" = "Attiva la modalità multi-selezione";
-"GridExitMultiSelectButton" = "Esci dalla modalità multi-selezione";
-"SettingsNoAppsAvailable" = "Nessuna app disponibile";
-"ItemNoAppsSelected" = "Nessuna app selezionata";
-"GridPageIndicatorFormat" = "Pagina %lld di %lld";
-"GridSearchEmptyHint" = "Prova un’altra ricerca.";
-"GridNotIndexedLabel" = "Launchy non ha ancora indicizzato applicazioni.";
+
+// Grid
 "GridSearchPlaceholder" = "Cerca app";
 "GridSearchLabel" = "Cerca";
 "GridSearchClearButton" = "Cancella testo di ricerca";
+"GridSearchEmptyHint" = "Prova un’altra ricerca.";
+"GridNotIndexedLabel" = "Launchy non ha ancora indicizzato applicazioni.";
+"GridNoItemsFoundLabel" = "Nessun elemento trovato";
+"GridNoMatchingItemsLabel" = "Nessun elemento corrispondente";
+"GridPageIndicatorFormat" = "Pagina %lld di %lld";
+"GridEnterMultiSelectButton" = "Attiva la modalità multi-selezione";
+"GridExitMultiSelectButton" = "Esci dalla modalità multi-selezione";
 "GridMoreActionsButton" = "Altre azioni";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "Rinomina app";
 "ItemRenameAppPromptBody" = "Inserisci un nome personalizzato per questa app. Lascia vuoto per ripristinare.";
 "ItemActionShowInFinder" = "Mostra nel Finder";
+"ItemActionHideApp" = "Nascondi app";
 "ItemActionMoveToFolder" = "Sposta nella cartella";
+"ItemMoveToFolderNoneAvailable" = "Nessuna cartella disponibile";
 "ItemActionMoveToPage" = "Sposta nella pagina";
 "ItemActionCreateNewPage" = "Crea nuova pagina";
 "ItemActionInsertAtBeginning" = "Inserisci all'inizio";
 "ItemActionInsertBetweenPagesFormat" = "Inserisci tra la pagina %lld e la %lld";
 "ItemActionInsertAtEnd" = "Inserisci alla fine";
-"ItemActionHideApp" = "Nascondi app";
+"ItemPageLabel" = "Pagina %lld";
 "ItemActionCreateFolderWithApp" = "Crea cartella con l’app";
+"ItemActionCreateFolder" = "Crea cartella";
 "ItemActionFolderDetails" = "Dettagli cartella";
 "ItemActionRenameFolder" = "Rinomina cartella";
 "ItemRenameFolderPromptBody" = "Inserisci un nome per questa cartella.";
-"ItemMoveToFolderNoneAvailable" = "Nessuna cartella disponibile";
-"ItemPageLabel" = "Pagina %lld";
-"ItemActionCreateFolder" = "Crea cartella";
 "ItemDetailBundleIDFormat" = "ID bundle: %@";
 "ItemDetailLocationFormat" = "Percorso: %@";
 "ItemDetailCustomNameFormat" = "Nome personalizzato: %@";
-"CommonOKButton" = "OK";
 "ItemDetailFolderEmptyLabel" = "La cartella è vuota.";
 "ItemDetailAppsFormat" = "App:\n%@";
+"ItemNoAppsSelected" = "Nessuna app selezionata";
+"CommonCancelButton" = "Annulla";
+"CommonOKButton" = "OK";
 "CommonSaveButton" = "Salva";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "Ordine di scoperta";
 "SortOrderAlphabeticalDetail" = "A → Z per nome dell’app";
 "SortOrderDiscoveryDetail" = "Come le trova Launchy";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "Backup e ripristina";
 "BackupRestoreSectionBody" = "Salva griglia di icone, cartelle, nomi personalizzati, app nascoste e impostazioni in un unico file. Ripristina per migrare o recuperare il layout.";
@@ -206,5 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Raggruppa le cartelle dopo le app nel menu Dock";
 "SettingsDockFolderGroupBody" = "Mostra prima le app singole in ordine alfabetico, con le cartelle sotto quando fai clic destro sull'icona del Dock.";
-"SettingsDockFolderGroupToggle" = "Group folders after apps in Dock menu";
-"SettingsDockFolderGroupBody" = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";
+

@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "ยินดีต้อนรับสู่ Launchy";
 "ScaffoldReadyBody" = "โครงสร้าง SwiftUI นี้พร้อมสำหรับไอเดียของคุณแล้ว";
 "ScaffoldCounterButton" = "เพิ่มเคาน์เตอร์";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "ย้อนกลับ";
 "IntroStartButton" = "เริ่มใช้ Launchy";
 "IntroNextButton" = "ถัดไป";
+
+// Settings
+"SettingsWindowTitle" = "การตั้งค่า Launchy";
 "SettingsTabVisuals" = "ภาพ";
 "SettingsTabShortcuts" = "ทางลัด";
 "SettingsTabAbout" = "เกี่ยวกับ";
+"SettingsTabHiddenApps" = "แอปที่ซ่อนอยู่";
+"SettingsLauncherSectionTitle" = "แอปเปิด";
+"SettingsLauncherSectionBody" = "เปิดพร้อมล็อกอิน เลย์เอาต์ และสไตล์พื้นหลัง";
+"SettingsLaunchAtLoginToggle" = "เปิดพร้อมล็อกอิน";
 "LayoutFullscreen" = "เต็มหน้าจอ";
 "LayoutFloatyPanel" = "แผง Floaty";
+"SettingsLayoutPickerLabel" = "เลย์เอาต์ของ Launcher";
+"SettingsLayoutPickerHelpText" = "เพิ่มทางลัดเปลี่ยนเลย์เอาต์ด้านล่างเพื่อสลับโหมดทันทีจากทุกที่";
+"SettingsDockIconToggle" = "ซ่อนไอคอน Dock";
+"SettingsMenuBarIconToggle" = "ซ่อนไอคอนแถบเมนู";
+"SettingsIconsHiddenHelpText" = "ถ้าซ่อนทั้งสองไอคอน Launchy จะยังเปิดทางลัดไว้ให้คุณเปิดอยู่";
+"SettingsBackgroundStyleLabel" = "สไตล์พื้นหลัง";
+"SettingsSolidColorPickerLabel" = "สีเรียบ";
+"BackgroundStyleStandard" = "มาตรฐาน";
+"BackgroundStyleLightBlur" = "เบลอแบบอ่อน";
+"BackgroundStyleTransparent" = "โปร่งใส";
+"BackgroundStyleSolidColor" = "สีเรียบ";
 "AccentColorSystem" = "ระบบ";
 "AccentColorGraphite" = "กราไฟท์";
 "AccentColorIndigo" = "สีน้ำเงินคราม";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "ส้ม";
 "AccentColorPink" = "สีชมพู";
 "AccentColorPurple" = "สีม่วง";
-"BackgroundStyleStandard" = "มาตรฐาน";
-"BackgroundStyleLightBlur" = "เบลอแบบอ่อน";
-"BackgroundStyleTransparent" = "โปร่งใส";
-"BackgroundStyleSolidColor" = "สีเรียบ";
-"FolderDefaultName" = "ไม่มีชื่อ";
-"SettingsLauncherSectionTitle" = "แอปเปิด";
-"SettingsLauncherSectionBody" = "เปิดพร้อมล็อกอิน เลย์เอาต์ และสไตล์พื้นหลัง";
-"SettingsKeyboardSectionTitle" = "แป้นพิมพ์";
-"SettingsKeyboardSectionBody" = "ทางลัดทั่วทั้งระบบและเครื่องมือรีเซ็ตด่วน";
-"SettingsTabHiddenApps" = "แอปที่ซ่อนอยู่";
-"SettingsHiddenAppsSectionBody" = "เลือกแอปที่จะไม่อยู่ในกริดของ Launcher";
-"SettingsUserAppsFolderToggle" = "รวมโฟลเดอร์แอปของผู้ใช้";
-"SettingsUserAppsFolderBody" = "Launchy ค้นหา %@ เพื่อหาแอปเมื่อเปิดใช้งาน.";
-"SettingsLaunchAtLoginToggle" = "เปิดพร้อมล็อกอิน";
-"SettingsLayoutPickerLabel" = "เลย์เอาต์ของ Launcher";
-"HotCornerTopLeft" = "บนซ้าย";
-"HotCornerTopRight" = "บนขวา";
-"HotCornerBottomLeft" = "ล่างซ้าย";
-"HotCornerBottomRight" = "ล่างขวา";
-"SettingsLayoutPickerHelpText" = "เพิ่มทางลัดเปลี่ยนเลย์เอาต์ด้านล่างเพื่อสลับโหมดทันทีจากทุกที่";
-"SettingsDockIconToggle" = "ซ่อนไอคอน Dock";
-"SettingsMenuBarIconToggle" = "ซ่อนไอคอนแถบเมนู";
-"SettingsIconsHiddenHelpText" = "ถ้าซ่อนทั้งสองไอคอน Launchy จะยังเปิดทางลัดไว้ให้คุณเปิดอยู่";
-"SettingsBackgroundStyleLabel" = "สไตล์พื้นหลัง";
-"SettingsSolidColorPickerLabel" = "สีเรียบ";
 "SettingsIconsFloatToggle" = "ไอคอนเลื่อนขึ้นเมื่อมีช่องว่าง";
 "SettingsHotCornerToggle" = "เปิดการสลับมุมลัด";
 "SettingsHotCornerBody" = "เลื่อนเคอร์เซอร์ไปยังมุมที่เลือกเพื่อแสดงหรือซ่อน Launchy";
 "SettingsHotCornerPickerLabel" = "มุม";
 "SettingsHotCornerPermissionNote" = "ครั้งแรกที่เปิดใช้งาน macOS อาจขอการตรวจสอบการป้อนข้อมูล ถ้าไม่ ให้เพิ่ม Launchy ในการตั้งค่าระบบ → ความเป็นส่วนตัวและความปลอดภัย → การตรวจสอบการป้อนข้อมูล";
+"HotCornerTopLeft" = "บนซ้าย";
+"HotCornerTopRight" = "บนขวา";
+"HotCornerBottomLeft" = "ล่างซ้าย";
+"HotCornerBottomRight" = "ล่างขวา";
+"SettingsUserAppsFolderToggle" = "รวมโฟลเดอร์แอปของผู้ใช้";
+"SettingsUserAppsFolderBody" = "Launchy ค้นหา %@ เพื่อหาแอปเมื่อเปิดใช้งาน.";
+"FolderDefaultName" = "ไม่มีชื่อ";
+"SettingsKeyboardSectionTitle" = "แป้นพิมพ์";
+"SettingsKeyboardSectionBody" = "ทางลัดทั่วทั้งระบบและเครื่องมือรีเซ็ตด่วน";
 "SettingsToggleLaunchyLabel" = "สลับ Launchy";
 "SettingsToggleLaunchyBody" = "ใช้งานได้ทุกที่ กด Delete เพื่อล้าง หรือ Reset เพื่อคืน Cmd+Shift+Space";
 "SettingsShortcutClickToRecord" = "คลิกเพื่อบันทึก";
 "SettingsShortcutResetButton" = "รีเซ็ต";
 "SettingsShortcutClearButton" = "ล้าง";
+"SettingsShortcutPlaceholder" = "กดทางลัด...";
 "SettingsLayoutToggleShortcutLabel" = "สลับเต็มหน้าจอ <-> Floaty";
 "SettingsFloatyToggleLabel" = "สลับแผง Floaty";
 "SettingsLayoutToggleShortcutBody" = "เลือกทางลัดหากต้องการสลับเลย์เอาต์เร็ว ๆ ทิ้งไว้ว่างเพื่อปิดใช้งาน";
 "SettingsAddShortcutButton" = "เพิ่มทางลัด";
 "SettingsResetArrangementButton" = "รีเซ็ตการจัดเรียงไอคอน...";
 "SettingsResetArrangementBody" = "ลบลำดับและโฟลเดอร์ที่บันทึกไว้แล้วสร้างหน้าใหม่ตั้งแต่ต้น ชื่อกำหนดเองและแอปที่ซ่อนยังคงอยู่.";
+"ResetArrangementDialogTitle" = "รีเซ็ตการจัดเรียงไอคอน?";
+"ResetArrangementDialogBody" = "สิ่งนี้จะลบการจัดเรียง โฟลเดอร์ และเลย์เอาต์หน้าที่บันทึกไว้ พิมพ์ RESET เพื่อดำเนินการต่อ";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "เลือกแอปที่จะไม่อยู่ในกริดของ Launcher";
 "SettingsHiddenAppsColumnApp" = "แอปพลิเคชัน";
 "SettingsHiddenAppsColumnHidden" = "ซ่อน";
 "SettingsShowHiddenAppsFirstToggle" = "แสดงแอปที่ซ่อนก่อน";
 "SettingsScanningAppsStatus" = "กำลังสแกนแอปพลิเคชัน...";
+"SettingsNoAppsAvailable" = "ไม่พบแอปที่ใช้งานได้";
 "SettingsAboutTitle" = "เกี่ยวกับ Launchy";
 "SettingsAboutBody" = "รายละเอียดเวอร์ชัน เครดิต และลิงก์ที่เป็นประโยชน์";
+"SettingsAboutVersionFormat" = "เวอร์ชัน %@";
+"SettingsAboutBuiltByLabel" = "สร้างโดยทีม Launchy";
 "SettingsAboutWebsiteButton" = "เว็บไซต์โครงการ";
 "SettingsAboutReportIssueButton" = "รายงานปัญหา";
 "SettingsAboutSupportEmailButton" = "อีเมลสนับสนุน";
 "SettingsAboutRevisitIntroButton" = "กลับไปที่บทนำ...";
 "SettingsAboutGitHubButton" = "ดูบน GitHub";
-"ResetArrangementDialogTitle" = "รีเซ็ตการจัดเรียงไอคอน?";
-"ResetArrangementDialogBody" = "สิ่งนี้จะลบการจัดเรียง โฟลเดอร์ และเลย์เอาต์หน้าที่บันทึกไว้ พิมพ์ RESET เพื่อดำเนินการต่อ";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "ยกเลิก";
-"SettingsShortcutPlaceholder" = "กดทางลัด...";
-"SettingsAboutVersionFormat" = "เวอร์ชัน %@";
-"SettingsAboutBuiltByLabel" = "สร้างโดยทีม Launchy";
-"SettingsWindowTitle" = "การตั้งค่า Launchy";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "การตั้งค่า Launcher";
 "StatusBarInfoButton" = "ข้อมูล Launchy";
 "StatusBarSettingsButton" = "การตั้งค่า";
 "MenuItemSettings" = "การตั้งค่า...";
+"MenuItemShowLauncher" = "แสดง Launcher";
 "MenuItemCheckUpdates" = "ตรวจสอบการอัปเดต...";
+"MenuItemQuitLaunchy" = "ออกจาก Launchy";
 "DebugMenuLabel" = "ดีบัก";
 "DebugMenuReloadApps" = "โหลดแอปใหม่";
 "DebugMenuResetSettings" = "รีเซ็ตการตั้งค่า";
 "DebugMenuToggleStyles" = "สลับสไตล์พื้นหลังทดสอบ";
-"MenuItemShowLauncher" = "แสดง Launcher";
-"MenuItemQuitLaunchy" = "ออกจาก Launchy";
-"GridNoItemsFoundLabel" = "ไม่พบรายการ";
-"GridNoMatchingItemsLabel" = "ไม่มีรายการตรงกัน";
-"GridEnterMultiSelectButton" = "เข้าสู่โหมดเลือกหลายรายการ";
-"GridExitMultiSelectButton" = "ออกจากโหมดเลือกหลายรายการ";
-"SettingsNoAppsAvailable" = "ไม่พบแอปที่ใช้งานได้";
-"ItemNoAppsSelected" = "ยังไม่มีแอปที่ถูกเลือก";
-"GridPageIndicatorFormat" = "หน้า %lld จาก %lld";
-"GridSearchEmptyHint" = "ลองคำค้นหาอื่น";
-"GridNotIndexedLabel" = "Launchy ยังไม่ได้จัดทำดัชนีแอปใด ๆ";
+
+// Grid
 "GridSearchPlaceholder" = "ค้นหาแอป";
 "GridSearchLabel" = "ค้นหา";
 "GridSearchClearButton" = "ล้างข้อความค้นหา";
+"GridSearchEmptyHint" = "ลองคำค้นหาอื่น";
+"GridNotIndexedLabel" = "Launchy ยังไม่ได้จัดทำดัชนีแอปใด ๆ";
+"GridNoItemsFoundLabel" = "ไม่พบรายการ";
+"GridNoMatchingItemsLabel" = "ไม่มีรายการตรงกัน";
+"GridPageIndicatorFormat" = "หน้า %lld จาก %lld";
+"GridEnterMultiSelectButton" = "เข้าสู่โหมดเลือกหลายรายการ";
+"GridExitMultiSelectButton" = "ออกจากโหมดเลือกหลายรายการ";
 "GridMoreActionsButton" = "ดำเนินการเพิ่มเติม";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "เปลี่ยนชื่อแอป";
 "ItemRenameAppPromptBody" = "ใส่ชื่อเฉพาะสำหรับแอปนี้ ปล่อยว่างเพื่อรีเซ็ต";
 "ItemActionShowInFinder" = "แสดงใน Finder";
+"ItemActionHideApp" = "ซ่อนแอป";
 "ItemActionMoveToFolder" = "ย้ายไปโฟลเดอร์";
+"ItemMoveToFolderNoneAvailable" = "ไม่มีโฟลเดอร์ให้ใช้งาน";
 "ItemActionMoveToPage" = "ย้ายไปหน้า";
 "ItemActionCreateNewPage" = "สร้างหน้าใหม่";
 "ItemActionInsertAtBeginning" = "แทรกที่จุดเริ่มต้น";
 "ItemActionInsertBetweenPagesFormat" = "แทรกระหว่างหน้า %lld และ %lld";
 "ItemActionInsertAtEnd" = "แทรกที่ท้าย";
-"ItemActionHideApp" = "ซ่อนแอป";
+"ItemPageLabel" = "หน้า %lld";
 "ItemActionCreateFolderWithApp" = "สร้างโฟลเดอร์พร้อมแอป";
+"ItemActionCreateFolder" = "สร้างโฟลเดอร์";
 "ItemActionFolderDetails" = "รายละเอียดโฟลเดอร์";
 "ItemActionRenameFolder" = "เปลี่ยนชื่อโฟลเดอร์";
 "ItemRenameFolderPromptBody" = "ใส่ชื่อสำหรับโฟลเดอร์นี้";
-"ItemMoveToFolderNoneAvailable" = "ไม่มีโฟลเดอร์ให้ใช้งาน";
-"ItemPageLabel" = "หน้า %lld";
-"ItemActionCreateFolder" = "สร้างโฟลเดอร์";
 "ItemDetailBundleIDFormat" = "Bundle ID: %@";
 "ItemDetailLocationFormat" = "ตำแหน่ง: %@";
 "ItemDetailCustomNameFormat" = "ชื่อเฉพาะ: %@";
-"CommonOKButton" = "ตกลง";
 "ItemDetailFolderEmptyLabel" = "โฟลเดอร์ว่างเปล่า";
 "ItemDetailAppsFormat" = "แอป:\n%@";
+"ItemNoAppsSelected" = "ยังไม่มีแอปที่ถูกเลือก";
+"CommonCancelButton" = "ยกเลิก";
+"CommonOKButton" = "ตกลง";
 "CommonSaveButton" = "บันทึก";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "ลำดับการค้นพบ";
 "SortOrderAlphabeticalDetail" = "A → Z ตามชื่อแอป";
 "SortOrderDiscoveryDetail" = "ตามที่ Launchy พบ";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "สำรองและกู้คืน";
 "BackupRestoreSectionBody" = "บันทึกตารางไอคอน โฟลเดอร์ ชื่อกำหนดเอง แอปที่ซ่อน และการตั้งค่าไว้ในไฟล์เดียว กู้คืนเพื่อย้ายหรือกู้คืนเลย์เอาต์";
@@ -206,3 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "จัดโฟลเดอร์ไว้หลังแอปในเมนู Dock";
 "SettingsDockFolderGroupBody" = "เมื่อคลิกขวาที่ไอคอน Dock จะแสดงแอปเดี่ยวตามลำดับตัวอักษรก่อน ตามด้วยโฟลเดอร์เรียงตัวอักษรด้านล่าง";
+

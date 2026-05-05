@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Kaabọ si Launchy";
 "ScaffoldReadyBody" = "Eto SwiftUI yii ti ṣetan fun awọn ero rẹ.";
 "ScaffoldCounterButton" = "Mu kaunta pọ si";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "Padà";
 "IntroStartButton" = "Bẹ̀rẹ̀ sí í lo Launchy";
 "IntroNextButton" = "Tẹ̀síwájú";
+
+// Settings
+"SettingsWindowTitle" = "Settings Launchy";
 "SettingsTabVisuals" = "Àwòrán";
 "SettingsTabShortcuts" = "Àkótán";
 "SettingsTabAbout" = "Nipa";
+"SettingsTabHiddenApps" = "Àwọn app tó farasin";
+"SettingsLauncherSectionTitle" = "Lánsà";
+"SettingsLauncherSectionBody" = "Ṣí nígbà títẹ̀wọlé, àkópọ̀, àti ìṣàtúnṣe ẹ̀yìn.";
+"SettingsLaunchAtLoginToggle" = "Ṣí nígbà títẹ̀wọlé";
 "LayoutFullscreen" = "Iboju kikun";
 "LayoutFloatyPanel" = "Pánẹ́lì Floaty";
+"SettingsLayoutPickerLabel" = "Àkópọ̀ lánsà";
+"SettingsLayoutPickerHelpText" = "Fi àkótán tó ń yí àkópọ̀ padà kún ní isàlẹ̀ láti yí àwọn ipo pa dà lẹ́sẹ̀kẹsẹ láti ibikíbi.";
+"SettingsDockIconToggle" = "Pa àmi Dock mọ́";
+"SettingsMenuBarIconToggle" = "Pa àmi akojọ bàárù mọ́";
+"SettingsIconsHiddenHelpText" = "Tí a bá pa àmi méjèèjì mọ́, Launchy yóò jẹ́ kí àkótán tó ń yí padà ṣiṣẹ́ kí o lè ṣi i.";
+"SettingsBackgroundStyleLabel" = "Àṣà ẹ̀yìn";
+"SettingsSolidColorPickerLabel" = "Àwọ̀ tó ní ìtọ́jú";
+"BackgroundStyleStandard" = "Boṣewa";
+"BackgroundStyleLightBlur" = "Ìfọ̀rọ̀wọ̀ọ̀ rọ̀rùn";
+"BackgroundStyleTransparent" = "Kedere";
+"BackgroundStyleSolidColor" = "Àwọ̀ tó ní ìtọ́jú";
 "AccentColorSystem" = "Eto";
 "AccentColorGraphite" = "Giraifaiti";
 "AccentColorIndigo" = "Indigo";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "Àwọ̀ ọ̀sàn";
 "AccentColorPink" = "Pínki";
 "AccentColorPurple" = "Pọ́pù";
-"BackgroundStyleStandard" = "Boṣewa";
-"BackgroundStyleLightBlur" = "Ìfọ̀rọ̀wọ̀ọ̀ rọ̀rùn";
-"BackgroundStyleTransparent" = "Kedere";
-"BackgroundStyleSolidColor" = "Àwọ̀ tó ní ìtọ́jú";
-"FolderDefaultName" = "láìní orúkọ";
-"SettingsLauncherSectionTitle" = "Lánsà";
-"SettingsLauncherSectionBody" = "Ṣí nígbà títẹ̀wọlé, àkópọ̀, àti ìṣàtúnṣe ẹ̀yìn.";
-"SettingsKeyboardSectionTitle" = "Kíbọ́ọ̀du";
-"SettingsKeyboardSectionBody" = "Àkótán àgbáyé àti irinṣẹ́ rirẹ́seti kíákíá.";
-"SettingsTabHiddenApps" = "Àwọn app tó farasin";
-"SettingsHiddenAppsSectionBody" = "Yan àwọn app tí yóò wà níta gridi lánsà.";
-"SettingsUserAppsFolderToggle" = "Pẹlu folda Applications ti olumulo";
-"SettingsUserAppsFolderBody" = "Nígbà tí ó bá ṣiṣẹ́, Launchy ń ṣàwárí %@ fún àwọn app.";
-"SettingsLaunchAtLoginToggle" = "Ṣí nígbà títẹ̀wọlé";
-"SettingsLayoutPickerLabel" = "Àkópọ̀ lánsà";
-"HotCornerTopLeft" = "Òkè òsì";
-"HotCornerTopRight" = "Òkè ọ̀tún";
-"HotCornerBottomLeft" = "Isàlẹ̀ òsì";
-"HotCornerBottomRight" = "Isàlẹ̀ ọ̀tún";
-"SettingsLayoutPickerHelpText" = "Fi àkótán tó ń yí àkópọ̀ padà kún ní isàlẹ̀ láti yí àwọn ipo pa dà lẹ́sẹ̀kẹsẹ láti ibikíbi.";
-"SettingsDockIconToggle" = "Pa àmi Dock mọ́";
-"SettingsMenuBarIconToggle" = "Pa àmi akojọ bàárù mọ́";
-"SettingsIconsHiddenHelpText" = "Tí a bá pa àmi méjèèjì mọ́, Launchy yóò jẹ́ kí àkótán tó ń yí padà ṣiṣẹ́ kí o lè ṣi i.";
-"SettingsBackgroundStyleLabel" = "Àṣà ẹ̀yìn";
-"SettingsSolidColorPickerLabel" = "Àwọ̀ tó ní ìtọ́jú";
 "SettingsIconsFloatToggle" = "Àwọn aami ń gòkè nígbà tí àyè bá wà";
 "SettingsHotCornerToggle" = "Mú ìyípo kọnà gbígbóná ṣiṣẹ́";
 "SettingsHotCornerBody" = "Gbé kọ́sọ̀ọ̀ sí kọnà tí a yàn láti fi Launchy hàn tàbí pa a mọ́.";
 "SettingsHotCornerPickerLabel" = "Kọnà";
 "SettingsHotCornerPermissionNote" = "macOS lè béèrè fún Input Monitoring nígbà àkọ́kọ́ tí o bá mú un ṣiṣẹ́; tí kò bá béèrè, fi Launchy kún System Settings → Privacy & Security → Input Monitoring.";
+"HotCornerTopLeft" = "Òkè òsì";
+"HotCornerTopRight" = "Òkè ọ̀tún";
+"HotCornerBottomLeft" = "Isàlẹ̀ òsì";
+"HotCornerBottomRight" = "Isàlẹ̀ ọ̀tún";
+"SettingsUserAppsFolderToggle" = "Pẹlu folda Applications ti olumulo";
+"SettingsUserAppsFolderBody" = "Nígbà tí ó bá ṣiṣẹ́, Launchy ń ṣàwárí %@ fún àwọn app.";
+"FolderDefaultName" = "láìní orúkọ";
+"SettingsKeyboardSectionTitle" = "Kíbọ́ọ̀du";
+"SettingsKeyboardSectionBody" = "Àkótán àgbáyé àti irinṣẹ́ rirẹ́seti kíákíá.";
 "SettingsToggleLaunchyLabel" = "Tọ́gùlù Launchy";
 "SettingsToggleLaunchyBody" = "Ó ṣiṣẹ́ ní gbogbo ibi. Tẹ̀ Delete láti pa rẹ́ mọ́ tàbí Reset láti mú Cmd+Shift+Space padà.";
 "SettingsShortcutClickToRecord" = "Tẹ̀ láti gbasilẹ";
 "SettingsShortcutResetButton" = "Rẹ́seti";
 "SettingsShortcutClearButton" = "Pa mọ́";
+"SettingsShortcutPlaceholder" = "Tẹ̀ àkótán...";
 "SettingsLayoutToggleShortcutLabel" = "Yí iboju kikun <-> floaty";
 "SettingsFloatyToggleLabel" = "Tọ́gùlù Pánẹ́lì Floaty";
 "SettingsLayoutToggleShortcutBody" = "Yan àkótán tí o bá fẹ́ yí àkópọ̀ kíákíá. Fi sí òfo láti pa a.";
 "SettingsAddShortcutButton" = "Fi àkótán kún";
 "SettingsResetArrangementButton" = "Rẹ́seti ìṣètò aami...";
 "SettingsResetArrangementBody" = "Ó pa àtòjọ àti àwọn pọọ̀dà tí a fipamọ́, ó sì tún kó ojúewé pọ̀ láti ìpilẹ̀. Àwọn orúkọ àdáni àti app to farapamọ́ máa ṣèlẹ̀.";
+"ResetArrangementDialogTitle" = "Ṣe fẹ́ rẹ́seti ìṣètò aami?";
+"ResetArrangementDialogBody" = "Èyí yóò pa ìṣètò tí o fipamọ́, àwọn folda, àti àkópọ̀ ojúewé rẹ́. Tẹ RESET láti tẹ̀síwájú.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "Yan àwọn app tí yóò wà níta gridi lánsà.";
 "SettingsHiddenAppsColumnApp" = "App";
 "SettingsHiddenAppsColumnHidden" = "Farasin";
 "SettingsShowHiddenAppsFirstToggle" = "Fi àwọn app tó farasin hàn kọ́kọ́";
 "SettingsScanningAppsStatus" = "Ń ṣàwárí àwọn app...";
+"SettingsNoAppsAvailable" = "Kò sí app tó wà";
 "SettingsAboutTitle" = "Nipa Launchy";
 "SettingsAboutBody" = "Àlàyé ẹ̀dà, ìyìn, àti àwọn ìjápọ̀ wúlò.";
+"SettingsAboutVersionFormat" = "Ẹ̀dà %@";
+"SettingsAboutBuiltByLabel" = "Ẹgbẹ́ Launchy ló ṣe";
 "SettingsAboutWebsiteButton" = "Ojúlé ọ̀nà abawọle";
 "SettingsAboutReportIssueButton" = "Ṣàrọ̀wọ́ ìṣòro";
 "SettingsAboutSupportEmailButton" = "Imeeli ìtìlẹ́yìn";
 "SettingsAboutRevisitIntroButton" = "Padà sí àkíyèsí àkọ́kọ́...";
 "SettingsAboutGitHubButton" = "Wo lórí GitHub";
-"ResetArrangementDialogTitle" = "Ṣe fẹ́ rẹ́seti ìṣètò aami?";
-"ResetArrangementDialogBody" = "Èyí yóò pa ìṣètò tí o fipamọ́, àwọn folda, àti àkópọ̀ ojúewé rẹ́. Tẹ RESET láti tẹ̀síwájú.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "Fagilee";
-"SettingsShortcutPlaceholder" = "Tẹ̀ àkótán...";
-"SettingsAboutVersionFormat" = "Ẹ̀dà %@";
-"SettingsAboutBuiltByLabel" = "Ẹgbẹ́ Launchy ló ṣe";
-"SettingsWindowTitle" = "Settings Launchy";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "Settings lánsà";
 "StatusBarInfoButton" = "Ìtàn Launchy";
 "StatusBarSettingsButton" = "Settings";
 "MenuItemSettings" = "Settings...";
+"MenuItemShowLauncher" = "Fi lánsà hàn";
 "MenuItemCheckUpdates" = "Ṣàyẹ̀wò fún àwọn ìmúlò tuntun...";
+"MenuItemQuitLaunchy" = "Jade Launchy";
 "DebugMenuLabel" = "Debọ́gì";
 "DebugMenuReloadApps" = "Tun àwọn app wọlé";
 "DebugMenuResetSettings" = "Rẹ́seti Settings";
 "DebugMenuToggleStyles" = "Tọ́gùlù àwọn àṣà ẹ̀yìn ìdánwò";
-"MenuItemShowLauncher" = "Fi lánsà hàn";
-"MenuItemQuitLaunchy" = "Jade Launchy";
-"GridNoItemsFoundLabel" = "Kò sí ohun tí a rí";
-"GridNoMatchingItemsLabel" = "Kò sí ohun tó bá mu";
-"GridEnterMultiSelectButton" = "Wọ́ ipo yíyan púpọ̀";
-"GridExitMultiSelectButton" = "Jade ipo yíyan púpọ̀";
-"SettingsNoAppsAvailable" = "Kò sí app tó wà";
-"ItemNoAppsSelected" = "Kò sí app tí a yàn";
-"GridPageIndicatorFormat" = "Ojúewé %lld / %lld";
-"GridSearchEmptyHint" = "Gbìyànjú ọ̀rọ̀ ìṣàwárí míì.";
-"GridNotIndexedLabel" = "Launchy kò tíì ṣe ìkànsí àwọn app kankan.";
+
+// Grid
 "GridSearchPlaceholder" = "Ṣàwárí àwọn app";
 "GridSearchLabel" = "Ṣàwárí";
 "GridSearchClearButton" = "Pa ọrọ ìṣàwárí mọ́";
+"GridSearchEmptyHint" = "Gbìyànjú ọ̀rọ̀ ìṣàwárí míì.";
+"GridNotIndexedLabel" = "Launchy kò tíì ṣe ìkànsí àwọn app kankan.";
+"GridNoItemsFoundLabel" = "Kò sí ohun tí a rí";
+"GridNoMatchingItemsLabel" = "Kò sí ohun tó bá mu";
+"GridPageIndicatorFormat" = "Ojúewé %lld / %lld";
+"GridEnterMultiSelectButton" = "Wọ́ ipo yíyan púpọ̀";
+"GridExitMultiSelectButton" = "Jade ipo yíyan púpọ̀";
 "GridMoreActionsButton" = "Àwọn ìgbésẹ míì";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "Tún orúkọ app ṣe";
 "ItemRenameAppPromptBody" = "Tẹ orúkọ àtọkànwá fún app yìí. Fi sí òfo láti rẹ́seti.";
 "ItemActionShowInFinder" = "Fi hàn ní Finder";
+"ItemActionHideApp" = "Pa app mọ́";
 "ItemActionMoveToFolder" = "Gbe lọ sí folda";
+"ItemMoveToFolderNoneAvailable" = "Kò sí folda tó wà";
 "ItemActionMoveToPage" = "Gbe lọ sí ojúewé";
 "ItemActionCreateNewPage" = "Dá ojúewé tuntun";
 "ItemActionInsertAtBeginning" = "Fi sí ìbẹ̀rẹ̀";
 "ItemActionInsertBetweenPagesFormat" = "Fi sí láàárín Ojúewé %lld àti %lld";
 "ItemActionInsertAtEnd" = "Fi sí ìparí";
-"ItemActionHideApp" = "Pa app mọ́";
+"ItemPageLabel" = "Ojúewé %lld";
 "ItemActionCreateFolderWithApp" = "Dá folda pọ̀ mọ́ app";
+"ItemActionCreateFolder" = "Dá folda";
 "ItemActionFolderDetails" = "Àlàyé folda";
 "ItemActionRenameFolder" = "Tún orúkọ folda ṣe";
 "ItemRenameFolderPromptBody" = "Tẹ orúkọ fún folda yìí.";
-"ItemMoveToFolderNoneAvailable" = "Kò sí folda tó wà";
-"ItemPageLabel" = "Ojúewé %lld";
-"ItemActionCreateFolder" = "Dá folda";
 "ItemDetailBundleIDFormat" = "ID Apo: %@";
 "ItemDetailLocationFormat" = "Ibi: %@";
 "ItemDetailCustomNameFormat" = "Orúkọ àtọkànwá: %@";
-"CommonOKButton" = "Ó dáa";
 "ItemDetailFolderEmptyLabel" = "Folda ṣofo ni.";
 "ItemDetailAppsFormat" = "Àwọn app:\n%@";
+"ItemNoAppsSelected" = "Kò sí app tí a yàn";
+"CommonCancelButton" = "Fagilee";
+"CommonOKButton" = "Ó dáa";
 "CommonSaveButton" = "Fipamọ́";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "Ìtọ́sọ́nà ìwárí";
 "SortOrderAlphabeticalDetail" = "A → Z gẹ́gẹ́ bí orúkọ app";
 "SortOrderDiscoveryDetail" = "Gẹ́gẹ́ bí Launchy ṣe ń rí wọn";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "Afẹyinti & Atunṣe";
 "BackupRestoreSectionBody" = "Fipamọ àgọ àkọsílẹ, àwọn fọ́ọ̀dà, orúkọ àdáni, àwọn app tí a fi pamọ́ àti àwọn ìtọ́sọ́nà sínú fáìlì kan. Lo atunṣe láti kó tàbí gba àtẹ̀jáde padà.";
@@ -206,3 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Ṣọ́ọ̀ṣọ́ fọ́ọ̀dà lẹ́yìn app nínú akojọ Dock";
 "SettingsDockFolderGroupBody" = "Nigbati o ba tẹ Dock, àwọn app kọọkan máa wà lókè ní àtòkọ lẹ́tà, àwọn fọ́ọ̀dà sì wà ní isalẹ pẹ̀lú àtòkọ lẹ́tà.";
+

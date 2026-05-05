@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Fáilte go Launchy";
 "ScaffoldReadyBody" = "Tá an t-ardán SwiftUI seo réidh do do smaointe.";
 "ScaffoldCounterButton" = "Méadaigh an cuntar";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "Siar";
 "IntroStartButton" = "Tosaigh ag úsáid Launchy";
 "IntroNextButton" = "Ar aghaidh";
+
+// Settings
+"SettingsWindowTitle" = "Socruithe Launchy";
 "SettingsTabVisuals" = "Amharc";
 "SettingsTabShortcuts" = "Aicearraí";
 "SettingsTabAbout" = "Maidir";
+"SettingsTabHiddenApps" = "Aipeanna ceilte";
+"SettingsLauncherSectionTitle" = "Tosaitheoir";
+"SettingsLauncherSectionBody" = "Tosaigh ag logáil isteach, leaganacha amach, agus stíliú cúlra.";
+"SettingsLaunchAtLoginToggle" = "Tosaigh ag logáil isteach";
 "LayoutFullscreen" = "Lánscáileán";
 "LayoutFloatyPanel" = "Snámhphainéal";
+"SettingsLayoutPickerLabel" = "Leagan amach an tosaitheora";
+"SettingsLayoutPickerHelpText" = "Cuir aicearra scoránaithe leagain amach thíos chun módanna a aistriú láithreach ó áit ar bith.";
+"SettingsDockIconToggle" = "Folaigh deilbhín an Duga";
+"SettingsMenuBarIconToggle" = "Folaigh deilbhín na barra roghchláir";
+"SettingsIconsHiddenHelpText" = "Má tá an dá dheilbhín folaithe, coimeádann Launchy an t-aicearra scoránaithe cumasaithe ionas gur féidir leat é a oscailt fós.";
+"SettingsBackgroundStyleLabel" = "Stíl chúlra";
+"SettingsSolidColorPickerLabel" = "Dath soladach";
+"BackgroundStyleStandard" = "Caighdeánach";
+"BackgroundStyleLightBlur" = "Doiléir éadrom";
+"BackgroundStyleTransparent" = "Trédhearcach";
+"BackgroundStyleSolidColor" = "Dath soladach";
 "AccentColorSystem" = "Córas";
 "AccentColorGraphite" = "Graifít";
 "AccentColorIndigo" = "Indigo";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "Oráiste";
 "AccentColorPink" = "Bándearg";
 "AccentColorPurple" = "Corcra";
-"BackgroundStyleStandard" = "Caighdeánach";
-"BackgroundStyleLightBlur" = "Doiléir éadrom";
-"BackgroundStyleTransparent" = "Trédhearcach";
-"BackgroundStyleSolidColor" = "Dath soladach";
-"FolderDefaultName" = "gan ainm";
-"SettingsLauncherSectionTitle" = "Tosaitheoir";
-"SettingsLauncherSectionBody" = "Tosaigh ag logáil isteach, leaganacha amach, agus stíliú cúlra.";
-"SettingsKeyboardSectionTitle" = "Méarchlár";
-"SettingsKeyboardSectionBody" = "Aicearraí domhanda agus uirlisí athshocraithe tapa.";
-"SettingsTabHiddenApps" = "Aipeanna ceilte";
-"SettingsHiddenAppsSectionBody" = "Roghnaigh na feidhmchláir a fhanann as greille an tosaitheora.";
-"SettingsUserAppsFolderToggle" = "Cuir san áireamh fillteán Applications an úsáideora";
-"SettingsUserAppsFolderBody" = "Déanann Launchy cuardach i %@ d'aipeanna nuair a bhíonn sé cumasaithe.";
-"SettingsLaunchAtLoginToggle" = "Tosaigh ag logáil isteach";
-"SettingsLayoutPickerLabel" = "Leagan amach an tosaitheora";
-"HotCornerTopLeft" = "Barr ar chlé";
-"HotCornerTopRight" = "Barr ar dheis";
-"HotCornerBottomLeft" = "Bun ar chlé";
-"HotCornerBottomRight" = "Bun ar dheis";
-"SettingsLayoutPickerHelpText" = "Cuir aicearra scoránaithe leagain amach thíos chun módanna a aistriú láithreach ó áit ar bith.";
-"SettingsDockIconToggle" = "Folaigh deilbhín an Duga";
-"SettingsMenuBarIconToggle" = "Folaigh deilbhín na barra roghchláir";
-"SettingsIconsHiddenHelpText" = "Má tá an dá dheilbhín folaithe, coimeádann Launchy an t-aicearra scoránaithe cumasaithe ionas gur féidir leat é a oscailt fós.";
-"SettingsBackgroundStyleLabel" = "Stíl chúlra";
-"SettingsSolidColorPickerLabel" = "Dath soladach";
 "SettingsIconsFloatToggle" = "Bogann deilbhíní suas nuair a bhíonn spás ann";
 "SettingsHotCornerToggle" = "Cumasaigh scoránú cúinne te";
 "SettingsHotCornerBody" = "Bog an cúrsóir sa chúinne roghnaithe chun Launchy a thaispeáint nó a cheilt.";
 "SettingsHotCornerPickerLabel" = "Cúinne";
 "SettingsHotCornerPermissionNote" = "D'fhéadfadh macOS iarraidh ar Monatóireacht Ionchuir an chéad uair a chumasaíonn tú é; mura n-iarrann, cuir Launchy le Socruithe Córais → Príobháideachas & Slándáil → Monatóireacht Ionchuir.";
+"HotCornerTopLeft" = "Barr ar chlé";
+"HotCornerTopRight" = "Barr ar dheis";
+"HotCornerBottomLeft" = "Bun ar chlé";
+"HotCornerBottomRight" = "Bun ar dheis";
+"SettingsUserAppsFolderToggle" = "Cuir san áireamh fillteán Applications an úsáideora";
+"SettingsUserAppsFolderBody" = "Déanann Launchy cuardach i %@ d'aipeanna nuair a bhíonn sé cumasaithe.";
+"FolderDefaultName" = "gan ainm";
+"SettingsKeyboardSectionTitle" = "Méarchlár";
+"SettingsKeyboardSectionBody" = "Aicearraí domhanda agus uirlisí athshocraithe tapa.";
 "SettingsToggleLaunchyLabel" = "Scoránaigh Launchy";
 "SettingsToggleLaunchyBody" = "Oibríonn sé i ngach áit. Brúigh Delete chun glanadh nó Athshocraigh chun Cmd+Shift+Space a chur ar ais.";
 "SettingsShortcutClickToRecord" = "Cliceáil chun taifeadadh";
 "SettingsShortcutResetButton" = "Athshocraigh";
 "SettingsShortcutClearButton" = "Glan";
+"SettingsShortcutPlaceholder" = "Brúigh aicearra...";
 "SettingsLayoutToggleShortcutLabel" = "Athraigh lánscáileán <-> snámh";
 "SettingsFloatyToggleLabel" = "Scoránaigh an snámhphainéal";
 "SettingsLayoutToggleShortcutBody" = "Roghnaigh aicearra más mian leat leaganacha a aistriú go tapa. Fág folamh chun díchumasú.";
 "SettingsAddShortcutButton" = "Cuir aicearra leis";
 "SettingsResetArrangementButton" = "Athshocraigh socrú deilbhíní...";
 "SettingsResetArrangementBody" = "Scriosann sé an t‑ordú agus na fillteáin shábháilte agus atógann sé na leathanaigh. Fanann ainmneacha saincheaptha agus aipeanna ceilte.";
+"ResetArrangementDialogTitle" = "Athshocraigh socrú deilbhíní?";
+"ResetArrangementDialogBody" = "Scriosann sé seo d'ordú sábháilte, d'fhillteáin, agus leagan amach na leathanach. Clóscríobh RESET chun leanúint ar aghaidh.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "Roghnaigh na feidhmchláir a fhanann as greille an tosaitheora.";
 "SettingsHiddenAppsColumnApp" = "Feidhmchlár";
 "SettingsHiddenAppsColumnHidden" = "I bhfolach";
 "SettingsShowHiddenAppsFirstToggle" = "Taispeáin aipeanna ceilte ar dtús";
 "SettingsScanningAppsStatus" = "Ag scanadh feidhmchlár...";
+"SettingsNoAppsAvailable" = "Níl feidhmchláir ar fáil";
 "SettingsAboutTitle" = "Maidir le Launchy";
 "SettingsAboutBody" = "Mionsonraí leagain, creidiúintí, agus naisc úsáideacha.";
+"SettingsAboutVersionFormat" = "Leagan %@";
+"SettingsAboutBuiltByLabel" = "Tógtha ag foireann Launchy";
 "SettingsAboutWebsiteButton" = "Suíomh Gréasáin an tionscadail";
 "SettingsAboutReportIssueButton" = "Déan tuairisc ar cheist";
 "SettingsAboutSupportEmailButton" = "Ríomhphost tacaíochta";
 "SettingsAboutRevisitIntroButton" = "Tabhair cuairt ar an Réamhrá arís...";
 "SettingsAboutGitHubButton" = "Féach ar GitHub";
-"ResetArrangementDialogTitle" = "Athshocraigh socrú deilbhíní?";
-"ResetArrangementDialogBody" = "Scriosann sé seo d'ordú sábháilte, d'fhillteáin, agus leagan amach na leathanach. Clóscríobh RESET chun leanúint ar aghaidh.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "Cealaigh";
-"SettingsShortcutPlaceholder" = "Brúigh aicearra...";
-"SettingsAboutVersionFormat" = "Leagan %@";
-"SettingsAboutBuiltByLabel" = "Tógtha ag foireann Launchy";
-"SettingsWindowTitle" = "Socruithe Launchy";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "Socruithe an tosaitheora";
 "StatusBarInfoButton" = "Eolas Launchy";
 "StatusBarSettingsButton" = "Socruithe";
 "MenuItemSettings" = "Socruithe...";
+"MenuItemShowLauncher" = "Taispeáin an tosaitheoir";
 "MenuItemCheckUpdates" = "Seiceáil le haghaidh nuashonruithe...";
+"MenuItemQuitLaunchy" = "Scoir Launchy";
 "DebugMenuLabel" = "Dífhabhtaigh";
 "DebugMenuReloadApps" = "Athluchtaigh aipeanna";
 "DebugMenuResetSettings" = "Athshocraigh socruithe";
 "DebugMenuToggleStyles" = "Scoránaigh stíleanna cúlra tástála";
-"MenuItemShowLauncher" = "Taispeáin an tosaitheoir";
-"MenuItemQuitLaunchy" = "Scoir Launchy";
-"GridNoItemsFoundLabel" = "Níor aimsíodh míreanna";
-"GridNoMatchingItemsLabel" = "Níl aon mhíreanna comhoiriúnacha";
-"GridEnterMultiSelectButton" = "Iontráil mód ilroghnaithe";
-"GridExitMultiSelectButton" = "Fág mód ilroghnaithe";
-"SettingsNoAppsAvailable" = "Níl feidhmchláir ar fáil";
-"ItemNoAppsSelected" = "Níl aipeanna roghnaithe";
-"GridPageIndicatorFormat" = "Leathanach %lld as %lld";
-"GridSearchEmptyHint" = "Bain triail as téarma cuardaigh eile.";
-"GridNotIndexedLabel" = "Níl Launchy tar éis aon fheidhmchlár a innéacsú fós.";
+
+// Grid
 "GridSearchPlaceholder" = "Cuardaigh aipeanna";
 "GridSearchLabel" = "Cuardaigh";
 "GridSearchClearButton" = "Glan téacs an chuardaigh";
+"GridSearchEmptyHint" = "Bain triail as téarma cuardaigh eile.";
+"GridNotIndexedLabel" = "Níl Launchy tar éis aon fheidhmchlár a innéacsú fós.";
+"GridNoItemsFoundLabel" = "Níor aimsíodh míreanna";
+"GridNoMatchingItemsLabel" = "Níl aon mhíreanna comhoiriúnacha";
+"GridPageIndicatorFormat" = "Leathanach %lld as %lld";
+"GridEnterMultiSelectButton" = "Iontráil mód ilroghnaithe";
+"GridExitMultiSelectButton" = "Fág mód ilroghnaithe";
 "GridMoreActionsButton" = "Tuilleadh gníomhartha";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "Athainmnigh an aip";
 "ItemRenameAppPromptBody" = "Iontráil ainm saincheaptha don aip seo. Fág folamh chun athshocrú.";
 "ItemActionShowInFinder" = "Taispeáin san Aimsitheoir";
+"ItemActionHideApp" = "Folaigh an aip";
 "ItemActionMoveToFolder" = "Bog go fillteán";
+"ItemMoveToFolderNoneAvailable" = "Níl fillteáin ar fáil";
 "ItemActionMoveToPage" = "Bog go leathanach";
 "ItemActionCreateNewPage" = "Cruthaigh leathanach nua";
 "ItemActionInsertAtBeginning" = "Ionsáigh ag an tús";
 "ItemActionInsertBetweenPagesFormat" = "Ionsáigh idir Leathanach %lld agus %lld";
 "ItemActionInsertAtEnd" = "Ionsáigh ag an deireadh";
-"ItemActionHideApp" = "Folaigh an aip";
+"ItemPageLabel" = "Leathanach %lld";
 "ItemActionCreateFolderWithApp" = "Cruthaigh fillteán leis an aip";
+"ItemActionCreateFolder" = "Cruthaigh fillteán";
 "ItemActionFolderDetails" = "Sonraí fillteáin";
 "ItemActionRenameFolder" = "Athainmnigh an fillteán";
 "ItemRenameFolderPromptBody" = "Iontráil ainm don fhillteán seo.";
-"ItemMoveToFolderNoneAvailable" = "Níl fillteáin ar fáil";
-"ItemPageLabel" = "Leathanach %lld";
-"ItemActionCreateFolder" = "Cruthaigh fillteán";
 "ItemDetailBundleIDFormat" = "Aitheantas bundle: %@";
 "ItemDetailLocationFormat" = "Suíomh: %@";
 "ItemDetailCustomNameFormat" = "Ainm saincheaptha: %@";
-"CommonOKButton" = "OK";
 "ItemDetailFolderEmptyLabel" = "Tá an fillteán folamh.";
 "ItemDetailAppsFormat" = "Aipeanna:\n%@";
+"ItemNoAppsSelected" = "Níl aipeanna roghnaithe";
+"CommonCancelButton" = "Cealaigh";
+"CommonOKButton" = "OK";
 "CommonSaveButton" = "Sábháil";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "Ord Fionnachtana";
 "SortOrderAlphabeticalDetail" = "A → Z de réir ainm na haipe";
 "SortOrderDiscoveryDetail" = "De réir mar a aimsíonn Launchy iad";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "Cúltaca agus Athchóirigh";
 "BackupRestoreSectionBody" = "Sábháil do ghreille deilbhíní, fillteáin, ainmneacha saincheaptha, aipeanna folaithe agus socruithe in aon chomhad amháin. Athchóirigh chun do leagan amach a aistriú nó a ghnóthú.";
@@ -206,5 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Grúpáil fillteáin i ndiaidh aipeanna i roghchlár an Dock";
 "SettingsDockFolderGroupBody" = "Fágann sé aipeanna aonair ar dtús in ord aibítre, le fillteáin thíos agus tú ag deaschliceáil deilbhín an Dock.";
-"SettingsDockFolderGroupToggle" = "Group folders after apps in Dock menu";
-"SettingsDockFolderGroupBody" = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";
+

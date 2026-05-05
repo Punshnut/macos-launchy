@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Maraba da Launchy";
 "ScaffoldReadyBody" = "Wannan tsarin SwiftUI ya shirya don tunaninka.";
 "ScaffoldCounterButton" = "Ƙara Ma'auni";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "Baya";
 "IntroStartButton" = "Fara amfani da Launchy";
 "IntroNextButton" = "Gaba";
+
+// Settings
+"SettingsWindowTitle" = "Saitunan Launchy";
 "SettingsTabVisuals" = "Hanyoyin gani";
 "SettingsTabShortcuts" = "Gajerun hanyoyi";
 "SettingsTabAbout" = "Game da";
+"SettingsTabHiddenApps" = "Apps da aka ɓoye";
+"SettingsLauncherSectionTitle" = "Mai ƙaddamarwa";
+"SettingsLauncherSectionBody" = "Fara lokacin shiga, tsarin, da suturar bango.";
+"SettingsLaunchAtLoginToggle" = "Fara lokacin shiga";
 "LayoutFullscreen" = "Cikakken allo";
 "LayoutFloatyPanel" = "Allon Floaty";
+"SettingsLayoutPickerLabel" = "Tsarin mai ƙaddamarwa";
+"SettingsLayoutPickerHelpText" = "Ƙara hanya don canza tsarin a ƙasa don sauya yanayi nan take daga ko'ina.";
+"SettingsDockIconToggle" = "Boye alamar Dock";
+"SettingsMenuBarIconToggle" = "Boye alamar sandar menu";
+"SettingsIconsHiddenHelpText" = "Idan dukkan alamomin sun ɓoye, Launchy zai ci gaba da kunnawa don ka iya buɗewa.";
+"SettingsBackgroundStyleLabel" = "Salon bango";
+"SettingsSolidColorPickerLabel" = "Launi mai ƙarfi";
+"BackgroundStyleStandard" = "Matsakaici";
+"BackgroundStyleLightBlur" = "Hazo mai haske";
+"BackgroundStyleTransparent" = "Hujja";
+"BackgroundStyleSolidColor" = "Launi mai ƙarfi";
 "AccentColorSystem" = "Tsari";
 "AccentColorGraphite" = "Graphite";
 "AccentColorIndigo" = "Indigo";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "Orange";
 "AccentColorPink" = "Pink";
 "AccentColorPurple" = "Purple";
-"BackgroundStyleStandard" = "Matsakaici";
-"BackgroundStyleLightBlur" = "Hazo mai haske";
-"BackgroundStyleTransparent" = "Hujja";
-"BackgroundStyleSolidColor" = "Launi mai ƙarfi";
-"FolderDefaultName" = "ba a sanya suna ba";
-"SettingsLauncherSectionTitle" = "Mai ƙaddamarwa";
-"SettingsLauncherSectionBody" = "Fara lokacin shiga, tsarin, da suturar bango.";
-"SettingsKeyboardSectionTitle" = "Maballi";
-"SettingsKeyboardSectionBody" = "Gajerun hanyoyin duniya da kayan sake saiti cikin sauri.";
-"SettingsTabHiddenApps" = "Apps da aka ɓoye";
-"SettingsHiddenAppsSectionBody" = "Zaɓi waɗanne apps za su kasance a waje da grid ɗin masu ƙaddamarwa.";
-"SettingsUserAppsFolderToggle" = "Haɗa babban fayil ɗin aikace-aikacen mai amfani";
-"SettingsUserAppsFolderBody" = "Launchy yana bincika %@ domin aikace-aikace lokacin da aka kunna shi.";
-"SettingsLaunchAtLoginToggle" = "Fara lokacin shiga";
-"SettingsLayoutPickerLabel" = "Tsarin mai ƙaddamarwa";
-"HotCornerTopLeft" = "Sama hagu";
-"HotCornerTopRight" = "Sama dama";
-"HotCornerBottomLeft" = "Kasa hagu";
-"HotCornerBottomRight" = "Kasa dama";
-"SettingsLayoutPickerHelpText" = "Ƙara hanya don canza tsarin a ƙasa don sauya yanayi nan take daga ko'ina.";
-"SettingsDockIconToggle" = "Boye alamar Dock";
-"SettingsMenuBarIconToggle" = "Boye alamar sandar menu";
-"SettingsIconsHiddenHelpText" = "Idan dukkan alamomin sun ɓoye, Launchy zai ci gaba da kunnawa don ka iya buɗewa.";
-"SettingsBackgroundStyleLabel" = "Salon bango";
-"SettingsSolidColorPickerLabel" = "Launi mai ƙarfi";
 "SettingsIconsFloatToggle" = "Gumaka suna hawa sama idan sarari ya samu";
 "SettingsHotCornerToggle" = "Kunna sauyawa ta kusurwa mai zafi";
 "SettingsHotCornerBody" = "Matsa madauwari zuwa kusurwar da aka zaɓa don nuna ko ɓoye Launchy.";
 "SettingsHotCornerPickerLabel" = "Kusurwa";
 "SettingsHotCornerPermissionNote" = "macOS na iya neman Izinin Kula da Shigarwa a karon farko; idan ba haka ba, ƙara Launchy a Saitunan Tsarin → Sirri & Tsaro → Kula da Shigarwa.";
+"HotCornerTopLeft" = "Sama hagu";
+"HotCornerTopRight" = "Sama dama";
+"HotCornerBottomLeft" = "Kasa hagu";
+"HotCornerBottomRight" = "Kasa dama";
+"SettingsUserAppsFolderToggle" = "Haɗa babban fayil ɗin aikace-aikacen mai amfani";
+"SettingsUserAppsFolderBody" = "Launchy yana bincika %@ domin aikace-aikace lokacin da aka kunna shi.";
+"FolderDefaultName" = "ba a sanya suna ba";
+"SettingsKeyboardSectionTitle" = "Maballi";
+"SettingsKeyboardSectionBody" = "Gajerun hanyoyin duniya da kayan sake saiti cikin sauri.";
 "SettingsToggleLaunchyLabel" = "Canza Launchy";
 "SettingsToggleLaunchyBody" = "Yana aiki ko'ina. Danna Delete don share ko Reset don dawo da Cmd+Shift+Space.";
 "SettingsShortcutClickToRecord" = "Danna don rikodin";
 "SettingsShortcutResetButton" = "Sake saiti";
 "SettingsShortcutClearButton" = "Share";
+"SettingsShortcutPlaceholder" = "Latsa hanya...";
 "SettingsLayoutToggleShortcutLabel" = "Canza cikakken allo <-> Floaty";
 "SettingsFloatyToggleLabel" = "Canza panel ɗin Floaty";
 "SettingsLayoutToggleShortcutBody" = "Zaɓi hanya idan kana son canza tsarin da sauri. Bar shi babu komai don kashe.";
 "SettingsAddShortcutButton" = "Ƙara hanya";
 "SettingsResetArrangementButton" = "Sake saita tsarin gumaka...";
 "SettingsResetArrangementBody" = "Yana goge jerin da aka ajiye da fayiloli, yana sake gina shafuka daga tushe. Sunayen app na al’ada da ɓoyayyu suna ci gaba da kasancewa.";
+"ResetArrangementDialogTitle" = "Sake saita tsarin gumaka?";
+"ResetArrangementDialogBody" = "Wannan yana goge oda, fayiloli, da tsarin shafuka da aka adana. Rubuta RESET don ci gaba.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "Zaɓi waɗanne apps za su kasance a waje da grid ɗin masu ƙaddamarwa.";
 "SettingsHiddenAppsColumnApp" = "Manhaja";
 "SettingsHiddenAppsColumnHidden" = "An ɓoye";
 "SettingsShowHiddenAppsFirstToggle" = "Nuna apps da aka ɓoye da farko";
 "SettingsScanningAppsStatus" = "Ana duba manhajoji...";
+"SettingsNoAppsAvailable" = "Babu aikace-aikace masu samuwa";
 "SettingsAboutTitle" = "Game da Launchy";
 "SettingsAboutBody" = "Bayani game da sigar, yabo da hanyoyin haɗi masu amfani.";
+"SettingsAboutVersionFormat" = "Sigogin %@";
+"SettingsAboutBuiltByLabel" = "An gina shi da tawagar Launchy";
 "SettingsAboutWebsiteButton" = "Shafin yanar gizon aikin";
 "SettingsAboutReportIssueButton" = "Bayyana matsala";
 "SettingsAboutSupportEmailButton" = "Imel ɗin tallafi";
 "SettingsAboutRevisitIntroButton" = "Duba gabatarwar...";
 "SettingsAboutGitHubButton" = "Duba a GitHub";
-"ResetArrangementDialogTitle" = "Sake saita tsarin gumaka?";
-"ResetArrangementDialogBody" = "Wannan yana goge oda, fayiloli, da tsarin shafuka da aka adana. Rubuta RESET don ci gaba.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "Soke";
-"SettingsShortcutPlaceholder" = "Latsa hanya...";
-"SettingsAboutVersionFormat" = "Sigogin %@";
-"SettingsAboutBuiltByLabel" = "An gina shi da tawagar Launchy";
-"SettingsWindowTitle" = "Saitunan Launchy";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "Saitunan Launcher";
 "StatusBarInfoButton" = "Bayanin Launchy";
 "StatusBarSettingsButton" = "Saituna";
 "MenuItemSettings" = "Saituna...";
+"MenuItemShowLauncher" = "Nuna mai ƙaddamarwa";
 "MenuItemCheckUpdates" = "Duba sabuntawa...";
+"MenuItemQuitLaunchy" = "Fita daga Launchy";
 "DebugMenuLabel" = "Gyara";
 "DebugMenuReloadApps" = "Sake loda apps";
 "DebugMenuResetSettings" = "Sake saita saituna";
 "DebugMenuToggleStyles" = "Canza salon bango na gwaji";
-"MenuItemShowLauncher" = "Nuna mai ƙaddamarwa";
-"MenuItemQuitLaunchy" = "Fita daga Launchy";
-"GridNoItemsFoundLabel" = "Babu abubuwa da aka samu";
-"GridNoMatchingItemsLabel" = "Babu abubuwa masu dacewa";
-"GridEnterMultiSelectButton" = "Shiga yanayin zaɓi mai yawa";
-"GridExitMultiSelectButton" = "Fita daga yanayin zaɓi mai yawa";
-"SettingsNoAppsAvailable" = "Babu aikace-aikace masu samuwa";
-"ItemNoAppsSelected" = "Babu apps da aka zaɓa";
-"GridPageIndicatorFormat" = "Shafi %lld na %lld";
-"GridSearchEmptyHint" = "Gwada kalmar bincike daban.";
-"GridNotIndexedLabel" = "Launchy bai lissafa kowanne manhaja ba tukuna.";
+
+// Grid
 "GridSearchPlaceholder" = "Nemo apps";
 "GridSearchLabel" = "Bincike";
 "GridSearchClearButton" = "Goge rubutun bincike";
+"GridSearchEmptyHint" = "Gwada kalmar bincike daban.";
+"GridNotIndexedLabel" = "Launchy bai lissafa kowanne manhaja ba tukuna.";
+"GridNoItemsFoundLabel" = "Babu abubuwa da aka samu";
+"GridNoMatchingItemsLabel" = "Babu abubuwa masu dacewa";
+"GridPageIndicatorFormat" = "Shafi %lld na %lld";
+"GridEnterMultiSelectButton" = "Shiga yanayin zaɓi mai yawa";
+"GridExitMultiSelectButton" = "Fita daga yanayin zaɓi mai yawa";
 "GridMoreActionsButton" = "Ƙarin ayyuka";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "Sake suna manhaja";
 "ItemRenameAppPromptBody" = "Shigar da suna na musamman don wannan manhaja. Bar shi babu komai don sake saitawa.";
 "ItemActionShowInFinder" = "Nuna a Finder";
+"ItemActionHideApp" = "Boye manhaja";
 "ItemActionMoveToFolder" = "Matsar zuwa fayil";
+"ItemMoveToFolderNoneAvailable" = "Babu fayiloli a halin yanzu";
 "ItemActionMoveToPage" = "Matsar zuwa shafi";
 "ItemActionCreateNewPage" = "Ƙirƙiri Sabuwar Shafi";
 "ItemActionInsertAtBeginning" = "Saka a farko";
 "ItemActionInsertBetweenPagesFormat" = "Saka tsakanin Shafi na %lld da %lld";
 "ItemActionInsertAtEnd" = "Saka a ƙarshe";
-"ItemActionHideApp" = "Boye manhaja";
+"ItemPageLabel" = "Shafi %lld";
 "ItemActionCreateFolderWithApp" = "Ƙirƙiri fayil tare da manhaja";
+"ItemActionCreateFolder" = "Ƙirƙiri fayil";
 "ItemActionFolderDetails" = "Bayanan fayil";
 "ItemActionRenameFolder" = "Canja sunan fayil";
 "ItemRenameFolderPromptBody" = "Shigar da suna don wannan fayil.";
-"ItemMoveToFolderNoneAvailable" = "Babu fayiloli a halin yanzu";
-"ItemPageLabel" = "Shafi %lld";
-"ItemActionCreateFolder" = "Ƙirƙiri fayil";
 "ItemDetailBundleIDFormat" = "ID ɗin bundle: %@";
 "ItemDetailLocationFormat" = "Wuri: %@";
 "ItemDetailCustomNameFormat" = "Sunan musamman: %@";
-"CommonOKButton" = "To";
 "ItemDetailFolderEmptyLabel" = "Fayil ɗin babu komai.";
 "ItemDetailAppsFormat" = "Manhajoji:\n%@";
+"ItemNoAppsSelected" = "Babu apps da aka zaɓa";
+"CommonCancelButton" = "Soke";
+"CommonOKButton" = "To";
 "CommonSaveButton" = "Ajiye";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "Tsarin gano abubuwa";
 "SortOrderAlphabeticalDetail" = "A → Z bisa sunan app";
 "SortOrderDiscoveryDetail" = "Yadda Launchy ke samun su";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "Ajiyar bayanai da Mayarwa";
 "BackupRestoreSectionBody" = "Ajiye tsarin gumaka, manyan fayiloli, sunaye na al’ada, apps da aka ɓoye, da saituna cikin fayil ɗaya. Mayar domin canja ko dawo da kwalliyar ka.";
@@ -206,5 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Hada manyan fayiloli bayan app a jeren Dock";
 "SettingsDockFolderGroupBody" = "Yana barin app ɗin guda ɗaya a sama cikin haruffa, manyan fayiloli suna ƙasa idan an danna dama kan gunkin Dock.";
-"SettingsDockFolderGroupToggle" = "Group folders after apps in Dock menu";
-"SettingsDockFolderGroupBody" = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";
+

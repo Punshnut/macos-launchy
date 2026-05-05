@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Launchy‌కు స్వాగతం";
 "ScaffoldReadyBody" = "ఈ SwiftUI స్కాఫోల్డ్ మీ ఆలోచనలకు సిద్ధంగా ఉంది.";
 "ScaffoldCounterButton" = "కౌంటర్ పెంచండి";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "వెనక్కి";
 "IntroStartButton" = "Launchy ను ఉపయోగించడం ప్రారంభించండి";
 "IntroNextButton" = "తరువాత";
+
+// Settings
+"SettingsWindowTitle" = "Launchy సెట్టింగ్స్";
 "SettingsTabVisuals" = "విజువల్స్";
 "SettingsTabShortcuts" = "షార్ట్‌కట్లు";
 "SettingsTabAbout" = "గురించి";
+"SettingsTabHiddenApps" = "దాచిన యాప్స్";
+"SettingsLauncherSectionTitle" = "లాంచర్";
+"SettingsLauncherSectionBody" = "లాగిన్ సమయంలో ప్రారంభించడం, లేఅవుట్లు, మరియు బ్యాక్‌గ్రౌండ్ స్టైలింగ్.";
+"SettingsLaunchAtLoginToggle" = "లాగిన్ సమయంలో ప్రారంభించండి";
 "LayoutFullscreen" = "ఫుల్‌స్క్రీన్";
 "LayoutFloatyPanel" = "ఫ్లోటీ ప్యానెల్";
+"SettingsLayoutPickerLabel" = "లాంచర్ లేఅవుట్";
+"SettingsLayoutPickerHelpText" = "ఎక్కడి నుండైనా మోడ్‌లు వెంటనే మార్చడానికి దిగువన లేఅవుట్ టాగిల్ షార్ట్‌కట్‌ను జోడించండి.";
+"SettingsDockIconToggle" = "Dock ఐకాన్‌ను దాచండి";
+"SettingsMenuBarIconToggle" = "మెను బార్ ఐకాన్‌ను దాచండి";
+"SettingsIconsHiddenHelpText" = "రెండు ఐకాన్లు దాచబడితే, మీరు ఇంకా తెరవడానికి Launchy టాగిల్ షార్ట్‌కట్‌ను ఎనేబుల్‌గా ఉంచుతుంది.";
+"SettingsBackgroundStyleLabel" = "బ్యాక్‌గ్రౌండ్ స్టైల్";
+"SettingsSolidColorPickerLabel" = "సాలిడ్ కలర్";
+"BackgroundStyleStandard" = "స్టాండర్డ్";
+"BackgroundStyleLightBlur" = "లైట్ బ్లర్";
+"BackgroundStyleTransparent" = "పారదర్శకం";
+"BackgroundStyleSolidColor" = "సాలిడ్ కలర్";
 "AccentColorSystem" = "సిస్టమ్";
 "AccentColorGraphite" = "గ్రాఫైట్";
 "AccentColorIndigo" = "ఇండిగో";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "నారింజ";
 "AccentColorPink" = "పింక్";
 "AccentColorPurple" = "పర్పుల్";
-"BackgroundStyleStandard" = "స్టాండర్డ్";
-"BackgroundStyleLightBlur" = "లైట్ బ్లర్";
-"BackgroundStyleTransparent" = "పారదర్శకం";
-"BackgroundStyleSolidColor" = "సాలిడ్ కలర్";
-"FolderDefaultName" = "పేరు లేదు";
-"SettingsLauncherSectionTitle" = "లాంచర్";
-"SettingsLauncherSectionBody" = "లాగిన్ సమయంలో ప్రారంభించడం, లేఅవుట్లు, మరియు బ్యాక్‌గ్రౌండ్ స్టైలింగ్.";
-"SettingsKeyboardSectionTitle" = "కీబోర్డ్";
-"SettingsKeyboardSectionBody" = "గ్లోబల్ షార్ట్‌కట్లు మరియు త్వరిత రీసెట్ టూల్స్.";
-"SettingsTabHiddenApps" = "దాచిన యాప్స్";
-"SettingsHiddenAppsSectionBody" = "లాంచర్ గ్రిడ్‌కి వెలుపల ఉండే యాప్‌లను ఎంచుకోండి.";
-"SettingsUserAppsFolderToggle" = "యూజర్ Applications ఫోల్డర్‌ను చేర్చండి";
-"SettingsUserAppsFolderBody" = "ఎనేబుల్ చేసినప్పుడు Launchy %@ లో యాప్‌లను శోధిస్తుంది.";
-"SettingsLaunchAtLoginToggle" = "లాగిన్ సమయంలో ప్రారంభించండి";
-"SettingsLayoutPickerLabel" = "లాంచర్ లేఅవుట్";
-"HotCornerTopLeft" = "పై ఎడమ";
-"HotCornerTopRight" = "పై కుడి";
-"HotCornerBottomLeft" = "క్రింది ఎడమ";
-"HotCornerBottomRight" = "క్రింది కుడి";
-"SettingsLayoutPickerHelpText" = "ఎక్కడి నుండైనా మోడ్‌లు వెంటనే మార్చడానికి దిగువన లేఅవుట్ టాగిల్ షార్ట్‌కట్‌ను జోడించండి.";
-"SettingsDockIconToggle" = "Dock ఐకాన్‌ను దాచండి";
-"SettingsMenuBarIconToggle" = "మెను బార్ ఐకాన్‌ను దాచండి";
-"SettingsIconsHiddenHelpText" = "రెండు ఐకాన్లు దాచబడితే, మీరు ఇంకా తెరవడానికి Launchy టాగిల్ షార్ట్‌కట్‌ను ఎనేబుల్‌గా ఉంచుతుంది.";
-"SettingsBackgroundStyleLabel" = "బ్యాక్‌గ్రౌండ్ స్టైల్";
-"SettingsSolidColorPickerLabel" = "సాలిడ్ కలర్";
 "SettingsIconsFloatToggle" = "ఖాళీ ఉంటే ఐకాన్లు పైకి కదులుతాయి";
 "SettingsHotCornerToggle" = "హాట్ కార్నర్ టాగిల్‌ను ఎనేబుల్ చేయండి";
 "SettingsHotCornerBody" = "Launchy ని చూపడానికి లేదా దాచడానికి కర్సర్‌ను ఎంచుకున్న మూలలోకి తరలించండి.";
 "SettingsHotCornerPickerLabel" = "మూల";
 "SettingsHotCornerPermissionNote" = "మొదటిసారి దీన్ని ఎనేబుల్ చేసినప్పుడు macOS Input Monitoring కోసం అడగవచ్చు; అడగకపోతే System Settings → Privacy & Security → Input Monitoring లో Launchy ని జోడించండి.";
+"HotCornerTopLeft" = "పై ఎడమ";
+"HotCornerTopRight" = "పై కుడి";
+"HotCornerBottomLeft" = "క్రింది ఎడమ";
+"HotCornerBottomRight" = "క్రింది కుడి";
+"SettingsUserAppsFolderToggle" = "యూజర్ Applications ఫోల్డర్‌ను చేర్చండి";
+"SettingsUserAppsFolderBody" = "ఎనేబుల్ చేసినప్పుడు Launchy %@ లో యాప్‌లను శోధిస్తుంది.";
+"FolderDefaultName" = "పేరు లేదు";
+"SettingsKeyboardSectionTitle" = "కీబోర్డ్";
+"SettingsKeyboardSectionBody" = "గ్లోబల్ షార్ట్‌కట్లు మరియు త్వరిత రీసెట్ టూల్స్.";
 "SettingsToggleLaunchyLabel" = "Launchy ను టాగిల్ చేయండి";
 "SettingsToggleLaunchyBody" = "అన్ని చోట్ల పని చేస్తుంది. క్లియర్ చేయడానికి Delete ను నొక్కండి లేదా Cmd+Shift+Space ను తిరిగి తీసుకురావడానికి Reset ను నొక్కండి.";
 "SettingsShortcutClickToRecord" = "రికార్డ్ చేయడానికి క్లిక్ చేయండి";
 "SettingsShortcutResetButton" = "రిసెట్";
 "SettingsShortcutClearButton" = "క్లియర్";
+"SettingsShortcutPlaceholder" = "షార్ట్‌కట్ నొక్కండి...";
 "SettingsLayoutToggleShortcutLabel" = "ఫుల్‌స్క్రీన్ <-> ఫ్లోటీ మార్చండి";
 "SettingsFloatyToggleLabel" = "ఫ్లోటీ ప్యానెల్ టాగిల్ చేయండి";
 "SettingsLayoutToggleShortcutBody" = "లేఅవుట్‌లను వేగంగా మార్చాలంటే ఒక షార్ట్‌కట్‌ను ఎంచుకోండి. ఆఫ్ చేయడానికి ఖాళీగా ఉంచండి.";
 "SettingsAddShortcutButton" = "షార్ట్‌కట్ జోడించండి";
 "SettingsResetArrangementButton" = "ఐకాన్ అమరికను రీసెట్ చేయండి...";
 "SettingsResetArrangementBody" = "సేవ్ చేసిన క్రమం, ఫోల్డర్లను తొలగించి పేజీలను కొత్తగా నిర్మిస్తుంది. కస్టమ్ పేర్లు, దాచిన యాప్‌లు అలాగే ఉంటాయి.";
+"ResetArrangementDialogTitle" = "ఐకాన్ అమరికను రీసెట్ చేయాలా?";
+"ResetArrangementDialogBody" = "ఇది మీ సేవ్ చేసిన క్రమం, ఫోల్డర్లు, మరియు పేజీ లేఅవుట్‌ను తొలగిస్తుంది. కొనసాగించడానికి RESET టైప్ చేయండి.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "లాంచర్ గ్రిడ్‌కి వెలుపల ఉండే యాప్‌లను ఎంచుకోండి.";
 "SettingsHiddenAppsColumnApp" = "అప్లికేషన్";
 "SettingsHiddenAppsColumnHidden" = "దాచినవి";
 "SettingsShowHiddenAppsFirstToggle" = "దాచిన యాప్‌లను ముందుగా చూపండి";
 "SettingsScanningAppsStatus" = "అప్లికేషన్లను స్కాన్ చేస్తోంది...";
+"SettingsNoAppsAvailable" = "ఏ అప్లికేషన్లు అందుబాటులో లేవు";
 "SettingsAboutTitle" = "Launchy గురించి";
 "SettingsAboutBody" = "వర్షన్ వివరాలు, క్రెడిట్స్, మరియు ఉపయోగకరమైన లింకులు.";
+"SettingsAboutVersionFormat" = "వర్షన్ %@";
+"SettingsAboutBuiltByLabel" = "Launchy టీమ్ నిర్మించింది";
 "SettingsAboutWebsiteButton" = "ప్రాజెక్ట్ వెబ్‌సైట్";
 "SettingsAboutReportIssueButton" = "ఇష్యూ నివేదించండి";
 "SettingsAboutSupportEmailButton" = "సపోర్ట్ ఇమెయిల్";
 "SettingsAboutRevisitIntroButton" = "ఇంట్రోను మళ్లీ చూడండి...";
 "SettingsAboutGitHubButton" = "GitHub లో చూడండి";
-"ResetArrangementDialogTitle" = "ఐకాన్ అమరికను రీసెట్ చేయాలా?";
-"ResetArrangementDialogBody" = "ఇది మీ సేవ్ చేసిన క్రమం, ఫోల్డర్లు, మరియు పేజీ లేఅవుట్‌ను తొలగిస్తుంది. కొనసాగించడానికి RESET టైప్ చేయండి.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "రద్దు";
-"SettingsShortcutPlaceholder" = "షార్ట్‌కట్ నొక్కండి...";
-"SettingsAboutVersionFormat" = "వర్షన్ %@";
-"SettingsAboutBuiltByLabel" = "Launchy టీమ్ నిర్మించింది";
-"SettingsWindowTitle" = "Launchy సెట్టింగ్స్";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "లాంచర్ సెట్టింగ్స్";
 "StatusBarInfoButton" = "Launchy సమాచారం";
 "StatusBarSettingsButton" = "సెట్టింగ్స్";
 "MenuItemSettings" = "సెట్టింగ్స్...";
+"MenuItemShowLauncher" = "లాంచర్‌ను చూపండి";
 "MenuItemCheckUpdates" = "అప్‌డేట్స్‌ను చెక్ చేయండి...";
+"MenuItemQuitLaunchy" = "Launchy నుండి బయటకి";
 "DebugMenuLabel" = "డీబగ్";
 "DebugMenuReloadApps" = "యాప్‌లను మళ్లీ లోడ్ చేయండి";
 "DebugMenuResetSettings" = "సెట్టింగ్స్ రీసెట్ చేయండి";
 "DebugMenuToggleStyles" = "టెస్ట్ బ్యాక్‌గ్రౌండ్ స్టైళ్లను టాగిల్ చేయండి";
-"MenuItemShowLauncher" = "లాంచర్‌ను చూపండి";
-"MenuItemQuitLaunchy" = "Launchy నుండి బయటకి";
-"GridNoItemsFoundLabel" = "ఏ అంశాలు కనబడలేదు";
-"GridNoMatchingItemsLabel" = "మ్యాచ్ అయ్యే అంశాలు లేవు";
-"GridEnterMultiSelectButton" = "మల్టీ-సెలెక్ట్ మోడ్‌లోకి వెళ్లండి";
-"GridExitMultiSelectButton" = "మల్టీ-సెలెక్ట్ మోడ్ నుండి బయటకి";
-"SettingsNoAppsAvailable" = "ఏ అప్లికేషన్లు అందుబాటులో లేవు";
-"ItemNoAppsSelected" = "ఏ యాప్స్ ఎంచుకోలేదు";
-"GridPageIndicatorFormat" = "పేజీ %lld / %lld";
-"GridSearchEmptyHint" = "ఇంకొక శోధన పదాన్ని ప్రయత్నించండి.";
-"GridNotIndexedLabel" = "Launchy ఇప్పటివరకు ఏ అప్లికేషన్లను ఇండెక్స్ చేయలేదు.";
+
+// Grid
 "GridSearchPlaceholder" = "యాప్‌లను శోధించండి";
 "GridSearchLabel" = "శోధించండి";
 "GridSearchClearButton" = "శోధన టెక్స్ట్‌ను క్లియర్ చేయండి";
+"GridSearchEmptyHint" = "ఇంకొక శోధన పదాన్ని ప్రయత్నించండి.";
+"GridNotIndexedLabel" = "Launchy ఇప్పటివరకు ఏ అప్లికేషన్లను ఇండెక్స్ చేయలేదు.";
+"GridNoItemsFoundLabel" = "ఏ అంశాలు కనబడలేదు";
+"GridNoMatchingItemsLabel" = "మ్యాచ్ అయ్యే అంశాలు లేవు";
+"GridPageIndicatorFormat" = "పేజీ %lld / %lld";
+"GridEnterMultiSelectButton" = "మల్టీ-సెలెక్ట్ మోడ్‌లోకి వెళ్లండి";
+"GridExitMultiSelectButton" = "మల్టీ-సెలెక్ట్ మోడ్ నుండి బయటకి";
 "GridMoreActionsButton" = "మరిన్ని చర్యలు";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "యాప్ పేరు మార్చండి";
 "ItemRenameAppPromptBody" = "ఈ యాప్‌కు కస్టమ్ పేరు ఇవ్వండి. రీసెట్ చేయడానికి ఖాళీగా ఉంచండి.";
 "ItemActionShowInFinder" = "Finder లో చూపండి";
+"ItemActionHideApp" = "యాప్‌ను దాచండి";
 "ItemActionMoveToFolder" = "ఫోల్డర్‌కు తరలించండి";
+"ItemMoveToFolderNoneAvailable" = "ఫోల్డర్లు అందుబాటులో లేవు";
 "ItemActionMoveToPage" = "పేజీకి తరలించండి";
 "ItemActionCreateNewPage" = "కొత్త పేజీని సృష్టించండి";
 "ItemActionInsertAtBeginning" = "ప్రారంభంలో చేర్చండి";
 "ItemActionInsertBetweenPagesFormat" = "పేజీ %lld మరియు %lld మధ్య చేర్చండి";
 "ItemActionInsertAtEnd" = "చివరలో చేర్చండి";
-"ItemActionHideApp" = "యాప్‌ను దాచండి";
+"ItemPageLabel" = "పేజీ %lld";
 "ItemActionCreateFolderWithApp" = "యాప్‌తో ఫోల్డర్ సృష్టించండి";
+"ItemActionCreateFolder" = "ఫోల్డర్ సృష్టించండి";
 "ItemActionFolderDetails" = "ఫోల్డర్ వివరాలు";
 "ItemActionRenameFolder" = "ఫోల్డర్ పేరు మార్చండి";
 "ItemRenameFolderPromptBody" = "ఈ ఫోల్డర్‌కు పేరు ఇవ్వండి.";
-"ItemMoveToFolderNoneAvailable" = "ఫోల్డర్లు అందుబాటులో లేవు";
-"ItemPageLabel" = "పేజీ %lld";
-"ItemActionCreateFolder" = "ఫోల్డర్ సృష్టించండి";
 "ItemDetailBundleIDFormat" = "బండిల్ ఐడి: %@";
 "ItemDetailLocationFormat" = "స్థానం: %@";
 "ItemDetailCustomNameFormat" = "కస్టమ్ పేరు: %@";
-"CommonOKButton" = "సరే";
 "ItemDetailFolderEmptyLabel" = "ఫోల్డర్ ఖాళీగా ఉంది.";
 "ItemDetailAppsFormat" = "యాప్‌లు:\n%@";
+"ItemNoAppsSelected" = "ఏ యాప్స్ ఎంచుకోలేదు";
+"CommonCancelButton" = "రద్దు";
+"CommonOKButton" = "సరే";
 "CommonSaveButton" = "సేవ్ చేయండి";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "డిస్కవరీ క్రమం";
 "SortOrderAlphabeticalDetail" = "యాప్ పేరువారీగా A → Z";
 "SortOrderDiscoveryDetail" = "Launchy కనిపెట్టిన క్రమంలో";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "బ్యాకప్ & రీస్టోర్";
 "BackupRestoreSectionBody" = "మీ ఐకాన్ గ్రిడ్, ఫోల్డర్లు, కస్టమ్ పేర్లు, దాచిన యాప్‌లు, సెట్టింగ్‌లను ఒకే ఫైల్లో సేవ్ చేయండి. లేఆవుట్‌ను తరలించడానికి లేదా పునరుద్ధరించడానికి రీస్టోర్ చేయండి.";
@@ -206,3 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Dock మెనూలో యాప్‌ల తర్వాత ఫోల్డర్లను సమూహీకరించండి";
 "SettingsDockFolderGroupBody" = "Dock ఐకాన్‌పై రైట్-క్లిక్ చేసినప్పుడు ఒక్కొక్క యాప్‌ను ముందు అక్షరక్రమంలో, ఫోల్డర్లను క్రింద అక్షరక్రమంలో చూపిస్తుంది.";
+

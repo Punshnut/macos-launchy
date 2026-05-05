@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Ласкаво просимо до Launchy";
 "ScaffoldReadyBody" = "Цей каркас SwiftUI готовий втілювати ваші ідеї.";
 "ScaffoldCounterButton" = "Збільшити лічильник";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "Назад";
 "IntroStartButton" = "Почати користуватись Launchy";
 "IntroNextButton" = "Далі";
+
+// Settings
+"SettingsWindowTitle" = "Налаштування Launchy";
 "SettingsTabVisuals" = "Візуально";
 "SettingsTabShortcuts" = "Комбінації";
 "SettingsTabAbout" = "Про";
+"SettingsTabHiddenApps" = "Приховані додатки";
+"SettingsLauncherSectionTitle" = "Лаунчер";
+"SettingsLauncherSectionBody" = "Запуск при вході, макети й оформлення фону.";
+"SettingsLaunchAtLoginToggle" = "Запуск при вході";
 "LayoutFullscreen" = "Повноекранний";
 "LayoutFloatyPanel" = "Панель Floaty";
+"SettingsLayoutPickerLabel" = "Макет лаунчера";
+"SettingsLayoutPickerHelpText" = "Додайте нижче перемикач макету, щоб з будь-якого місця миттєво міняти режим.";
+"SettingsDockIconToggle" = "Сховати іконку Dock";
+"SettingsMenuBarIconToggle" = "Сховати іконку меню";
+"SettingsIconsHiddenHelpText" = "Якщо обидві іконки приховано, Launchy залишає перемикач доступним, щоб ви могли його відкрити.";
+"SettingsBackgroundStyleLabel" = "Стиль фону";
+"SettingsSolidColorPickerLabel" = "Суцільний колір";
+"BackgroundStyleStandard" = "Стандартний";
+"BackgroundStyleLightBlur" = "Легке розмиття";
+"BackgroundStyleTransparent" = "Прозорий";
+"BackgroundStyleSolidColor" = "Суцільний колір";
 "AccentColorSystem" = "Система";
 "AccentColorGraphite" = "Графіт";
 "AccentColorIndigo" = "Індиго";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "Оранжевий";
 "AccentColorPink" = "Рожевий";
 "AccentColorPurple" = "Фіолетовий";
-"BackgroundStyleStandard" = "Стандартний";
-"BackgroundStyleLightBlur" = "Легке розмиття";
-"BackgroundStyleTransparent" = "Прозорий";
-"BackgroundStyleSolidColor" = "Суцільний колір";
-"FolderDefaultName" = "без назви";
-"SettingsLauncherSectionTitle" = "Лаунчер";
-"SettingsLauncherSectionBody" = "Запуск при вході, макети й оформлення фону.";
-"SettingsKeyboardSectionTitle" = "Клавіатура";
-"SettingsKeyboardSectionBody" = "Глобальні комбінації та інструменти швидкого скидання.";
-"SettingsTabHiddenApps" = "Приховані додатки";
-"SettingsHiddenAppsSectionBody" = "Оберіть програми, які не з’являтимуться в сітці лаунчера.";
-"SettingsUserAppsFolderToggle" = "Включити папку з додатками користувача";
-"SettingsUserAppsFolderBody" = "Launchy шукає додатки в %@, коли ця опція увімкнена.";
-"SettingsLaunchAtLoginToggle" = "Запуск при вході";
-"SettingsLayoutPickerLabel" = "Макет лаунчера";
-"HotCornerTopLeft" = "Угорі зліва";
-"HotCornerTopRight" = "Угорі справа";
-"HotCornerBottomLeft" = "Внизу зліва";
-"HotCornerBottomRight" = "Внизу справа";
-"SettingsLayoutPickerHelpText" = "Додайте нижче перемикач макету, щоб з будь-якого місця миттєво міняти режим.";
-"SettingsDockIconToggle" = "Сховати іконку Dock";
-"SettingsMenuBarIconToggle" = "Сховати іконку меню";
-"SettingsIconsHiddenHelpText" = "Якщо обидві іконки приховано, Launchy залишає перемикач доступним, щоб ви могли його відкрити.";
-"SettingsBackgroundStyleLabel" = "Стиль фону";
-"SettingsSolidColorPickerLabel" = "Суцільний колір";
 "SettingsIconsFloatToggle" = "Іконки піднімаються, коли є місце";
 "SettingsHotCornerToggle" = "Увімкнути перемикання гарячим кутом";
 "SettingsHotCornerBody" = "Перемістіть курсор у вибраний кут, щоб показати або сховати Launchy.";
 "SettingsHotCornerPickerLabel" = "Кут";
 "SettingsHotCornerPermissionNote" = "Під час першого ввімкнення macOS може запросити моніторинг введення; якщо ні — додайте Launchy у Системні налаштування → Конфіденційність і безпека → Моніторинг введення.";
+"HotCornerTopLeft" = "Угорі зліва";
+"HotCornerTopRight" = "Угорі справа";
+"HotCornerBottomLeft" = "Внизу зліва";
+"HotCornerBottomRight" = "Внизу справа";
+"SettingsUserAppsFolderToggle" = "Включити папку з додатками користувача";
+"SettingsUserAppsFolderBody" = "Launchy шукає додатки в %@, коли ця опція увімкнена.";
+"FolderDefaultName" = "без назви";
+"SettingsKeyboardSectionTitle" = "Клавіатура";
+"SettingsKeyboardSectionBody" = "Глобальні комбінації та інструменти швидкого скидання.";
 "SettingsToggleLaunchyLabel" = "Перемикач Launchy";
 "SettingsToggleLaunchyBody" = "Працює всюди. Натисніть Delete, щоб очистити, або Reset, щоб повернути Cmd+Shift+Space.";
 "SettingsShortcutClickToRecord" = "Клікніть, щоб записати";
 "SettingsShortcutResetButton" = "Скинути";
 "SettingsShortcutClearButton" = "Очистити";
+"SettingsShortcutPlaceholder" = "Натисніть комбінацію...";
 "SettingsLayoutToggleShortcutLabel" = "Перемкнути повноекранний <-> Floaty";
 "SettingsFloatyToggleLabel" = "Перемкнути панель Floaty";
 "SettingsLayoutToggleShortcutBody" = "Виберіть комбінацію, якщо хочете швидко перемикати макети. Залиште пустим, щоб вимкнути.";
 "SettingsAddShortcutButton" = "Додати комбінацію";
 "SettingsResetArrangementButton" = "Скинути розташування іконок...";
 "SettingsResetArrangementBody" = "Видаляє збережений порядок і теки та будує сторінки заново. Користувацькі назви й приховані програми залишаються.";
+"ResetArrangementDialogTitle" = "Скинути розташування іконок?";
+"ResetArrangementDialogBody" = "Це видалить збережений порядок, папки й макет сторінок. Введіть RESET, щоб продовжити.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "Оберіть програми, які не з’являтимуться в сітці лаунчера.";
 "SettingsHiddenAppsColumnApp" = "Додаток";
 "SettingsHiddenAppsColumnHidden" = "Приховано";
 "SettingsShowHiddenAppsFirstToggle" = "Показувати приховані додатки першими";
 "SettingsScanningAppsStatus" = "Сканування додатків...";
+"SettingsNoAppsAvailable" = "Немає доступних програм";
 "SettingsAboutTitle" = "Про Launchy";
 "SettingsAboutBody" = "Деталі версії, подяки та корисні посилання.";
+"SettingsAboutVersionFormat" = "Версія %@";
+"SettingsAboutBuiltByLabel" = "Створено командою Launchy";
 "SettingsAboutWebsiteButton" = "Вебсайт проекту";
 "SettingsAboutReportIssueButton" = "Поскаржитись на проблему";
 "SettingsAboutSupportEmailButton" = "Пошта підтримки";
 "SettingsAboutRevisitIntroButton" = "Повернутися до вступу...";
 "SettingsAboutGitHubButton" = "Переглянути на GitHub";
-"ResetArrangementDialogTitle" = "Скинути розташування іконок?";
-"ResetArrangementDialogBody" = "Це видалить збережений порядок, папки й макет сторінок. Введіть RESET, щоб продовжити.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "Скасувати";
-"SettingsShortcutPlaceholder" = "Натисніть комбінацію...";
-"SettingsAboutVersionFormat" = "Версія %@";
-"SettingsAboutBuiltByLabel" = "Створено командою Launchy";
-"SettingsWindowTitle" = "Налаштування Launchy";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "Налаштування стартера";
 "StatusBarInfoButton" = "Інформація про Launchy";
 "StatusBarSettingsButton" = "Налаштування";
 "MenuItemSettings" = "Налаштування...";
+"MenuItemShowLauncher" = "Показати лаунчер";
 "MenuItemCheckUpdates" = "Перевірити оновлення...";
+"MenuItemQuitLaunchy" = "Вийти з Launchy";
 "DebugMenuLabel" = "Відлагодження";
 "DebugMenuReloadApps" = "Перезавантажити додатки";
 "DebugMenuResetSettings" = "Скинути налаштування";
 "DebugMenuToggleStyles" = "Переключити тестові стилі фону";
-"MenuItemShowLauncher" = "Показати лаунчер";
-"MenuItemQuitLaunchy" = "Вийти з Launchy";
-"GridNoItemsFoundLabel" = "Елементи не знайдені";
-"GridNoMatchingItemsLabel" = "Немає відповідних елементів";
-"GridEnterMultiSelectButton" = "Увімкнути режим множинного вибору";
-"GridExitMultiSelectButton" = "Вийти з режиму множинного вибору";
-"SettingsNoAppsAvailable" = "Немає доступних програм";
-"ItemNoAppsSelected" = "Жодних програм не вибрано";
-"GridPageIndicatorFormat" = "Сторінка %lld з %lld";
-"GridSearchEmptyHint" = "Спробуйте інший пошуковий запит.";
-"GridNotIndexedLabel" = "Launchy ще не проіндексував жодного додатку.";
+
+// Grid
 "GridSearchPlaceholder" = "Шукати програми";
 "GridSearchLabel" = "Пошук";
 "GridSearchClearButton" = "Очистити текст пошуку";
+"GridSearchEmptyHint" = "Спробуйте інший пошуковий запит.";
+"GridNotIndexedLabel" = "Launchy ще не проіндексував жодного додатку.";
+"GridNoItemsFoundLabel" = "Елементи не знайдені";
+"GridNoMatchingItemsLabel" = "Немає відповідних елементів";
+"GridPageIndicatorFormat" = "Сторінка %lld з %lld";
+"GridEnterMultiSelectButton" = "Увімкнути режим множинного вибору";
+"GridExitMultiSelectButton" = "Вийти з режиму множинного вибору";
 "GridMoreActionsButton" = "Додаткові дії";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "Перейменувати додаток";
 "ItemRenameAppPromptBody" = "Введіть власну назву для цього додатку. Залиште пустим, щоб скинути.";
 "ItemActionShowInFinder" = "Показати у Finder";
+"ItemActionHideApp" = "Сховати додаток";
 "ItemActionMoveToFolder" = "Перемістити до папки";
+"ItemMoveToFolderNoneAvailable" = "Немає доступних папок";
 "ItemActionMoveToPage" = "Перемістити на сторінку";
 "ItemActionCreateNewPage" = "Створити нову сторінку";
 "ItemActionInsertAtBeginning" = "Вставити на початку";
 "ItemActionInsertBetweenPagesFormat" = "Вставити між сторінками %lld і %lld";
 "ItemActionInsertAtEnd" = "Вставити в кінці";
-"ItemActionHideApp" = "Сховати додаток";
+"ItemPageLabel" = "Сторінка %lld";
 "ItemActionCreateFolderWithApp" = "Створити папку з цим додатком";
+"ItemActionCreateFolder" = "Створити папку";
 "ItemActionFolderDetails" = "Деталі папки";
 "ItemActionRenameFolder" = "Перейменувати папку";
 "ItemRenameFolderPromptBody" = "Введіть назву для цієї папки.";
-"ItemMoveToFolderNoneAvailable" = "Немає доступних папок";
-"ItemPageLabel" = "Сторінка %lld";
-"ItemActionCreateFolder" = "Створити папку";
 "ItemDetailBundleIDFormat" = "Ідентифікатор пакету: %@";
 "ItemDetailLocationFormat" = "Розташування: %@";
 "ItemDetailCustomNameFormat" = "Власна назва: %@";
-"CommonOKButton" = "ОК";
 "ItemDetailFolderEmptyLabel" = "Папка порожня.";
 "ItemDetailAppsFormat" = "Додатки:\n%@";
+"ItemNoAppsSelected" = "Жодних програм не вибрано";
+"CommonCancelButton" = "Скасувати";
+"CommonOKButton" = "ОК";
 "CommonSaveButton" = "Зберегти";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "В порядку знаходження";
 "SortOrderAlphabeticalDetail" = "A → Z за назвою програми";
 "SortOrderDiscoveryDetail" = "У порядку знаходження Launchy";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "Резервувати та відновити";
 "BackupRestoreSectionBody" = "Збережіть сітку іконок, папки, власні назви, приховані застосунки та налаштування в один файл. Відновіть, щоб перенести чи відновити макет.";
@@ -206,3 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Групувати папки після застосунків у меню Dock";
 "SettingsDockFolderGroupBody" = "При правому кліку на іконку Dock спершу показує окремі застосунки за алфавітом, папки під ними теж за алфавітом.";
+

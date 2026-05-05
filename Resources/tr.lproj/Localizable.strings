@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Launchy’ye hoş geldin";
 "ScaffoldReadyBody" = "Bu SwiftUI taslağı fikirlerin için hazır.";
 "ScaffoldCounterButton" = "Sayacı artır";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "Geri";
 "IntroStartButton" = "Launchy’yi kullanmaya başla";
 "IntroNextButton" = "İleri";
+
+// Settings
+"SettingsWindowTitle" = "Launchy ayarları";
 "SettingsTabVisuals" = "Görünüm";
 "SettingsTabShortcuts" = "Kısayollar";
 "SettingsTabAbout" = "Hakkında";
+"SettingsTabHiddenApps" = "Gizli uygulamalar";
+"SettingsLauncherSectionTitle" = "Launcher";
+"SettingsLauncherSectionBody" = "Girişte başlatma, düzenler ve arka plan stili.";
+"SettingsLaunchAtLoginToggle" = "Girişte başlat";
 "LayoutFullscreen" = "Tam ekran";
 "LayoutFloatyPanel" = "Kayan panel";
+"SettingsLayoutPickerLabel" = "Launcher düzeni";
+"SettingsLayoutPickerHelpText" = "Aşağıya, her yerden modları anında değiştirmek için bir kısayol ekle.";
+"SettingsDockIconToggle" = "Dock simgesini gizle";
+"SettingsMenuBarIconToggle" = "Menü çubuğu simgesini gizle";
+"SettingsIconsHiddenHelpText" = "İki simge de gizliyse Launchy kısayolu açık kalır, böylece yine de açabilirsin.";
+"SettingsBackgroundStyleLabel" = "Arka plan stili";
+"SettingsSolidColorPickerLabel" = "Düz renk";
+"BackgroundStyleStandard" = "Standart";
+"BackgroundStyleLightBlur" = "Hafif bulanıklık";
+"BackgroundStyleTransparent" = "Şeffaf";
+"BackgroundStyleSolidColor" = "Düz renk";
 "AccentColorSystem" = "Sistem";
 "AccentColorGraphite" = "Grafit";
 "AccentColorIndigo" = "Çivit";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "Turuncu";
 "AccentColorPink" = "Pembe";
 "AccentColorPurple" = "Mor";
-"BackgroundStyleStandard" = "Standart";
-"BackgroundStyleLightBlur" = "Hafif bulanıklık";
-"BackgroundStyleTransparent" = "Şeffaf";
-"BackgroundStyleSolidColor" = "Düz renk";
-"FolderDefaultName" = "adsız";
-"SettingsLauncherSectionTitle" = "Launcher";
-"SettingsLauncherSectionBody" = "Girişte başlatma, düzenler ve arka plan stili.";
-"SettingsKeyboardSectionTitle" = "Klavye";
-"SettingsKeyboardSectionBody" = "Genel kısayollar ve hızlı sıfırlama araçları.";
-"SettingsTabHiddenApps" = "Gizli uygulamalar";
-"SettingsHiddenAppsSectionBody" = "Launcher ızgarasının dışında kalacak uygulamaları seç.";
-"SettingsUserAppsFolderToggle" = "Kullanıcının Uygulamalar klasörünü dahil et";
-"SettingsUserAppsFolderBody" = "Launchy, etkinleştirildiğinde %@ klasöründe uygulamaları arar.";
-"SettingsLaunchAtLoginToggle" = "Girişte başlat";
-"SettingsLayoutPickerLabel" = "Launcher düzeni";
-"HotCornerTopLeft" = "Sol üst";
-"HotCornerTopRight" = "Sağ üst";
-"HotCornerBottomLeft" = "Sol alt";
-"HotCornerBottomRight" = "Sağ alt";
-"SettingsLayoutPickerHelpText" = "Aşağıya, her yerden modları anında değiştirmek için bir kısayol ekle.";
-"SettingsDockIconToggle" = "Dock simgesini gizle";
-"SettingsMenuBarIconToggle" = "Menü çubuğu simgesini gizle";
-"SettingsIconsHiddenHelpText" = "İki simge de gizliyse Launchy kısayolu açık kalır, böylece yine de açabilirsin.";
-"SettingsBackgroundStyleLabel" = "Arka plan stili";
-"SettingsSolidColorPickerLabel" = "Düz renk";
 "SettingsIconsFloatToggle" = "Yer açıldığında simgeler yukarı çıkar";
 "SettingsHotCornerToggle" = "Sıcak köşe geçişini etkinleştir";
 "SettingsHotCornerBody" = "İmleci seçilen köşeye taşıyarak Launchy’yi gösterin veya gizleyin.";
 "SettingsHotCornerPickerLabel" = "Köşe";
 "SettingsHotCornerPermissionNote" = "İlk kez etkinleştirdiğinizde macOS Girdi İzleme isteyebilir; istemezse Sistem Ayarları → Gizlilik ve Güvenlik → Girdi İzleme bölümüne Launchy’yi ekleyin.";
+"HotCornerTopLeft" = "Sol üst";
+"HotCornerTopRight" = "Sağ üst";
+"HotCornerBottomLeft" = "Sol alt";
+"HotCornerBottomRight" = "Sağ alt";
+"SettingsUserAppsFolderToggle" = "Kullanıcının Uygulamalar klasörünü dahil et";
+"SettingsUserAppsFolderBody" = "Launchy, etkinleştirildiğinde %@ klasöründe uygulamaları arar.";
+"FolderDefaultName" = "adsız";
+"SettingsKeyboardSectionTitle" = "Klavye";
+"SettingsKeyboardSectionBody" = "Genel kısayollar ve hızlı sıfırlama araçları.";
 "SettingsToggleLaunchyLabel" = "Launchy’yi aç/kapat";
 "SettingsToggleLaunchyBody" = "Her yerde çalışır. Sil ile temizle veya Sıfırla ile Cmd+Shift+Boşluk’a dön.";
 "SettingsShortcutClickToRecord" = "Kaydetmek için tıkla";
 "SettingsShortcutResetButton" = "Sıfırla";
 "SettingsShortcutClearButton" = "Temizle";
+"SettingsShortcutPlaceholder" = "Kısayola bas...";
 "SettingsLayoutToggleShortcutLabel" = "Tam ekran <-> kayan geçiş";
 "SettingsFloatyToggleLabel" = "Floaty panelini değiştir";
 "SettingsLayoutToggleShortcutBody" = "Düzenleri hızlıca değiştirmek için bir kısayol seç. Devre dışı bırakmak için boş bırak.";
 "SettingsAddShortcutButton" = "Kısayol ekle";
 "SettingsResetArrangementButton" = "Simge düzenini sıfırla...";
 "SettingsResetArrangementBody" = "Kayıtlı sıralama ve klasörleri siler, sayfaları yeniden oluşturur. Özel adlar ve gizli uygulamalar kalır.";
+"ResetArrangementDialogTitle" = "Simge düzeni sıfırlansın mı?";
+"ResetArrangementDialogBody" = "Bu işlem kayıtlı sıralamayı, klasörleri ve sayfa düzenini siler. Devam etmek için RESET yaz.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "Launcher ızgarasının dışında kalacak uygulamaları seç.";
 "SettingsHiddenAppsColumnApp" = "Uygulama";
 "SettingsHiddenAppsColumnHidden" = "Gizli";
 "SettingsShowHiddenAppsFirstToggle" = "Gizli uygulamaları önce göster";
 "SettingsScanningAppsStatus" = "Uygulamalar taranıyor...";
+"SettingsNoAppsAvailable" = "Kullanılabilir uygulama yok";
 "SettingsAboutTitle" = "Launchy hakkında";
 "SettingsAboutBody" = "Sürüm bilgileri, teşekkürler ve faydalı bağlantılar.";
+"SettingsAboutVersionFormat" = "Sürüm %@";
+"SettingsAboutBuiltByLabel" = "Launchy ekibi tarafından geliştirildi";
 "SettingsAboutWebsiteButton" = "Proje sitesi";
 "SettingsAboutReportIssueButton" = "Sorun bildir";
 "SettingsAboutSupportEmailButton" = "Destek e-postası";
 "SettingsAboutRevisitIntroButton" = "Girişi yeniden izle...";
 "SettingsAboutGitHubButton" = "GitHub’da görüntüle";
-"ResetArrangementDialogTitle" = "Simge düzeni sıfırlansın mı?";
-"ResetArrangementDialogBody" = "Bu işlem kayıtlı sıralamayı, klasörleri ve sayfa düzenini siler. Devam etmek için RESET yaz.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "İptal";
-"SettingsShortcutPlaceholder" = "Kısayola bas...";
-"SettingsAboutVersionFormat" = "Sürüm %@";
-"SettingsAboutBuiltByLabel" = "Launchy ekibi tarafından geliştirildi";
-"SettingsWindowTitle" = "Launchy ayarları";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "Başlatıcı ayarları";
 "StatusBarInfoButton" = "Launchy bilgisi";
 "StatusBarSettingsButton" = "Ayarlar";
 "MenuItemSettings" = "Ayarlar...";
+"MenuItemShowLauncher" = "Launcher’ı göster";
 "MenuItemCheckUpdates" = "Güncellemeleri denetle...";
+"MenuItemQuitLaunchy" = "Launchy’den çık";
 "DebugMenuLabel" = "Hata ayıklama";
 "DebugMenuReloadApps" = "Uygulamaları yeniden yükle";
 "DebugMenuResetSettings" = "Ayarları sıfırla";
 "DebugMenuToggleStyles" = "Test arka plan stillerini aç/kapat";
-"MenuItemShowLauncher" = "Launcher’ı göster";
-"MenuItemQuitLaunchy" = "Launchy’den çık";
-"GridNoItemsFoundLabel" = "Öğe bulunamadı";
-"GridNoMatchingItemsLabel" = "Eşleşen öğe yok";
-"GridEnterMultiSelectButton" = "Çoklu seçim moduna geç";
-"GridExitMultiSelectButton" = "Çoklu seçim modundan çık";
-"SettingsNoAppsAvailable" = "Kullanılabilir uygulama yok";
-"ItemNoAppsSelected" = "Hiç uygulama seçilmedi";
-"GridPageIndicatorFormat" = "Sayfa %lld / %lld";
-"GridSearchEmptyHint" = "Başka bir arama terimi dene.";
-"GridNotIndexedLabel" = "Launchy henüz uygulama indekslemedi.";
+
+// Grid
 "GridSearchPlaceholder" = "Uygulamaları ara";
 "GridSearchLabel" = "Ara";
 "GridSearchClearButton" = "Arama metnini temizle";
+"GridSearchEmptyHint" = "Başka bir arama terimi dene.";
+"GridNotIndexedLabel" = "Launchy henüz uygulama indekslemedi.";
+"GridNoItemsFoundLabel" = "Öğe bulunamadı";
+"GridNoMatchingItemsLabel" = "Eşleşen öğe yok";
+"GridPageIndicatorFormat" = "Sayfa %lld / %lld";
+"GridEnterMultiSelectButton" = "Çoklu seçim moduna geç";
+"GridExitMultiSelectButton" = "Çoklu seçim modundan çık";
 "GridMoreActionsButton" = "Daha fazla işlem";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "Uygulamayı yeniden adlandır";
 "ItemRenameAppPromptBody" = "Bu uygulama için özel bir ad gir. Sıfırlamak için boş bırak.";
 "ItemActionShowInFinder" = "Finder’da göster";
+"ItemActionHideApp" = "Uygulamayı gizle";
 "ItemActionMoveToFolder" = "Klasöre taşı";
+"ItemMoveToFolderNoneAvailable" = "Klasör yok";
 "ItemActionMoveToPage" = "Sayfaya taşı";
 "ItemActionCreateNewPage" = "Yeni Sayfa Oluştur";
 "ItemActionInsertAtBeginning" = "Başa ekle";
 "ItemActionInsertBetweenPagesFormat" = "Sayfa %lld ile %lld arasına ekle";
 "ItemActionInsertAtEnd" = "Sona ekle";
-"ItemActionHideApp" = "Uygulamayı gizle";
+"ItemPageLabel" = "Sayfa %lld";
 "ItemActionCreateFolderWithApp" = "Uygulamayla klasör oluştur";
+"ItemActionCreateFolder" = "Klasör oluştur";
 "ItemActionFolderDetails" = "Klasör ayrıntıları";
 "ItemActionRenameFolder" = "Klasörü yeniden adlandır";
 "ItemRenameFolderPromptBody" = "Bu klasör için bir ad gir.";
-"ItemMoveToFolderNoneAvailable" = "Klasör yok";
-"ItemPageLabel" = "Sayfa %lld";
-"ItemActionCreateFolder" = "Klasör oluştur";
 "ItemDetailBundleIDFormat" = "Paket kimliği: %@";
 "ItemDetailLocationFormat" = "Konum: %@";
 "ItemDetailCustomNameFormat" = "Özel ad: %@";
-"CommonOKButton" = "Tamam";
 "ItemDetailFolderEmptyLabel" = "Klasör boş.";
 "ItemDetailAppsFormat" = "Uygulamalar:\n%@";
+"ItemNoAppsSelected" = "Hiç uygulama seçilmedi";
+"CommonCancelButton" = "İptal";
+"CommonOKButton" = "Tamam";
 "CommonSaveButton" = "Kaydet";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "Keşif sırası";
 "SortOrderAlphabeticalDetail" = "Uygulama adına göre A → Z";
 "SortOrderDiscoveryDetail" = "Launchy bulduğu sırayla";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "Yedekle ve Geri Yükle";
 "BackupRestoreSectionBody" = "Simge ızgaranı, klasörleri, özel adları, gizli uygulamaları ve ayarları tek dosyada sakla. Düzeni taşımak veya kurtarmak için geri yükle.";
@@ -206,3 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Dock menüsünde uygulamalardan sonra klasörleri grupla";
 "SettingsDockFolderGroupBody" = "Dock simgesine sağ tıklandığında bağımsız uygulamalar önce alfabetik, klasörler hemen altında alfabetik sıralanır.";
+

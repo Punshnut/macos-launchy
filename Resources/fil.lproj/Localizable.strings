@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Maligayang pagdating sa Launchy";
 "ScaffoldReadyBody" = "Handa na ang SwiftUI scaffold na ito para sa mga ideya mo.";
 "ScaffoldCounterButton" = "Dagdagan ang counter";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "Bumalik";
 "IntroStartButton" = "Simulan gamitin ang Launchy";
 "IntroNextButton" = "Susunod";
+
+// Settings
+"SettingsWindowTitle" = "Mga Setting ng Launchy";
 "SettingsTabVisuals" = "Biswal";
 "SettingsTabShortcuts" = "Mga shortcut";
 "SettingsTabAbout" = "Tungkol";
+"SettingsTabHiddenApps" = "Mga nakatagong app";
+"SettingsLauncherSectionTitle" = "Launcher";
+"SettingsLauncherSectionBody" = "Paglunsad sa login, mga layout, at estilo ng background.";
+"SettingsLaunchAtLoginToggle" = "Mag-launch sa login";
 "LayoutFullscreen" = "Fullscreen";
 "LayoutFloatyPanel" = "Floaty Panel";
+"SettingsLayoutPickerLabel" = "Layout ng launcher";
+"SettingsLayoutPickerHelpText" = "Magdagdag ng layout toggle shortcut sa ibaba para lumipat ng mode agad kahit saan.";
+"SettingsDockIconToggle" = "Itago ang Dock icon";
+"SettingsMenuBarIconToggle" = "Itago ang menu bar icon";
+"SettingsIconsHiddenHelpText" = "Kung parehong nakatago ang icons, nananatiling naka-enable ang toggle shortcut para mabuksan mo pa rin ito.";
+"SettingsBackgroundStyleLabel" = "Estilo ng background";
+"SettingsSolidColorPickerLabel" = "Solid na kulay";
+"BackgroundStyleStandard" = "Standard";
+"BackgroundStyleLightBlur" = "Magaang blur";
+"BackgroundStyleTransparent" = "Transparent";
+"BackgroundStyleSolidColor" = "Solid na kulay";
 "AccentColorSystem" = "System";
 "AccentColorGraphite" = "Graphite";
 "AccentColorIndigo" = "Indigo";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "Kahel";
 "AccentColorPink" = "Rosas";
 "AccentColorPurple" = "Lila";
-"BackgroundStyleStandard" = "Standard";
-"BackgroundStyleLightBlur" = "Magaang blur";
-"BackgroundStyleTransparent" = "Transparent";
-"BackgroundStyleSolidColor" = "Solid na kulay";
-"FolderDefaultName" = "walang pangalan";
-"SettingsLauncherSectionTitle" = "Launcher";
-"SettingsLauncherSectionBody" = "Paglunsad sa login, mga layout, at estilo ng background.";
-"SettingsKeyboardSectionTitle" = "Keyboard";
-"SettingsKeyboardSectionBody" = "Mga global shortcut at mabilis na reset tools.";
-"SettingsTabHiddenApps" = "Mga nakatagong app";
-"SettingsHiddenAppsSectionBody" = "Piliin kung aling apps ang mananatiling wala sa launcher grid.";
-"SettingsUserAppsFolderToggle" = "Isama ang Applications folder ng user";
-"SettingsUserAppsFolderBody" = "Hinahanap ng Launchy ang mga app sa %@ kapag naka-enable.";
-"SettingsLaunchAtLoginToggle" = "Mag-launch sa login";
-"SettingsLayoutPickerLabel" = "Layout ng launcher";
-"HotCornerTopLeft" = "Kaliwang itaas";
-"HotCornerTopRight" = "Kanang itaas";
-"HotCornerBottomLeft" = "Kaliwang ibaba";
-"HotCornerBottomRight" = "Kanang ibaba";
-"SettingsLayoutPickerHelpText" = "Magdagdag ng layout toggle shortcut sa ibaba para lumipat ng mode agad kahit saan.";
-"SettingsDockIconToggle" = "Itago ang Dock icon";
-"SettingsMenuBarIconToggle" = "Itago ang menu bar icon";
-"SettingsIconsHiddenHelpText" = "Kung parehong nakatago ang icons, nananatiling naka-enable ang toggle shortcut para mabuksan mo pa rin ito.";
-"SettingsBackgroundStyleLabel" = "Estilo ng background";
-"SettingsSolidColorPickerLabel" = "Solid na kulay";
 "SettingsIconsFloatToggle" = "Umakyat ang icons kapag may espasyo";
 "SettingsHotCornerToggle" = "I-enable ang hot corner toggle";
 "SettingsHotCornerBody" = "Ilipat ang cursor sa napiling sulok para ipakita o itago ang Launchy.";
 "SettingsHotCornerPickerLabel" = "Sulok";
 "SettingsHotCornerPermissionNote" = "Maaaring humingi ang macOS ng Input Monitoring sa unang pag-enable nito; kung hindi, idagdag ang Launchy sa System Settings → Privacy & Security → Input Monitoring.";
+"HotCornerTopLeft" = "Kaliwang itaas";
+"HotCornerTopRight" = "Kanang itaas";
+"HotCornerBottomLeft" = "Kaliwang ibaba";
+"HotCornerBottomRight" = "Kanang ibaba";
+"SettingsUserAppsFolderToggle" = "Isama ang Applications folder ng user";
+"SettingsUserAppsFolderBody" = "Hinahanap ng Launchy ang mga app sa %@ kapag naka-enable.";
+"FolderDefaultName" = "walang pangalan";
+"SettingsKeyboardSectionTitle" = "Keyboard";
+"SettingsKeyboardSectionBody" = "Mga global shortcut at mabilis na reset tools.";
 "SettingsToggleLaunchyLabel" = "I-toggle ang Launchy";
 "SettingsToggleLaunchyBody" = "Gumagana kahit saan. Pindutin ang Delete para i-clear o Reset para ibalik ang Cmd+Shift+Space.";
 "SettingsShortcutClickToRecord" = "I-click para mag-record";
 "SettingsShortcutResetButton" = "Reset";
 "SettingsShortcutClearButton" = "I-clear";
+"SettingsShortcutPlaceholder" = "Pindutin ang shortcut...";
 "SettingsLayoutToggleShortcutLabel" = "Lumipat fullscreen <-> floaty";
 "SettingsFloatyToggleLabel" = "I-toggle ang Floaty Panel";
 "SettingsLayoutToggleShortcutBody" = "Pumili ng shortcut kung gusto mong mabilis magpalit ng layout. Iwanang walang laman para i-disable.";
 "SettingsAddShortcutButton" = "Magdagdag ng shortcut";
 "SettingsResetArrangementButton" = "I-reset ang ayos ng icon...";
 "SettingsResetArrangementBody" = "Binubura ang naka-save na ayos at mga folder at binubuo muli ang mga pahina. Nananatili ang custom na pangalan at nakatagong app.";
+"ResetArrangementDialogTitle" = "I-reset ang ayos ng icon?";
+"ResetArrangementDialogBody" = "Buburahin nito ang nai-save mong pagkakasunod, mga folder, at layout ng page. I-type ang RESET para magpatuloy.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "Piliin kung aling apps ang mananatiling wala sa launcher grid.";
 "SettingsHiddenAppsColumnApp" = "Aplikasyon";
 "SettingsHiddenAppsColumnHidden" = "Nakatago";
 "SettingsShowHiddenAppsFirstToggle" = "Ipakita muna ang mga nakatagong app";
 "SettingsScanningAppsStatus" = "Nagsi-scan para sa mga aplikasyon...";
+"SettingsNoAppsAvailable" = "Walang available na aplikasyon";
 "SettingsAboutTitle" = "Tungkol sa Launchy";
 "SettingsAboutBody" = "Mga detalye ng bersyon, credits, at kapaki-pakinabang na link.";
+"SettingsAboutVersionFormat" = "Bersyon %@";
+"SettingsAboutBuiltByLabel" = "Ginawa ng Launchy team";
 "SettingsAboutWebsiteButton" = "Website ng proyekto";
 "SettingsAboutReportIssueButton" = "I-report ang isyu";
 "SettingsAboutSupportEmailButton" = "Email ng suporta";
 "SettingsAboutRevisitIntroButton" = "Balikan ang Introduksiyon...";
 "SettingsAboutGitHubButton" = "Tingnan sa GitHub";
-"ResetArrangementDialogTitle" = "I-reset ang ayos ng icon?";
-"ResetArrangementDialogBody" = "Buburahin nito ang nai-save mong pagkakasunod, mga folder, at layout ng page. I-type ang RESET para magpatuloy.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "Kanselahin";
-"SettingsShortcutPlaceholder" = "Pindutin ang shortcut...";
-"SettingsAboutVersionFormat" = "Bersyon %@";
-"SettingsAboutBuiltByLabel" = "Ginawa ng Launchy team";
-"SettingsWindowTitle" = "Mga Setting ng Launchy";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "Mga setting ng launcher";
 "StatusBarInfoButton" = "Impormasyon ng Launchy";
 "StatusBarSettingsButton" = "Mga Setting";
 "MenuItemSettings" = "Mga Setting...";
+"MenuItemShowLauncher" = "Ipakita ang Launcher";
 "MenuItemCheckUpdates" = "Tingnan ang mga update...";
+"MenuItemQuitLaunchy" = "Isara ang Launchy";
 "DebugMenuLabel" = "Debug";
 "DebugMenuReloadApps" = "I-reload ang mga app";
 "DebugMenuResetSettings" = "I-reset ang Settings";
 "DebugMenuToggleStyles" = "I-toggle ang test background styles";
-"MenuItemShowLauncher" = "Ipakita ang Launcher";
-"MenuItemQuitLaunchy" = "Isara ang Launchy";
-"GridNoItemsFoundLabel" = "Walang nahanap na item";
-"GridNoMatchingItemsLabel" = "Walang tugmang item";
-"GridEnterMultiSelectButton" = "Pumasok sa multi-select mode";
-"GridExitMultiSelectButton" = "Lumabas sa multi-select mode";
-"SettingsNoAppsAvailable" = "Walang available na aplikasyon";
-"ItemNoAppsSelected" = "Walang napiling app";
-"GridPageIndicatorFormat" = "Pahina %lld ng %lld";
-"GridSearchEmptyHint" = "Subukan ang ibang termino sa paghahanap.";
-"GridNotIndexedLabel" = "Wala pang nai-index na aplikasyon ang Launchy.";
+
+// Grid
 "GridSearchPlaceholder" = "Maghanap ng mga app";
 "GridSearchLabel" = "Maghanap";
 "GridSearchClearButton" = "I-clear ang teksto ng paghahanap";
+"GridSearchEmptyHint" = "Subukan ang ibang termino sa paghahanap.";
+"GridNotIndexedLabel" = "Wala pang nai-index na aplikasyon ang Launchy.";
+"GridNoItemsFoundLabel" = "Walang nahanap na item";
+"GridNoMatchingItemsLabel" = "Walang tugmang item";
+"GridPageIndicatorFormat" = "Pahina %lld ng %lld";
+"GridEnterMultiSelectButton" = "Pumasok sa multi-select mode";
+"GridExitMultiSelectButton" = "Lumabas sa multi-select mode";
 "GridMoreActionsButton" = "Mas maraming aksyon";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "Palitan ang pangalan ng app";
 "ItemRenameAppPromptBody" = "Maglagay ng custom na pangalan para sa app na ito. Iwanang walang laman para i-reset.";
 "ItemActionShowInFinder" = "Ipakita sa Finder";
+"ItemActionHideApp" = "Itago ang App";
 "ItemActionMoveToFolder" = "Ilipat sa Folder";
+"ItemMoveToFolderNoneAvailable" = "Walang available na folder";
 "ItemActionMoveToPage" = "Ilipat sa Page";
 "ItemActionCreateNewPage" = "Gumawa ng bagong page";
 "ItemActionInsertAtBeginning" = "Ipasok sa simula";
 "ItemActionInsertBetweenPagesFormat" = "Ipasok sa pagitan ng Page %lld at %lld";
 "ItemActionInsertAtEnd" = "Ipasok sa dulo";
-"ItemActionHideApp" = "Itago ang App";
+"ItemPageLabel" = "Pahina %lld";
 "ItemActionCreateFolderWithApp" = "Gumawa ng Folder kasama ang App";
+"ItemActionCreateFolder" = "Gumawa ng Folder";
 "ItemActionFolderDetails" = "Mga detalye ng Folder";
 "ItemActionRenameFolder" = "Palitan ang pangalan ng Folder";
 "ItemRenameFolderPromptBody" = "Maglagay ng pangalan para sa folder na ito.";
-"ItemMoveToFolderNoneAvailable" = "Walang available na folder";
-"ItemPageLabel" = "Pahina %lld";
-"ItemActionCreateFolder" = "Gumawa ng Folder";
 "ItemDetailBundleIDFormat" = "Bundle ID: %@";
 "ItemDetailLocationFormat" = "Lokasyon: %@";
 "ItemDetailCustomNameFormat" = "Custom na Pangalan: %@";
-"CommonOKButton" = "OK";
 "ItemDetailFolderEmptyLabel" = "Walang laman ang folder.";
 "ItemDetailAppsFormat" = "Mga app:\n%@";
+"ItemNoAppsSelected" = "Walang napiling app";
+"CommonCancelButton" = "Kanselahin";
+"CommonOKButton" = "OK";
 "CommonSaveButton" = "I-save";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "Discovery order";
 "SortOrderAlphabeticalDetail" = "A → Z batay sa pangalan ng app";
 "SortOrderDiscoveryDetail" = "Habang natatagpuan ni Launchy";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "Mag-backup at Mag-restore";
 "BackupRestoreSectionBody" = "I-save ang grid ng icon, mga folder, custom na pangalan, nakatagong app, at mga setting sa isang file. I-restore para ilipat o bawiin ang layout.";
@@ -206,5 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "I-grupo ang mga folder pagkatapos ng apps sa Dock menu";
 "SettingsDockFolderGroupBody" = "Inilalagay muna ang mga solong app ayon sa alpabeto, mga folder sa ibaba kapag right-click sa Dock icon.";
-"SettingsDockFolderGroupToggle" = "Group folders after apps in Dock menu";
-"SettingsDockFolderGroupBody" = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";
+

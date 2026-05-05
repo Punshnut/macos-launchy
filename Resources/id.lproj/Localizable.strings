@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Selamat datang di Launchy";
 "ScaffoldReadyBody" = "Kerangka SwiftUI ini siap untuk ide-ide Anda.";
 "ScaffoldCounterButton" = "Tambahkan penghitung";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "Kembali";
 "IntroStartButton" = "Mulai gunakan Launchy";
 "IntroNextButton" = "Berikutnya";
+
+// Settings
+"SettingsWindowTitle" = "Pengaturan Launchy";
 "SettingsTabVisuals" = "Visual";
 "SettingsTabShortcuts" = "Pintasan";
 "SettingsTabAbout" = "Tentang";
+"SettingsTabHiddenApps" = "Aplikasi tersembunyi";
+"SettingsLauncherSectionTitle" = "Peluncur";
+"SettingsLauncherSectionBody" = "Luncurkan saat login, atur tata letak, dan styil latar belakang.";
+"SettingsLaunchAtLoginToggle" = "Luncurkan saat login";
 "LayoutFullscreen" = "Layar penuh";
 "LayoutFloatyPanel" = "Panel Floaty";
+"SettingsLayoutPickerLabel" = "Tata letak peluncur";
+"SettingsLayoutPickerHelpText" = "Tambahkan pintasan pengalih tata letak di bawah agar bisa berpindah mode dari mana pun dalam sekejap.";
+"SettingsDockIconToggle" = "Sembunyikan ikon Dock";
+"SettingsMenuBarIconToggle" = "Sembunyikan ikon menu bar";
+"SettingsIconsHiddenHelpText" = "Jika kedua ikon tersembunyi, Launchy tetap mengaktifkan pintasan pengalih agar Anda tetap bisa membukanya.";
+"SettingsBackgroundStyleLabel" = "Gaya latar";
+"SettingsSolidColorPickerLabel" = "Warna padat";
+"BackgroundStyleStandard" = "Standar";
+"BackgroundStyleLightBlur" = "Kabur ringan";
+"BackgroundStyleTransparent" = "Transparan";
+"BackgroundStyleSolidColor" = "Warna padat";
 "AccentColorSystem" = "Sistem";
 "AccentColorGraphite" = "Grafit";
 "AccentColorIndigo" = "Indigo";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "Oranye";
 "AccentColorPink" = "Merah Muda";
 "AccentColorPurple" = "Ungu";
-"BackgroundStyleStandard" = "Standar";
-"BackgroundStyleLightBlur" = "Kabur ringan";
-"BackgroundStyleTransparent" = "Transparan";
-"BackgroundStyleSolidColor" = "Warna padat";
-"FolderDefaultName" = "tanpa nama";
-"SettingsLauncherSectionTitle" = "Peluncur";
-"SettingsLauncherSectionBody" = "Luncurkan saat login, atur tata letak, dan styil latar belakang.";
-"SettingsKeyboardSectionTitle" = "Keyboard";
-"SettingsKeyboardSectionBody" = "Pintasan global dan alat reset cepat.";
-"SettingsTabHiddenApps" = "Aplikasi tersembunyi";
-"SettingsHiddenAppsSectionBody" = "Pilih aplikasi yang tetap tidak muncul di grid peluncur.";
-"SettingsUserAppsFolderToggle" = "Sertakan folder Applications pengguna";
-"SettingsUserAppsFolderBody" = "Launchy mencari aplikasi di %@ saat diaktifkan.";
-"SettingsLaunchAtLoginToggle" = "Luncurkan saat login";
-"SettingsLayoutPickerLabel" = "Tata letak peluncur";
-"HotCornerTopLeft" = "Kiri atas";
-"HotCornerTopRight" = "Kanan atas";
-"HotCornerBottomLeft" = "Kiri bawah";
-"HotCornerBottomRight" = "Kanan bawah";
-"SettingsLayoutPickerHelpText" = "Tambahkan pintasan pengalih tata letak di bawah agar bisa berpindah mode dari mana pun dalam sekejap.";
-"SettingsDockIconToggle" = "Sembunyikan ikon Dock";
-"SettingsMenuBarIconToggle" = "Sembunyikan ikon menu bar";
-"SettingsIconsHiddenHelpText" = "Jika kedua ikon tersembunyi, Launchy tetap mengaktifkan pintasan pengalih agar Anda tetap bisa membukanya.";
-"SettingsBackgroundStyleLabel" = "Gaya latar";
-"SettingsSolidColorPickerLabel" = "Warna padat";
 "SettingsIconsFloatToggle" = "Ikon naik saat ada ruang";
 "SettingsHotCornerToggle" = "Aktifkan toggle hot corner";
 "SettingsHotCornerBody" = "Gerakkan kursor ke sudut yang dipilih untuk menampilkan atau menyembunyikan Launchy.";
 "SettingsHotCornerPickerLabel" = "Sudut";
 "SettingsHotCornerPermissionNote" = "Saat pertama kali mengaktifkan, macOS mungkin meminta Pemantauan Input; jika tidak, tambahkan Launchy di Pengaturan Sistem → Privasi & Keamanan → Pemantauan Input.";
+"HotCornerTopLeft" = "Kiri atas";
+"HotCornerTopRight" = "Kanan atas";
+"HotCornerBottomLeft" = "Kiri bawah";
+"HotCornerBottomRight" = "Kanan bawah";
+"SettingsUserAppsFolderToggle" = "Sertakan folder Applications pengguna";
+"SettingsUserAppsFolderBody" = "Launchy mencari aplikasi di %@ saat diaktifkan.";
+"FolderDefaultName" = "tanpa nama";
+"SettingsKeyboardSectionTitle" = "Keyboard";
+"SettingsKeyboardSectionBody" = "Pintasan global dan alat reset cepat.";
 "SettingsToggleLaunchyLabel" = "Toggle Launchy";
 "SettingsToggleLaunchyBody" = "Bekerja di mana saja. Tekan Delete untuk mengosongkan atau Reset untuk mengembalikan Cmd+Shift+Space.";
 "SettingsShortcutClickToRecord" = "Klik untuk merekam";
 "SettingsShortcutResetButton" = "Reset";
 "SettingsShortcutClearButton" = "Bersihkan";
+"SettingsShortcutPlaceholder" = "Tekan pintasan...";
 "SettingsLayoutToggleShortcutLabel" = "Beralih layar penuh <-> floaty";
 "SettingsFloatyToggleLabel" = "Alihkan panel Floaty";
 "SettingsLayoutToggleShortcutBody" = "Pilih pintasan jika ingin mengganti tata letak dengan cepat. Kosongkan untuk menonaktifkan.";
 "SettingsAddShortcutButton" = "Tambah pintasan";
 "SettingsResetArrangementButton" = "Reset susunan ikon...";
 "SettingsResetArrangementBody" = "Menghapus urutan dan folder tersimpan lalu membangun ulang halaman. Nama kustom dan aplikasi tersembunyi tetap ada.";
+"ResetArrangementDialogTitle" = "Reset susunan ikon?";
+"ResetArrangementDialogBody" = "Ini menghapus urutan, folder, dan tata letak halaman tersimpan Anda. Ketik RESET untuk melanjutkan.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "Pilih aplikasi yang tetap tidak muncul di grid peluncur.";
 "SettingsHiddenAppsColumnApp" = "Aplikasi";
 "SettingsHiddenAppsColumnHidden" = "Tersembunyi";
 "SettingsShowHiddenAppsFirstToggle" = "Tampilkan aplikasi tersembunyi terlebih dahulu";
 "SettingsScanningAppsStatus" = "Memindai aplikasi...";
+"SettingsNoAppsAvailable" = "Tidak ada aplikasi tersedia";
 "SettingsAboutTitle" = "Tentang Launchy";
 "SettingsAboutBody" = "Detail versi, kredit, dan tautan berguna.";
+"SettingsAboutVersionFormat" = "Versi %@";
+"SettingsAboutBuiltByLabel" = "Dibuat oleh tim Launchy";
 "SettingsAboutWebsiteButton" = "Situs proyek";
 "SettingsAboutReportIssueButton" = "Laporkan masalah";
 "SettingsAboutSupportEmailButton" = "Email dukungan";
 "SettingsAboutRevisitIntroButton" = "Kunjungi ulang pengantar...";
 "SettingsAboutGitHubButton" = "Lihat di GitHub";
-"ResetArrangementDialogTitle" = "Reset susunan ikon?";
-"ResetArrangementDialogBody" = "Ini menghapus urutan, folder, dan tata letak halaman tersimpan Anda. Ketik RESET untuk melanjutkan.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "Batal";
-"SettingsShortcutPlaceholder" = "Tekan pintasan...";
-"SettingsAboutVersionFormat" = "Versi %@";
-"SettingsAboutBuiltByLabel" = "Dibuat oleh tim Launchy";
-"SettingsWindowTitle" = "Pengaturan Launchy";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "Pengaturan peluncur";
 "StatusBarInfoButton" = "Info Launchy";
 "StatusBarSettingsButton" = "Pengaturan";
 "MenuItemSettings" = "Pengaturan...";
+"MenuItemShowLauncher" = "Tampilkan peluncur";
 "MenuItemCheckUpdates" = "Periksa pembaruan...";
+"MenuItemQuitLaunchy" = "Keluar dari Launchy";
 "DebugMenuLabel" = "Debug";
 "DebugMenuReloadApps" = "Muat ulang aplikasi";
 "DebugMenuResetSettings" = "Reset pengaturan";
 "DebugMenuToggleStyles" = "Toggle gaya latar uji";
-"MenuItemShowLauncher" = "Tampilkan peluncur";
-"MenuItemQuitLaunchy" = "Keluar dari Launchy";
-"GridNoItemsFoundLabel" = "Tidak ada item ditemukan";
-"GridNoMatchingItemsLabel" = "Tidak ada item yang cocok";
-"GridEnterMultiSelectButton" = "Masuk mode multi-pilih";
-"GridExitMultiSelectButton" = "Keluar dari mode multi-pilih";
-"SettingsNoAppsAvailable" = "Tidak ada aplikasi tersedia";
-"ItemNoAppsSelected" = "Tidak ada aplikasi terpilih";
-"GridPageIndicatorFormat" = "Halaman %lld dari %lld";
-"GridSearchEmptyHint" = "Coba kata pencarian lain.";
-"GridNotIndexedLabel" = "Launchy belum mengindeks aplikasi apa pun.";
+
+// Grid
 "GridSearchPlaceholder" = "Cari aplikasi";
 "GridSearchLabel" = "Cari";
 "GridSearchClearButton" = "Bersihkan teks pencarian";
+"GridSearchEmptyHint" = "Coba kata pencarian lain.";
+"GridNotIndexedLabel" = "Launchy belum mengindeks aplikasi apa pun.";
+"GridNoItemsFoundLabel" = "Tidak ada item ditemukan";
+"GridNoMatchingItemsLabel" = "Tidak ada item yang cocok";
+"GridPageIndicatorFormat" = "Halaman %lld dari %lld";
+"GridEnterMultiSelectButton" = "Masuk mode multi-pilih";
+"GridExitMultiSelectButton" = "Keluar dari mode multi-pilih";
 "GridMoreActionsButton" = "Tindakan lainnya";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "Ganti nama aplikasi";
 "ItemRenameAppPromptBody" = "Masukkan nama khusus untuk aplikasi ini. Kosongkan untuk mereset.";
 "ItemActionShowInFinder" = "Tampilkan di Finder";
+"ItemActionHideApp" = "Sembunyikan aplikasi";
 "ItemActionMoveToFolder" = "Pindahkan ke folder";
+"ItemMoveToFolderNoneAvailable" = "Tidak ada folder tersedia";
 "ItemActionMoveToPage" = "Pindahkan ke halaman";
 "ItemActionCreateNewPage" = "Buat Halaman Baru";
 "ItemActionInsertAtBeginning" = "Sisipkan di awal";
 "ItemActionInsertBetweenPagesFormat" = "Sisipkan di antara halaman %lld dan %lld";
 "ItemActionInsertAtEnd" = "Sisipkan di akhir";
-"ItemActionHideApp" = "Sembunyikan aplikasi";
+"ItemPageLabel" = "Halaman %lld";
 "ItemActionCreateFolderWithApp" = "Buat folder dengan aplikasi";
+"ItemActionCreateFolder" = "Buat folder";
 "ItemActionFolderDetails" = "Detail folder";
 "ItemActionRenameFolder" = "Ganti nama folder";
 "ItemRenameFolderPromptBody" = "Masukkan nama untuk folder ini.";
-"ItemMoveToFolderNoneAvailable" = "Tidak ada folder tersedia";
-"ItemPageLabel" = "Halaman %lld";
-"ItemActionCreateFolder" = "Buat folder";
 "ItemDetailBundleIDFormat" = "ID bundel: %@";
 "ItemDetailLocationFormat" = "Lokasi: %@";
 "ItemDetailCustomNameFormat" = "Nama kustom: %@";
-"CommonOKButton" = "OK";
 "ItemDetailFolderEmptyLabel" = "Folder kosong.";
 "ItemDetailAppsFormat" = "Aplikasi:\n%@";
+"ItemNoAppsSelected" = "Tidak ada aplikasi terpilih";
+"CommonCancelButton" = "Batal";
+"CommonOKButton" = "OK";
 "CommonSaveButton" = "Simpan";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "Urutan penemuan";
 "SortOrderAlphabeticalDetail" = "A → Z menurut nama aplikasi";
 "SortOrderDiscoveryDetail" = "Saat Launchy menemukannya";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "Cadangkan & Pulihkan";
 "BackupRestoreSectionBody" = "Simpan kisi ikon, folder, nama khusus, app tersembunyi, dan pengaturan ke satu file. Pulihkan untuk memigrasi atau memulihkan tata letak.";
@@ -206,5 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Kelompokkan folder setelah aplikasi di menu Dock";
 "SettingsDockFolderGroupBody" = "Menempatkan aplikasi tunggal dulu secara alfabetis, folder di bawahnya saat klik kanan ikon Dock.";
-"SettingsDockFolderGroupToggle" = "Group folders after apps in Dock menu";
-"SettingsDockFolderGroupBody" = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";
+

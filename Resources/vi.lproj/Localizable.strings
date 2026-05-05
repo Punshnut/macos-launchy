@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Chào mừng đến với Launchy";
 "ScaffoldReadyBody" = "Khung SwiftUI này sẵn sàng cho những ý tưởng của bạn.";
 "ScaffoldCounterButton" = "Tăng bộ đếm";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "Quay lại";
 "IntroStartButton" = "Bắt đầu dùng Launchy";
 "IntroNextButton" = "Tiếp theo";
+
+// Settings
+"SettingsWindowTitle" = "Cài đặt Launchy";
 "SettingsTabVisuals" = "Hình ảnh";
 "SettingsTabShortcuts" = "Phím tắt";
 "SettingsTabAbout" = "Giới thiệu";
+"SettingsTabHiddenApps" = "Ứng dụng ẩn";
+"SettingsLauncherSectionTitle" = "Trình khởi chạy";
+"SettingsLauncherSectionBody" = "Khởi chạy khi đăng nhập, bố cục và kiểu nền.";
+"SettingsLaunchAtLoginToggle" = "Khởi chạy khi đăng nhập";
 "LayoutFullscreen" = "Toàn màn hình";
 "LayoutFloatyPanel" = "Bảng Floaty";
+"SettingsLayoutPickerLabel" = "Bố cục trình khởi chạy";
+"SettingsLayoutPickerHelpText" = "Thêm phím tắt chuyển đổi bố cục bên dưới để đổi chế độ ngay lập tức từ bất cứ đâu.";
+"SettingsDockIconToggle" = "Ẩn biểu tượng Dock";
+"SettingsMenuBarIconToggle" = "Ẩn biểu tượng thanh menu";
+"SettingsIconsHiddenHelpText" = "Nếu cả hai biểu tượng bị ẩn, Launchy vẫn giữ phím tắt chuyển đổi để bạn có thể mở lại.";
+"SettingsBackgroundStyleLabel" = "Kiểu nền";
+"SettingsSolidColorPickerLabel" = "Màu rắn";
+"BackgroundStyleStandard" = "Chuẩn";
+"BackgroundStyleLightBlur" = "Mờ nhẹ";
+"BackgroundStyleTransparent" = "Trong suốt";
+"BackgroundStyleSolidColor" = "Màu đồng nhất";
 "AccentColorSystem" = "Hệ thống";
 "AccentColorGraphite" = "Graphite";
 "AccentColorIndigo" = "Chàm";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "Cam";
 "AccentColorPink" = "Hồng";
 "AccentColorPurple" = "Tím";
-"BackgroundStyleStandard" = "Chuẩn";
-"BackgroundStyleLightBlur" = "Mờ nhẹ";
-"BackgroundStyleTransparent" = "Trong suốt";
-"BackgroundStyleSolidColor" = "Màu đồng nhất";
-"FolderDefaultName" = "chưa đặt tên";
-"SettingsLauncherSectionTitle" = "Trình khởi chạy";
-"SettingsLauncherSectionBody" = "Khởi chạy khi đăng nhập, bố cục và kiểu nền.";
-"SettingsKeyboardSectionTitle" = "Bàn phím";
-"SettingsKeyboardSectionBody" = "Phím tắt toàn cục và công cụ đặt lại nhanh.";
-"SettingsTabHiddenApps" = "Ứng dụng ẩn";
-"SettingsHiddenAppsSectionBody" = "Chọn ứng dụng không xuất hiện trong lưới khởi chạy.";
-"SettingsUserAppsFolderToggle" = "Bao gồm thư mục Applications của người dùng";
-"SettingsUserAppsFolderBody" = "Launchy tìm kiếm ứng dụng ở %@ khi được bật.";
-"SettingsLaunchAtLoginToggle" = "Khởi chạy khi đăng nhập";
-"SettingsLayoutPickerLabel" = "Bố cục trình khởi chạy";
-"HotCornerTopLeft" = "Trên cùng bên trái";
-"HotCornerTopRight" = "Trên cùng bên phải";
-"HotCornerBottomLeft" = "Dưới cùng bên trái";
-"HotCornerBottomRight" = "Dưới cùng bên phải";
-"SettingsLayoutPickerHelpText" = "Thêm phím tắt chuyển đổi bố cục bên dưới để đổi chế độ ngay lập tức từ bất cứ đâu.";
-"SettingsDockIconToggle" = "Ẩn biểu tượng Dock";
-"SettingsMenuBarIconToggle" = "Ẩn biểu tượng thanh menu";
-"SettingsIconsHiddenHelpText" = "Nếu cả hai biểu tượng bị ẩn, Launchy vẫn giữ phím tắt chuyển đổi để bạn có thể mở lại.";
-"SettingsBackgroundStyleLabel" = "Kiểu nền";
-"SettingsSolidColorPickerLabel" = "Màu rắn";
 "SettingsIconsFloatToggle" = "Biểu tượng di chuyển lên khi có khoảng trống";
 "SettingsHotCornerToggle" = "Bật chuyển đổi góc nóng";
 "SettingsHotCornerBody" = "Di chuyển con trỏ vào góc đã chọn để hiện hoặc ẩn Launchy.";
 "SettingsHotCornerPickerLabel" = "Góc";
 "SettingsHotCornerPermissionNote" = "Lần đầu bật, macOS có thể yêu cầu Giám sát nhập; nếu không, hãy thêm Launchy trong Cài đặt hệ thống → Quyền riêng tư & Bảo mật → Giám sát nhập.";
+"HotCornerTopLeft" = "Trên cùng bên trái";
+"HotCornerTopRight" = "Trên cùng bên phải";
+"HotCornerBottomLeft" = "Dưới cùng bên trái";
+"HotCornerBottomRight" = "Dưới cùng bên phải";
+"SettingsUserAppsFolderToggle" = "Bao gồm thư mục Applications của người dùng";
+"SettingsUserAppsFolderBody" = "Launchy tìm kiếm ứng dụng ở %@ khi được bật.";
+"FolderDefaultName" = "chưa đặt tên";
+"SettingsKeyboardSectionTitle" = "Bàn phím";
+"SettingsKeyboardSectionBody" = "Phím tắt toàn cục và công cụ đặt lại nhanh.";
 "SettingsToggleLaunchyLabel" = "Chuyển đổi Launchy";
 "SettingsToggleLaunchyBody" = "Hoạt động ở mọi nơi. Nhấn Delete để xóa hoặc Reset để khôi phục Cmd+Shift+Space.";
 "SettingsShortcutClickToRecord" = "Nhấn để ghi";
 "SettingsShortcutResetButton" = "Đặt lại";
 "SettingsShortcutClearButton" = "Xóa";
+"SettingsShortcutPlaceholder" = "Nhấn phím tắt...";
 "SettingsLayoutToggleShortcutLabel" = "Chuyển đổi toàn màn hình <-> floaty";
 "SettingsFloatyToggleLabel" = "Chuyển đổi bảng Floaty";
 "SettingsLayoutToggleShortcutBody" = "Chọn một phím tắt nếu bạn muốn chuyển bố cục nhanh. Để trống để vô hiệu hóa.";
 "SettingsAddShortcutButton" = "Thêm phím tắt";
 "SettingsResetArrangementButton" = "Đặt lại thứ tự biểu tượng...";
 "SettingsResetArrangementBody" = "Xóa thứ tự và thư mục đã lưu rồi xây dựng lại các trang từ đầu. Tên tùy chỉnh và ứng dụng ẩn vẫn giữ nguyên.";
+"ResetArrangementDialogTitle" = "Đặt lại thứ tự biểu tượng?";
+"ResetArrangementDialogBody" = "Điều này xóa thứ tự, thư mục và bố cục trang đã lưu của bạn. Gõ RESET để tiếp tục.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "Chọn ứng dụng không xuất hiện trong lưới khởi chạy.";
 "SettingsHiddenAppsColumnApp" = "Ứng dụng";
 "SettingsHiddenAppsColumnHidden" = "Đã ẩn";
 "SettingsShowHiddenAppsFirstToggle" = "Hiển thị ứng dụng ẩn lên trước";
 "SettingsScanningAppsStatus" = "Đang quét ứng dụng...";
+"SettingsNoAppsAvailable" = "Không có ứng dụng nào";
 "SettingsAboutTitle" = "Về Launchy";
 "SettingsAboutBody" = "Thông tin phiên bản, ghi nhận và liên kết hữu ích.";
+"SettingsAboutVersionFormat" = "Phiên bản %@";
+"SettingsAboutBuiltByLabel" = "Được tạo bởi đội ngũ Launchy";
 "SettingsAboutWebsiteButton" = "Trang dự án";
 "SettingsAboutReportIssueButton" = "Báo cáo lỗi";
 "SettingsAboutSupportEmailButton" = "Email hỗ trợ";
 "SettingsAboutRevisitIntroButton" = "Xem lại phần giới thiệu...";
 "SettingsAboutGitHubButton" = "Xem trên GitHub";
-"ResetArrangementDialogTitle" = "Đặt lại thứ tự biểu tượng?";
-"ResetArrangementDialogBody" = "Điều này xóa thứ tự, thư mục và bố cục trang đã lưu của bạn. Gõ RESET để tiếp tục.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "Hủy";
-"SettingsShortcutPlaceholder" = "Nhấn phím tắt...";
-"SettingsAboutVersionFormat" = "Phiên bản %@";
-"SettingsAboutBuiltByLabel" = "Được tạo bởi đội ngũ Launchy";
-"SettingsWindowTitle" = "Cài đặt Launchy";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "Cài đặt trình khởi chạy";
 "StatusBarInfoButton" = "Thông tin Launchy";
 "StatusBarSettingsButton" = "Cài đặt";
 "MenuItemSettings" = "Cài đặt...";
+"MenuItemShowLauncher" = "Hiển thị trình khởi chạy";
 "MenuItemCheckUpdates" = "Kiểm tra cập nhật...";
+"MenuItemQuitLaunchy" = "Thoát Launchy";
 "DebugMenuLabel" = "Gỡ lỗi";
 "DebugMenuReloadApps" = "Tải lại ứng dụng";
 "DebugMenuResetSettings" = "Đặt lại cài đặt";
 "DebugMenuToggleStyles" = "Chuyển đổi kiểu nền thử nghiệm";
-"MenuItemShowLauncher" = "Hiển thị trình khởi chạy";
-"MenuItemQuitLaunchy" = "Thoát Launchy";
-"GridNoItemsFoundLabel" = "Không tìm thấy mục nào";
-"GridNoMatchingItemsLabel" = "Không có mục phù hợp";
-"GridEnterMultiSelectButton" = "Vào chế độ chọn nhiều";
-"GridExitMultiSelectButton" = "Thoát chế độ chọn nhiều";
-"SettingsNoAppsAvailable" = "Không có ứng dụng nào";
-"ItemNoAppsSelected" = "Chưa chọn ứng dụng nào";
-"GridPageIndicatorFormat" = "Trang %lld trên %lld";
-"GridSearchEmptyHint" = "Thử từ tìm kiếm khác.";
-"GridNotIndexedLabel" = "Launchy chưa lập chỉ mục ứng dụng nào.";
+
+// Grid
 "GridSearchPlaceholder" = "Tìm ứng dụng";
 "GridSearchLabel" = "Tìm";
 "GridSearchClearButton" = "Xóa văn bản tìm kiếm";
+"GridSearchEmptyHint" = "Thử từ tìm kiếm khác.";
+"GridNotIndexedLabel" = "Launchy chưa lập chỉ mục ứng dụng nào.";
+"GridNoItemsFoundLabel" = "Không tìm thấy mục nào";
+"GridNoMatchingItemsLabel" = "Không có mục phù hợp";
+"GridPageIndicatorFormat" = "Trang %lld trên %lld";
+"GridEnterMultiSelectButton" = "Vào chế độ chọn nhiều";
+"GridExitMultiSelectButton" = "Thoát chế độ chọn nhiều";
 "GridMoreActionsButton" = "Thêm hành động";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "Đổi tên ứng dụng";
 "ItemRenameAppPromptBody" = "Nhập tên tùy chỉnh cho ứng dụng này. Để trống để đặt lại.";
 "ItemActionShowInFinder" = "Hiển thị trong Finder";
+"ItemActionHideApp" = "Ẩn ứng dụng";
 "ItemActionMoveToFolder" = "Chuyển vào thư mục";
+"ItemMoveToFolderNoneAvailable" = "Không có thư mục nào";
 "ItemActionMoveToPage" = "Chuyển sang trang";
 "ItemActionCreateNewPage" = "Tạo trang mới";
 "ItemActionInsertAtBeginning" = "Chèn ở đầu";
 "ItemActionInsertBetweenPagesFormat" = "Chèn giữa trang %lld và %lld";
 "ItemActionInsertAtEnd" = "Chèn vào cuối";
-"ItemActionHideApp" = "Ẩn ứng dụng";
+"ItemPageLabel" = "Trang %lld";
 "ItemActionCreateFolderWithApp" = "Tạo thư mục với ứng dụng";
+"ItemActionCreateFolder" = "Tạo thư mục";
 "ItemActionFolderDetails" = "Chi tiết thư mục";
 "ItemActionRenameFolder" = "Đổi tên thư mục";
 "ItemRenameFolderPromptBody" = "Nhập tên cho thư mục này.";
-"ItemMoveToFolderNoneAvailable" = "Không có thư mục nào";
-"ItemPageLabel" = "Trang %lld";
-"ItemActionCreateFolder" = "Tạo thư mục";
 "ItemDetailBundleIDFormat" = "ID gói: %@";
 "ItemDetailLocationFormat" = "Vị trí: %@";
 "ItemDetailCustomNameFormat" = "Tên tùy chỉnh: %@";
-"CommonOKButton" = "OK";
 "ItemDetailFolderEmptyLabel" = "Thư mục trống.";
 "ItemDetailAppsFormat" = "Ứng dụng:\n%@";
+"ItemNoAppsSelected" = "Chưa chọn ứng dụng nào";
+"CommonCancelButton" = "Hủy";
+"CommonOKButton" = "OK";
 "CommonSaveButton" = "Lưu";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "Thứ tự tìm thấy";
 "SortOrderAlphabeticalDetail" = "A → Z theo tên ứng dụng";
 "SortOrderDiscoveryDetail" = "Theo thứ tự Launchy tìm thấy";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "Sao lưu & Khôi phục";
 "BackupRestoreSectionBody" = "Lưu lưới biểu tượng, thư mục, tên tùy chỉnh, ứng dụng ẩn và cài đặt vào một tệp. Khôi phục để di chuyển hoặc phục hồi bố cục.";
@@ -206,3 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Nhóm thư mục sau ứng dụng trong menu Dock";
 "SettingsDockFolderGroupBody" = "Khi nhấp chuột phải vào biểu tượng Dock, ứng dụng đơn lẻ được xếp theo ABC trước, thư mục ở bên dưới cũng theo ABC.";
+

@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Üdvözlünk a Launchy-ban";
 "ScaffoldReadyBody" = "Ez a SwiftUI váz készen áll az ötleteidre.";
 "ScaffoldCounterButton" = "Számláló növelése";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "Vissza";
 "IntroStartButton" = "Launchy használatának megkezdése";
 "IntroNextButton" = "Következő";
+
+// Settings
+"SettingsWindowTitle" = "Launchy beállítások";
 "SettingsTabVisuals" = "Megjelenés";
 "SettingsTabShortcuts" = "Gyorsbillentyűk";
 "SettingsTabAbout" = "Névjegy";
+"SettingsTabHiddenApps" = "Rejtett alkalmazások";
+"SettingsLauncherSectionTitle" = "Launcher";
+"SettingsLauncherSectionBody" = "Indítás bejelentkezéskor, elrendezések és háttérstílusok.";
+"SettingsLaunchAtLoginToggle" = "Indítás bejelentkezéskor";
 "LayoutFullscreen" = "Teljes képernyő";
 "LayoutFloatyPanel" = "Floaty panel";
+"SettingsLayoutPickerLabel" = "Launcher elrendezés";
+"SettingsLayoutPickerHelpText" = "Adj hozzá alább egy elrendezés-váltó gyorsbillentyűt, hogy bárhonnan azonnal válthass módot.";
+"SettingsDockIconToggle" = "Dock ikon elrejtése";
+"SettingsMenuBarIconToggle" = "Menüsáv ikon elrejtése";
+"SettingsIconsHiddenHelpText" = "Ha mindkét ikon rejtve van, a Launchy bekapcsolva hagyja a váltó gyorsbillentyűt, hogy továbbra is meg tudd nyitni.";
+"SettingsBackgroundStyleLabel" = "Háttér stílus";
+"SettingsSolidColorPickerLabel" = "Egyszínű";
+"BackgroundStyleStandard" = "Standard";
+"BackgroundStyleLightBlur" = "Enyhe elmosás";
+"BackgroundStyleTransparent" = "Átlátszó";
+"BackgroundStyleSolidColor" = "Egyszínű";
 "AccentColorSystem" = "Rendszer";
 "AccentColorGraphite" = "Grafit";
 "AccentColorIndigo" = "Indigó";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "Narancs";
 "AccentColorPink" = "Rózsaszín";
 "AccentColorPurple" = "Lila";
-"BackgroundStyleStandard" = "Standard";
-"BackgroundStyleLightBlur" = "Enyhe elmosás";
-"BackgroundStyleTransparent" = "Átlátszó";
-"BackgroundStyleSolidColor" = "Egyszínű";
-"FolderDefaultName" = "névtelen";
-"SettingsLauncherSectionTitle" = "Launcher";
-"SettingsLauncherSectionBody" = "Indítás bejelentkezéskor, elrendezések és háttérstílusok.";
-"SettingsKeyboardSectionTitle" = "Billentyűzet";
-"SettingsKeyboardSectionBody" = "Globális gyorsbillentyűk és gyors reset eszközök.";
-"SettingsTabHiddenApps" = "Rejtett alkalmazások";
-"SettingsHiddenAppsSectionBody" = "Válaszd ki, mely alkalmazások maradjanak kívül a launcher rácson.";
-"SettingsUserAppsFolderToggle" = "Felhasználói Applications mappa hozzáadása";
-"SettingsUserAppsFolderBody" = "Ha engedélyezve van, a Launchy a %@ helyen keres appokat.";
-"SettingsLaunchAtLoginToggle" = "Indítás bejelentkezéskor";
-"SettingsLayoutPickerLabel" = "Launcher elrendezés";
-"HotCornerTopLeft" = "Bal felső";
-"HotCornerTopRight" = "Jobb felső";
-"HotCornerBottomLeft" = "Bal alsó";
-"HotCornerBottomRight" = "Jobb alsó";
-"SettingsLayoutPickerHelpText" = "Adj hozzá alább egy elrendezés-váltó gyorsbillentyűt, hogy bárhonnan azonnal válthass módot.";
-"SettingsDockIconToggle" = "Dock ikon elrejtése";
-"SettingsMenuBarIconToggle" = "Menüsáv ikon elrejtése";
-"SettingsIconsHiddenHelpText" = "Ha mindkét ikon rejtve van, a Launchy bekapcsolva hagyja a váltó gyorsbillentyűt, hogy továbbra is meg tudd nyitni.";
-"SettingsBackgroundStyleLabel" = "Háttér stílus";
-"SettingsSolidColorPickerLabel" = "Egyszínű";
 "SettingsIconsFloatToggle" = "Az ikonok feljebb kerülnek, ha van hely";
 "SettingsHotCornerToggle" = "Forró sarok váltó engedélyezése";
 "SettingsHotCornerBody" = "Vidd a kurzort a kiválasztott sarokba a Launchy megjelenítéséhez vagy elrejtéséhez.";
 "SettingsHotCornerPickerLabel" = "Sarok";
 "SettingsHotCornerPermissionNote" = "A macOS először engedélyezéskor kérhet Input Monitoring hozzáférést; ha nem, add hozzá a Launchy-t a System Settings → Privacy & Security → Input Monitoring alatt.";
+"HotCornerTopLeft" = "Bal felső";
+"HotCornerTopRight" = "Jobb felső";
+"HotCornerBottomLeft" = "Bal alsó";
+"HotCornerBottomRight" = "Jobb alsó";
+"SettingsUserAppsFolderToggle" = "Felhasználói Applications mappa hozzáadása";
+"SettingsUserAppsFolderBody" = "Ha engedélyezve van, a Launchy a %@ helyen keres appokat.";
+"FolderDefaultName" = "névtelen";
+"SettingsKeyboardSectionTitle" = "Billentyűzet";
+"SettingsKeyboardSectionBody" = "Globális gyorsbillentyűk és gyors reset eszközök.";
 "SettingsToggleLaunchyLabel" = "Launchy kapcsolása";
 "SettingsToggleLaunchyBody" = "Mindenhol működik. Nyomd meg a Delete-et a törléshez, vagy a Resetet a Cmd+Shift+Space visszaállításához.";
 "SettingsShortcutClickToRecord" = "Kattints a rögzítéshez";
 "SettingsShortcutResetButton" = "Reset";
 "SettingsShortcutClearButton" = "Törlés";
+"SettingsShortcutPlaceholder" = "Nyomj meg egy gyorsbillentyűt...";
 "SettingsLayoutToggleShortcutLabel" = "Teljes képernyő <-> floaty váltás";
 "SettingsFloatyToggleLabel" = "Floaty panel kapcsolása";
 "SettingsLayoutToggleShortcutBody" = "Válassz gyorsbillentyűt, ha gyorsan szeretnél elrendezést váltani. Hagyd üresen a kikapcsoláshoz.";
 "SettingsAddShortcutButton" = "Gyorsbillentyű hozzáadása";
 "SettingsResetArrangementButton" = "Ikonelrendezés reset...";
 "SettingsResetArrangementBody" = "Törli a mentett sorrendet és mappákat, majd újraépíti az oldalakat. Az egyedi nevek és rejtett appok megmaradnak.";
+"ResetArrangementDialogTitle" = "Ikonelrendezés reset?";
+"ResetArrangementDialogBody" = "Ez törli a mentett sorrendet, mappákat és oldalelrendezést. A folytatáshoz írd be: RESET.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "Válaszd ki, mely alkalmazások maradjanak kívül a launcher rácson.";
 "SettingsHiddenAppsColumnApp" = "Alkalmazás";
 "SettingsHiddenAppsColumnHidden" = "Rejtett";
 "SettingsShowHiddenAppsFirstToggle" = "Rejtett appok megjelenítése először";
 "SettingsScanningAppsStatus" = "Alkalmazások keresése...";
+"SettingsNoAppsAvailable" = "Nincsenek elérhető alkalmazások";
 "SettingsAboutTitle" = "Launchy névjegy";
 "SettingsAboutBody" = "Verzióadatok, köszönetnyilvánítások és hasznos linkek.";
+"SettingsAboutVersionFormat" = "Verzió %@";
+"SettingsAboutBuiltByLabel" = "A Launchy csapat készítette";
 "SettingsAboutWebsiteButton" = "Projekt weboldal";
 "SettingsAboutReportIssueButton" = "Hiba jelentése";
 "SettingsAboutSupportEmailButton" = "Támogatási e-mail";
 "SettingsAboutRevisitIntroButton" = "Bevezető újranézése...";
 "SettingsAboutGitHubButton" = "Megtekintés GitHubon";
-"ResetArrangementDialogTitle" = "Ikonelrendezés reset?";
-"ResetArrangementDialogBody" = "Ez törli a mentett sorrendet, mappákat és oldalelrendezést. A folytatáshoz írd be: RESET.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "Mégse";
-"SettingsShortcutPlaceholder" = "Nyomj meg egy gyorsbillentyűt...";
-"SettingsAboutVersionFormat" = "Verzió %@";
-"SettingsAboutBuiltByLabel" = "A Launchy csapat készítette";
-"SettingsWindowTitle" = "Launchy beállítások";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "Launcher beállítások";
 "StatusBarInfoButton" = "Launchy információ";
 "StatusBarSettingsButton" = "Beállítások";
 "MenuItemSettings" = "Beállítások...";
+"MenuItemShowLauncher" = "Launcher megjelenítése";
 "MenuItemCheckUpdates" = "Frissítések keresése...";
+"MenuItemQuitLaunchy" = "Launchy kilépés";
 "DebugMenuLabel" = "Hibakeresés";
 "DebugMenuReloadApps" = "Appok újratöltése";
 "DebugMenuResetSettings" = "Beállítások resetelése";
 "DebugMenuToggleStyles" = "Teszt háttérstílusok kapcsolása";
-"MenuItemShowLauncher" = "Launcher megjelenítése";
-"MenuItemQuitLaunchy" = "Launchy kilépés";
-"GridNoItemsFoundLabel" = "Nincs találat";
-"GridNoMatchingItemsLabel" = "Nincs egyező elem";
-"GridEnterMultiSelectButton" = "Belépés többes kijelölés módba";
-"GridExitMultiSelectButton" = "Kilépés többes kijelölés módból";
-"SettingsNoAppsAvailable" = "Nincsenek elérhető alkalmazások";
-"ItemNoAppsSelected" = "Nincs app kiválasztva";
-"GridPageIndicatorFormat" = "%lld / %lld oldal";
-"GridSearchEmptyHint" = "Próbálj másik keresőkifejezést.";
-"GridNotIndexedLabel" = "A Launchy még nem indexelt alkalmazásokat.";
+
+// Grid
 "GridSearchPlaceholder" = "Appok keresése";
 "GridSearchLabel" = "Keresés";
 "GridSearchClearButton" = "Keresési szöveg törlése";
+"GridSearchEmptyHint" = "Próbálj másik keresőkifejezést.";
+"GridNotIndexedLabel" = "A Launchy még nem indexelt alkalmazásokat.";
+"GridNoItemsFoundLabel" = "Nincs találat";
+"GridNoMatchingItemsLabel" = "Nincs egyező elem";
+"GridPageIndicatorFormat" = "%lld / %lld oldal";
+"GridEnterMultiSelectButton" = "Belépés többes kijelölés módba";
+"GridExitMultiSelectButton" = "Kilépés többes kijelölés módból";
 "GridMoreActionsButton" = "További műveletek";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "App átnevezése";
 "ItemRenameAppPromptBody" = "Adj meg egy egyedi nevet az appnak. Hagyd üresen a resethez.";
 "ItemActionShowInFinder" = "Megjelenítés Finderben";
+"ItemActionHideApp" = "App elrejtése";
 "ItemActionMoveToFolder" = "Áthelyezés mappába";
+"ItemMoveToFolderNoneAvailable" = "Nincsenek elérhető mappák";
 "ItemActionMoveToPage" = "Áthelyezés oldalra";
 "ItemActionCreateNewPage" = "Új oldal létrehozása";
 "ItemActionInsertAtBeginning" = "Beszúrás az elejére";
 "ItemActionInsertBetweenPagesFormat" = "Beszúrás a %lld és %lld oldal közé";
 "ItemActionInsertAtEnd" = "Beszúrás a végére";
-"ItemActionHideApp" = "App elrejtése";
+"ItemPageLabel" = "%lld oldal";
 "ItemActionCreateFolderWithApp" = "Mappa létrehozása appal";
+"ItemActionCreateFolder" = "Mappa létrehozása";
 "ItemActionFolderDetails" = "Mappa részletei";
 "ItemActionRenameFolder" = "Mappa átnevezése";
 "ItemRenameFolderPromptBody" = "Adj meg egy nevet a mappának.";
-"ItemMoveToFolderNoneAvailable" = "Nincsenek elérhető mappák";
-"ItemPageLabel" = "%lld oldal";
-"ItemActionCreateFolder" = "Mappa létrehozása";
 "ItemDetailBundleIDFormat" = "Csomag ID: %@";
 "ItemDetailLocationFormat" = "Hely: %@";
 "ItemDetailCustomNameFormat" = "Egyedi név: %@";
-"CommonOKButton" = "OK";
 "ItemDetailFolderEmptyLabel" = "A mappa üres.";
 "ItemDetailAppsFormat" = "Appok:\n%@";
+"ItemNoAppsSelected" = "Nincs app kiválasztva";
+"CommonCancelButton" = "Mégse";
+"CommonOKButton" = "OK";
 "CommonSaveButton" = "Mentés";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "Felfedezési sorrend";
 "SortOrderAlphabeticalDetail" = "A → Z az app neve szerint";
 "SortOrderDiscoveryDetail" = "Ahogy a Launchy megtalálja";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "Biztonsági mentés és visszaállítás";
 "BackupRestoreSectionBody" = "Mentsd az ikonrácsot, mappákat, egyedi neveket, rejtett appokat és beállításokat egy fájlba. Állítsd vissza az elrendezés átviteléhez vagy helyreállításához.";
@@ -206,5 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Csoportosítsa a mappákat az appok után a Dock menüben";
 "SettingsDockFolderGroupBody" = "Önálló appokat előbb, ábécé sorrendben tartja, a mappákat alattuk a Dock ikonra jobb kattintáskor.";
-"SettingsDockFolderGroupToggle" = "Group folders after apps in Dock menu";
-"SettingsDockFolderGroupBody" = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";
+

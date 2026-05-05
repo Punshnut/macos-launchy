@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Tervetuloa Launchyyn";
 "ScaffoldReadyBody" = "Tämä SwiftUI-runko on valmis ideoillesi.";
 "ScaffoldCounterButton" = "Kasvata laskuria";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "Takaisin";
 "IntroStartButton" = "Aloita Launchyn käyttö";
 "IntroNextButton" = "Seuraava";
+
+// Settings
+"SettingsWindowTitle" = "Launchy-asetukset";
 "SettingsTabVisuals" = "Ulkoasu";
 "SettingsTabShortcuts" = "Pikanäppäimet";
 "SettingsTabAbout" = "Tietoja";
+"SettingsTabHiddenApps" = "Piilotetut sovellukset";
+"SettingsLauncherSectionTitle" = "Käynnistin";
+"SettingsLauncherSectionBody" = "Käynnistys kirjautuessa, asettelut ja taustan tyyli.";
+"SettingsLaunchAtLoginToggle" = "Käynnistä kirjautumisen yhteydessä";
 "LayoutFullscreen" = "Koko näyttö";
 "LayoutFloatyPanel" = "Floaty-paneeli";
+"SettingsLayoutPickerLabel" = "Käynnistimen asettelu";
+"SettingsLayoutPickerHelpText" = "Lisää alle asettelun vaihtopikanäppäin, jotta voit vaihtaa tiloja heti mistä tahansa.";
+"SettingsDockIconToggle" = "Piilota Dock-kuvake";
+"SettingsMenuBarIconToggle" = "Piilota valikkorivin kuvake";
+"SettingsIconsHiddenHelpText" = "Jos molemmat kuvakkeet on piilotettu, Launchy pitää vaihtopikanäppäimen käytössä, jotta voit silti avata sen.";
+"SettingsBackgroundStyleLabel" = "Taustan tyyli";
+"SettingsSolidColorPickerLabel" = "Yksivärinen";
+"BackgroundStyleStandard" = "Vakio";
+"BackgroundStyleLightBlur" = "Kevyt sumennus";
+"BackgroundStyleTransparent" = "Läpinäkyvä";
+"BackgroundStyleSolidColor" = "Yksivärinen";
 "AccentColorSystem" = "Järjestelmä";
 "AccentColorGraphite" = "Grafiitti";
 "AccentColorIndigo" = "Indigo";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "Oranssi";
 "AccentColorPink" = "Pinkki";
 "AccentColorPurple" = "Purppura";
-"BackgroundStyleStandard" = "Vakio";
-"BackgroundStyleLightBlur" = "Kevyt sumennus";
-"BackgroundStyleTransparent" = "Läpinäkyvä";
-"BackgroundStyleSolidColor" = "Yksivärinen";
-"FolderDefaultName" = "nimetön";
-"SettingsLauncherSectionTitle" = "Käynnistin";
-"SettingsLauncherSectionBody" = "Käynnistys kirjautuessa, asettelut ja taustan tyyli.";
-"SettingsKeyboardSectionTitle" = "Näppäimistö";
-"SettingsKeyboardSectionBody" = "Globaalit pikanäppäimet ja nopeat reset-työkalut.";
-"SettingsTabHiddenApps" = "Piilotetut sovellukset";
-"SettingsHiddenAppsSectionBody" = "Valitse, mitkä sovellukset pysyvät käynnistimen ruudukon ulkopuolella.";
-"SettingsUserAppsFolderToggle" = "Sisällytä käyttäjän Applications-kansio";
-"SettingsUserAppsFolderBody" = "Kun käytössä, Launchy etsii sovelluksia sijainnista %@.";
-"SettingsLaunchAtLoginToggle" = "Käynnistä kirjautumisen yhteydessä";
-"SettingsLayoutPickerLabel" = "Käynnistimen asettelu";
-"HotCornerTopLeft" = "Ylävasen";
-"HotCornerTopRight" = "Yläoikea";
-"HotCornerBottomLeft" = "Alavasen";
-"HotCornerBottomRight" = "Alaoikea";
-"SettingsLayoutPickerHelpText" = "Lisää alle asettelun vaihtopikanäppäin, jotta voit vaihtaa tiloja heti mistä tahansa.";
-"SettingsDockIconToggle" = "Piilota Dock-kuvake";
-"SettingsMenuBarIconToggle" = "Piilota valikkorivin kuvake";
-"SettingsIconsHiddenHelpText" = "Jos molemmat kuvakkeet on piilotettu, Launchy pitää vaihtopikanäppäimen käytössä, jotta voit silti avata sen.";
-"SettingsBackgroundStyleLabel" = "Taustan tyyli";
-"SettingsSolidColorPickerLabel" = "Yksivärinen";
 "SettingsIconsFloatToggle" = "Kuvakkeet siirtyvät ylöspäin, kun tilaa on";
 "SettingsHotCornerToggle" = "Ota käyttöön kuuma kulma -vaihto";
 "SettingsHotCornerBody" = "Siirrä kohdistin valittuun kulmaan näyttääksesi tai piilottaaksesi Launchyn.";
 "SettingsHotCornerPickerLabel" = "Kulma";
 "SettingsHotCornerPermissionNote" = "macOS saattaa pyytää Input Monitoring -oikeutta ensimmäisellä kerralla; jos ei, lisää Launchy kohtaan System Settings → Privacy & Security → Input Monitoring.";
+"HotCornerTopLeft" = "Ylävasen";
+"HotCornerTopRight" = "Yläoikea";
+"HotCornerBottomLeft" = "Alavasen";
+"HotCornerBottomRight" = "Alaoikea";
+"SettingsUserAppsFolderToggle" = "Sisällytä käyttäjän Applications-kansio";
+"SettingsUserAppsFolderBody" = "Kun käytössä, Launchy etsii sovelluksia sijainnista %@.";
+"FolderDefaultName" = "nimetön";
+"SettingsKeyboardSectionTitle" = "Näppäimistö";
+"SettingsKeyboardSectionBody" = "Globaalit pikanäppäimet ja nopeat reset-työkalut.";
 "SettingsToggleLaunchyLabel" = "Näytä/piilota Launchy";
 "SettingsToggleLaunchyBody" = "Toimii kaikkialla. Paina Delete tyhjentääksesi tai Reset palauttaaksesi Cmd+Shift+Space.";
 "SettingsShortcutClickToRecord" = "Klikkaa tallentaaksesi";
 "SettingsShortcutResetButton" = "Reset";
 "SettingsShortcutClearButton" = "Tyhjennä";
+"SettingsShortcutPlaceholder" = "Paina pikanäppäintä...";
 "SettingsLayoutToggleShortcutLabel" = "Vaihda koko näyttö <-> floaty";
 "SettingsFloatyToggleLabel" = "Vaihda Floaty-paneeli";
 "SettingsLayoutToggleShortcutBody" = "Valitse pikanäppäin, jos haluat vaihtaa asettelua nopeasti. Jätä tyhjäksi poistaaksesi käytöstä.";
 "SettingsAddShortcutButton" = "Lisää pikanäppäin";
 "SettingsResetArrangementButton" = "Nollaa kuvakkeiden järjestys...";
 "SettingsResetArrangementBody" = "Poistaa tallennetun järjestyksen ja kansiot ja rakentaa sivut uudelleen. Mukautetut nimet ja piilotetut sovellukset säilyvät.";
+"ResetArrangementDialogTitle" = "Nollataanko kuvakkeiden järjestys?";
+"ResetArrangementDialogBody" = "Tämä poistaa tallennetun järjestyksen, kansiot ja sivun asettelun. Kirjoita RESET jatkaaksesi.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "Valitse, mitkä sovellukset pysyvät käynnistimen ruudukon ulkopuolella.";
 "SettingsHiddenAppsColumnApp" = "Sovellus";
 "SettingsHiddenAppsColumnHidden" = "Piilotettu";
 "SettingsShowHiddenAppsFirstToggle" = "Näytä piilotetut sovellukset ensin";
 "SettingsScanningAppsStatus" = "Etsitään sovelluksia...";
+"SettingsNoAppsAvailable" = "Ei sovelluksia saatavilla";
 "SettingsAboutTitle" = "Tietoja Launchystä";
 "SettingsAboutBody" = "Versiotiedot, kiitokset ja hyödylliset linkit.";
+"SettingsAboutVersionFormat" = "Versio %@";
+"SettingsAboutBuiltByLabel" = "Launchy-tiimin tekemä";
 "SettingsAboutWebsiteButton" = "Projektin verkkosivusto";
 "SettingsAboutReportIssueButton" = "Ilmoita ongelmasta";
 "SettingsAboutSupportEmailButton" = "Tukisähköposti";
 "SettingsAboutRevisitIntroButton" = "Palaa esittelyyn...";
 "SettingsAboutGitHubButton" = "Näytä GitHubissa";
-"ResetArrangementDialogTitle" = "Nollataanko kuvakkeiden järjestys?";
-"ResetArrangementDialogBody" = "Tämä poistaa tallennetun järjestyksen, kansiot ja sivun asettelun. Kirjoita RESET jatkaaksesi.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "Peruuta";
-"SettingsShortcutPlaceholder" = "Paina pikanäppäintä...";
-"SettingsAboutVersionFormat" = "Versio %@";
-"SettingsAboutBuiltByLabel" = "Launchy-tiimin tekemä";
-"SettingsWindowTitle" = "Launchy-asetukset";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "Käynnistimen asetukset";
 "StatusBarInfoButton" = "Launchy-tiedot";
 "StatusBarSettingsButton" = "Asetukset";
 "MenuItemSettings" = "Asetukset...";
+"MenuItemShowLauncher" = "Näytä käynnistin";
 "MenuItemCheckUpdates" = "Tarkista päivitykset...";
+"MenuItemQuitLaunchy" = "Lopeta Launchy";
 "DebugMenuLabel" = "Vianetsintä";
 "DebugMenuReloadApps" = "Lataa sovellukset uudelleen";
 "DebugMenuResetSettings" = "Nollaa asetukset";
 "DebugMenuToggleStyles" = "Vaihda testitaustan tyylejä";
-"MenuItemShowLauncher" = "Näytä käynnistin";
-"MenuItemQuitLaunchy" = "Lopeta Launchy";
-"GridNoItemsFoundLabel" = "Kohteita ei löytynyt";
-"GridNoMatchingItemsLabel" = "Ei vastaavia kohteita";
-"GridEnterMultiSelectButton" = "Siirry monivalintatilaan";
-"GridExitMultiSelectButton" = "Poistu monivalintatilasta";
-"SettingsNoAppsAvailable" = "Ei sovelluksia saatavilla";
-"ItemNoAppsSelected" = "Ei sovelluksia valittuna";
-"GridPageIndicatorFormat" = "Sivu %lld / %lld";
-"GridSearchEmptyHint" = "Kokeile toista hakusanaa.";
-"GridNotIndexedLabel" = "Launchy ei ole vielä indeksoinut sovelluksia.";
+
+// Grid
 "GridSearchPlaceholder" = "Hae sovelluksia";
 "GridSearchLabel" = "Hae";
 "GridSearchClearButton" = "Tyhjennä hakuteksti";
+"GridSearchEmptyHint" = "Kokeile toista hakusanaa.";
+"GridNotIndexedLabel" = "Launchy ei ole vielä indeksoinut sovelluksia.";
+"GridNoItemsFoundLabel" = "Kohteita ei löytynyt";
+"GridNoMatchingItemsLabel" = "Ei vastaavia kohteita";
+"GridPageIndicatorFormat" = "Sivu %lld / %lld";
+"GridEnterMultiSelectButton" = "Siirry monivalintatilaan";
+"GridExitMultiSelectButton" = "Poistu monivalintatilasta";
 "GridMoreActionsButton" = "Lisää toimintoja";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "Nimeä sovellus uudelleen";
 "ItemRenameAppPromptBody" = "Anna sovellukselle mukautettu nimi. Jätä tyhjäksi nollataksesi.";
 "ItemActionShowInFinder" = "Näytä Finderissa";
+"ItemActionHideApp" = "Piilota sovellus";
 "ItemActionMoveToFolder" = "Siirrä kansioon";
+"ItemMoveToFolderNoneAvailable" = "Ei kansioita saatavilla";
 "ItemActionMoveToPage" = "Siirrä sivulle";
 "ItemActionCreateNewPage" = "Luo uusi sivu";
 "ItemActionInsertAtBeginning" = "Lisää alkuun";
 "ItemActionInsertBetweenPagesFormat" = "Lisää sivujen %lld ja %lld väliin";
 "ItemActionInsertAtEnd" = "Lisää loppuun";
-"ItemActionHideApp" = "Piilota sovellus";
+"ItemPageLabel" = "Sivu %lld";
 "ItemActionCreateFolderWithApp" = "Luo kansio sovelluksella";
+"ItemActionCreateFolder" = "Luo kansio";
 "ItemActionFolderDetails" = "Kansion tiedot";
 "ItemActionRenameFolder" = "Nimeä kansio uudelleen";
 "ItemRenameFolderPromptBody" = "Anna nimi tälle kansiolle.";
-"ItemMoveToFolderNoneAvailable" = "Ei kansioita saatavilla";
-"ItemPageLabel" = "Sivu %lld";
-"ItemActionCreateFolder" = "Luo kansio";
 "ItemDetailBundleIDFormat" = "Paketti-ID: %@";
 "ItemDetailLocationFormat" = "Sijainti: %@";
 "ItemDetailCustomNameFormat" = "Mukautettu nimi: %@";
-"CommonOKButton" = "OK";
 "ItemDetailFolderEmptyLabel" = "Kansio on tyhjä.";
 "ItemDetailAppsFormat" = "Sovellukset:\n%@";
+"ItemNoAppsSelected" = "Ei sovelluksia valittuna";
+"CommonCancelButton" = "Peruuta";
+"CommonOKButton" = "OK";
 "CommonSaveButton" = "Tallenna";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "Löytöjärjestys";
 "SortOrderAlphabeticalDetail" = "A → Z sovelluksen nimen mukaan";
 "SortOrderDiscoveryDetail" = "Sitä mukaa kun Launchy löytää ne";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "Varmuuskopioi ja palauta";
 "BackupRestoreSectionBody" = "Tallenna kuvakeristikko, kansiot, mukautetut nimet, piilotetut appit ja asetukset yhteen tiedostoon. Palauta siirtääksesi tai palauttaaksesi asettelun.";
@@ -206,5 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Ryhmitä kansiot sovellusten jälkeen Dock-valikossa";
 "SettingsDockFolderGroupBody" = "Pitää yksittäiset sovellukset ensin aakkosissa, kansiot niiden alla Dock-kuvaketta oikealla napsauttaessa.";
-"SettingsDockFolderGroupToggle" = "Group folders after apps in Dock menu";
-"SettingsDockFolderGroupBody" = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";
+

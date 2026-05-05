@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Karibu Launchy";
 "ScaffoldReadyBody" = "Mfumo huu wa SwiftUI umeandaliwa kwa mawazo yako.";
 "ScaffoldCounterButton" = "Ongeza kielekezi";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "Nyuma";
 "IntroStartButton" = "Anza kutumia Launchy";
 "IntroNextButton" = "Inayofuata";
+
+// Settings
+"SettingsWindowTitle" = "Mipangilio ya Launchy";
 "SettingsTabVisuals" = "Mionekano";
 "SettingsTabShortcuts" = "Njia za mkato";
 "SettingsTabAbout" = "Kuhusu";
+"SettingsTabHiddenApps" = "Programu zilizofichwa";
+"SettingsLauncherSectionTitle" = "Chombo";
+"SettingsLauncherSectionBody" = "Anzisha unapojisajili, muundo na mtindo wa mandhari.";
+"SettingsLaunchAtLoginToggle" = "Anzisha baada ya kuingia";
 "LayoutFullscreen" = "Skrini nzima";
 "LayoutFloatyPanel" = "Paneli ya Floaty";
+"SettingsLayoutPickerLabel" = "Mpangilio wa chombo";
+"SettingsLayoutPickerHelpText" = "Ongeza njia ya mkato ya kubadilisha muundo hapa chini kubadilisha hali mara moja kutoka mahali popote.";
+"SettingsDockIconToggle" = "Ficha ikoni ya Dock";
+"SettingsMenuBarIconToggle" = "Ficha ikoni ya upau wa menyu";
+"SettingsIconsHiddenHelpText" = "Iwapo ikoni zote mbili zimefichwa, Launchy inaweka njia ya mkato ikifanyi kazi ili uendelee kuiwasha.";
+"SettingsBackgroundStyleLabel" = "Mtindo wa mandhari";
+"SettingsSolidColorPickerLabel" = "Rangi imara";
+"BackgroundStyleStandard" = "Kawaida";
+"BackgroundStyleLightBlur" = "Blur nyepesi";
+"BackgroundStyleTransparent" = "Uwazi";
+"BackgroundStyleSolidColor" = "Rangi imara";
 "AccentColorSystem" = "Mfumo";
 "AccentColorGraphite" = "Graphite";
 "AccentColorIndigo" = "Indigo";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "Machungwa";
 "AccentColorPink" = "Waridi";
 "AccentColorPurple" = "Zambarau";
-"BackgroundStyleStandard" = "Kawaida";
-"BackgroundStyleLightBlur" = "Blur nyepesi";
-"BackgroundStyleTransparent" = "Uwazi";
-"BackgroundStyleSolidColor" = "Rangi imara";
-"FolderDefaultName" = "isiyokuwa na jina";
-"SettingsLauncherSectionTitle" = "Chombo";
-"SettingsLauncherSectionBody" = "Anzisha unapojisajili, muundo na mtindo wa mandhari.";
-"SettingsKeyboardSectionTitle" = "Kibodi";
-"SettingsKeyboardSectionBody" = "Njia za mkato za kimataifa na zana za kurejesha haraka.";
-"SettingsTabHiddenApps" = "Programu zilizofichwa";
-"SettingsHiddenAppsSectionBody" = "Chagua programu zitakazobaki nje ya mtandao wa chombo.";
-"SettingsUserAppsFolderToggle" = "Jumuisha folda ya Programu za mtumiaji";
-"SettingsUserAppsFolderBody" = "Launchy inatafuta programu ndani ya %@ wakati imewezeshwa.";
-"SettingsLaunchAtLoginToggle" = "Anzisha baada ya kuingia";
-"SettingsLayoutPickerLabel" = "Mpangilio wa chombo";
-"HotCornerTopLeft" = "Juu kushoto";
-"HotCornerTopRight" = "Juu kulia";
-"HotCornerBottomLeft" = "Chini kushoto";
-"HotCornerBottomRight" = "Chini kulia";
-"SettingsLayoutPickerHelpText" = "Ongeza njia ya mkato ya kubadilisha muundo hapa chini kubadilisha hali mara moja kutoka mahali popote.";
-"SettingsDockIconToggle" = "Ficha ikoni ya Dock";
-"SettingsMenuBarIconToggle" = "Ficha ikoni ya upau wa menyu";
-"SettingsIconsHiddenHelpText" = "Iwapo ikoni zote mbili zimefichwa, Launchy inaweka njia ya mkato ikifanyi kazi ili uendelee kuiwasha.";
-"SettingsBackgroundStyleLabel" = "Mtindo wa mandhari";
-"SettingsSolidColorPickerLabel" = "Rangi imara";
 "SettingsIconsFloatToggle" = "Alama zinapanda juu wakati nafasi ipo";
 "SettingsHotCornerToggle" = "Wezesha kubadilisha kona moto";
 "SettingsHotCornerBody" = "Sogeza kishale kwenye kona uliochagua ili kuonyesha au kuficha Launchy.";
 "SettingsHotCornerPickerLabel" = "Kona";
 "SettingsHotCornerPermissionNote" = "Mara ya kwanza kuwezesha, macOS inaweza kuomba Ufuatiliaji wa Uingizaji; ikiwa haijaomba, ongeza Launchy kwenye Mipangilio ya Mfumo → Faragha na Usalama → Ufuatiliaji wa Uingizaji.";
+"HotCornerTopLeft" = "Juu kushoto";
+"HotCornerTopRight" = "Juu kulia";
+"HotCornerBottomLeft" = "Chini kushoto";
+"HotCornerBottomRight" = "Chini kulia";
+"SettingsUserAppsFolderToggle" = "Jumuisha folda ya Programu za mtumiaji";
+"SettingsUserAppsFolderBody" = "Launchy inatafuta programu ndani ya %@ wakati imewezeshwa.";
+"FolderDefaultName" = "isiyokuwa na jina";
+"SettingsKeyboardSectionTitle" = "Kibodi";
+"SettingsKeyboardSectionBody" = "Njia za mkato za kimataifa na zana za kurejesha haraka.";
 "SettingsToggleLaunchyLabel" = "Badilisha Launchy";
 "SettingsToggleLaunchyBody" = "Inafanya kazi kila mahali. Bonyeza Delete kufuta au Reset kurejesha Cmd+Shift+Space.";
 "SettingsShortcutClickToRecord" = "Bonyeza kurekodi";
 "SettingsShortcutResetButton" = "Rejesha";
 "SettingsShortcutClearButton" = "Futa";
+"SettingsShortcutPlaceholder" = "Bonyeza njia ya mkato...";
 "SettingsLayoutToggleShortcutLabel" = "Badilisha skrini nzima <-> Floaty";
 "SettingsFloatyToggleLabel" = "Badilisha paneli ya Floaty";
 "SettingsLayoutToggleShortcutBody" = "Chagua njia ya mkato ikiwa unataka kubadilisha muundo kwa haraka. Acha tupu ili kuzima.";
 "SettingsAddShortcutButton" = "Ongeza njia ya mkato";
 "SettingsResetArrangementButton" = "Rejesha mpangilio wa ikoni...";
 "SettingsResetArrangementBody" = "Huondoa mpangilio na folda ulizohifadhi na kujenga upya kurasa kutoka mwanzo. Majina maalum na app zilizofichwa hubaki.";
+"ResetArrangementDialogTitle" = "Rejesha mpangilio wa ikoni?";
+"ResetArrangementDialogBody" = "Hii inafuta upangaji uliohifadhiwa, folda, na mpangilio wa kurasa. Andika RESET kuendelea.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "Chagua programu zitakazobaki nje ya mtandao wa chombo.";
 "SettingsHiddenAppsColumnApp" = "Programu";
 "SettingsHiddenAppsColumnHidden" = "Imefichwa";
 "SettingsShowHiddenAppsFirstToggle" = "Onyesha programu zilizofichwa kwanza";
 "SettingsScanningAppsStatus" = "Inatafsiri programu...";
+"SettingsNoAppsAvailable" = "Hakuna programu zinapatikana";
 "SettingsAboutTitle" = "Kuhusu Launchy";
 "SettingsAboutBody" = "Maelezo ya toleo, mikopo, na viungo muhimu.";
+"SettingsAboutVersionFormat" = "Toleo %@";
+"SettingsAboutBuiltByLabel" = "Imejengwa na timu ya Launchy";
 "SettingsAboutWebsiteButton" = "Tovuti ya mradi";
 "SettingsAboutReportIssueButton" = "Ripoti tatizo";
 "SettingsAboutSupportEmailButton" = "Barua ya msaada";
 "SettingsAboutRevisitIntroButton" = "Rudi kwenye utangulizi...";
 "SettingsAboutGitHubButton" = "Tazama kwenye GitHub";
-"ResetArrangementDialogTitle" = "Rejesha mpangilio wa ikoni?";
-"ResetArrangementDialogBody" = "Hii inafuta upangaji uliohifadhiwa, folda, na mpangilio wa kurasa. Andika RESET kuendelea.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "Ghairi";
-"SettingsShortcutPlaceholder" = "Bonyeza njia ya mkato...";
-"SettingsAboutVersionFormat" = "Toleo %@";
-"SettingsAboutBuiltByLabel" = "Imejengwa na timu ya Launchy";
-"SettingsWindowTitle" = "Mipangilio ya Launchy";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "Mipangilio ya Launcher";
 "StatusBarInfoButton" = "Maelezo ya Launchy";
 "StatusBarSettingsButton" = "Mipangilio";
 "MenuItemSettings" = "Mipangilio...";
+"MenuItemShowLauncher" = "Onyesha chombo";
 "MenuItemCheckUpdates" = "Angalia masasisho...";
+"MenuItemQuitLaunchy" = "Acha Launchy";
 "DebugMenuLabel" = "Kani";
 "DebugMenuReloadApps" = "Pakia tena programu";
 "DebugMenuResetSettings" = "Rejesha mipangilio";
 "DebugMenuToggleStyles" = "Badilisha mitindo ya mandhari ya majaribio";
-"MenuItemShowLauncher" = "Onyesha chombo";
-"MenuItemQuitLaunchy" = "Acha Launchy";
-"GridNoItemsFoundLabel" = "Hakuna vitu vilivyopatikana";
-"GridNoMatchingItemsLabel" = "Hakuna vitu vinavyolingana";
-"GridEnterMultiSelectButton" = "Ingiza hali ya kuchagua nyingi";
-"GridExitMultiSelectButton" = "Toka kwenye hali ya kuchagua nyingi";
-"SettingsNoAppsAvailable" = "Hakuna programu zinapatikana";
-"ItemNoAppsSelected" = "Hakuna programu zilizochaguliwa";
-"GridPageIndicatorFormat" = "Ukurasa %lld wa %lld";
-"GridSearchEmptyHint" = "Jaribu neno tofauti la utafutaji.";
-"GridNotIndexedLabel" = "Launchy bado haijafanyia faharisi programu yoyote.";
+
+// Grid
 "GridSearchPlaceholder" = "Tafuta programu";
 "GridSearchLabel" = "Tafuta";
 "GridSearchClearButton" = "Futa maandishi ya utafutaji";
+"GridSearchEmptyHint" = "Jaribu neno tofauti la utafutaji.";
+"GridNotIndexedLabel" = "Launchy bado haijafanyia faharisi programu yoyote.";
+"GridNoItemsFoundLabel" = "Hakuna vitu vilivyopatikana";
+"GridNoMatchingItemsLabel" = "Hakuna vitu vinavyolingana";
+"GridPageIndicatorFormat" = "Ukurasa %lld wa %lld";
+"GridEnterMultiSelectButton" = "Ingiza hali ya kuchagua nyingi";
+"GridExitMultiSelectButton" = "Toka kwenye hali ya kuchagua nyingi";
 "GridMoreActionsButton" = "Vitendo zaidi";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "Badilisha jina la programu";
 "ItemRenameAppPromptBody" = "Ingiza jina maalum la programu hii. Acha tupu kurejesha.";
 "ItemActionShowInFinder" = "Onyesha katika Finder";
+"ItemActionHideApp" = "Ficha programu";
 "ItemActionMoveToFolder" = "Hamisha kwenda folda";
+"ItemMoveToFolderNoneAvailable" = "Hakuna folda zinazopatikana";
 "ItemActionMoveToPage" = "Hamisha kwenda ukurasa";
 "ItemActionCreateNewPage" = "Unda Ukurasa Mpya";
 "ItemActionInsertAtBeginning" = "Weka mwanzoni";
 "ItemActionInsertBetweenPagesFormat" = "Ingiza kati ya Ukurasa %lld na %lld";
 "ItemActionInsertAtEnd" = "Ingiza mwisho";
-"ItemActionHideApp" = "Ficha programu";
+"ItemPageLabel" = "Ukurasa %lld";
 "ItemActionCreateFolderWithApp" = "Tengeneza folda na programu";
+"ItemActionCreateFolder" = "Tengeneza folda";
 "ItemActionFolderDetails" = "Maelezo ya folda";
 "ItemActionRenameFolder" = "Badilisha jina la folda";
 "ItemRenameFolderPromptBody" = "Ingiza jina la folda hii.";
-"ItemMoveToFolderNoneAvailable" = "Hakuna folda zinazopatikana";
-"ItemPageLabel" = "Ukurasa %lld";
-"ItemActionCreateFolder" = "Tengeneza folda";
 "ItemDetailBundleIDFormat" = "Kitambulisho cha kifurushi: %@";
 "ItemDetailLocationFormat" = "Mahali: %@";
 "ItemDetailCustomNameFormat" = "Jina maalum: %@";
-"CommonOKButton" = "Sawa";
 "ItemDetailFolderEmptyLabel" = "Folda ni tupu.";
 "ItemDetailAppsFormat" = "Programu:\n%@";
+"ItemNoAppsSelected" = "Hakuna programu zilizochaguliwa";
+"CommonCancelButton" = "Ghairi";
+"CommonOKButton" = "Sawa";
 "CommonSaveButton" = "Hifadhi";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "Mpangilio wa kugundua";
 "SortOrderAlphabeticalDetail" = "A → Z kwa jina la app";
 "SortOrderDiscoveryDetail" = "Launchy anavyowapata";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "Hifadhi nakala na rejesha";
 "BackupRestoreSectionBody" = "Hifadhi gridi ya ikoni, folda, majina maalum, programu zilizofichwa na mipangilio katika faili moja. Rejesha ili kuhamisha au kurejesha mpangilio.";
@@ -206,3 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Panga folda baada ya programu kwenye menyu ya Dock";
 "SettingsDockFolderGroupBody" = "Huonyesha programu pekee kwanza kwa mpangilio wa alfabeti, folda zikiwa chini unapo-bofya kulia ikoni ya Dock.";
+

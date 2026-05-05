@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Launchy へようこそ";
 "ScaffoldReadyBody" = "この SwiftUI スキャフォールドはあなたのアイデアの準備ができています。";
 "ScaffoldCounterButton" = "カウンターを増やす";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "戻る";
 "IntroStartButton" = "Launchy を使い始める";
 "IntroNextButton" = "次へ";
+
+// Settings
+"SettingsWindowTitle" = "Launchy 設定";
 "SettingsTabVisuals" = "ビジュアル";
 "SettingsTabShortcuts" = "ショートカット";
 "SettingsTabAbout" = "概要";
+"SettingsTabHiddenApps" = "非表示のアプリ";
+"SettingsLauncherSectionTitle" = "ランチャー";
+"SettingsLauncherSectionBody" = "ログイン時起動、レイアウト、背景スタイル。";
+"SettingsLaunchAtLoginToggle" = "ログイン時起動";
 "LayoutFullscreen" = "全画面";
 "LayoutFloatyPanel" = "Floaty パネル";
+"SettingsLayoutPickerLabel" = "ランチャーのレイアウト";
+"SettingsLayoutPickerHelpText" = "下にレイアウト切り替えのショートカットを追加すれば、どこからでも即座にモードを切り替えられます。";
+"SettingsDockIconToggle" = "Dock アイコンを隠す";
+"SettingsMenuBarIconToggle" = "メニューバーのアイコンを隠す";
+"SettingsIconsHiddenHelpText" = "両方のアイコンを隠しても、Launchy は切り替えショートカットを有効にしておき、引き続き開けるようにします。";
+"SettingsBackgroundStyleLabel" = "背景スタイル";
+"SettingsSolidColorPickerLabel" = "単色";
+"BackgroundStyleStandard" = "スタンダード";
+"BackgroundStyleLightBlur" = "ライトブラー";
+"BackgroundStyleTransparent" = "透明";
+"BackgroundStyleSolidColor" = "単色";
 "AccentColorSystem" = "システム";
 "AccentColorGraphite" = "グラファイト";
 "AccentColorIndigo" = "インディゴ";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "オレンジ";
 "AccentColorPink" = "ピンク";
 "AccentColorPurple" = "パープル";
-"BackgroundStyleStandard" = "スタンダード";
-"BackgroundStyleLightBlur" = "ライトブラー";
-"BackgroundStyleTransparent" = "透明";
-"BackgroundStyleSolidColor" = "単色";
-"FolderDefaultName" = "名前なし";
-"SettingsLauncherSectionTitle" = "ランチャー";
-"SettingsLauncherSectionBody" = "ログイン時起動、レイアウト、背景スタイル。";
-"SettingsKeyboardSectionTitle" = "キーボード";
-"SettingsKeyboardSectionBody" = "グローバルショートカットとクイックリセットツール。";
-"SettingsTabHiddenApps" = "非表示のアプリ";
-"SettingsHiddenAppsSectionBody" = "ランチャーのグリッドから除外するアプリを選んでください。";
-"SettingsUserAppsFolderToggle" = "ユーザーのアプリケーションフォルダを含める";
-"SettingsUserAppsFolderBody" = "Launchy は有効にすると %@ でアプリを検索します。";
-"SettingsLaunchAtLoginToggle" = "ログイン時起動";
-"SettingsLayoutPickerLabel" = "ランチャーのレイアウト";
-"HotCornerTopLeft" = "左上";
-"HotCornerTopRight" = "右上";
-"HotCornerBottomLeft" = "左下";
-"HotCornerBottomRight" = "右下";
-"SettingsLayoutPickerHelpText" = "下にレイアウト切り替えのショートカットを追加すれば、どこからでも即座にモードを切り替えられます。";
-"SettingsDockIconToggle" = "Dock アイコンを隠す";
-"SettingsMenuBarIconToggle" = "メニューバーのアイコンを隠す";
-"SettingsIconsHiddenHelpText" = "両方のアイコンを隠しても、Launchy は切り替えショートカットを有効にしておき、引き続き開けるようにします。";
-"SettingsBackgroundStyleLabel" = "背景スタイル";
-"SettingsSolidColorPickerLabel" = "単色";
 "SettingsIconsFloatToggle" = "余白があればアイコンが上にスライドします";
 "SettingsHotCornerToggle" = "ホットコーナー切り替えを有効にする";
 "SettingsHotCornerBody" = "選択したコーナーにカーソルを動かすと、Launchy を表示/非表示にします。";
 "SettingsHotCornerPickerLabel" = "コーナー";
 "SettingsHotCornerPermissionNote" = "初回は macOS から入力監視の許可を求められる場合があります。表示されない場合は、システム設定 → プライバシーとセキュリティ → 入力監視で Launchy を追加してください。";
+"HotCornerTopLeft" = "左上";
+"HotCornerTopRight" = "右上";
+"HotCornerBottomLeft" = "左下";
+"HotCornerBottomRight" = "右下";
+"SettingsUserAppsFolderToggle" = "ユーザーのアプリケーションフォルダを含める";
+"SettingsUserAppsFolderBody" = "Launchy は有効にすると %@ でアプリを検索します。";
+"FolderDefaultName" = "名前なし";
+"SettingsKeyboardSectionTitle" = "キーボード";
+"SettingsKeyboardSectionBody" = "グローバルショートカットとクイックリセットツール。";
 "SettingsToggleLaunchyLabel" = "Launchy を切り替え";
 "SettingsToggleLaunchyBody" = "どこでも機能します。Delete を押してクリア、Reset で Cmd+Shift+Space を復元できます。";
 "SettingsShortcutClickToRecord" = "クリックして記録";
 "SettingsShortcutResetButton" = "リセット";
 "SettingsShortcutClearButton" = "クリア";
+"SettingsShortcutPlaceholder" = "ショートカットを入力...";
 "SettingsLayoutToggleShortcutLabel" = "全画面 <-> Floaty を切り替え";
 "SettingsFloatyToggleLabel" = "Floatyパネルを切り替える";
 "SettingsLayoutToggleShortcutBody" = "レイアウトを素早く切り替えたいならショートカットを選択してください。空欄にすると無効になります。";
 "SettingsAddShortcutButton" = "ショートカットを追加";
 "SettingsResetArrangementButton" = "アイコンの配置をリセット...";
 "SettingsResetArrangementBody" = "保存済みの並びとフォルダを削除し、ページを再構築します。カスタム名と非表示アプリはそのままです。";
+"ResetArrangementDialogTitle" = "アイコン配置をリセットしますか？";
+"ResetArrangementDialogBody" = "保存された順序、フォルダ、ページレイアウトを削除します。続行するには RESET を入力してください。";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "ランチャーのグリッドから除外するアプリを選んでください。";
 "SettingsHiddenAppsColumnApp" = "アプリ";
 "SettingsHiddenAppsColumnHidden" = "非表示";
 "SettingsShowHiddenAppsFirstToggle" = "非表示のアプリを先頭に表示";
 "SettingsScanningAppsStatus" = "アプリをスキャン中...";
+"SettingsNoAppsAvailable" = "利用できるアプリはありません";
 "SettingsAboutTitle" = "Launchy について";
 "SettingsAboutBody" = "バージョン詳細、クレジット、便利なリンク。";
+"SettingsAboutVersionFormat" = "バージョン %@";
+"SettingsAboutBuiltByLabel" = "Launchy チームによって制作";
 "SettingsAboutWebsiteButton" = "プロジェクトのウェブサイト";
 "SettingsAboutReportIssueButton" = "問題を報告";
 "SettingsAboutSupportEmailButton" = "サポート用メール";
 "SettingsAboutRevisitIntroButton" = "紹介を見直す...";
 "SettingsAboutGitHubButton" = "GitHub で表示";
-"ResetArrangementDialogTitle" = "アイコン配置をリセットしますか？";
-"ResetArrangementDialogBody" = "保存された順序、フォルダ、ページレイアウトを削除します。続行するには RESET を入力してください。";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "キャンセル";
-"SettingsShortcutPlaceholder" = "ショートカットを入力...";
-"SettingsAboutVersionFormat" = "バージョン %@";
-"SettingsAboutBuiltByLabel" = "Launchy チームによって制作";
-"SettingsWindowTitle" = "Launchy 設定";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "ランチャーの設定";
 "StatusBarInfoButton" = "Launchy 情報";
 "StatusBarSettingsButton" = "設定";
 "MenuItemSettings" = "設定...";
+"MenuItemShowLauncher" = "ランチャーを表示";
 "MenuItemCheckUpdates" = "アップデートを確認...";
+"MenuItemQuitLaunchy" = "Launchy を終了";
 "DebugMenuLabel" = "デバッグ";
 "DebugMenuReloadApps" = "アプリを再読み込み";
 "DebugMenuResetSettings" = "設定をリセット";
 "DebugMenuToggleStyles" = "テスト用背景スタイルを切り替え";
-"MenuItemShowLauncher" = "ランチャーを表示";
-"MenuItemQuitLaunchy" = "Launchy を終了";
-"GridNoItemsFoundLabel" = "項目が見つかりません";
-"GridNoMatchingItemsLabel" = "一致する項目がありません";
-"GridEnterMultiSelectButton" = "複数選択モードに入る";
-"GridExitMultiSelectButton" = "複数選択モードを終了する";
-"SettingsNoAppsAvailable" = "利用できるアプリはありません";
-"ItemNoAppsSelected" = "アプリが選択されていません";
-"GridPageIndicatorFormat" = "%lld / %lld ページ";
-"GridSearchEmptyHint" = "別の検索語を試してください。";
-"GridNotIndexedLabel" = "Launchy はまだアプリのインデックスを作成していません。";
+
+// Grid
 "GridSearchPlaceholder" = "アプリを検索";
 "GridSearchLabel" = "検索";
 "GridSearchClearButton" = "検索文字列をクリア";
+"GridSearchEmptyHint" = "別の検索語を試してください。";
+"GridNotIndexedLabel" = "Launchy はまだアプリのインデックスを作成していません。";
+"GridNoItemsFoundLabel" = "項目が見つかりません";
+"GridNoMatchingItemsLabel" = "一致する項目がありません";
+"GridPageIndicatorFormat" = "%lld / %lld ページ";
+"GridEnterMultiSelectButton" = "複数選択モードに入る";
+"GridExitMultiSelectButton" = "複数選択モードを終了する";
 "GridMoreActionsButton" = "その他の操作";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "アプリ名を変更";
 "ItemRenameAppPromptBody" = "このアプリにカスタム名を入力してください。空欄にするとリセットされます。";
 "ItemActionShowInFinder" = "Finder で表示";
+"ItemActionHideApp" = "アプリを非表示";
 "ItemActionMoveToFolder" = "フォルダに移動";
+"ItemMoveToFolderNoneAvailable" = "利用可能なフォルダがありません";
 "ItemActionMoveToPage" = "ページに移動";
 "ItemActionCreateNewPage" = "新しいページを作成";
 "ItemActionInsertAtBeginning" = "先頭に挿入";
 "ItemActionInsertBetweenPagesFormat" = "ページ%lldと%lldの間に挿入";
 "ItemActionInsertAtEnd" = "末尾に挿入";
-"ItemActionHideApp" = "アプリを非表示";
+"ItemPageLabel" = "%lld ページ";
 "ItemActionCreateFolderWithApp" = "アプリでフォルダを作成";
+"ItemActionCreateFolder" = "フォルダを作成";
 "ItemActionFolderDetails" = "フォルダの詳細";
 "ItemActionRenameFolder" = "フォルダ名を変更";
 "ItemRenameFolderPromptBody" = "このフォルダに名前を入力してください。";
-"ItemMoveToFolderNoneAvailable" = "利用可能なフォルダがありません";
-"ItemPageLabel" = "%lld ページ";
-"ItemActionCreateFolder" = "フォルダを作成";
 "ItemDetailBundleIDFormat" = "バンドル ID：%@";
 "ItemDetailLocationFormat" = "場所：%@";
 "ItemDetailCustomNameFormat" = "カスタム名：%@";
-"CommonOKButton" = "OK";
 "ItemDetailFolderEmptyLabel" = "フォルダは空です。";
 "ItemDetailAppsFormat" = "アプリ：\n%@";
+"ItemNoAppsSelected" = "アプリが選択されていません";
+"CommonCancelButton" = "キャンセル";
+"CommonOKButton" = "OK";
 "CommonSaveButton" = "保存";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "検出順";
 "SortOrderAlphabeticalDetail" = "アプリ名の A → Z";
 "SortOrderDiscoveryDetail" = "Launchy が見つけた順";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "バックアップと復元";
 "BackupRestoreSectionBody" = "アイコングリッド、フォルダ、カスタム名、非表示アプリ、設定を1つのファイルに保存します。レイアウト移行や復旧に復元を使います。";
@@ -206,5 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Dock メニューでアプリの後にフォルダを並べる";
 "SettingsDockFolderGroupBody" = "Dock アイコンを右クリックしたとき、単体アプリを先にアルファベット順、フォルダをその下に並べます。";
-"SettingsDockFolderGroupToggle" = "Group folders after apps in Dock menu";
-"SettingsDockFolderGroupBody" = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";
+

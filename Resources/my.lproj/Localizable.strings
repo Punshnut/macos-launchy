@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Launchy မှ ကြိုဆိုပါတယ်";
 "ScaffoldReadyBody" = "ဒီ SwiftUI scaffold က သင့်အကြံဉာဏ်များအတွက် အဆင်သင့် ဖြစ်ပါတယ်။";
 "ScaffoldCounterButton" = "ကောင်တာ တိုးပါ";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "နောက်သို့";
 "IntroStartButton" = "Launchy ကို စတင်အသုံးပြုပါ";
 "IntroNextButton" = "နောက်တစ်ခု";
+
+// Settings
+"SettingsWindowTitle" = "Launchy Settings";
 "SettingsTabVisuals" = "ရုပ်ပုံများ";
 "SettingsTabShortcuts" = "Shortcut များ";
 "SettingsTabAbout" = "အကြောင်း";
+"SettingsTabHiddenApps" = "ဖျောက်ထားသော app များ";
+"SettingsLauncherSectionTitle" = "Launcher";
+"SettingsLauncherSectionBody" = "Login အချိန်စတင်ခြင်း၊ layout များ၊ နှင့် background အလှဆင်ခြင်း။";
+"SettingsLaunchAtLoginToggle" = "Login အချိန်စတင်ပါ";
 "LayoutFullscreen" = "မျက်နှာပြင်အပြည့်";
 "LayoutFloatyPanel" = "Floaty Panel";
+"SettingsLayoutPickerLabel" = "Launcher layout";
+"SettingsLayoutPickerHelpText" = "ဘယ်နေရာကမှမဆို မုဒ်တွေကို ချက်ချင်း ပြောင်းနိုင်ဖို့ အောက်မှာ layout toggle shortcut ထည့်ပါ။";
+"SettingsDockIconToggle" = "Dock အိုင်ကွန် ဖျောက်ပါ";
+"SettingsMenuBarIconToggle" = "Menu bar အိုင်ကွန် ဖျောက်ပါ";
+"SettingsIconsHiddenHelpText" = "နှစ်ခုလုံး ဖျောက်ထားရင် Launchy က toggle shortcut ကို ဖွင့်ထားလို့ သင်ဆဲ ဖွင့်နိုင်ပါတယ်။";
+"SettingsBackgroundStyleLabel" = "Background style";
+"SettingsSolidColorPickerLabel" = "Solid color";
+"BackgroundStyleStandard" = "စံ";
+"BackgroundStyleLightBlur" = "ပေါ့ပါးတဲ့ blur";
+"BackgroundStyleTransparent" = "ဖောက်ထွင်းမြင်နိုင်";
+"BackgroundStyleSolidColor" = "တောက်ပတဲ့ အရောင်";
 "AccentColorSystem" = "စနစ်";
 "AccentColorGraphite" = "ဂရဖိုက်";
 "AccentColorIndigo" = "အင်ဒီဂို";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "လိမ္မော်";
 "AccentColorPink" = "ပန်းရောင်";
 "AccentColorPurple" = "ခရမ်း";
-"BackgroundStyleStandard" = "စံ";
-"BackgroundStyleLightBlur" = "ပေါ့ပါးတဲ့ blur";
-"BackgroundStyleTransparent" = "ဖောက်ထွင်းမြင်နိုင်";
-"BackgroundStyleSolidColor" = "တောက်ပတဲ့ အရောင်";
-"FolderDefaultName" = "အမည်မရှိ";
-"SettingsLauncherSectionTitle" = "Launcher";
-"SettingsLauncherSectionBody" = "Login အချိန်စတင်ခြင်း၊ layout များ၊ နှင့် background အလှဆင်ခြင်း။";
-"SettingsKeyboardSectionTitle" = "Keyboard";
-"SettingsKeyboardSectionBody" = "Global shortcuts နှင့် အမြန် reset ကိရိယာများ။";
-"SettingsTabHiddenApps" = "ဖျောက်ထားသော app များ";
-"SettingsHiddenAppsSectionBody" = "launcher grid အပြင်ဘက်မှာရှိနေမယ့် app များကို ရွေးပါ။";
-"SettingsUserAppsFolderToggle" = "User Applications folder ကို ထည့်ပါ";
-"SettingsUserAppsFolderBody" = "Enable လုပ်ထားရင် Launchy က %@ ထဲမှာ app များကို ရှာဖွေပါတယ်။";
-"SettingsLaunchAtLoginToggle" = "Login အချိန်စတင်ပါ";
-"SettingsLayoutPickerLabel" = "Launcher layout";
-"HotCornerTopLeft" = "အပေါ် ဘယ်";
-"HotCornerTopRight" = "အပေါ် ညာ";
-"HotCornerBottomLeft" = "အောက် ဘယ်";
-"HotCornerBottomRight" = "အောက် ညာ";
-"SettingsLayoutPickerHelpText" = "ဘယ်နေရာကမှမဆို မုဒ်တွေကို ချက်ချင်း ပြောင်းနိုင်ဖို့ အောက်မှာ layout toggle shortcut ထည့်ပါ။";
-"SettingsDockIconToggle" = "Dock အိုင်ကွန် ဖျောက်ပါ";
-"SettingsMenuBarIconToggle" = "Menu bar အိုင်ကွန် ဖျောက်ပါ";
-"SettingsIconsHiddenHelpText" = "နှစ်ခုလုံး ဖျောက်ထားရင် Launchy က toggle shortcut ကို ဖွင့်ထားလို့ သင်ဆဲ ဖွင့်နိုင်ပါတယ်။";
-"SettingsBackgroundStyleLabel" = "Background style";
-"SettingsSolidColorPickerLabel" = "Solid color";
 "SettingsIconsFloatToggle" = "နေရာလွတ်ရှိရင် အိုင်ကွန်တွေ အပေါ်တက်ပါမယ်";
 "SettingsHotCornerToggle" = "Hot corner toggle ကို ဖွင့်ပါ";
 "SettingsHotCornerBody" = "Launchy ကို ပြ/ဖျောက်ဖို့ ရွေးထားတဲ့ မျက်လုံးထောင့်ထဲ cursor ကို ရွှေ့ပါ။";
 "SettingsHotCornerPickerLabel" = "ထောင့်";
 "SettingsHotCornerPermissionNote" = "ပထမဆုံး ဖွင့်တဲ့အခါ macOS က Input Monitoring အတွက် မေးနိုင်တယ်; မမေးရင် System Settings → Privacy & Security → Input Monitoring ထဲမှာ Launchy ကို ထည့်ပါ။";
+"HotCornerTopLeft" = "အပေါ် ဘယ်";
+"HotCornerTopRight" = "အပေါ် ညာ";
+"HotCornerBottomLeft" = "အောက် ဘယ်";
+"HotCornerBottomRight" = "အောက် ညာ";
+"SettingsUserAppsFolderToggle" = "User Applications folder ကို ထည့်ပါ";
+"SettingsUserAppsFolderBody" = "Enable လုပ်ထားရင် Launchy က %@ ထဲမှာ app များကို ရှာဖွေပါတယ်။";
+"FolderDefaultName" = "အမည်မရှိ";
+"SettingsKeyboardSectionTitle" = "Keyboard";
+"SettingsKeyboardSectionBody" = "Global shortcuts နှင့် အမြန် reset ကိရိယာများ။";
 "SettingsToggleLaunchyLabel" = "Launchy ကို toggle လုပ်ပါ";
 "SettingsToggleLaunchyBody" = "နေရာတိုင်းမှာ အလုပ်လုပ်ပါတယ်။ Delete ကိုနှိပ်ပြီး ဖျက်ပါ သို့မဟုတ် Cmd+Shift+Space ကို ပြန်ယူဖို့ Reset ကိုနှိပ်ပါ။";
 "SettingsShortcutClickToRecord" = "မှတ်တမ်းတင်ရန် click လုပ်ပါ";
 "SettingsShortcutResetButton" = "Reset";
 "SettingsShortcutClearButton" = "ဖျက်";
+"SettingsShortcutPlaceholder" = "Shortcut ကို နှိပ်ပါ...";
 "SettingsLayoutToggleShortcutLabel" = "Full screen <-> floaty ပြောင်းပါ";
 "SettingsFloatyToggleLabel" = "Floaty Panel ကို toggle လုပ်ပါ";
 "SettingsLayoutToggleShortcutBody" = "Layout တွေကို မြန်မြန် ပြောင်းချင်ရင် shortcut တစ်ခု ရွေးပါ။ ပိတ်ချင်ရင် အလွတ်ထားပါ။";
 "SettingsAddShortcutButton" = "Shortcut ထည့်ပါ";
 "SettingsResetArrangementButton" = "အိုင်ကွန် စီစဉ်မှု ပြန်သတ်မှတ်...";
 "SettingsResetArrangementBody" = "သိမ်းထားသော စီစဉ်မှုနှင့် ဖိုင်တွဲများကို ဖျက်၍ စာမျက်နှာများကို ပြန်တည်ဆောက်ပါသည်။ မိမိပုံစံအပ်အမည်များနှင့် ဖျောက်ထားသောအပ်များ ဆက်ရှိနေမည်။";
+"ResetArrangementDialogTitle" = "အိုင်ကွန် စီစဉ်မှုကို ပြန်သတ်မှတ်မလား?";
+"ResetArrangementDialogBody" = "သင်သိမ်းထားတဲ့ အစဉ်၊ folder တွေ နှင့် စာမျက်နှာ layout ကို ဖျက်ပါမယ်။ ဆက်လက်ရန် RESET ကို ရိုက်ပါ။";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "launcher grid အပြင်ဘက်မှာရှိနေမယ့် app များကို ရွေးပါ။";
 "SettingsHiddenAppsColumnApp" = "Application";
 "SettingsHiddenAppsColumnHidden" = "ဖျောက်ထားသော";
 "SettingsShowHiddenAppsFirstToggle" = "ဖျောက်ထားသော app များကို အရင်ပြ";
 "SettingsScanningAppsStatus" = "Application များကို စစ်ဆေးနေသည်...";
+"SettingsNoAppsAvailable" = "Applications မရှိပါ";
 "SettingsAboutTitle" = "Launchy အကြောင်း";
 "SettingsAboutBody" = "ဗားရှင်း အသေးစိတ်၊ ချီးကျူးမှုများ၊ နှင့် အသုံးဝင်သော လင့်ခ်များ။";
+"SettingsAboutVersionFormat" = "ဗားရှင်း %@";
+"SettingsAboutBuiltByLabel" = "Launchy အဖွဲ့က တည်ဆောက်သည်";
 "SettingsAboutWebsiteButton" = "Project Website";
 "SettingsAboutReportIssueButton" = "Issue တင်ပါ";
 "SettingsAboutSupportEmailButton" = "Support အီးမေးလ်";
 "SettingsAboutRevisitIntroButton" = "မိတ်ဆက်ကို ပြန်ကြည့်...";
 "SettingsAboutGitHubButton" = "GitHub တွင် ကြည့်ရန်";
-"ResetArrangementDialogTitle" = "အိုင်ကွန် စီစဉ်မှုကို ပြန်သတ်မှတ်မလား?";
-"ResetArrangementDialogBody" = "သင်သိမ်းထားတဲ့ အစဉ်၊ folder တွေ နှင့် စာမျက်နှာ layout ကို ဖျက်ပါမယ်။ ဆက်လက်ရန် RESET ကို ရိုက်ပါ။";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "ပယ်ဖျက်";
-"SettingsShortcutPlaceholder" = "Shortcut ကို နှိပ်ပါ...";
-"SettingsAboutVersionFormat" = "ဗားရှင်း %@";
-"SettingsAboutBuiltByLabel" = "Launchy အဖွဲ့က တည်ဆောက်သည်";
-"SettingsWindowTitle" = "Launchy Settings";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "Launcher settings";
 "StatusBarInfoButton" = "Launchy info";
 "StatusBarSettingsButton" = "Settings";
 "MenuItemSettings" = "Settings...";
+"MenuItemShowLauncher" = "Launcher ကိုပြ";
 "MenuItemCheckUpdates" = "အပ်ဒိတ်များ စစ်ဆေးပါ...";
+"MenuItemQuitLaunchy" = "Launchy မှ ထွက်";
 "DebugMenuLabel" = "Debug";
 "DebugMenuReloadApps" = "App များ ပြန်တင်ပါ";
 "DebugMenuResetSettings" = "Settings ကို Reset လုပ်ပါ";
 "DebugMenuToggleStyles" = "Test Background Styles ကို toggle လုပ်ပါ";
-"MenuItemShowLauncher" = "Launcher ကိုပြ";
-"MenuItemQuitLaunchy" = "Launchy မှ ထွက်";
-"GridNoItemsFoundLabel" = "မည်သည့်အရာမျှ မတွေ့ပါ";
-"GridNoMatchingItemsLabel" = "ကိုက်ညီသော အရာမရှိ";
-"GridEnterMultiSelectButton" = "Multi-select မုဒ်သို့ ဝင်ပါ";
-"GridExitMultiSelectButton" = "Multi-select မုဒ်မှ ထွက်ပါ";
-"SettingsNoAppsAvailable" = "Applications မရှိပါ";
-"ItemNoAppsSelected" = "App မရွေးထားပါ";
-"GridPageIndicatorFormat" = "စာမျက်နှာ %lld / %lld";
-"GridSearchEmptyHint" = "အခြား search term တစ်ခု စမ်းကြည့်ပါ။";
-"GridNotIndexedLabel" = "Launchy က applications များကို မညွှန်းထားသေးပါ။";
+
+// Grid
 "GridSearchPlaceholder" = "App များရှာဖွေပါ";
 "GridSearchLabel" = "ရှာဖွေပါ";
 "GridSearchClearButton" = "Search text ကို ဖျက်ပါ";
+"GridSearchEmptyHint" = "အခြား search term တစ်ခု စမ်းကြည့်ပါ။";
+"GridNotIndexedLabel" = "Launchy က applications များကို မညွှန်းထားသေးပါ။";
+"GridNoItemsFoundLabel" = "မည်သည့်အရာမျှ မတွေ့ပါ";
+"GridNoMatchingItemsLabel" = "ကိုက်ညီသော အရာမရှိ";
+"GridPageIndicatorFormat" = "စာမျက်နှာ %lld / %lld";
+"GridEnterMultiSelectButton" = "Multi-select မုဒ်သို့ ဝင်ပါ";
+"GridExitMultiSelectButton" = "Multi-select မုဒ်မှ ထွက်ပါ";
 "GridMoreActionsButton" = "နောက်ထပ် လုပ်ဆောင်ချက်များ";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "App အမည်ပြောင်း";
 "ItemRenameAppPromptBody" = "ဒီ app အတွက် custom အမည် ထည့်ပါ။ Reset လုပ်ချင်ရင် အလွတ်ထားပါ။";
 "ItemActionShowInFinder" = "Finder တွင် ပြပါ";
+"ItemActionHideApp" = "App ဖျောက်";
 "ItemActionMoveToFolder" = "Folder သို့ ပြောင်းရွှေ့";
+"ItemMoveToFolderNoneAvailable" = "Folder မရှိပါ";
 "ItemActionMoveToPage" = "စာမျက်နှာသို့ ပြောင်းရွှေ့";
 "ItemActionCreateNewPage" = "စာမျက်နှာအသစ် ဖန်တီး";
 "ItemActionInsertAtBeginning" = "အစမှာ ထည့်ပါ";
 "ItemActionInsertBetweenPagesFormat" = "စာမျက်နှာ %lld နှင့် %lld ကြား ထည့်ပါ";
 "ItemActionInsertAtEnd" = "အဆုံးမှာ ထည့်ပါ";
-"ItemActionHideApp" = "App ဖျောက်";
+"ItemPageLabel" = "စာမျက်နှာ %lld";
 "ItemActionCreateFolderWithApp" = "App နဲ့ folder ဖန်တီး";
+"ItemActionCreateFolder" = "Folder ဖန်တီး";
 "ItemActionFolderDetails" = "Folder အသေးစိတ်";
 "ItemActionRenameFolder" = "Folder အမည်ပြောင်း";
 "ItemRenameFolderPromptBody" = "ဒီ folder အတွက် အမည်ထည့်ပါ။";
-"ItemMoveToFolderNoneAvailable" = "Folder မရှိပါ";
-"ItemPageLabel" = "စာမျက်နှာ %lld";
-"ItemActionCreateFolder" = "Folder ဖန်တီး";
 "ItemDetailBundleIDFormat" = "Bundle ID: %@";
 "ItemDetailLocationFormat" = "တည်နေရာ: %@";
 "ItemDetailCustomNameFormat" = "Custom Name: %@";
-"CommonOKButton" = "OK";
 "ItemDetailFolderEmptyLabel" = "Folder လွတ်နေသည်။";
 "ItemDetailAppsFormat" = "Apps:\n%@";
+"ItemNoAppsSelected" = "App မရွေးထားပါ";
+"CommonCancelButton" = "ပယ်ဖျက်";
+"CommonOKButton" = "OK";
 "CommonSaveButton" = "သိမ်းပါ";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "ရှာတွေ့စဉ်";
 "SortOrderAlphabeticalDetail" = "အပ်အမည်အလိုက် A → Z";
 "SortOrderDiscoveryDetail" = "Launchy တွေ့သလို";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "မိတ္တူကူးပြီး ပြန်လည်ထည့်သွင်းပါ";
 "BackupRestoreSectionBody" = "အိုင်ကွန်ဇာတ်စင်၊ ဖိုင်တွဲများ၊ စိတ်ကြိုက်နာမည်များ၊ ဝှက်ထားသောအပ်များနှင့် ဆက်တင်များကို ဖိုင်တစ်ခုထဲတွင် သိမ်းဆည်းပါ။ လိုအပ်လျှင် ပြန်လည်ထည့်သွင်း၍ အပြင်အဆင်ပြောင်းရွှေ့ သို့မဟုတ် ပြန်ရယူနိုင်ပါသည်။";
@@ -206,5 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Dock မီနူးတွင် အပ်များနောက် ဖိုင်တွဲများကို စု";
 "SettingsDockFolderGroupBody" = "Dock အိုင်ကွန်ကို right-click ပြုလုပ်သောအခါ ပုဂ္ဂလိကအပ်များကို အက္ခရာစဉ်ဖြင့် အပေါ်သို့ ထားပြီး ဖိုင်တွဲများကို အောက်တွင် အက္ခရာစဉ်ဖြင့် ပြပါသည်။";
-"SettingsDockFolderGroupToggle" = "Group folders after apps in Dock menu";
-"SettingsDockFolderGroupBody" = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";
+

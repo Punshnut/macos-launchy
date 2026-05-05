@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Launchy에 오신 것을 환영합니다";
 "ScaffoldReadyBody" = "이 SwiftUI 스캐폴드는 당신의 아이디어를 위해 준비되어 있습니다.";
 "ScaffoldCounterButton" = "카운터 증가";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "뒤로";
 "IntroStartButton" = "Launchy 사용 시작";
 "IntroNextButton" = "다음";
+
+// Settings
+"SettingsWindowTitle" = "Launchy 설정";
 "SettingsTabVisuals" = "비주얼";
 "SettingsTabShortcuts" = "단축키";
 "SettingsTabAbout" = "정보";
+"SettingsTabHiddenApps" = "숨김 앱";
+"SettingsLauncherSectionTitle" = "런처";
+"SettingsLauncherSectionBody" = "로그인 시 실행, 레이아웃 및 배경 스타일.";
+"SettingsLaunchAtLoginToggle" = "로그인 시 실행";
 "LayoutFullscreen" = "전체 화면";
 "LayoutFloatyPanel" = "Floaty 패널";
+"SettingsLayoutPickerLabel" = "런처 레이아웃";
+"SettingsLayoutPickerHelpText" = "아래에 레이아웃 전환 단축키를 추가하면 어디에서든 모드를 즉시 전환할 수 있습니다.";
+"SettingsDockIconToggle" = "Dock 아이콘 숨기기";
+"SettingsMenuBarIconToggle" = "메뉴 막대 아이콘 숨기기";
+"SettingsIconsHiddenHelpText" = "둘 다 숨겨도 Launchy는 전환 단축키를 유지해 계속 열 수 있게 합니다.";
+"SettingsBackgroundStyleLabel" = "배경 스타일";
+"SettingsSolidColorPickerLabel" = "단색";
+"BackgroundStyleStandard" = "표준";
+"BackgroundStyleLightBlur" = "라이트 블러";
+"BackgroundStyleTransparent" = "투명";
+"BackgroundStyleSolidColor" = "단색";
 "AccentColorSystem" = "시스템";
 "AccentColorGraphite" = "흑연";
 "AccentColorIndigo" = "인디고";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "주황";
 "AccentColorPink" = "분홍색";
 "AccentColorPurple" = "보라색";
-"BackgroundStyleStandard" = "표준";
-"BackgroundStyleLightBlur" = "라이트 블러";
-"BackgroundStyleTransparent" = "투명";
-"BackgroundStyleSolidColor" = "단색";
-"FolderDefaultName" = "이름 없음";
-"SettingsLauncherSectionTitle" = "런처";
-"SettingsLauncherSectionBody" = "로그인 시 실행, 레이아웃 및 배경 스타일.";
-"SettingsKeyboardSectionTitle" = "키보드";
-"SettingsKeyboardSectionBody" = "전역 단축키 및 빠른 재설정 도구.";
-"SettingsTabHiddenApps" = "숨김 앱";
-"SettingsHiddenAppsSectionBody" = "런처 그리드에서 제외할 앱을 선택하세요.";
-"SettingsUserAppsFolderToggle" = "사용자 응용 프로그램 폴더 포함";
-"SettingsUserAppsFolderBody" = "Launchy는 활성화되면 %@에서 앱을 검색합니다.";
-"SettingsLaunchAtLoginToggle" = "로그인 시 실행";
-"SettingsLayoutPickerLabel" = "런처 레이아웃";
-"HotCornerTopLeft" = "왼쪽 상단";
-"HotCornerTopRight" = "오른쪽 상단";
-"HotCornerBottomLeft" = "왼쪽 하단";
-"HotCornerBottomRight" = "오른쪽 하단";
-"SettingsLayoutPickerHelpText" = "아래에 레이아웃 전환 단축키를 추가하면 어디에서든 모드를 즉시 전환할 수 있습니다.";
-"SettingsDockIconToggle" = "Dock 아이콘 숨기기";
-"SettingsMenuBarIconToggle" = "메뉴 막대 아이콘 숨기기";
-"SettingsIconsHiddenHelpText" = "둘 다 숨겨도 Launchy는 전환 단축키를 유지해 계속 열 수 있게 합니다.";
-"SettingsBackgroundStyleLabel" = "배경 스타일";
-"SettingsSolidColorPickerLabel" = "단색";
 "SettingsIconsFloatToggle" = "공간이 생기면 아이콘이 위로 올라갑니다";
 "SettingsHotCornerToggle" = "핫코너 토글 사용";
 "SettingsHotCornerBody" = "선택한 모서리로 커서를 옮겨 Launchy를 표시하거나 숨기세요.";
 "SettingsHotCornerPickerLabel" = "모서리";
 "SettingsHotCornerPermissionNote" = "처음 켤 때 macOS에서 입력 모니터링을 요청할 수 있습니다. 요청이 없다면 시스템 설정 → 개인정보 보호 및 보안 → 입력 모니터링에 Launchy를 추가하세요.";
+"HotCornerTopLeft" = "왼쪽 상단";
+"HotCornerTopRight" = "오른쪽 상단";
+"HotCornerBottomLeft" = "왼쪽 하단";
+"HotCornerBottomRight" = "오른쪽 하단";
+"SettingsUserAppsFolderToggle" = "사용자 응용 프로그램 폴더 포함";
+"SettingsUserAppsFolderBody" = "Launchy는 활성화되면 %@에서 앱을 검색합니다.";
+"FolderDefaultName" = "이름 없음";
+"SettingsKeyboardSectionTitle" = "키보드";
+"SettingsKeyboardSectionBody" = "전역 단축키 및 빠른 재설정 도구.";
 "SettingsToggleLaunchyLabel" = "Launchy 전환";
 "SettingsToggleLaunchyBody" = "어디서나 작동합니다. Delete로 지우거나 Reset으로 Cmd+Shift+Space를 복구하세요.";
 "SettingsShortcutClickToRecord" = "클릭하여 기록";
 "SettingsShortcutResetButton" = "재설정";
 "SettingsShortcutClearButton" = "지우기";
+"SettingsShortcutPlaceholder" = "단축키 입력...";
 "SettingsLayoutToggleShortcutLabel" = "전체 화면 <-> Floaty 전환";
 "SettingsFloatyToggleLabel" = "Floaty 패널 전환";
 "SettingsLayoutToggleShortcutBody" = "레이아웃을 빠르게 바꾸고 싶다면 단축키를 선택하세요. 비워두면 비활성화됩니다.";
 "SettingsAddShortcutButton" = "단축키 추가";
 "SettingsResetArrangementButton" = "아이콘 배열 재설정...";
 "SettingsResetArrangementBody" = "저장된 순서와 폴더를 삭제하고 페이지를 처음부터 다시 만듭니다. 사용자 지정 이름과 숨김 앱은 유지됩니다.";
+"ResetArrangementDialogTitle" = "아이콘 배열을 리셋하시겠습니까?";
+"ResetArrangementDialogBody" = "저장된 순서, 폴더, 페이지 레이아웃을 삭제합니다. 계속하려면 RESET을 입력하세요.";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "런처 그리드에서 제외할 앱을 선택하세요.";
 "SettingsHiddenAppsColumnApp" = "애플리케이션";
 "SettingsHiddenAppsColumnHidden" = "숨김";
 "SettingsShowHiddenAppsFirstToggle" = "숨김 앱을 먼저 표시";
 "SettingsScanningAppsStatus" = "애플리케이션 스캔 중...";
+"SettingsNoAppsAvailable" = "사용 가능한 앱이 없습니다";
 "SettingsAboutTitle" = "Launchy 정보";
 "SettingsAboutBody" = "버전 정보, 크레딧, 유용한 링크.";
+"SettingsAboutVersionFormat" = "버전 %@";
+"SettingsAboutBuiltByLabel" = "Launchy 팀에서 제작";
 "SettingsAboutWebsiteButton" = "프로젝트 웹사이트";
 "SettingsAboutReportIssueButton" = "문제 신고";
 "SettingsAboutSupportEmailButton" = "지원 이메일";
 "SettingsAboutRevisitIntroButton" = "소개 다시 보기...";
 "SettingsAboutGitHubButton" = "GitHub에서 보기";
-"ResetArrangementDialogTitle" = "아이콘 배열을 리셋하시겠습니까?";
-"ResetArrangementDialogBody" = "저장된 순서, 폴더, 페이지 레이아웃을 삭제합니다. 계속하려면 RESET을 입력하세요.";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "취소";
-"SettingsShortcutPlaceholder" = "단축키 입력...";
-"SettingsAboutVersionFormat" = "버전 %@";
-"SettingsAboutBuiltByLabel" = "Launchy 팀에서 제작";
-"SettingsWindowTitle" = "Launchy 설정";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "런처 설정";
 "StatusBarInfoButton" = "Launchy 정보";
 "StatusBarSettingsButton" = "설정";
 "MenuItemSettings" = "설정...";
+"MenuItemShowLauncher" = "런처 표시";
 "MenuItemCheckUpdates" = "업데이트 확인...";
+"MenuItemQuitLaunchy" = "Launchy 종료";
 "DebugMenuLabel" = "디버그";
 "DebugMenuReloadApps" = "앱 다시 로드";
 "DebugMenuResetSettings" = "설정 재설정";
 "DebugMenuToggleStyles" = "테스트용 배경 스타일 전환";
-"MenuItemShowLauncher" = "런처 표시";
-"MenuItemQuitLaunchy" = "Launchy 종료";
-"GridNoItemsFoundLabel" = "항목을 찾을 수 없습니다";
-"GridNoMatchingItemsLabel" = "일치하는 항목 없음";
-"GridEnterMultiSelectButton" = "다중 선택 모드로 진입";
-"GridExitMultiSelectButton" = "다중 선택 모드 종료";
-"SettingsNoAppsAvailable" = "사용 가능한 앱이 없습니다";
-"ItemNoAppsSelected" = "선택된 앱이 없습니다";
-"GridPageIndicatorFormat" = "%lld / %lld 페이지";
-"GridSearchEmptyHint" = "다른 검색어를 시도하세요.";
-"GridNotIndexedLabel" = "Launchy는 아직 애플리케이션을 인덱싱하지 않았습니다.";
+
+// Grid
 "GridSearchPlaceholder" = "앱 검색";
 "GridSearchLabel" = "검색";
 "GridSearchClearButton" = "검색어 지우기";
+"GridSearchEmptyHint" = "다른 검색어를 시도하세요.";
+"GridNotIndexedLabel" = "Launchy는 아직 애플리케이션을 인덱싱하지 않았습니다.";
+"GridNoItemsFoundLabel" = "항목을 찾을 수 없습니다";
+"GridNoMatchingItemsLabel" = "일치하는 항목 없음";
+"GridPageIndicatorFormat" = "%lld / %lld 페이지";
+"GridEnterMultiSelectButton" = "다중 선택 모드로 진입";
+"GridExitMultiSelectButton" = "다중 선택 모드 종료";
 "GridMoreActionsButton" = "추가 작업";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "앱 이름 바꾸기";
 "ItemRenameAppPromptBody" = "이 앱의 사용자 지정 이름을 입력하세요. 비워두면 재설정됩니다.";
 "ItemActionShowInFinder" = "Finder에서 보기";
+"ItemActionHideApp" = "앱 숨기기";
 "ItemActionMoveToFolder" = "폴더로 이동";
+"ItemMoveToFolderNoneAvailable" = "사용 가능한 폴더가 없습니다";
 "ItemActionMoveToPage" = "페이지로 이동";
 "ItemActionCreateNewPage" = "새 페이지 만들기";
 "ItemActionInsertAtBeginning" = "처음에 삽입";
 "ItemActionInsertBetweenPagesFormat" = "페이지 %lld과(와) %lld 사이에 삽입";
 "ItemActionInsertAtEnd" = "끝에 삽입";
-"ItemActionHideApp" = "앱 숨기기";
+"ItemPageLabel" = "%lld 페이지";
 "ItemActionCreateFolderWithApp" = "앱으로 폴더 만들기";
+"ItemActionCreateFolder" = "폴더 만들기";
 "ItemActionFolderDetails" = "폴더 세부 정보";
 "ItemActionRenameFolder" = "폴더 이름 바꾸기";
 "ItemRenameFolderPromptBody" = "이 폴더의 이름을 입력하세요.";
-"ItemMoveToFolderNoneAvailable" = "사용 가능한 폴더가 없습니다";
-"ItemPageLabel" = "%lld 페이지";
-"ItemActionCreateFolder" = "폴더 만들기";
 "ItemDetailBundleIDFormat" = "번들 ID: %@";
 "ItemDetailLocationFormat" = "위치: %@";
 "ItemDetailCustomNameFormat" = "사용자 정의 이름: %@";
-"CommonOKButton" = "확인";
 "ItemDetailFolderEmptyLabel" = "폴더가 비어 있습니다.";
 "ItemDetailAppsFormat" = "앱:\n%@";
+"ItemNoAppsSelected" = "선택된 앱이 없습니다";
+"CommonCancelButton" = "취소";
+"CommonOKButton" = "확인";
 "CommonSaveButton" = "저장";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "발견 순서";
 "SortOrderAlphabeticalDetail" = "앱 이름 기준 A → Z";
 "SortOrderDiscoveryDetail" = "Launchy가 찾는 순서대로";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "백업 및 복원";
 "BackupRestoreSectionBody" = "아이콘 그리드, 폴더, 사용자 지정 이름, 숨김 앱, 설정을 하나의 파일로 저장합니다. 레이아웃을 이동하거나 복구하려면 복원하세요.";
@@ -206,5 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Dock 메뉴에서 앱 다음에 폴더를 정렬";
 "SettingsDockFolderGroupBody" = "Dock 아이콘을 오른쪽 클릭할 때 단일 앱을 먼저, 폴더를 그 아래에 알파벳 순으로 표시합니다.";
-"SettingsDockFolderGroupToggle" = "Group folders after apps in Dock menu";
-"SettingsDockFolderGroupBody" = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";
+

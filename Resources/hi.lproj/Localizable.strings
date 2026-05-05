@@ -1,3 +1,4 @@
+// Onboarding
 "ScaffoldWelcomeTitle" = "Launchy में आपका स्वागत है";
 "ScaffoldReadyBody" = "यह SwiftUI ढांचा आपके विचारों के लिए तैयार है।";
 "ScaffoldCounterButton" = "काउंटर बढ़ाएँ";
@@ -40,11 +41,29 @@
 "IntroBackButton" = "वापस";
 "IntroStartButton" = "Launchy का उपयोग शुरू करें";
 "IntroNextButton" = "अगला";
+
+// Settings
+"SettingsWindowTitle" = "Launchy सेटिंग्स";
 "SettingsTabVisuals" = "दृश्य";
 "SettingsTabShortcuts" = "शॉर्टकट";
 "SettingsTabAbout" = "बारे में";
+"SettingsTabHiddenApps" = "छिपी ऐप्स";
+"SettingsLauncherSectionTitle" = "लॉन्चर";
+"SettingsLauncherSectionBody" = "लॉगिन पर लॉन्च, लेआउट और पृष्ठभूमि स्टाइलिंग।";
+"SettingsLaunchAtLoginToggle" = "लॉगिन पर लॉन्च";
 "LayoutFullscreen" = "फुलस्क्रीन";
 "LayoutFloatyPanel" = "फ़्लोटी पैनल";
+"SettingsLayoutPickerLabel" = "लॉन्चर लेआउट";
+"SettingsLayoutPickerHelpText" = "किसी भी जगह से तुरंत मोड बदलने के लिए नीचे लेआउट टॉगल शॉर्टकट जोड़ें।";
+"SettingsDockIconToggle" = "Dock आइकन छुपाएँ";
+"SettingsMenuBarIconToggle" = "मेनू बार आइकन छुपाएँ";
+"SettingsIconsHiddenHelpText" = "यदि दोनों आइकन छिपे हों तो Launchy टॉगल शॉर्टकट को चालू रखता है ताकि आप इसे फिर भी खोल सकें।";
+"SettingsBackgroundStyleLabel" = "पृष्ठभूमि शैली";
+"SettingsSolidColorPickerLabel" = "ठोस रंग";
+"BackgroundStyleStandard" = "मानक";
+"BackgroundStyleLightBlur" = "हल्का ब्लर";
+"BackgroundStyleTransparent" = "पारदर्शी";
+"BackgroundStyleSolidColor" = "ठोस रंग";
 "AccentColorSystem" = "सिस्टम";
 "AccentColorGraphite" = "ग्रेफ़ाइट";
 "AccentColorIndigo" = "नील";
@@ -57,89 +76,75 @@
 "AccentColorOrange" = "नारंगी";
 "AccentColorPink" = "गुलाबी";
 "AccentColorPurple" = "बैंगनी";
-"BackgroundStyleStandard" = "मानक";
-"BackgroundStyleLightBlur" = "हल्का ब्लर";
-"BackgroundStyleTransparent" = "पारदर्शी";
-"BackgroundStyleSolidColor" = "ठोस रंग";
-"FolderDefaultName" = "बिना नाम";
-"SettingsLauncherSectionTitle" = "लॉन्चर";
-"SettingsLauncherSectionBody" = "लॉगिन पर लॉन्च, लेआउट और पृष्ठभूमि स्टाइलिंग।";
-"SettingsKeyboardSectionTitle" = "कीबोर्ड";
-"SettingsKeyboardSectionBody" = "ग्लोबल शॉर्टकट और क्विक रीसेट टूल।";
-"SettingsTabHiddenApps" = "छिपी ऐप्स";
-"SettingsHiddenAppsSectionBody" = "उन ऐप्स को चुनें जो लॉन्चर ग्रिड से बाहर रहें।";
-"SettingsUserAppsFolderToggle" = "यूज़र Applications फ़ोल्डर शामिल करें";
-"SettingsUserAppsFolderBody" = "Launchy %@ में ऐप्स खोजता है जब यह सक्षम हो।";
-"SettingsLaunchAtLoginToggle" = "लॉगिन पर लॉन्च";
-"SettingsLayoutPickerLabel" = "लॉन्चर लेआउट";
-"HotCornerTopLeft" = "ऊपरी बाएँ";
-"HotCornerTopRight" = "ऊपरी दाएँ";
-"HotCornerBottomLeft" = "नीचे बाएँ";
-"HotCornerBottomRight" = "नीचे दाएँ";
-"SettingsLayoutPickerHelpText" = "किसी भी जगह से तुरंत मोड बदलने के लिए नीचे लेआउट टॉगल शॉर्टकट जोड़ें।";
-"SettingsDockIconToggle" = "Dock आइकन छुपाएँ";
-"SettingsMenuBarIconToggle" = "मेनू बार आइकन छुपाएँ";
-"SettingsIconsHiddenHelpText" = "यदि दोनों आइकन छिपे हों तो Launchy टॉगल शॉर्टकट को चालू रखता है ताकि आप इसे फिर भी खोल सकें।";
-"SettingsBackgroundStyleLabel" = "पृष्ठभूमि शैली";
-"SettingsSolidColorPickerLabel" = "ठोस रंग";
 "SettingsIconsFloatToggle" = "जब जगह मिलती है तो आइकन ऊपर की ओर चले जाते हैं";
 "SettingsHotCornerToggle" = "हॉट कॉर्नर टॉगल सक्षम करें";
 "SettingsHotCornerBody" = "लॉन्ची को दिखाने या छुपाने के लिए कर्सर को चुने हुए कोने में ले जाएँ।";
 "SettingsHotCornerPickerLabel" = "कोना";
 "SettingsHotCornerPermissionNote" = "पहली बार सक्षम करने पर macOS इनपुट मॉनिटरिंग मांग सकता है; अगर नहीं, तो सिस्टम सेटिंग्स → गोपनीयता व सुरक्षा → इनपुट मॉनिटरिंग में Launchy जोड़ें।";
+"HotCornerTopLeft" = "ऊपरी बाएँ";
+"HotCornerTopRight" = "ऊपरी दाएँ";
+"HotCornerBottomLeft" = "नीचे बाएँ";
+"HotCornerBottomRight" = "नीचे दाएँ";
+"SettingsUserAppsFolderToggle" = "यूज़र Applications फ़ोल्डर शामिल करें";
+"SettingsUserAppsFolderBody" = "Launchy %@ में ऐप्स खोजता है जब यह सक्षम हो।";
+"FolderDefaultName" = "बिना नाम";
+"SettingsKeyboardSectionTitle" = "कीबोर्ड";
+"SettingsKeyboardSectionBody" = "ग्लोबल शॉर्टकट और क्विक रीसेट टूल।";
 "SettingsToggleLaunchyLabel" = "Launchy टॉगल करें";
 "SettingsToggleLaunchyBody" = "यह सभी जगह काम करता है। साफ़ करने के लिए Delete दबाएँ या Cmd+Shift+Space बहाल करने के लिए Reset।";
 "SettingsShortcutClickToRecord" = "रिकॉर्ड करने के लिए क्लिक करें";
 "SettingsShortcutResetButton" = "रीसेट";
 "SettingsShortcutClearButton" = "साफ़ करें";
+"SettingsShortcutPlaceholder" = "शॉर्टकट दबाएँ...";
 "SettingsLayoutToggleShortcutLabel" = "फुलस्क्रीन <-> फ़्लोटी स्विच करें";
 "SettingsFloatyToggleLabel" = "Floaty पैनल को टॉगल करें";
 "SettingsLayoutToggleShortcutBody" = "यदि आप तेजी से लेआउट बदलना चाहते हैं तो एक शॉर्टकट चुनें। अक्षम करने के लिए खाली छोड़ दें।";
 "SettingsAddShortcutButton" = "शॉर्टकट जोड़ें";
 "SettingsResetArrangementButton" = "आइकन का क्रम रीसेट करें...";
 "SettingsResetArrangementBody" = "सहेजा गया क्रम और फ़ोल्डर मिटाकर पेज फिर से बनाता है। कस्टम ऐप नाम व छिपे ऐप बने रहते हैं।";
+"ResetArrangementDialogTitle" = "आइकन क्रम रीसेट करें?";
+"ResetArrangementDialogBody" = "यह आपके सहेजे हुए क्रम, फ़ोल्डर, और पृष्ठ लेआउट को हटा देता है। जारी रखने के लिए RESET टाइप करें।";
+"ResetArrangementConfirmWord" = "RESET";
+"SettingsHiddenAppsSectionBody" = "उन ऐप्स को चुनें जो लॉन्चर ग्रिड से बाहर रहें।";
 "SettingsHiddenAppsColumnApp" = "एप्लिकेशन";
 "SettingsHiddenAppsColumnHidden" = "छिपा हुआ";
 "SettingsShowHiddenAppsFirstToggle" = "छिपी हुई ऐप्स पहले दिखाएँ";
 "SettingsScanningAppsStatus" = "एप्लिकेशन की स्कैनिंग जारी है...";
+"SettingsNoAppsAvailable" = "कोई एप्लिकेशन उपलब्ध नहीं";
 "SettingsAboutTitle" = "Launchy के बारे में";
 "SettingsAboutBody" = "संस्करण विवरण, श्रेय, और उपयोगी लिंक।";
+"SettingsAboutVersionFormat" = "संस्करण %@";
+"SettingsAboutBuiltByLabel" = "Launchy टीम द्वारा निर्मित";
 "SettingsAboutWebsiteButton" = "प्रोजेक्ट वेबसाइट";
 "SettingsAboutReportIssueButton" = "एक समस्या रिपोर्ट करें";
 "SettingsAboutSupportEmailButton" = "सहायता ईमेल";
 "SettingsAboutRevisitIntroButton" = "परिचय को फिर देखें...";
 "SettingsAboutGitHubButton" = "GitHub पर देखें";
-"ResetArrangementDialogTitle" = "आइकन क्रम रीसेट करें?";
-"ResetArrangementDialogBody" = "यह आपके सहेजे हुए क्रम, फ़ोल्डर, और पृष्ठ लेआउट को हटा देता है। जारी रखने के लिए RESET टाइप करें।";
-"ResetArrangementConfirmWord" = "RESET";
-"CommonCancelButton" = "रद्द करें";
-"SettingsShortcutPlaceholder" = "शॉर्टकट दबाएँ...";
-"SettingsAboutVersionFormat" = "संस्करण %@";
-"SettingsAboutBuiltByLabel" = "Launchy टीम द्वारा निर्मित";
-"SettingsWindowTitle" = "Launchy सेटिंग्स";
+
+// Status bar & menus
 "StatusBarLauncherSettingsButton" = "लॉन्चर सेटिंग्स";
 "StatusBarInfoButton" = "Launchy जानकारी";
 "StatusBarSettingsButton" = "सेटिंग्स";
 "MenuItemSettings" = "सेटिंग्स...";
+"MenuItemShowLauncher" = "लॉन्चर दिखाएँ";
 "MenuItemCheckUpdates" = "अपडेट जांचें...";
+"MenuItemQuitLaunchy" = "Launchy बंद करें";
 "DebugMenuLabel" = "डिबग";
 "DebugMenuReloadApps" = "ऐप्स रीलोड करें";
 "DebugMenuResetSettings" = "सेटिंग्स रीसेट करें";
 "DebugMenuToggleStyles" = "टेस्ट पृष्ठभूमि शैलियों को टॉगल करें";
-"MenuItemShowLauncher" = "लॉन्चर दिखाएँ";
-"MenuItemQuitLaunchy" = "Launchy बंद करें";
-"GridNoItemsFoundLabel" = "कोई आइटम नहीं मिला";
-"GridNoMatchingItemsLabel" = "कोई मेल खाने वाला आइटम नहीं";
-"GridEnterMultiSelectButton" = "मल्टी-सेलेक्ट मोड में प्रवेश करें";
-"GridExitMultiSelectButton" = "मल्टी-सेलेक्ट मोड से बाहर निकलें";
-"SettingsNoAppsAvailable" = "कोई एप्लिकेशन उपलब्ध नहीं";
-"ItemNoAppsSelected" = "कोई ऐप चुना नहीं गया";
-"GridPageIndicatorFormat" = "पृष्ठ %lld में से %lld";
-"GridSearchEmptyHint" = "कोई अलग खोज शब्द आजमाएँ।";
-"GridNotIndexedLabel" = "Launchy ने अभी तक किसी भी एप्लिकेशन का सूचकांक नहीं बनाया है।";
+
+// Grid
 "GridSearchPlaceholder" = "ऐप खोजें";
 "GridSearchLabel" = "खोज";
 "GridSearchClearButton" = "खोज पाठ साफ़ करें";
+"GridSearchEmptyHint" = "कोई अलग खोज शब्द आजमाएँ।";
+"GridNotIndexedLabel" = "Launchy ने अभी तक किसी भी एप्लिकेशन का सूचकांक नहीं बनाया है।";
+"GridNoItemsFoundLabel" = "कोई आइटम नहीं मिला";
+"GridNoMatchingItemsLabel" = "कोई मेल खाने वाला आइटम नहीं";
+"GridPageIndicatorFormat" = "पृष्ठ %lld में से %lld";
+"GridEnterMultiSelectButton" = "मल्टी-सेलेक्ट मोड में प्रवेश करें";
+"GridExitMultiSelectButton" = "मल्टी-सेलेक्ट मोड से बाहर निकलें";
 "GridMoreActionsButton" = "अधिक क्रियाएँ";
 
 // Item actions
@@ -147,26 +152,28 @@
 "ItemActionRenameApp" = "ऐप का नाम बदलें";
 "ItemRenameAppPromptBody" = "इस ऐप के लिए एक कस्टम नाम दर्ज करें। रीसेट करने के लिए खाली छोड़ दें।";
 "ItemActionShowInFinder" = "Finder में दिखाएँ";
+"ItemActionHideApp" = "ऐप छुपाएँ";
 "ItemActionMoveToFolder" = "फ़ोल्डर में ले जाएँ";
+"ItemMoveToFolderNoneAvailable" = "कोई फ़ोल्डर उपलब्ध नहीं";
 "ItemActionMoveToPage" = "पृष्ठ पर ले जाएँ";
 "ItemActionCreateNewPage" = "नया पेज बनाएँ";
 "ItemActionInsertAtBeginning" = "शुरुआत में जोड़ें";
 "ItemActionInsertBetweenPagesFormat" = "पेज %lld और %lld के बीच जोड़ें";
 "ItemActionInsertAtEnd" = "अंत में जोड़ें";
-"ItemActionHideApp" = "ऐप छुपाएँ";
+"ItemPageLabel" = "पृष्ठ %lld";
 "ItemActionCreateFolderWithApp" = "ऐप के साथ फ़ोल्डर बनाएं";
+"ItemActionCreateFolder" = "फ़ोल्डर बनाएं";
 "ItemActionFolderDetails" = "फ़ोल्डर विवरण";
 "ItemActionRenameFolder" = "फ़ोल्डर का नाम बदलें";
 "ItemRenameFolderPromptBody" = "इस फ़ोल्डर के लिए एक नाम दर्ज करें।";
-"ItemMoveToFolderNoneAvailable" = "कोई फ़ोल्डर उपलब्ध नहीं";
-"ItemPageLabel" = "पृष्ठ %lld";
-"ItemActionCreateFolder" = "फ़ोल्डर बनाएं";
 "ItemDetailBundleIDFormat" = "बंडल आईडी: %@";
 "ItemDetailLocationFormat" = "स्थान: %@";
 "ItemDetailCustomNameFormat" = "कस्टम नाम: %@";
-"CommonOKButton" = "ठीक है";
 "ItemDetailFolderEmptyLabel" = "फ़ोल्डर खाली है।";
 "ItemDetailAppsFormat" = "ऐप्स:\n%@";
+"ItemNoAppsSelected" = "कोई ऐप चुना नहीं गया";
+"CommonCancelButton" = "रद्द करें";
+"CommonOKButton" = "ठीक है";
 "CommonSaveButton" = "सहेजें";
 
 // Launcher visuals
@@ -189,7 +196,7 @@
 "SortOrderDiscovery" = "डिस्कवरी क्रम";
 "SortOrderAlphabeticalDetail" = "ऐप नाम के अनुसार A → Z";
 "SortOrderDiscoveryDetail" = "जैसे Launchy उन्हें पाता है";
-// Backup & restore (placeholder English)
+
 // Backup & restore
 "BackupRestoreSectionTitle" = "बैकअप और पुनर्स्थापना";
 "BackupRestoreSectionBody" = "अपना आइकन ग्रिड, फ़ोल्डर, कस्टम नाम, छुपे ऐप्स और सेटिंग्स एक ही फ़ाइल में सहेजें। लेआउट माइग्रेट या रिकवर करने के लिए पुनर्स्थापित करें।";
@@ -206,5 +213,4 @@
 // Dock menu folder grouping
 "SettingsDockFolderGroupToggle" = "Dock मेनू में ऐप्स के बाद फ़ोल्डरों को समूहित करें";
 "SettingsDockFolderGroupBody" = "राइट-क्लिक पर पहले अकेली ऐप्स को वर्णक्रम में दिखाता है, फ़ोल्डर नीचे दिखते हैं।";
-"SettingsDockFolderGroupToggle" = "Group folders after apps in Dock menu";
-"SettingsDockFolderGroupBody" = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";
+

@@ -1511,6 +1511,17 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             screenScale: launcherScreenScale(),
             limit: limit
         )
+
+        // Folder preview tiles render at 0.6× base dimension — a different cache key than above.
+        // Prewarming this size prevents synchronous resizing on the main thread during transitions.
+        let folderTileDimension = preferredIconRenderDimension(for: mode) * 0.6
+        applicationDiscovery.preheatIcons(
+            for: Array(uniqueApps.prefix(limit)),
+            targetDimension: folderTileDimension,
+            qualities: [.low],
+            screenScale: launcherScreenScale(),
+            limit: limit
+        )
     }
 
     /// Resolves backing scale from launcher window screen or active cursor screen fallback.

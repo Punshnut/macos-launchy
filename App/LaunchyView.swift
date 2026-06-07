@@ -401,6 +401,7 @@ struct LauncherView: View {
                 updatePagerViewport(using: gridProxy.size)
             }
             beginFirstPageRenderIfNeeded()
+            lastKnownIconDimension = layout.iconDimension
         }
         .onChange(of: gridProxy.size) { newSize in
             let transaction = Transaction(animation: nil)
@@ -408,6 +409,7 @@ struct LauncherView: View {
                 updatePagerViewport(using: newSize)
             }
         }
+        .onChange(of: layout.iconDimension) { lastKnownIconDimension = $0 }
     }
 
     /// Persists the latest grid size and updates the pager span for the active orientation.
@@ -927,6 +929,7 @@ struct LauncherView: View {
     @State private var queuedPageShifts: [Int] = []
     @State private var visiblePagesTask: Task<Void, Never>?
     @State private var prewarmedPageTokens: Set<Int> = []
+    @State private var lastKnownIconDimension: CGFloat = 100
     @State private var hasRecordedFirstPageRender = false
     @State private var firstPageRenderSignpostID: OSSignpostID = .invalid
     @State private var hasRecordedFirstPageSwitchCommit = false
@@ -1582,6 +1585,34 @@ struct LauncherView: View {
         }
     }
 
+    /// Preloads folder preview icons using an explicit icon dimension (for use before layout is available).
+    private func warmFolderPreviewIcons(for folder: FolderItem, iconDimension: CGFloat) {
+        let dimension = max(iconDimension * 0.6, 34)
+        let quality: IconRenderQuality = .low
+        let apps = Array(folder.apps.prefix(9))
+        guard apps.isEmpty == false else { return }
+        let cache = Self.folderPreviewCache
+        let appearanceToken = currentAppearanceToken()
+        let keys = apps.map {
+            cache.cacheKey(for: $0, dimension: dimension, quality: quality, appearanceToken: appearanceToken)
+        }
+        let missing = keys.contains { cache.cachedIcon(for: $0) == nil }
+        guard missing else { return }
+        let token = "\(folder.id.uuidString)|\(appearanceToken)|\(Int(dimension.rounded()))|\(apps.map(\.id).hashValue)"
+        guard cache.beginWarmupIfNeeded(token: token) else { return }
+        let provider: @Sendable (AppItem, CGFloat, IconRenderQuality, CGFloat) -> NSImage? = iconProvider
+        let scale = currentBackingScale()
+        let queue = Self.folderPreviewWarmupQueue
+        queue.async {
+            for (app, key) in zip(apps, keys) {
+                if cache.cachedIcon(for: key) != nil { continue }
+                let resolved = provider(app, dimension, quality, scale) ?? app.iconImage
+                if let resolved { cache.store(resolved, for: key) }
+            }
+            cache.finishWarmup(token: token)
+        }
+    }
+
     /// Clears transient folder preview cache when inputs/limits change.
     private func purgeFolderPreviewCache() {
         Self.folderPreviewCache.purge()
@@ -2210,6 +2241,13 @@ struct LauncherView: View {
             .sorted()
     }
 
+    /// Extracts folder items from a mixed item list.
+    private nonisolated static func collectFolders(from items: [LauncherItem]) -> [FolderItem] {
+        items.compactMap {
+            if case .folder(let f) = $0 { return f } else { return nil }
+        }
+    }
+
     /// Flattens mixed launcher items into a simple app list.
     private nonisolated static func collectApps(from items: [LauncherItem]) -> [AppItem] {
         var seen = Set<UUID>()
@@ -2242,6 +2280,16 @@ struct LauncherView: View {
         let apps = Self.collectApps(from: items)
         guard apps.isEmpty == false else { return }
         onPageSwitchPrewarm(apps)
+
+        // Also warm FolderPreviewCache for any folders on this page so folder tile icons
+        // are cache-hot before the page slides in, preventing main-thread resize stalls.
+        let folders = Self.collectFolders(from: items)
+        if folders.isEmpty == false {
+            let dim = lastKnownIconDimension
+            for folder in folders {
+                warmFolderPreviewIcons(for: folder, iconDimension: dim)
+            }
+        }
     }
 
     /// Starts first-page render timing instrumentation once.

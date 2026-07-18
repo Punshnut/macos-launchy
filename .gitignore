@@ -44,3 +44,6 @@ Launchy Dev Install.dmg
 
 # Shell scripts in the repository root
 /*.sh
+
+# Internal notes / planning docs (not for public repo)
+/.internal/

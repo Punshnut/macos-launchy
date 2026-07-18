@@ -6272,7 +6272,7 @@ struct LauncherView: View {
             }
 
             Button(String(localized: "ItemActionHideApp")) {
-                hideApp(app)
+                hideApps(multiSelectAppTargets(for: item))
                 finalizeBulkSelectionAction()
             }
 
@@ -6657,21 +6657,34 @@ struct LauncherView: View {
         NSWorkspace.shared.open(directoryURL)
     }
 
-    /// Adds or updates a hidden app entry and removes it from the current grid.
-    private func hideApp(_ app: AppItem) {
+    /// Adds or updates hidden app entries and removes them from the current grid.
+    private func hideApps(_ apps: [AppItem]) {
+        guard apps.isEmpty == false else { return }
+
         var identifiers = Set(LauncherSettingsPersistence.hiddenBundleIdentifiers())
-        let inserted = identifiers.insert(app.bundleIdentifier).inserted
-        guard inserted else { return }
+        for app in apps {
+            identifiers.insert(app.bundleIdentifier)
+        }
         LauncherSettingsPersistence.setHiddenBundleIdentifiers(Array(identifiers).sorted())
 
-        if let removal = removeAppFromHierarchy(app) {
-            withAnimation(gridSpringAnimation) {
-                orderedItems = removal.items
+        var didRemoveAny = false
+        withAnimation(gridSpringAnimation) {
+            for app in apps {
+                if let removal = removeAppFromHierarchy(app) {
+                    orderedItems = removal.items
+                    didRemoveAny = true
+                }
             }
-            persistOrderChange(using: pageSizes)
-            currentPage = min(currentPage, fullPageCount - 1)
-            pagerDragOffset = 0
         }
+
+        guard didRemoveAny else { return }
+        persistOrderChange(using: pageSizes)
+        currentPage = min(currentPage, fullPageCount - 1)
+        pagerDragOffset = 0
+    }
+
+    private func hideApp(_ app: AppItem) {
+        hideApps([app])
     }
 
     /// Moves an app into an existing folder.

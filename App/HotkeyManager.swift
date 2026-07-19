@@ -142,9 +142,13 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
 
     /// Derives a readable key name from a keyboard event, preserving "Space".
     private static func displayNameForKey(_ event: NSEvent) -> String {
+        let keyCode = UInt32(event.keyCode)
+        if event.modifierFlags.contains(.function) || (keyCode >= UInt32(kVK_F1) && keyCode <= UInt32(kVK_F20)) {
+            return displayName(for: keyCode)
+        }
         let trimmed = event.charactersIgnoringModifiers?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         if trimmed.isEmpty {
-            return displayName(for: UInt32(event.keyCode))
+            return displayName(for: keyCode)
         }
         if trimmed == " " {
             return "Space"

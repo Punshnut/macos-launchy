@@ -110,6 +110,13 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         private var scrollMonitor: EventMonitorToken?
         private var hasActivePagedScroll = false
         private var isIgnoringPreciseMomentum = false
+        private var phaselessAccumulatedDelta: CGFloat = 0
+        private var phaselessLastEventDate: Date?
+
+        /// Points of accumulated delta from a "precise but phaseless" device required to trigger a page change.
+        private let phaselessPageThreshold: CGFloat = 40
+        /// Gap after which stale accumulation from an earlier gesture is discarded.
+        private let phaselessIdleResetInterval: TimeInterval = 0.25
 
         init(
             pagingOrientation: PagingOrientation,
@@ -161,18 +168,26 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             }
 
             let isPrecise = event.hasPreciseScrollingDeltas
-            if isPrecise, event.phase.contains(.began) {
+            // Some third-party mice (e.g. Logitech via Options+/generic HID) report precise deltas but
+            // never emit phase/momentumPhase transitions, which are Multi-Touch trackpad/Magic Mouse
+            // concepts. Without phase info the drag/settle pipeline below never receives an `.ended`
+            // event to commit a page change, so those devices must be treated like discrete wheels.
+            let hasPhaseInfo = !event.phase.isEmpty || !event.momentumPhase.isEmpty
+            let effectivelyPrecise = isPrecise && hasPhaseInfo
+
+            if effectivelyPrecise, event.phase.contains(.began) {
                 isIgnoringPreciseMomentum = false
             }
-            if isPrecise, isIgnoringPreciseMomentum {
+            if effectivelyPrecise, isIgnoringPreciseMomentum {
                 if event.momentumPhase.contains(.ended) || event.momentumPhase.contains(.cancelled) {
                     isIgnoringPreciseMomentum = false
                 }
                 return
             }
 
-            let primaryDelta = pagingOrientation == .vertical ? event.scrollingDeltaY : event.scrollingDeltaX
-            if abs(primaryDelta) > 0.01 {
+            let primaryDelta = pagingOrientation == .vertical ? -event.scrollingDeltaY : event.scrollingDeltaX
+
+            if effectivelyPrecise, abs(primaryDelta) > 0.01 {
                 hasActivePagedScroll = true
                 onScrollProgress(
                     ScrollEvent(
@@ -180,16 +195,18 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
                         deltaY: event.scrollingDeltaY,
                         phase: event.phase,
                         momentumPhase: event.momentumPhase,
-                        isPrecise: isPrecise
+                        isPrecise: effectivelyPrecise
                     )
                 )
             }
 
             if isPrecise == false {
                 processDiscretePagingScroll(delta: primaryDelta)
+            } else if effectivelyPrecise == false {
+                processPhaselessPrecisePagingScroll(delta: primaryDelta)
             }
 
-            if isPrecise, event.phase.contains(.ended) {
+            if effectivelyPrecise, event.phase.contains(.ended) {
                 if hasActivePagedScroll {
                     onScrollEnd()
                 }
@@ -219,6 +236,35 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             }
         }
 
+        /// Maps accumulated deltas from "precise but phaseless" devices (hasPreciseScrollingDeltas == true,
+        /// but phase/momentumPhase never populated — typical of Logitech Options+/generic-HID mice) to
+        /// discrete next/previous page triggers. Unlike genuinely non-precise wheel mice, which report
+        /// roughly one unit per physical notch, these devices can emit many small/fractional deltas per
+        /// notch (hi-res scrolling), so per-event thresholding isn't enough: deltas are accumulated until
+        /// they cross a page-worth threshold, reset on direction reversal, and reset after an idle gap so
+        /// a later, unrelated nudge doesn't inherit stale accumulation from a completed gesture.
+        private func processPhaselessPrecisePagingScroll(delta: CGFloat) {
+            let now = Date()
+            if let last = phaselessLastEventDate, now.timeIntervalSince(last) > phaselessIdleResetInterval {
+                phaselessAccumulatedDelta = 0
+            }
+            phaselessLastEventDate = now
+
+            if phaselessAccumulatedDelta != 0, (phaselessAccumulatedDelta > 0) != (delta > 0) {
+                phaselessAccumulatedDelta = 0
+            }
+
+            phaselessAccumulatedDelta += delta
+
+            if phaselessAccumulatedDelta <= -phaselessPageThreshold {
+                trigger(.next)
+                phaselessAccumulatedDelta = 0
+            } else if phaselessAccumulatedDelta >= phaselessPageThreshold {
+                trigger(.previous)
+                phaselessAccumulatedDelta = 0
+            }
+        }
+
         /// Dispatches page navigation callback for resolved direction.
         private func trigger(_ direction: PageDirection) {
             switch direction {
@@ -233,6 +279,8 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         private func resetState() {
             hasActivePagedScroll = false
             isIgnoringPreciseMomentum = false
+            phaselessAccumulatedDelta = 0
+            phaselessLastEventDate = nil
         }
 
         private enum PageDirection {

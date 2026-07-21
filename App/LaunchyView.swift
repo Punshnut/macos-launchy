@@ -6750,14 +6750,21 @@ struct LauncherView: View {
             itemToInsert = items.remove(at: index)
         }
 
-        let resolvedPage = resolveTargetPageForInsertion(hint: max(0, targetPage), sizes: workingSizes)
-        while resolvedPage >= workingSizes.count {
-            workingSizes.append(0)
+        let finalSizes: [Int]
+        if fillsGapsAutomatically {
+            let insertionIndex = min(max(0, targetPage) * pageCapacity, items.count)
+            items.insert(itemToInsert, at: insertionIndex)
+            finalSizes = densePageSizes(for: items.count)
+        } else {
+            let resolvedPage = resolveTargetPageForInsertion(hint: max(0, targetPage), sizes: workingSizes)
+            while resolvedPage >= workingSizes.count {
+                workingSizes.append(0)
+            }
+            let insertionIndex = insertionIndexForPage(resolvedPage, sizes: workingSizes)
+            items.insert(itemToInsert, at: insertionIndex)
+            workingSizes[resolvedPage] += 1
+            finalSizes = trimTrailingEmptyPages(workingSizes)
         }
-        let insertionIndex = insertionIndexForPage(resolvedPage, sizes: workingSizes)
-        items.insert(itemToInsert, at: insertionIndex)
-        workingSizes[resolvedPage] += 1
-        let finalSizes = trimTrailingEmptyPages(workingSizes)
         withAnimation(gridSpringAnimation) {
             orderedItems = items
         }
@@ -6886,14 +6893,21 @@ struct LauncherView: View {
 
         var items = removal.items
         var afterRemovalSizes = removal.pageSizesAfterRemoval
-        let resolvedPage = resolveTargetPageForInsertion(hint: max(0, targetPage), sizes: afterRemovalSizes)
-        while resolvedPage >= afterRemovalSizes.count {
-            afterRemovalSizes.append(0)
+        let finalSizes: [Int]
+        if fillsGapsAutomatically {
+            let insertionIndex = min(max(0, targetPage) * pageCapacity, items.count)
+            items.insert(.app(removal.app), at: insertionIndex)
+            finalSizes = densePageSizes(for: items.count)
+        } else {
+            let resolvedPage = resolveTargetPageForInsertion(hint: max(0, targetPage), sizes: afterRemovalSizes)
+            while resolvedPage >= afterRemovalSizes.count {
+                afterRemovalSizes.append(0)
+            }
+            let insertionIndex = insertionIndexForPage(resolvedPage, sizes: afterRemovalSizes)
+            items.insert(.app(removal.app), at: insertionIndex)
+            afterRemovalSizes[resolvedPage] += 1
+            finalSizes = trimTrailingEmptyPages(afterRemovalSizes)
         }
-        let insertionIndex = insertionIndexForPage(resolvedPage, sizes: afterRemovalSizes)
-        items.insert(.app(removal.app), at: insertionIndex)
-        afterRemovalSizes[resolvedPage] += 1
-        let finalSizes = trimTrailingEmptyPages(afterRemovalSizes)
 
         withAnimation(gridSpringAnimation) {
             orderedItems = items

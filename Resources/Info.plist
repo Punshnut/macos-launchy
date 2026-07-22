@@ -9,7 +9,9 @@
 	<key>CFBundleExecutable</key>
 	<string>Launchy</string>
 	<key>CFBundleIconFile</key>
-	<string>AppIcon</string>
+	<string>Launchy</string>
+	<key>CFBundleIconName</key>
+	<string>Launchy</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.janfeuerbacher.Launchy</string>
 	<key>CFBundleInfoDictionaryVersion</key>

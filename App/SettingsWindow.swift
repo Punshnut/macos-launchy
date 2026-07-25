@@ -1092,10 +1092,20 @@ struct SettingsWindow: View {
 
     /// Formats version/build metadata for the About tab.
     private func versionSummary() -> String {
-        let rawVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-            ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
-            ?? "--"
-        return String(format: String(localized: "SettingsAboutVersionFormat"), rawVersion)
+        let shortVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        let buildVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+        let combined: String
+        switch (shortVersion, buildVersion) {
+        case let (short?, build?) where short != build:
+            combined = "\(short) (\(build))"
+        case let (short?, _):
+            combined = short
+        case let (nil, build?):
+            combined = build
+        default:
+            combined = "--"
+        }
+        return String(format: String(localized: "SettingsAboutVersionFormat"), combined)
     }
 
     /// Resolves developer attribution text for About.

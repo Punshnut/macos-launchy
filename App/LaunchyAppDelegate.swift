@@ -79,7 +79,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         scheduleRunloopProbes(label: "post-launch")
     }
 
-    /// Reapplies menu pruning after the app is foregrounded.
+    /// Reapplies menu pruning after the app is foregrounded and reveals the launcher (e.g. on Cmd-Tab), mirroring the Dock-icon reopen behavior.
     func applicationDidBecomeActive(_ notification: Notification) {
         enforceMinimalMainMenu()
 
@@ -96,6 +96,12 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         if suppressLauncherRevealOnNextActivation {
             suppressLauncherRevealOnNextActivation = false
             return
+        }
+
+        if let window = launcherWindowManager?.window, window.isVisible {
+            refocusLauncherWindowIfVisible()
+        } else {
+            showLauncherWindowAfterActivation()
         }
     }
 

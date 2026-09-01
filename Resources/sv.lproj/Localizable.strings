@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Support-e-post";
 "SettingsAboutRevisitIntroButton" = "Återbesök introduktionen...";
 "SettingsAboutGitHubButton" = "Visa på GitHub";
+"SettingsAboutSupportTitle" = "Stöd utvecklaren";
+"SettingsAboutSupportBody" = "Om Launchy sparar tid åt dig, överväg att bjuda mig på en kaffe.";
+"SettingsAboutDonateButton" = "Bjud mig på kaffe";
+"SysCategoryMacOSLabel" = "System";
+"SysCategoryMacOSBody" = "Inbyggda macOS-appar och verktyg.";
+"SysCategoryMacOSTitle" = "Systemverktyg";
+"SysCategoryPlaceholderBody" = "Verktyg som medföljer macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Launcher-inställningar";

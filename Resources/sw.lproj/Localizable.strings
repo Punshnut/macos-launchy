@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Barua ya msaada";
 "SettingsAboutRevisitIntroButton" = "Rudi kwenye utangulizi...";
 "SettingsAboutGitHubButton" = "Tazama kwenye GitHub";
+"SettingsAboutSupportTitle" = "Msaidie msanidi programu";
+"SettingsAboutSupportBody" = "Ikiwa Launchy inakuokolea muda, fikiria kunilipia kahawa.";
+"SettingsAboutDonateButton" = "Nilipie kahawa";
+"SysCategoryMacOSLabel" = "Mfumo";
+"SysCategoryMacOSBody" = "Programu na zana za ndani za macOS.";
+"SysCategoryMacOSTitle" = "Zana za Mfumo";
+"SysCategoryPlaceholderBody" = "Zana zinazokuja na macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Mipangilio ya Launcher";

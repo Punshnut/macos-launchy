@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Támogatási e-mail";
 "SettingsAboutRevisitIntroButton" = "Bevezető újranézése...";
 "SettingsAboutGitHubButton" = "Megtekintés GitHubon";
+"SettingsAboutSupportTitle" = "Támogasd a fejlesztőt";
+"SettingsAboutSupportBody" = "Ha a Launchy időt takarít meg neked, fontold meg, hogy meghívsz egy kávéra.";
+"SettingsAboutDonateButton" = "Hívj meg egy kávéra";
+"SysCategoryMacOSLabel" = "Rendszer";
+"SysCategoryMacOSBody" = "Beépített macOS-alkalmazások és segédprogramok.";
+"SysCategoryMacOSTitle" = "Rendszereszközök";
+"SysCategoryPlaceholderBody" = "A macOS-hez csomagolt segédprogramok.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Launcher beállítások";

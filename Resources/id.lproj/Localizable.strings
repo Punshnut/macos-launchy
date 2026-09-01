@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Email dukungan";
 "SettingsAboutRevisitIntroButton" = "Kunjungi ulang pengantar...";
 "SettingsAboutGitHubButton" = "Lihat di GitHub";
+"SettingsAboutSupportTitle" = "Dukung pengembang";
+"SettingsAboutSupportBody" = "Jika Launchy menghemat waktu Anda, pertimbangkan untuk membelikan saya kopi.";
+"SettingsAboutDonateButton" = "Belikan saya kopi";
+"SysCategoryMacOSLabel" = "Sistem";
+"SysCategoryMacOSBody" = "Aplikasi dan utilitas bawaan macOS.";
+"SysCategoryMacOSTitle" = "Alat Sistem";
+"SysCategoryPlaceholderBody" = "Utilitas bawaan macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Pengaturan peluncur";

@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "సపోర్ట్ ఇమెయిల్";
 "SettingsAboutRevisitIntroButton" = "ఇంట్రోను మళ్లీ చూడండి...";
 "SettingsAboutGitHubButton" = "GitHub లో చూడండి";
+"SettingsAboutSupportTitle" = "డెవలపర్‌కు మద్దతు ఇవ్వండి";
+"SettingsAboutSupportBody" = "Launchy మీ సమయాన్ని ఆదా చేస్తే, నాకు ఒక కాఫీ కొనివ్వడాన్ని పరిగణించండి.";
+"SettingsAboutDonateButton" = "నాకు కాఫీ కొనివ్వండి";
+"SysCategoryMacOSLabel" = "సిస్టమ్";
+"SysCategoryMacOSBody" = "అంతర్నిర్మిత macOS యాప్‌లు మరియు యుటిలిటీలు.";
+"SysCategoryMacOSTitle" = "సిస్టమ్ టూల్స్";
+"SysCategoryPlaceholderBody" = "macOSతో కలిసి వచ్చే యుటిలిటీలు.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "లాంచర్ సెట్టింగ్స్";

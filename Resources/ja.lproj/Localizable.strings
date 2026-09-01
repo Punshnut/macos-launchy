@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "サポート用メール";
 "SettingsAboutRevisitIntroButton" = "紹介を見直す...";
 "SettingsAboutGitHubButton" = "GitHub で表示";
+"SettingsAboutSupportTitle" = "開発者を支援する";
+"SettingsAboutSupportBody" = "Launchyで時間の節約になったら、コーヒーをおごってもらえると嬉しいです。";
+"SettingsAboutDonateButton" = "コーヒーをおごる";
+"SysCategoryMacOSLabel" = "システム";
+"SysCategoryMacOSBody" = "macOS 標準搭載のアプリとユーティリティ。";
+"SysCategoryMacOSTitle" = "システムツール";
+"SysCategoryPlaceholderBody" = "macOS に同梱されているユーティリティ。";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "ランチャーの設定";

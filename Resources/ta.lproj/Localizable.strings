@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "ஆதரவு மின்னஞ்சல்";
 "SettingsAboutRevisitIntroButton" = "அறிமுகத்தை மீண்டும் பாருங்கள்...";
 "SettingsAboutGitHubButton" = "GitHub-இல் பார்க்கவும்";
+"SettingsAboutSupportTitle" = "டெவலப்பரை ஆதரிக்கவும்";
+"SettingsAboutSupportBody" = "Launchy உங்கள் நேரத்தை மிச்சப்படுத்தினால், எனக்கு ஒரு காபி வாங்கித் தரலாமே.";
+"SettingsAboutDonateButton" = "எனக்கு காபி வாங்கித் தாருங்கள்";
+"SysCategoryMacOSLabel" = "சிஸ்டம்";
+"SysCategoryMacOSBody" = "macOS உடன் உள்ளமைந்த ஆப்ஸ் மற்றும் யூட்டிலிட்டீஸ்.";
+"SysCategoryMacOSTitle" = "சிஸ்டம் கருவிகள்";
+"SysCategoryPlaceholderBody" = "macOS உடன் வரும் யூட்டிலிட்டீஸ்.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "லாஞ்சர் அமைப்புகள்";

@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Email hỗ trợ";
 "SettingsAboutRevisitIntroButton" = "Xem lại phần giới thiệu...";
 "SettingsAboutGitHubButton" = "Xem trên GitHub";
+"SettingsAboutSupportTitle" = "Ủng hộ nhà phát triển";
+"SettingsAboutSupportBody" = "Nếu Launchy giúp bạn tiết kiệm thời gian, hãy cân nhắc mời tôi một tách cà phê.";
+"SettingsAboutDonateButton" = "Mời tôi cà phê";
+"SysCategoryMacOSLabel" = "Hệ thống";
+"SysCategoryMacOSBody" = "Các ứng dụng và tiện ích tích hợp sẵn của macOS.";
+"SysCategoryMacOSTitle" = "Công cụ hệ thống";
+"SysCategoryPlaceholderBody" = "Các tiện ích đi kèm với macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Cài đặt trình khởi chạy";

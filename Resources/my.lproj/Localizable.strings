@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Support အီးမေးလ်";
 "SettingsAboutRevisitIntroButton" = "မိတ်ဆက်ကို ပြန်ကြည့်...";
 "SettingsAboutGitHubButton" = "GitHub တွင် ကြည့်ရန်";
+"SettingsAboutSupportTitle" = "ဆော့ဖ်ဝဲရေးသားသူကို ပံ့ပိုးပါ";
+"SettingsAboutSupportBody" = "Launchy က သင့်အချိန်ကို ချွေတာပေးတယ်ဆိုရင် ကော်ဖီတစ်ခွက် ဝယ်ကျွေးဖို့ စဉ်းစားပေးပါ။";
+"SettingsAboutDonateButton" = "ကော်ဖီဝယ်ကျွေးပါ";
+"SysCategoryMacOSLabel" = "စနစ်";
+"SysCategoryMacOSBody" = "macOS တွင် ပါဝင်သော အက်ပ်နှင့် ကိရိယာများ။";
+"SysCategoryMacOSTitle" = "စနစ်ကိရိယာများ";
+"SysCategoryPlaceholderBody" = "macOS နှင့်အတူပါလာသော ကိရိယာများ။";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Launcher settings";

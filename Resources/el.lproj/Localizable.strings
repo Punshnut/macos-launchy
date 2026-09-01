@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Email υποστήριξης";
 "SettingsAboutRevisitIntroButton" = "Ξαναδείτε την εισαγωγή...";
 "SettingsAboutGitHubButton" = "Προβολή στο GitHub";
+"SettingsAboutSupportTitle" = "Υποστήριξε τον προγραμματιστή";
+"SettingsAboutSupportBody" = "Αν το Launchy σου εξοικονομεί χρόνο, σκέψου να μου προσφέρεις έναν καφέ.";
+"SettingsAboutDonateButton" = "Κέρασέ με έναν καφέ";
+"SysCategoryMacOSLabel" = "Σύστημα";
+"SysCategoryMacOSBody" = "Ενσωματωμένες εφαρμογές και βοηθητικά προγράμματα macOS.";
+"SysCategoryMacOSTitle" = "Εργαλεία συστήματος";
+"SysCategoryPlaceholderBody" = "Βοηθητικά προγράμματα που συνοδεύουν το macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Ρυθμίσεις εκκινητή";

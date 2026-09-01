@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Email wsparcia";
 "SettingsAboutRevisitIntroButton" = "Powtórz wprowadzenie...";
 "SettingsAboutGitHubButton" = "Zobacz na GitHub";
+"SettingsAboutSupportTitle" = "Wesprzyj dewelopera";
+"SettingsAboutSupportBody" = "Jeśli Launchy oszczędza Ci czas, rozważ postawienie mi kawy.";
+"SettingsAboutDonateButton" = "Postaw mi kawę";
+"SysCategoryMacOSLabel" = "System";
+"SysCategoryMacOSBody" = "Wbudowane aplikacje i narzędzia macOS.";
+"SysCategoryMacOSTitle" = "Narzędzia systemowe";
+"SysCategoryPlaceholderBody" = "Narzędzia dołączone do macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Ustawienia launchera";

@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Tukisähköposti";
 "SettingsAboutRevisitIntroButton" = "Palaa esittelyyn...";
 "SettingsAboutGitHubButton" = "Näytä GitHubissa";
+"SettingsAboutSupportTitle" = "Tue kehittäjää";
+"SettingsAboutSupportBody" = "Jos Launchy säästää aikaasi, harkitse kupin kahvin tarjoamista minulle.";
+"SettingsAboutDonateButton" = "Tarjoa minulle kahvi";
+"SysCategoryMacOSLabel" = "Järjestelmä";
+"SysCategoryMacOSBody" = "macOS:n sisäänrakennetut sovellukset ja apuohjelmat.";
+"SysCategoryMacOSTitle" = "Järjestelmätyökalut";
+"SysCategoryPlaceholderBody" = "macOS:n mukana tulevat apuohjelmat.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Käynnistimen asetukset";

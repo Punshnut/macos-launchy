@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "E-mail podpory";
 "SettingsAboutRevisitIntroButton" = "Znovu otevřít úvod...";
 "SettingsAboutGitHubButton" = "Zobrazit na GitHubu";
+"SettingsAboutSupportTitle" = "Podpořte vývojáře";
+"SettingsAboutSupportBody" = "Pokud vám Launchy šetří čas, zvažte, zda mi nekoupíte kávu.";
+"SettingsAboutDonateButton" = "Kup mi kávu";
+"SysCategoryMacOSLabel" = "Systém";
+"SysCategoryMacOSBody" = "Vestavěné aplikace a nástroje macOS.";
+"SysCategoryMacOSTitle" = "Systémové nástroje";
+"SysCategoryPlaceholderBody" = "Nástroje dodávané se systémem macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Nastavení spouštěče";

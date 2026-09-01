@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "سپورٹ ای میل";
 "SettingsAboutRevisitIntroButton" = "انٹرو دوبارہ دیکھیں...";
 "SettingsAboutGitHubButton" = "GitHub پر دیکھیں";
+"SettingsAboutSupportTitle" = "ڈویلپر کی حمایت کریں";
+"SettingsAboutSupportBody" = "اگر Launchy آپ کا وقت بچاتا ہے تو مجھے ایک کافی پلانے پر غور کریں۔";
+"SettingsAboutDonateButton" = "مجھے کافی پلائیں";
+"SysCategoryMacOSLabel" = "سسٹم";
+"SysCategoryMacOSBody" = "بلٹ ان macOS ایپس اور یوٹیلیٹیز۔";
+"SysCategoryMacOSTitle" = "سسٹم ٹولز";
+"SysCategoryPlaceholderBody" = "macOS کے ساتھ شامل یوٹیلیٹیز۔";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "لانچر سیٹنگز";

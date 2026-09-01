@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Destek e-postası";
 "SettingsAboutRevisitIntroButton" = "Girişi yeniden izle...";
 "SettingsAboutGitHubButton" = "GitHub’da görüntüle";
+"SettingsAboutSupportTitle" = "Geliştiriciyi destekle";
+"SettingsAboutSupportBody" = "Launchy senin zamanını kazandırıyorsa, bana bir kahve ısmarlamayı düşünebilirsin.";
+"SettingsAboutDonateButton" = "Bana kahve ısmarla";
+"SysCategoryMacOSLabel" = "Sistem";
+"SysCategoryMacOSBody" = "macOS'un yerleşik uygulamaları ve araçları.";
+"SysCategoryMacOSTitle" = "Sistem Araçları";
+"SysCategoryPlaceholderBody" = "macOS ile birlikte gelen araçlar.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Başlatıcı ayarları";

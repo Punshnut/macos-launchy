@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Imeeli ìtìlẹ́yìn";
 "SettingsAboutRevisitIntroButton" = "Padà sí àkíyèsí àkọ́kọ́...";
 "SettingsAboutGitHubButton" = "Wo lórí GitHub";
+"SettingsAboutSupportTitle" = "Ṣe atilẹyin fún olùdàgbàsókè náà";
+"SettingsAboutSupportBody" = "Bí Launchy bá ń fi àkókò rẹ pamọ́, ronú nípa rírà kọfí fún mi.";
+"SettingsAboutDonateButton" = "Ra kọfí fún mi";
+"SysCategoryMacOSLabel" = "Eto";
+"SysCategoryMacOSBody" = "Àwọn app àti irinṣẹ́ tí a kọ́ sínú macOS.";
+"SysCategoryMacOSTitle" = "Àwọn Irinṣẹ́ Eto";
+"SysCategoryPlaceholderBody" = "Àwọn irinṣẹ́ tí ó wá pẹ̀lú macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Settings lánsà";

@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "ایمیل پشتیبانی";
 "SettingsAboutRevisitIntroButton" = "بازدید دوبارهٔ معرفی...";
 "SettingsAboutGitHubButton" = "مشاهده در GitHub";
+"SettingsAboutSupportTitle" = "از توسعه‌دهنده حمایت کنید";
+"SettingsAboutSupportBody" = "اگر Launchy در وقت شما صرفه‌جویی می‌کند، می‌توانید یک قهوه برایم بخرید.";
+"SettingsAboutDonateButton" = "برایم قهوه بخر";
+"SysCategoryMacOSLabel" = "سیستم";
+"SysCategoryMacOSBody" = "برنامه‌ها و ابزارهای داخلی macOS.";
+"SysCategoryMacOSTitle" = "ابزارهای سیستم";
+"SysCategoryPlaceholderBody" = "ابزارهای همراه با macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "تنظیمات لانچر";

@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "সাপোর্ট ইমেইল";
 "SettingsAboutRevisitIntroButton" = "ইন্ট্রো আবার দেখুন...";
 "SettingsAboutGitHubButton" = "GitHub-এ দেখুন";
+"SettingsAboutSupportTitle" = "ডেভেলপারকে সমর্থন করুন";
+"SettingsAboutSupportBody" = "Launchy যদি আপনার সময় বাঁচায়, তাহলে আমাকে এক কাপ কফি কিনে দেওয়ার কথা ভাবুন।";
+"SettingsAboutDonateButton" = "আমাকে কফি কিনে দিন";
+"SysCategoryMacOSLabel" = "সিস্টেম";
+"SysCategoryMacOSBody" = "বিল্ট-ইন macOS অ্যাপ এবং ইউটিলিটি।";
+"SysCategoryMacOSTitle" = "সিস্টেম টুলস";
+"SysCategoryPlaceholderBody" = "macOS-এর সাথে বান্ডিল করা ইউটিলিটি।";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "লঞ্চার সেটিংস";

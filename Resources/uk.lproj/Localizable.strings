@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Пошта підтримки";
 "SettingsAboutRevisitIntroButton" = "Повернутися до вступу...";
 "SettingsAboutGitHubButton" = "Переглянути на GitHub";
+"SettingsAboutSupportTitle" = "Підтримати розробника";
+"SettingsAboutSupportBody" = "Якщо Launchy економить ваш час, пригостіть мене кавою.";
+"SettingsAboutDonateButton" = "Пригостити кавою";
+"SysCategoryMacOSLabel" = "Система";
+"SysCategoryMacOSBody" = "Вбудовані застосунки та утиліти macOS.";
+"SysCategoryMacOSTitle" = "Системні інструменти";
+"SysCategoryPlaceholderBody" = "Утиліти, що постачаються з macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Налаштування стартера";

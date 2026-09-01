@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Ríomhphost tacaíochta";
 "SettingsAboutRevisitIntroButton" = "Tabhair cuairt ar an Réamhrá arís...";
 "SettingsAboutGitHubButton" = "Féach ar GitHub";
+"SettingsAboutSupportTitle" = "Tacaigh leis an bhforbróir";
+"SettingsAboutSupportBody" = "Má shábhálann Launchy am duit, smaoinigh ar chaifé a cheannach dom.";
+"SettingsAboutDonateButton" = "Ceannaigh caifé dom";
+"SysCategoryMacOSLabel" = "Córas";
+"SysCategoryMacOSBody" = "Feidhmchláir agus áiseanna ionsuite macOS.";
+"SysCategoryMacOSTitle" = "Uirlisí Córais";
+"SysCategoryPlaceholderBody" = "Áiseanna atá pacáistithe le macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Socruithe an tosaitheora";

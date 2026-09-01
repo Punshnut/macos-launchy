@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "อีเมลสนับสนุน";
 "SettingsAboutRevisitIntroButton" = "กลับไปที่บทนำ...";
 "SettingsAboutGitHubButton" = "ดูบน GitHub";
+"SettingsAboutSupportTitle" = "สนับสนุนผู้พัฒนา";
+"SettingsAboutSupportBody" = "หาก Launchy ช่วยประหยัดเวลาของคุณ ลองพิจารณาซื้อกาแฟให้ผมสักแก้ว";
+"SettingsAboutDonateButton" = "ซื้อกาแฟให้ผม";
+"SysCategoryMacOSLabel" = "ระบบ";
+"SysCategoryMacOSBody" = "แอปและยูทิลิตี้ในตัวของ macOS";
+"SysCategoryMacOSTitle" = "เครื่องมือระบบ";
+"SysCategoryPlaceholderBody" = "ยูทิลิตี้ที่มาพร้อมกับ macOS";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "การตั้งค่า Launcher";

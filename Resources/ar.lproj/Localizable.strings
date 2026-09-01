@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "بريد الدعم";
 "SettingsAboutRevisitIntroButton" = "إعادة زيارة المقدمة...";
 "SettingsAboutGitHubButton" = "عرض على GitHub";
+"SettingsAboutSupportTitle" = "ادعم المطوّر";
+"SettingsAboutSupportBody" = "إذا كان Launchy يوفر عليك الوقت، ففكر في شراء فنجان قهوة لي.";
+"SettingsAboutDonateButton" = "اشترِ لي فنجان قهوة";
+"SysCategoryMacOSLabel" = "النظام";
+"SysCategoryMacOSBody" = "تطبيقات وأدوات macOS المدمجة.";
+"SysCategoryMacOSTitle" = "أدوات النظام";
+"SysCategoryPlaceholderBody" = "أدوات مرفقة مع macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "إعدادات المشغل";

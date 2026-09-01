@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "支持邮箱";
 "SettingsAboutRevisitIntroButton" = "重新查看介绍...";
 "SettingsAboutGitHubButton" = "在 GitHub 查看";
+"SettingsAboutSupportTitle" = "支持开发者";
+"SettingsAboutSupportBody" = "如果 Launchy 为你节省了时间，欢迎请我喝杯咖啡。";
+"SettingsAboutDonateButton" = "请我喝咖啡";
+"SysCategoryMacOSLabel" = "系统";
+"SysCategoryMacOSBody" = "macOS 内置应用与实用工具。";
+"SysCategoryMacOSTitle" = "系统工具";
+"SysCategoryPlaceholderBody" = "macOS 自带的实用工具。";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "启动器设置";

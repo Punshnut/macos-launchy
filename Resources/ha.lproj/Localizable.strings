@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Imel ɗin tallafi";
 "SettingsAboutRevisitIntroButton" = "Duba gabatarwar...";
 "SettingsAboutGitHubButton" = "Duba a GitHub";
+"SettingsAboutSupportTitle" = "Goyi bayan mai haɓakawa";
+"SettingsAboutSupportBody" = "Idan Launchy yana ceton lokacinka, ka yi tunanin sayo min kofi.";
+"SettingsAboutDonateButton" = "Sayo min kofi";
+"SysCategoryMacOSLabel" = "Tsari";
+"SysCategoryMacOSBody" = "Aikace-aikace da kayan aiki na macOS na cikin gida.";
+"SysCategoryMacOSTitle" = "Kayan Aikin Tsari";
+"SysCategoryPlaceholderBody" = "Kayan aiki da aka haɗa da macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Saitunan Launcher";

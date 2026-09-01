@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "지원 이메일";
 "SettingsAboutRevisitIntroButton" = "소개 다시 보기...";
 "SettingsAboutGitHubButton" = "GitHub에서 보기";
+"SettingsAboutSupportTitle" = "개발자 후원하기";
+"SettingsAboutSupportBody" = "Launchy가 시간을 절약해 준다면, 커피 한 잔을 사주시는 건 어떨까요.";
+"SettingsAboutDonateButton" = "커피 한 잔 사주기";
+"SysCategoryMacOSLabel" = "시스템";
+"SysCategoryMacOSBody" = "macOS에 내장된 앱 및 유틸리티입니다.";
+"SysCategoryMacOSTitle" = "시스템 도구";
+"SysCategoryPlaceholderBody" = "macOS에 포함된 유틸리티입니다.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "런처 설정";

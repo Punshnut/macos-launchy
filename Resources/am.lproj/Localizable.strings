@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "የድጋፍ ኢሜይል";
 "SettingsAboutRevisitIntroButton" = "መግቢያን ድገም...";
 "SettingsAboutGitHubButton" = "በGitHub ላይ ይመልከቱ";
+"SettingsAboutSupportTitle" = "ገንቢውን ይደግፉ";
+"SettingsAboutSupportBody" = "Launchy ጊዜዎን የሚቆጥብ ከሆነ፣ ቡና እንድገዛልዎ ያስቡ።";
+"SettingsAboutDonateButton" = "ቡና ይግዙልኝ";
+"SysCategoryMacOSLabel" = "ስርዓት";
+"SysCategoryMacOSBody" = "አብሮገነብ የmacOS መተግበሪያዎች እና መገልገያዎች።";
+"SysCategoryMacOSTitle" = "የስርዓት መሳሪያዎች";
+"SysCategoryPlaceholderBody" = "ከmacOS ጋር የተካተቱ መገልገያዎች።";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "የላንቸር ቅንብሮች";

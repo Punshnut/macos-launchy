@@ -275,7 +275,7 @@ struct SettingsWindow: View {
                 Text(String(localized: "SettingsLayoutPickerLabel"))
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                Text("BETA")
+                Text(String(localized: "BetaLabel"))
                     .font(.system(size: 7, weight: .bold))
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 4)

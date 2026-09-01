@@ -120,6 +120,13 @@
 "SettingsAboutSupportEmailButton" = "Email ng suporta";
 "SettingsAboutRevisitIntroButton" = "Balikan ang Introduksiyon...";
 "SettingsAboutGitHubButton" = "Tingnan sa GitHub";
+"SettingsAboutSupportTitle" = "Suportahan ang developer";
+"SettingsAboutSupportBody" = "Kung nakakatipid ka ng oras dahil sa Launchy, isaalang-alang ang pagbili sa akin ng kape.";
+"SettingsAboutDonateButton" = "Bilhan mo ako ng kape";
+"SysCategoryMacOSLabel" = "System";
+"SysCategoryMacOSBody" = "Built-in na mga app at utility ng macOS.";
+"SysCategoryMacOSTitle" = "Mga System Tool";
+"SysCategoryPlaceholderBody" = "Mga utility na kasama ng macOS.";
 
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Mga setting ng launcher";

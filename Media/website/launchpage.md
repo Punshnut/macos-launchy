@@ -14,7 +14,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 - Instant search with bilingual matching, diacritic folding, fuzzy hits, and keyboard-first controls; type a half-remembered name and Launchy still finds it.
 - Hot corners, global shortcuts, and a one-tap fullscreen ⇄ Floaty toggle so Launchy feels omnipresent, not obtrusive; muscle-memory friendly.
 - Right-click superpowers: rename, hide, move apps, create folders, or reveal in Finder without opening another window - light housekeeping in two clicks.
-- Universal build: native speed on Apple Silicon and Intel; auto-updating, notarized, MIT licensed, and free forever. No telemetry, no nags, just tools.
+- Universal build: native speed on Apple Silicon and Intel; auto-updating, notarized, open source, and free forever. No telemetry, no nags, just tools.
 - Accessibility-aware: respects system text size, high-contrast modes, and VoiceOver labels so everyone can fly through their apps.
 - Backups: export/restore from Settings anytime, plus quiet auto-backups (max every 48h on unchanged refresh) with the newest 14 kept in `~/Library/Application Support/Launchy/AutoBackup`.
 
@@ -38,7 +38,7 @@ Launchy is the open-source Launchpad alternative macOS users have been waiting f
 
 ## Project & support
 
-- <a href="https://github.com/Punshnut/macos-launchy">Source on GitHub</a> (MIT).
+- <a href="https://github.com/Punshnut/macos-launchy">Source on GitHub</a> (AGPL-3.0; versions before 2026-09-11 remain available under MIT).
 - <a href="https://github.com/Punshnut/macos-launchy/releases/latest">Latest release</a> (auto-updating, notarized, Apple Silicon + Intel).
 - Feedback or bugs? <a href="https://github.com/Punshnut/macos-launchy/issues">Open an issue</a>.
 - Follow updates at <a href="https://feuerbacher.me/projects/launchy">feuerbacher.me/projects/launchy</a>.

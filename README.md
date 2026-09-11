@@ -6,7 +6,7 @@ It scans your apps, caches icons, and keeps a responsive grid ready on every Spa
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-native-000000?style=flat&logo=apple" alt="macOS native">
   <img src="https://img.shields.io/badge/Stage-Beta-yellow" alt="Stage Beta">
-  <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
+  <img src="https://img.shields.io/badge/License-AGPL--3.0-blue.svg" alt="License: AGPL-3.0">
 </p>
 
 <p align="center">
@@ -54,7 +54,7 @@ It scans your apps, caches icons, and keeps a responsive grid ready on every Spa
 - **Hot corners & shortcuts** - Global toggle hotkey, optional layout-switch shortcut, plus a hot corner trigger if you prefer mouse-only activation.
 - **Startup & presence controls** - Launch at login, hide or show Dock and menu bar icons independently, and keep a menu bar status item for updates and settings.
 - **Universal & smooth** - Native speed on Apple Silicon and Intel (no Rosetta), with icon caching to keep things silky even on huge libraries.
-- **Auto-updating & MIT licensed** - Every build will be notarized, and the project will remain open source and free forever.
+- **Auto-updating & open source** - Every build will be notarized, and the project will remain open source and free forever.
 - **Accessibility & localization** - VoiceOver labels, contrast-friendly visuals, and wide language coverage so more people can fly through their apps.
 
 ## Search that just works
@@ -93,7 +93,7 @@ It scans your apps, caches icons, and keeps a responsive grid ready on every Spa
 
 ## License & support
 
-- **License:** MIT. Use it anywhere, just keep the notice.
+- **License:** AGPL-3.0, effective 2026-09-11. Versions released before this date remain available under the original MIT license, which cannot be retroactively revoked; all new releases going forward are AGPL-3.0.
 
 [Website](https://feuerbacher.me/projects/launchy) (currently there's not much to see)
 

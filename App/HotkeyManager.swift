@@ -171,6 +171,8 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
     }
 
     /// Extracts a media-key press from `.systemDefined` events.
+    /// `subtype.rawValue == 8` is Apple's long-standing but undocumented convention for
+    /// hardware media-key events; this guard fails safe (returns nil) if that ever changes.
     static func mediaKey(from event: NSEvent) -> MediaKey? {
         guard event.type == .systemDefined, event.subtype.rawValue == 8 else {
             return nil
@@ -364,6 +366,7 @@ final class HotkeyManager {
         if didRegisterHotkey {
             isHotkeyActive = true
         } else {
+            LaunchyLogger.error("HotkeyManager: failed to register global hotkey \(registeredHotkey)")
             assertionFailure("Failed to register global hotkey.")
         }
     }
@@ -554,30 +557,113 @@ final class MediaHotkeyRegistrar: HotkeyRegistering {
     }
 }
 
-/// Routes standard hotkeys to Carbon and media keys to a monitor-based registrar.
+/// Registers standard (non-media) shortcuts via an event monitor instead of Carbon.
+/// Used only as a fallback if `CarbonHotkeyRegistrar` fails to register (e.g. Carbon
+/// HIToolbox stops working on a future macOS); untested against any such failure today
+/// since Carbon registration currently always succeeds.
+final class EventMonitorHotkeyRegistrar: HotkeyRegistering {
+    private var globalMonitor: Any?
+    private var localMonitor: Any?
+    private var registeredDescriptor: HotkeyDescriptor?
+    private var registeredHandler: (() -> Void)?
+
+    /// Registers standard-key monitoring using local/global `.keyDown` event taps.
+    func beginListening(descriptor: HotkeyDescriptor, handler: @escaping () -> Void) -> Bool {
+        guard descriptor.mediaKey == nil else {
+            return false
+        }
+        endListening()
+        registeredDescriptor = descriptor
+        registeredHandler = handler
+        globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            self?.handle(event)
+        }
+        localMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            self?.handle(event)
+            return event
+        }
+        if globalMonitor == nil && localMonitor == nil {
+            endListening()
+            return false
+        }
+        return true
+    }
+
+    /// Removes installed monitors and clears registration state.
+    func endListening() {
+        if let globalMonitor {
+            NSEvent.removeMonitor(globalMonitor)
+        }
+        if let localMonitor {
+            NSEvent.removeMonitor(localMonitor)
+        }
+        globalMonitor = nil
+        localMonitor = nil
+        registeredDescriptor = nil
+        registeredHandler = nil
+    }
+
+    /// Validates key code + modifiers then invokes the registered callback.
+    private func handle(_ event: NSEvent) {
+        guard let registeredDescriptor,
+              UInt32(event.keyCode) == registeredDescriptor.keyCode else {
+            return
+        }
+        let sanitizedModifiers = HotkeyDescriptor.sanitizedModifiers(for: event)
+        guard sanitizedModifiers == registeredDescriptor.modifierFlags else {
+            return
+        }
+        registeredHandler?()
+    }
+}
+
+/// Routes standard hotkeys to Carbon (falling back to an event monitor if Carbon
+/// registration fails) and media keys to a monitor-based registrar.
 final class CompositeHotkeyRegistrar: HotkeyRegistering {
+    private enum ActiveRegistrar {
+        case none
+        case carbon
+        case media
+        case eventMonitorFallback
+    }
+
     private let carbonRegistrar = CarbonHotkeyRegistrar()
     private let mediaRegistrar = MediaHotkeyRegistrar()
-    private var isUsingMediaRegistrar = false
+    private let eventMonitorRegistrar = EventMonitorHotkeyRegistrar()
+    private var active: ActiveRegistrar = .none
 
-    /// Delegates registration to media or Carbon registrar depending on descriptor.
+    /// Delegates registration to media, Carbon, or (if Carbon fails) the event-monitor fallback.
     func beginListening(descriptor: HotkeyDescriptor, handler: @escaping () -> Void) -> Bool {
         endListening()
         if descriptor.mediaKey != nil {
-            isUsingMediaRegistrar = true
+            active = .media
             return mediaRegistrar.beginListening(descriptor: descriptor, handler: handler)
         }
-        isUsingMediaRegistrar = false
-        return carbonRegistrar.beginListening(descriptor: descriptor, handler: handler)
+        if carbonRegistrar.beginListening(descriptor: descriptor, handler: handler) {
+            active = .carbon
+            return true
+        }
+        LaunchyLogger.error("CompositeHotkeyRegistrar: Carbon registration failed, falling back to event monitor")
+        if eventMonitorRegistrar.beginListening(descriptor: descriptor, handler: handler) {
+            active = .eventMonitorFallback
+            return true
+        }
+        active = .none
+        return false
     }
 
     /// Unregisters whichever registrar is currently active.
     func endListening() {
-        if isUsingMediaRegistrar {
-            mediaRegistrar.endListening()
-        } else {
+        switch active {
+        case .none:
+            break
+        case .carbon:
             carbonRegistrar.endListening()
+        case .media:
+            mediaRegistrar.endListening()
+        case .eventMonitorFallback:
+            eventMonitorRegistrar.endListening()
         }
-        isUsingMediaRegistrar = false
+        active = .none
     }
 }

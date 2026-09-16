@@ -119,7 +119,10 @@ final class ItemArrangementStore {
                     }
                     return app
                 }
-                guard resolvedApps.isEmpty == false else { continue }
+                // Keep folders that were persisted as intentionally empty: `createEmptyFolder`
+                // makes one and prompts for a name before any app is dropped into it.
+                // Only drop folders whose apps are gone from disk.
+                guard folderRecord.bundleIDs.isEmpty || resolvedApps.isEmpty == false else { continue }
                 let folder = FolderItem(id: folderRecord.id, name: folderRecord.name, apps: resolvedApps)
                 orderedItems.append(.folder(folder))
             }

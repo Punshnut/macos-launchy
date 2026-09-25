@@ -1,45 +1,65 @@
-# Launchy Launchpad
+# Welcome to Launchy
 
-Launchy Launchpad is the free open-source Launchpad alternative macOS users have been waiting for. Fullscreen mode mirrors the classic Launchpad experience but adds richer controls, while Floaty Mode doubles as a HUD with fast toggles that match the new macOS design without changing the behavior you rely on.
+Launchy brings the classic macOS Launchpad back, and then builds on it. If
+you miss the old grid-of-apps screen, or you just want something faster and
+more flexible than clicking through Finder or Spotlight, Launchy gives you a
+dedicated home for every app on your Mac, one tap or swipe away.
 
-It scans your apps, caches icons, and keeps a responsive grid ready on every Space, a universal binary that runs natively on both Apple Silicon (M-series) and Intel Macs.
+It runs two ways depending on what you need in the moment:
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Punshnut/macos-launchy/dev/Media/ScreenshotFullscreenMode.jpeg" alt="Launchy Screenshot Fullscreen Mode" width="600">
-</p>
+- **Fullscreen mode** feels like the Launchpad you remember: a calm,
+  edge-to-edge grid you can arrange exactly how you like, with folders,
+  custom names, and smooth paging.
+- **Floaty mode** is a compact HUD you can summon over whatever you're doing,
+  find an app in a second, and dismiss without breaking your flow.
 
-## Highlights
+Both modes share the same grid, the same search, and the same shortcuts, so
+switching between them never costs you your layout.
 
-- **Launchpad-level fullscreen** - A fluid, edge-to-edge canvas with blur or solid backgrounds plus right-click menus for fast sorting, folder creation, and precise arrangement.
-- **Floaty mode & HUD toggle** - Lightweight palette for quick launches; flip between floaty and fullscreen with a shortcut without losing your layout.
-- **Search-first launching** - Type to filter instantly; `Return` opens the top match, arrows move selection, and the grid stays responsive.
-- **Fully featured grid** - Scans /Applications, /System/Applications, and optional ~/Applications, caches icons, and keeps 7x5 pages ready while respecting custom names and hidden items.
-- **Context-aware controls** - Right click any tile, folder, Dock, or menu bar icon to rename, hide, move, add/remove folders, show in Finder, or reset gaps without switching views.
-- **Hot corners & shortcuts** - Global toggle hotkey, optional layout-switch shortcut, plus a hot corner trigger if you prefer mouse-only activation.
-- **Startup & presence controls** - Launch at login, hide or show Dock and menu bar icons independently, and keep a menu bar status item for updates and settings.
-- **Universal & smooth** - Native speed on Apple Silicon and Intel (no Rosetta), with icon caching to keep things silky even on huge libraries.
-- **Auto-updating & open source** - Every build will be notarized, and the project will remain open source and free forever.
-- **Accessibility & localization** - VoiceOver labels, contrast-friendly visuals, and wide language coverage so more people can fly through their apps.
+Launchy is a universal binary, so it runs at full native speed on both Apple
+Silicon and Intel Macs, no Rosetta involved. It's free, open source, and
+auto-updates itself once installed.
 
-## Explore the wiki
+## Where to start
 
-- [Search](Search) - how the bilingual, typo-tolerant matching works.
-- [Gestures](Gestures) - touchpad and mouse paging.
-- [Keyboard Shortcuts](Keyboard-Shortcuts) - every default and configurable shortcut.
-- [Quick Tips](Quick-Tips) - small things that make daily use smoother.
-- [Contributing](Contributing) - build from source, project layout, sending a PR.
+New to Launchy? Start here:
+
+- [Getting Started](Getting-Started) - installing, first launch, and the one
+  permission you might need to grant.
+- [Fullscreen and Floaty Mode](Fullscreen-and-Floaty-Mode) - what each mode
+  is for, and when to reach for which one.
+
+Once you're up and running, these pages cover specific things you can do:
+
+- [Search](Search) - finding an app in a keystroke or two, in any language.
+- [Organizing Your Apps](Organizing-Your-Apps) - folders, custom names,
+  hiding clutter, and rearranging the grid.
+- [Gestures](Gestures) - paging with a trackpad or mouse.
+- [Keyboard Shortcuts](Keyboard-Shortcuts) - every default and configurable
+  shortcut, and how to pick ones that fit your workflow.
+- [Settings Overview](Settings-Overview) - a tour of every tab in Settings
+  and what it's for.
+- [Troubleshooting](Troubleshooting) - fixes for the handful of things that
+  can trip people up.
+
+And if you want to build Launchy yourself or contribute:
+
+- [Contributing](Contributing) - build from source, project layout, sending
+  a pull request.
 - [AI Policy](AI-Policy) - how AI use is handled in issues and pull requests.
 
 ## License & support
 
-License: AGPL-3.0, effective 2026-09-11. Versions released before this date remain available under the original MIT license, which cannot be retroactively revoked; all new releases going forward are AGPL-3.0.
+Launchy is licensed under AGPL-3.0, effective 2026-09-11. Versions released
+before that date remain available under the original MIT license, which
+can't be retroactively revoked; all new releases going forward are
+AGPL-3.0.
 
-[Website](https://feuerbacher.me/projects/launchy) (currently there's not much to see)
-
-## Get Launchy
-
-[Download Launchy for free](https://github.com/Punshnut/macos-launchy/releases/latest) and enjoy automatic updates.
-
-[Donate (Ko-Fi)](https://ko-fi.com/janfeuerbacher)
+- [Website](https://feuerbacher.me/projects/launchy) (currently there's not
+  much to see)
+- [Download Launchy for free](https://github.com/Punshnut/macos-launchy/releases/latest)
+  and enjoy automatic updates.
+- [Donate on Ko-Fi](https://ko-fi.com/janfeuerbacher) if Launchy has earned
+  a place in your daily routine.
 
 Made with love.

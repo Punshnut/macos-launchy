@@ -1374,12 +1374,16 @@ struct LauncherView: View {
         .frame(width: containerSize.width, height: containerSize.height)
         .contentShape(Rectangle())
         .collectInteractiveTapRegions(into: $interactiveTapRegions)
-        .gesture(
-            DragGesture(minimumDistance: 0)
-                .onEnded { _ in
-                    dismissLauncherViaBackgroundTap()
-                },
-            including: .gesture
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0, coordinateSpace: .named(launcherRootCoordinateSpaceName))
+                .onEnded { value in
+                    // A real drag (e.g. the page-swipe gesture) also ends with a mouse-up here;
+                    // only treat this as a background tap when the release stayed close to where
+                    // it started, so finishing a swipe doesn't also dismiss the launcher.
+                    let dragDistance = hypot(value.translation.width, value.translation.height)
+                    guard dragDistance <= 4 else { return }
+                    dismissLauncherViaBackgroundTap(at: value.location)
+                }
         )
     }
 
@@ -5643,10 +5647,10 @@ struct LauncherView: View {
     }
 
     /// Hides the launcher when the blurred background is clicked.
-    private func dismissLauncherViaBackgroundTap() {
+    private func dismissLauncherViaBackgroundTap(at location: CGPoint) {
         guard launcherMode == .fullscreen || launcherMode == .floaty else { return }
         guard isClosingLauncher == false else { return }
-        guard didTapInteractiveView() == false else { return }
+        guard didTapInteractiveView(at: location) == false else { return }
         isClosingLauncher = true
         animateAndDismissLauncher()
     }
@@ -5660,7 +5664,17 @@ struct LauncherView: View {
     }
 
     /// Returns true when the click landed on an interactive SwiftUI-backed control.
-    private func didTapInteractiveView() -> Bool {
+    private func didTapInteractiveView(at location: CGPoint) -> Bool {
+        // Primary check: does the click fall within a control's real SwiftUI-reported frame
+        // (`markInteractiveForDismissDetection()`), in the same named coordinate space the
+        // drag gesture reports `location` in? This is the source of truth and doesn't depend
+        // on `NSApp.currentEvent` still being the triggering event by the time this runs.
+        if interactiveTapRegions.contains(where: { $0.contains(location) }) {
+            return true
+        }
+
+        // Fallback for controls that do get a real AppKit backing (e.g. the search field's
+        // NSTextField), where the SwiftUI-reported frame above may not be registered.
         guard let window = hostingWindow(),
               let contentView = window.contentView,
               let event = NSApp?.currentEvent else {
@@ -5670,15 +5684,6 @@ struct LauncherView: View {
         let locationInWindow = event.locationInWindow
         let locationInContent = contentView.convert(locationInWindow, from: nil)
         guard contentView.bounds.contains(locationInContent) else { return false }
-
-        // Primary check: does the click fall within a control's real SwiftUI-reported frame
-        // (`markInteractiveForDismissDetection()`)? AppKit's NSButton-ancestor hitTest below isn't
-        // a reliable signal for `.buttonStyle(.plain)` controls on every macOS version, so this is
-        // the source of truth; the hitTest walk remains as a fallback for controls that do get a
-        // real AppKit backing (e.g. the search field's NSTextField).
-        if interactiveTapRegions.contains(where: { $0.contains(locationInContent) }) {
-            return true
-        }
 
         guard let hitView = contentView.hitTest(locationInContent) else { return false }
 

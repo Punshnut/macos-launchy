@@ -113,10 +113,10 @@ struct IntroductionWindow: View {
             .frame(minWidth: 720, minHeight: 540)
             .background(
                 FrostedBackgroundView(material: .hudWindow)
-                    .clipShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                RoundedRectangle(cornerRadius: 32, style: .continuous)
                     .stroke(Color.white.opacity(0.12), lineWidth: 1)
             )
             .overlay(
@@ -255,7 +255,7 @@ struct IntroductionWindow: View {
                 .padding(.vertical, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    RoundedRectangle(cornerRadius: GlassRadii.card, style: .continuous)
                         .fill(Color.white.opacity(0.03))
                 )
             }
@@ -285,7 +285,7 @@ struct IntroductionWindow: View {
                 Label(nextButtonTitle, systemImage: currentStep == steps.count - 1 ? "checkmark.circle" : "arrow.right.circle.fill")
                     .labelStyle(.titleAndIcon)
             }
-            .buttonStyle(.borderedProminent)
+            .glassProminentButtonStyle()
         }
         .padding(.horizontal, 22)
         .padding(.vertical, 18)
@@ -331,7 +331,7 @@ struct IntroductionWindow: View {
         guard let window else { return }
         window.isOpaque = false
         window.backgroundColor = .clear
-        window.applyRoundedCorners(radius: 26)
+        window.applyRoundedCorners(radius: 32)
     }
 }
 
@@ -364,7 +364,7 @@ final class IntroductionWindowController: NSWindowController {
 
         if let host = hostingController, let window {
             host.rootView = buildView()
-            window.applyRoundedCorners(radius: 26)
+            window.applyRoundedCorners(radius: 32)
             center(window: window)
             showWindow(nil)
             window.makeKeyAndOrderFront(nil)

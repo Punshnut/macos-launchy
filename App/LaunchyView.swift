@@ -751,6 +751,7 @@ struct LauncherView: View {
                 )
             }
             .buttonStyle(.plain)
+            .markInteractiveForDismissDetection()
         }
     }
 
@@ -933,6 +934,11 @@ struct LauncherView: View {
     @State private var hasRecordedFirstPageRender = false
     @State private var firstPageRenderSignpostID: OSSignpostID = .invalid
     @State private var hasRecordedFirstPageSwitchCommit = false
+    /// Real on-screen frames of interactive controls (grid item buttons, search bar decorations),
+    /// reported via `markInteractiveForDismissDetection()`. Used by `didTapInteractiveView()` as a
+    /// SwiftUI-native fallback since AppKit's `NSButton`-ancestor hitTest check doesn't reliably
+    /// recognize `.buttonStyle(.plain)` controls on every macOS version.
+    @State private var interactiveTapRegions: [CGRect] = []
     @FocusState private var isFolderNameFieldFocused: Bool
     @FocusState private var isAppNameFieldFocused: Bool
     @FocusState private var isSearchFieldFocused: Bool
@@ -1221,17 +1227,35 @@ struct LauncherView: View {
 
         if launcherMode == .floaty {
             let floatyShape = RoundedRectangle(cornerRadius: layout.floatyCornerRadius, style: .continuous)
-            content
-                .background(floatyBackdropHighlight(cornerRadius: layout.floatyCornerRadius))
-                .clipShape(floatyShape)
-                .overlay(floatyGlassStroke(cornerRadius: layout.floatyCornerRadius))
-                .background(
-                    floatyShape
-                        .fill(Color.clear)
-                        .shadow(color: Color.black.opacity(0.32), radius: 26, y: 22)
-                        .shadow(color: Color.black.opacity(0.18), radius: 12, y: 6)
-                        .shadow(color: Color.white.opacity(colorScheme == .dark ? 0.14 : 0.22), radius: 2.6, y: 1)
-                )
+            if #available(macOS 26, *) {
+                // Applied as a background layer, not chained directly onto `content`: real
+                // Liquid Glass's native compositing backing restructures the AppKit view
+                // hierarchy enough to break didTapInteractiveView()'s hitTest/ancestor-walk
+                // (used by the click-outside-to-dismiss logic) when applied to content directly.
+                content
+                    .background {
+                        Color.clear.glassEffect(.regular, in: floatyShape)
+                    }
+                    .clipShape(floatyShape)
+                    .background(
+                        floatyShape
+                            .fill(Color.clear)
+                            .shadow(color: Color.black.opacity(0.32), radius: 26, y: 22)
+                            .shadow(color: Color.black.opacity(0.18), radius: 12, y: 6)
+                    )
+            } else {
+                content
+                    .background(floatyBackdropHighlight(cornerRadius: layout.floatyCornerRadius))
+                    .clipShape(floatyShape)
+                    .overlay(floatyGlassStroke(cornerRadius: layout.floatyCornerRadius))
+                    .background(
+                        floatyShape
+                            .fill(Color.clear)
+                            .shadow(color: Color.black.opacity(0.32), radius: 26, y: 22)
+                            .shadow(color: Color.black.opacity(0.18), radius: 12, y: 6)
+                            .shadow(color: Color.white.opacity(colorScheme == .dark ? 0.14 : 0.22), radius: 2.6, y: 1)
+                    )
+            }
         } else {
             content
         }
@@ -1349,6 +1373,7 @@ struct LauncherView: View {
         }
         .frame(width: containerSize.width, height: containerSize.height)
         .contentShape(Rectangle())
+        .collectInteractiveTapRegions(into: $interactiveTapRegions)
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onEnded { _ in
@@ -4168,6 +4193,7 @@ struct LauncherView: View {
                 .onTapGesture {
                     beginFolderNameEdit(for: folder)
                 }
+                .markInteractiveForDismissDetection()
         }
     }
 
@@ -4338,6 +4364,7 @@ struct LauncherView: View {
             .contentShape(Rectangle().inset(by: -pagerButtonHitExpansion))
             .buttonStyle(.plain)
             .disabled(currentPage == 0)
+            .markInteractiveForDismissDetection()
 
             pagerDots(currentPage: currentPage, totalPages: totalPages) { index in
                 guard index < totalPages else { return }
@@ -4362,6 +4389,7 @@ struct LauncherView: View {
             .contentShape(Rectangle().inset(by: -pagerButtonHitExpansion))
             .buttonStyle(.plain)
             .disabled(currentPage >= totalPages - 1)
+            .markInteractiveForDismissDetection()
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 4)
@@ -4409,6 +4437,7 @@ struct LauncherView: View {
                 }
                 .buttonStyle(.plain)
                 .disabled(isDisabled)
+                .markInteractiveForDismissDetection()
             }
         }
 
@@ -4774,6 +4803,7 @@ struct LauncherView: View {
                 .animation(folderOpenAnimation, value: folderIconWaveToggle)
             }
             .buttonStyle(.plain)
+            .markInteractiveForDismissDetection()
         }
     }
 
@@ -5640,6 +5670,16 @@ struct LauncherView: View {
         let locationInWindow = event.locationInWindow
         let locationInContent = contentView.convert(locationInWindow, from: nil)
         guard contentView.bounds.contains(locationInContent) else { return false }
+
+        // Primary check: does the click fall within a control's real SwiftUI-reported frame
+        // (`markInteractiveForDismissDetection()`)? AppKit's NSButton-ancestor hitTest below isn't
+        // a reliable signal for `.buttonStyle(.plain)` controls on every macOS version, so this is
+        // the source of truth; the hitTest walk remains as a fallback for controls that do get a
+        // real AppKit backing (e.g. the search field's NSTextField).
+        if interactiveTapRegions.contains(where: { $0.contains(locationInContent) }) {
+            return true
+        }
+
         guard let hitView = contentView.hitTest(locationInContent) else { return false }
 
         return hitView.hasAncestor(ofType: NSButton.self) || hitView.hasAncestor(ofType: NSTextField.self)
@@ -5729,7 +5769,7 @@ struct LauncherView: View {
             .padding(-6)
     }
 
-    /// Hairline strokes that mimic the layered glass edges in modern macOS HUDs.
+    /// Hairline stroke that mimics the layered glass edge in modern macOS HUDs.
     private func floatyGlassStroke(cornerRadius: CGFloat) -> some View {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
             .strokeBorder(
@@ -5742,11 +5782,6 @@ struct LauncherView: View {
                     endPoint: .bottomTrailing
                 ),
                 lineWidth: 1.1
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(Color.black.opacity(colorScheme == .dark ? 0.30 : 0.20), lineWidth: 0.6)
-                    .blendMode(.overlay)
             )
     }
 
@@ -5822,10 +5857,7 @@ struct LauncherView: View {
             .overlay(
                 RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous)
                     .strokeBorder(
-                        isMultiSelectModeActive ? Color.accentColor.opacity(0.7) :
-                            isFloaty
-                                ? (usesDarkSearchBarAppearance ? Color.white.opacity(0.4) : Color.black.opacity(0.18))
-                                : Color.white.opacity(0.25),
+                        searchFieldStrokeColor(isFloaty: isFloaty),
                         lineWidth: isMultiSelectModeActive ? 2 : 1
                     )
             )
@@ -5842,37 +5874,57 @@ struct LauncherView: View {
             .environment(\.colorScheme, searchBarColorSchemeOverride())
     }
 
-    /// Returns layered search-field background visuals.
+    /// Returns layered search-field background visuals: real Liquid Glass on macOS 26+,
+    /// the existing hand-tinted material stack as the fallback below that.
+    @ViewBuilder
     private func searchFieldBackground(isFloaty: Bool, layout: LauncherLayoutMetrics) -> some View {
         let shape = RoundedRectangle(cornerRadius: layout.searchBarCornerRadius, style: .continuous)
-        return Group {
-            if isFloaty {
-                ZStack {
-                    searchBarBackgroundMaterial()
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(colorScheme == .dark ? 0.18 : 0.14),
-                            Color(red: 0.76, green: 0.86, blue: 0.99).opacity(colorScheme == .dark ? 0.18 : 0.14),
-                            Color(red: 0.54, green: 0.66, blue: 0.88).opacity(colorScheme == .dark ? 0.16 : 0.10)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    Color.white.opacity(colorScheme == .dark ? 0.08 : 0.10)
-                        .blendMode(.screen)
-                }
-                .overlay(
-                    shape.strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.36 : 0.28), lineWidth: 0.9)
+        if #available(macOS 26, *) {
+            // interactive glass intentionally NOT used here: its live hover/press event
+            // tracking was found to interfere with didTapInteractiveView()'s hitTest-based
+            // click-outside-to-dismiss check, causing every click to dismiss the launcher.
+            Color.clear
+                .glassSurface(
+                    cornerRadius: layout.searchBarCornerRadius,
+                    tint: isFloaty ? .prominent : .regular
                 )
-                .overlay(
-                    shape.strokeBorder(Color.black.opacity(colorScheme == .dark ? 0.28 : 0.12), lineWidth: 0.6)
-                        .blendMode(.overlay)
-                )
-            } else {
+        } else if isFloaty {
+            ZStack {
                 searchBarBackgroundMaterial()
+                LinearGradient(
+                    colors: [
+                        Color.white.opacity(colorScheme == .dark ? 0.18 : 0.14),
+                        Color(red: 0.76, green: 0.86, blue: 0.99).opacity(colorScheme == .dark ? 0.18 : 0.14),
+                        Color(red: 0.54, green: 0.66, blue: 0.88).opacity(colorScheme == .dark ? 0.16 : 0.10)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                Color.white.opacity(colorScheme == .dark ? 0.08 : 0.10)
+                    .blendMode(.screen)
             }
+            .overlay(
+                shape.strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.36 : 0.28), lineWidth: 0.9)
+            )
+            .clipShape(shape)
+        } else {
+            searchBarBackgroundMaterial()
+                .clipShape(shape)
         }
-        .clipShape(shape)
+    }
+
+    /// Outer stroke for the search field. Real glass on macOS 26+ already supplies its own
+    /// edge highlight, so the decorative stroke only remains for the multi-select selection ring.
+    private func searchFieldStrokeColor(isFloaty: Bool) -> Color {
+        if isMultiSelectModeActive {
+            return Color.accentColor.opacity(0.7)
+        }
+        if #available(macOS 26, *) {
+            return .clear
+        }
+        return isFloaty
+            ? (usesDarkSearchBarAppearance ? Color.white.opacity(0.4) : Color.black.opacity(0.18))
+            : Color.white.opacity(0.25)
     }
 
     private var isSearchControlsVisible: Bool {
@@ -5906,6 +5958,7 @@ struct LauncherView: View {
             .opacity(isSearchControlsVisible ? 0 : 1)
             .allowsHitTesting(!isSearchControlsVisible)
             .help(searchText.isEmpty ? String(localized: "GridMoreActionsButton") : String(localized: "GridSearchClearButton"))
+            .markInteractiveForDismissDetection()
 
             HStack(spacing: 12) {
                 Button {
@@ -5919,6 +5972,7 @@ struct LauncherView: View {
                 }
                 .buttonStyle(.plain)
                 .help(String(localized: "StatusBarInfoButton"))
+                .markInteractiveForDismissDetection()
 
                 multiSelectToggleControl()
 
@@ -5933,6 +5987,7 @@ struct LauncherView: View {
                 }
                 .buttonStyle(.plain)
                 .help(String(localized: "StatusBarLauncherSettingsButton"))
+                .markInteractiveForDismissDetection()
             }
             .padding(.trailing, 14)
             .opacity(isSearchControlsVisible ? 1 : 0)
@@ -6003,6 +6058,7 @@ struct LauncherView: View {
         .buttonStyle(.plain)
         .contentShape(Circle())
         .help(isMultiSelectModeActive ? String(localized: "GridExitMultiSelectButton") : String(localized: "GridEnterMultiSelectButton"))
+        .markInteractiveForDismissDetection()
     }
 
     /// Toggles expansion state for compact search controls.

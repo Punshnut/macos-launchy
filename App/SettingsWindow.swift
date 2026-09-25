@@ -123,9 +123,11 @@ struct SettingsWindow: View {
     // MARK: - Tabs
 
     private var tabBar: some View {
-        HStack(spacing: 6) {
-            ForEach(SettingsTab.allCases) { tab in
-                tabButton(for: tab)
+        AdaptiveGlassContainer {
+            HStack(spacing: 6) {
+                ForEach(SettingsTab.allCases) { tab in
+                    tabButton(for: tab)
+                }
             }
         }
         .padding(5)
@@ -435,15 +437,11 @@ struct SettingsWindow: View {
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
         }
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .stroke(Color.white.opacity(0.10), lineWidth: 0.8)
-                )
+        .glassSurface(cornerRadius: GlassRadii.card)
+        .overlay(
+            RoundedRectangle(cornerRadius: GlassRadii.card, style: .continuous)
+                .stroke(Color.white.opacity(0.10), lineWidth: 0.8)
         )
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     private var backgroundStyleSection: some View {
@@ -563,7 +561,7 @@ struct SettingsWindow: View {
             } label: {
                 Label(String(localized: "SettingsResetArrangementButton"), systemImage: "arrow.counterclockwise.circle")
             }
-            .buttonStyle(.borderedProminent)
+            .glassProminentButtonStyle()
             .tint(.red)
 
             Text(String(localized: "SettingsResetArrangementBody"))
@@ -589,7 +587,7 @@ struct SettingsWindow: View {
                 } label: {
                     Label(String(localized: "BackupExportButton"), systemImage: "arrow.down.doc.fill")
                 }
-                .buttonStyle(.borderedProminent)
+                .glassProminentButtonStyle()
 
                 Button {
                     settingsStore.importBackup(hostingWindow: hostingWindow)
@@ -655,10 +653,9 @@ struct SettingsWindow: View {
                 .glassListScrollBackground()
             }
         }
-        .background(glassListBackground(cornerRadius: 22, highlight: true))
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .glassSurface(cornerRadius: GlassRadii.panel)
         .overlay(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: GlassRadii.panel, style: .continuous)
                 .stroke(LinearGradient(
                     colors: [Color.white.opacity(0.45), Color.white.opacity(0.08)],
                     startPoint: .topLeading,
@@ -805,15 +802,11 @@ struct SettingsWindow: View {
                 urlString: "https://github.com/Punshnut/macos-launchy"
             )
         }
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(Color.white.opacity(0.10), lineWidth: 0.8)
-                )
+        .glassSurface(cornerRadius: GlassRadii.card)
+        .overlay(
+            RoundedRectangle(cornerRadius: GlassRadii.card, style: .continuous)
+                .stroke(Color.white.opacity(0.10), lineWidth: 0.8)
         )
-        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 
     @ViewBuilder
@@ -854,7 +847,7 @@ struct SettingsWindow: View {
             } label: {
                 Label(String(localized: "SettingsAboutGitHubButton"), systemImage: "chevron.right.circle")
             }
-            .buttonStyle(.borderedProminent)
+            .glassProminentButtonStyle()
         }
         .frame(maxWidth: .infinity, alignment: .center)
     }
@@ -986,17 +979,10 @@ struct SettingsWindow: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color.white.opacity(0.03))
-                .background(
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .fill(.ultraThinMaterial)
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .stroke(Color.white.opacity(0.08), lineWidth: 1)
-                )
+        .glassSurface(cornerRadius: GlassRadii.card)
+        .overlay(
+            RoundedRectangle(cornerRadius: GlassRadii.card, style: .continuous)
+                .stroke(Color.white.opacity(0.08), lineWidth: 1)
         )
     }
 
@@ -1015,25 +1001,6 @@ struct SettingsWindow: View {
         .aspectRatio(contentMode: .fit)
         .frame(width: 32, height: 32)
         .cornerRadius(6)
-    }
-
-    /// Shared translucent card background for list-style settings panes.
-    private func glassListBackground(cornerRadius: CGFloat = 22, highlight: Bool = false) -> some View {
-        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            .fill(.ultraThinMaterial)
-            .overlay(
-                LinearGradient(
-                    colors: highlight
-                        ? [Color.white.opacity(0.28), Color.white.opacity(0.05)]
-                        : [Color.white.opacity(0.22), Color.white.opacity(0.04)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .stroke(Color.white.opacity(0.12), lineWidth: 0.6)
-            )
     }
 
     /// Launches the onboarding flow from the About tab without marking completion.
@@ -1184,12 +1151,9 @@ private struct HotkeyRecorderRow: View {
                 .foregroundStyle(.secondary)
         }
         .padding(10)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(.ultraThinMaterial)
-        )
+        .glassSurface(cornerRadius: GlassRadii.card)
         .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
+            RoundedRectangle(cornerRadius: GlassRadii.card, style: .continuous)
                 .stroke(LinearGradient(
                     colors: [Color.white.opacity(0.25), Color.white.opacity(0.06)],
                     startPoint: .topLeading,
@@ -1366,19 +1330,9 @@ struct GlassListScrollBackground: ViewModifier {
     /// Wraps tab content in shared panel spacing and transition defaults.
     func body(content: Content) -> some View {
         content
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(.ultraThinMaterial)
-                    .overlay(
-                        LinearGradient(
-                            colors: [Color.white.opacity(0.16), Color.white.opacity(0.04)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-            )
+            .glassSurface(cornerRadius: GlassRadii.panel)
             .overlay(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                RoundedRectangle(cornerRadius: GlassRadii.panel, style: .continuous)
                     .stroke(Color.white.opacity(0.05), lineWidth: 0.8)
             )
     }

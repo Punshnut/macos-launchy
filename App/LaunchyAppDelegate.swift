@@ -70,6 +70,15 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var lastLauncherVisibilityChange = Date()
     private var needsRefreshOnNextShow = false
 
+    /// Opts out of AppKit's automatic window-state restoration so the SwiftUI `Settings`
+    /// scene (kept only to anchor the app-menu Settings… item) never silently reopens an
+    /// unstyled second window on next launch. The app's real windows (floaty/fullscreen
+    /// launcher, the real settings window) are built programmatically each time and don't
+    /// depend on restoration.
+    func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
+        false
+    }
+
     /// Bootstraps settings, items, and window state.
     func applicationDidFinishLaunching(_ notification: Notification) {
         LaunchyLogger.startup()
@@ -77,6 +86,57 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         bootstrapApplication()
         enforceMinimalMainMenu()
         scheduleRunloopProbes(label: "post-launch")
+        closeStrayAutoPresentedSettingsWindowIfNeeded()
+    }
+
+    /// The `Settings` scene in `LaunchyApp.swift` exists only to anchor the app-menu
+    /// "Settings…" item/Cmd+,. Since Launchy declares no `WindowGroup`, AppKit treats that
+    /// scene as the app's de-facto main window and auto-presents its own plain-chrome
+    /// instance of it on every launch. That window isn't created synchronously during
+    /// `applicationDidFinishLaunching` — SwiftUI's scene machinery creates it on a later
+    /// run-loop turn — so instead of guessing a fixed delay, watch for any window becoming
+    /// key during the first few seconds after launch and close the stray one on sight
+    /// (never the real one `settingsWindowPresenter` owns, which is only created on demand).
+    private var strayAutoPresentedSettingsWindowObserver: NSObjectProtocol?
+
+    private func closeStrayAutoPresentedSettingsWindowIfNeeded() {
+        closeAnyUnownedSettingsWindow()
+        let observer = NotificationCenter.default.addObserver(
+            forName: NSWindow.didBecomeKeyNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.closeAnyUnownedSettingsWindow()
+        }
+        strayAutoPresentedSettingsWindowObserver = observer
+
+        // Belt-and-suspenders: didBecomeKeyNotification may not fire if the stray window
+        // never becomes key, so also poll unconditionally for the first few seconds.
+        let pollTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            self?.closeAnyUnownedSettingsWindow()
+        }
+        RunLoop.main.add(pollTimer, forMode: .common)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+            pollTimer.invalidate()
+            guard let self, let token = self.strayAutoPresentedSettingsWindowObserver else { return }
+            NotificationCenter.default.removeObserver(token)
+            self.strayAutoPresentedSettingsWindowObserver = nil
+        }
+    }
+
+    private func closeAnyUnownedSettingsWindow() {
+        let ownedWindow = settingsWindowPresenter.window
+        for window in NSApp.windows where window !== ownedWindow {
+            // SwiftUI hosts the auto-presented `Settings` scene through a private
+            // `AppKitWindowHostingController` wrapper, not a plain `NSHostingController<SettingsWindow>`
+            // (confirmed by logging the runtime type) — this app declares no other SwiftUI Scene,
+            // so this type name uniquely identifies the stray scene window.
+            guard let contentViewController = window.contentViewController else { continue }
+            let vcTypeName = String(describing: type(of: contentViewController))
+            guard vcTypeName.contains("AppKitWindowHostingController") else { continue }
+            window.close()
+        }
     }
 
     /// Reapplies menu pruning after the app is foregrounded and reveals the launcher (e.g. on Cmd-Tab), mirroring the Dock-icon reopen behavior.

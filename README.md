@@ -1,11 +1,11 @@
 # Launchy Launchpad
 
 Launchy Launchpad is the free open-source Launchpad alternative macOS users have been waiting for. Fullscreen mode mirrors the classic Launchpad experience but adds richer controls, while Floaty Mode doubles as a HUD with fast toggles that match the new macOS design without changing the behavior you rely on. 
-It scans your apps, caches icons, and keeps a responsive grid ready on every Space - a universal binary that runs natively on both Apple Silicon (M‑series) and Intel Macs.
+It scans your apps, caches icons, and keeps a responsive grid ready on every Space - a universal binary that runs natively on both Apple Silicon (M-series) and Intel Macs.
 
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-native-000000?style=flat&logo=apple" alt="macOS native">
-  <img src="https://img.shields.io/badge/Stage-Beta-yellow" alt="Stage Beta">
+  <img src="https://img.shields.io/badge/Stage-Stable-brightgreen" alt="Stage Stable">
   <img src="https://img.shields.io/badge/License-AGPL--3.0-blue.svg" alt="License: AGPL-3.0">
 </p>
 
@@ -59,37 +59,30 @@ It scans your apps, caches icons, and keeps a responsive grid ready on every Spa
 
 ## Search that just works
 
-- **Bilingual smart match** - Searches English and your system language at once; whichever name you remember just works.
-- **Normalized substring matching** - Folds case/diacritics across names and bundle IDs, so `"cafe"` hits `"Café"` and `"face"` hits `"FaceTime"`.
-- **Instant feedback** - Light debounce + cached metadata for live results; hit `Return` for the top hit or arrows to pick another without leaving the field.
+Type a couple of letters and the grid filters live. Search is bilingual
+(your name for an app in English or your system language both work),
+forgiving of case and accents, and matches substrings anywhere in a name or
+bundle ID, so `"cafe"` still finds `"Café"`. Press `Return` for the top hit
+or arrow to another without leaving the field.
 
-## Gestures (touchpad or mouse)
+## Gestures and shortcuts
 
-- **Swipe left/right** anywhere on the HUD to change pages.
-- **Scroll wheel** up/down for the same paging behavior (works on classic mouse wheels and Magic Mouse).
-- **Smooth scrolling** accumulates movement; small flicks will still flip pages once they cross a threshold.
-- **Tap the background** to close Launchy quickly.
+Page through your grid however feels natural: swipe or scroll with a
+trackpad/mouse, or use the arrow keys. Everything else, opening Launchy,
+toggling fullscreen and floaty mode, jumping straight to a page, is
+keyboard-shortcut driven and fully configurable in Settings.
 
-## Keyboard shortcuts
+## Organizing your grid
 
-- **Show / hide Launchy:** configurable in Settings - set it to `Shift` + `Space` for a comfortable, launchpad-style trigger; `Ctrl` + `X` is a solid alternative if that combo isn’t already taken.
-- **Toggle fullscreen ⇄ floaty palette:** configurable in Settings (no default)
-- **Launch search result:** `Return` fires the first match without leaving the search field
-- **Page with arrows:** left/right arrows flip between pages
-- **Open settings:** `Cmd` + `,`
-- **Direct page jumps:** hold `Control` and tap a number key (1‑9 or `0` for page 10) to instantly switch pages while the launcher is visible
-- **Hotkey options:** set hotkeys with letters, numbers, punctuation, arrows, function keys, keypad keys, and media keys (volume/brightness/playback), plus any combo of `Cmd`/`Option`/`Shift`/`Ctrl`. If a media key doesn’t trigger globally, our app may need Input Monitoring permission.
+Right-click any tile for rename, hide, move, or folder options. Hold
+`Option` while dragging to build a folder, or hold `Shift` while dragging
+to swap two tiles without reshuffling everything else. Hidden apps,
+backups, and a clean-slate reset all live in Settings, and none of it
+touches the custom names or hidden states you've already set up.
 
-## Quick tips
-
-- **Right-click any icon** for rename, move, hide, Finder reveal, or folder shortcuts.
-- **Hold Shift while dragging** to swap two icons without the grid reshuffling; hold `Option` to create a folder or drop into one without disturbing the grid.
-- **Floaty mode** keeps the quick palette feel; assign a hotkey to jump between fullscreen and HUD instantly instead of mouse-only taps.
-- **Use the Visuals tab** to pick standard, light blur, transparent, or solid color backgrounds (with a color palette) and decide if icons auto-fill gaps.
-- **Hidden Apps** tab lets you include ~/Applications, mute noisy tools, or pin hidden entries to the top for quick toggling.
-- **Shortcuts tab** sets the launcher hotkey, fullscreen ⇄ floaty toggle, and hot corner; Launchy still opens even if both Dock and menu bar icons are hidden.
-- **Reset the grid** from Settings when you want a clean slate - **custom names and hidden states stay intact** - and enable Launch at Login so it’s ready after a reboot.
-- **Backups** manual export/restore in Settings plus quiet auto-backups (max every 48h on unchanged refresh) in `~/Library/Application Support/Launchy/AutoBackup` with the latest 14 kept.
+**Want the full walkthrough?** The [wiki](https://github.com/Punshnut/macos-launchy/wiki)
+covers all of this as a proper user guide, with use cases and a tour of
+every Settings tab, not just a feature list.
 
 ## License & support
 
@@ -100,6 +93,11 @@ It scans your apps, caches icons, and keeps a responsive grid ready on every Spa
 ## Get Launchy
 
 - <a href="https://github.com/Punshnut/macos-launchy/releases/latest">Download Launchy for free</a> and enjoy automatic updates.
+
+## Contributing
+
+- **Build it yourself** - want to compile Launchy from source, test an unreleased change, or send a pull request? See [CONTRIBUTING.md](CONTRIBUTING.md) for a full walkthrough.
+- **Using AI to contribute?** Read [AI_POLICY.md](AI_POLICY.md) first.
 
 ## Roadmap
 

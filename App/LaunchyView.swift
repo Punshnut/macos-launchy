@@ -1087,7 +1087,7 @@ struct LauncherView: View {
             } else if let folder = newValue {
                 stopDragEdgePaging()
                 lastActiveFolderID = folder.id
-                // folderIconWaveToggle being true means the overlay is already visible —
+                // folderIconWaveToggle being true means the overlay is already visible,
                 // this is a data sync (app moved in/out of folder), not a fresh open.
                 // Skip the opening animation resets so the overlay stays visible.
                 let isFreshOpen = folderIconWaveToggle == false

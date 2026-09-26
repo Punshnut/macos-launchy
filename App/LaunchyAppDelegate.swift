@@ -93,8 +93,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// "Settings…" item/Cmd+,. Since Launchy declares no `WindowGroup`, AppKit treats that
     /// scene as the app's de-facto main window and auto-presents its own plain-chrome
     /// instance of it on every launch. That window isn't created synchronously during
-    /// `applicationDidFinishLaunching` — SwiftUI's scene machinery creates it on a later
-    /// run-loop turn — so instead of guessing a fixed delay, watch for any window becoming
+    /// `applicationDidFinishLaunching`, SwiftUI's scene machinery creates it on a later
+    /// run-loop turn, so instead of guessing a fixed delay, watch for any window becoming
     /// key during the first few seconds after launch and close the stray one on sight
     /// (never the real one `settingsWindowPresenter` owns, which is only created on demand).
     private var strayAutoPresentedSettingsWindowObserver: NSObjectProtocol?
@@ -130,7 +130,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         for window in NSApp.windows where window !== ownedWindow {
             // SwiftUI hosts the auto-presented `Settings` scene through a private
             // `AppKitWindowHostingController` wrapper, not a plain `NSHostingController<SettingsWindow>`
-            // (confirmed by logging the runtime type) — this app declares no other SwiftUI Scene,
+            // (confirmed by logging the runtime type), this app declares no other SwiftUI Scene,
             // so this type name uniquely identifies the stray scene window.
             guard let contentViewController = window.contentViewController else { continue }
             let vcTypeName = String(describing: type(of: contentViewController))
@@ -278,7 +278,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         LaunchyLogger.log("bootstrap: loading apps (hidden=\(currentSettings.hiddenBundleIDs.count) scanUser=\(currentSettings.shouldScanUserApplicationsFolder))")
         // Discover apps using the latest hidden/background choices so the first render is accurate.
-        // Skip icon preheating here — icons will be loaded on first launcher show, avoiding unnecessary
+        // Skip icon preheating here, icons will be loaded on first launcher show, avoiding unnecessary
         // CPU burn at startup when the window may never appear.
         refreshLauncherItems(shouldPreheatIcons: false)
 
@@ -629,7 +629,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             guard let window = controller?.window else { return }
             let isOnscreen = window.occlusionState.contains(.visible)
             let alpha = window.alphaValue
-            // Only nudge if alpha is truly stuck near zero — not during an in-progress fade-in animation.
+            // Only nudge if alpha is truly stuck near zero, not during an in-progress fade-in animation.
             guard alpha < 0.1 || isOnscreen == false else { return }
 
             window.alphaValue = 1
@@ -1578,7 +1578,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             limit: limit
         )
 
-        // Folder preview tiles render at 0.6× base dimension — a different cache key than above.
+        // Folder preview tiles render at 0.6× base dimension, a different cache key than above.
         // Prewarming this size prevents synchronous resizing on the main thread during transitions.
         let folderTileDimension = preferredIconRenderDimension(for: mode) * 0.6
         applicationDiscovery.preheatIcons(

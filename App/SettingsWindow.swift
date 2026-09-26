@@ -1262,7 +1262,7 @@ private struct TabButtonView: View {
     }
 }
 
-/// Flat press style: scales down slightly and dims — no shadows.
+/// Flat press style: scales down slightly and dims, no shadows.
 private struct TabPressStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

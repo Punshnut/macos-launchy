@@ -123,7 +123,7 @@ final class LauncherWindowController: NSWindowController {
         LaunchyLogger.log("LauncherWindowController presentWindow: start mode=\(launcherMode) visible=\(window.isVisible) skip=\(skipEntranceAnimation)")
         updateFrameForPreferredScreenIfNeeded()
         let originalFrame = window.frame
-        // Floaty entrance: simple alpha fade only — no content-view offset to avoid the alpha-stuck-at-0 race that bit us before.
+        // Floaty entrance: simple alpha fade only, no content-view offset to avoid the alpha-stuck-at-0 race that bit us before.
         let shouldAnimateFloatyEntrance = window.isVisible == false
             && skipEntranceAnimation == false
             && launcherMode == .floaty

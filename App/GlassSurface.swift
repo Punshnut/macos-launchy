@@ -37,7 +37,7 @@ extension View {
 }
 
 /// Wraps sibling glass surfaces so macOS 26+ can merge/morph them into one glass group.
-/// Below macOS 26 this is a transparent passthrough — no extra cost is added on older systems.
+/// Below macOS 26 this is a transparent passthrough, no extra cost is added on older systems.
 struct AdaptiveGlassContainer<Content: View>: View {
     @ViewBuilder var content: Content
 

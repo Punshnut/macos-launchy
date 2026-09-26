@@ -18,7 +18,7 @@ extension View {
     /// Marks this view's frame as "interactive" for the launcher's click-outside-to-dismiss
     /// logic. AppKit's native `hitTest`/`NSButton`-ancestor check (`didTapInteractiveView()` in
     /// `LaunchyView.swift`) doesn't reliably recognize SwiftUI `.buttonStyle(.plain)` controls on
-    /// every macOS version — this reports the control's real frame directly from SwiftUI's own
+    /// every macOS version, this reports the control's real frame directly from SwiftUI's own
     /// layout instead, so a click's location can be tested against it without depending on how
     /// AppKit happens to back the control.
     func markInteractiveForDismissDetection() -> some View {

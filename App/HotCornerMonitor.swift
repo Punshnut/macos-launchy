@@ -18,7 +18,7 @@ final class HotCornerMonitor {
     private var isMonitoringEnabled = false
     private nonisolated(unsafe) var isEvalPending = false
     /// Pre-computed activation rects in screen coordinates, updated on screen/corner changes.
-    /// Accessed from the background event thread — nonisolated(unsafe) is safe here because
+    /// Accessed from the background event thread, nonisolated(unsafe) is safe here because
     /// writes happen only on the main actor and reads only check geometry (no object graph).
     private nonisolated(unsafe) var cachedCornerRects: [CGRect] = []
 

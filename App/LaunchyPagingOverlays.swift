@@ -237,7 +237,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         }
 
         /// Maps accumulated deltas from "precise but phaseless" devices (hasPreciseScrollingDeltas == true,
-        /// but phase/momentumPhase never populated — typical of Logitech Options+/generic-HID mice) to
+        /// but phase/momentumPhase never populated, typical of Logitech Options+/generic-HID mice) to
         /// discrete next/previous page triggers. Unlike genuinely non-precise wheel mice, which report
         /// roughly one unit per physical notch, these devices can emit many small/fractional deltas per
         /// notch (hi-res scrolling), so per-event thresholding isn't enough: deltas are accumulated until

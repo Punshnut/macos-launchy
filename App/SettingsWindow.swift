@@ -116,8 +116,46 @@ struct SettingsWindow: View {
             Text(versionSummary())
                 .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .foregroundColor(subtitleColor)
+            privateBuildBadge
         }
         .allowsHitTesting(false)
+    }
+
+    /// A small, playful badge shown only when the running app was built by
+    /// an end user (e.g. via `scripts/build_app.sh`) rather than an
+    /// official signed release. See `BuildProvenance`.
+    @ViewBuilder
+    private var privateBuildBadge: some View {
+        if !BuildProvenance.isOfficialBuild {
+            Text(String(localized: "PrivateBuildLabel"))
+                .font(.system(size: 7, weight: .bold))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 2)
+                .background(
+                    Capsule().fill(
+                        LinearGradient(
+                            colors: [Color.orange, Color.pink],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                )
+        }
+    }
+
+    /// Inline link to the official releases page, shown only on self-built
+    /// copies, right next to the version text on the About tab.
+    @ViewBuilder
+    private var officialDownloadHint: some View {
+        if !BuildProvenance.isOfficialBuild {
+            Link(destination: URL(string: "https://github.com/Punshnut/macos-launchy/releases/latest")!) {
+                Label(String(localized: "GetOfficialVersionLabel"), systemImage: "arrow.down.circle")
+                    .labelStyle(.titleAndIcon)
+                    .font(.system(size: 10, weight: .semibold))
+            }
+            .foregroundStyle(Color.accentColor)
+        }
     }
 
     // MARK: - Tabs
@@ -775,9 +813,13 @@ struct SettingsWindow: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
 
-            Text(versionSummary())
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            HStack(spacing: 6) {
+                Text(versionSummary())
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                privateBuildBadge
+                officialDownloadHint
+            }
         }
         .frame(maxWidth: .infinity)
     }

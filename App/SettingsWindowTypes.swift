@@ -1,4 +1,5 @@
 import SwiftUI
+import Security
 
 /// Tabs available in the settings window sidebar.
 enum SettingsTab: Int, CaseIterable, Identifiable {
@@ -64,4 +65,34 @@ struct SettingsWindowMetrics {
             return aboutHeight
         }
     }
+}
+
+/// Distinguishes an officially signed/notarized release from a copy someone
+/// built themselves (e.g. via `scripts/build_app.sh`, `swift build`, or
+/// `swift run`). Self-built copies are unsigned or ad-hoc signed, so the
+/// running app's code-signature Team ID is a tamper-resistant signal that
+/// can't be spoofed via a build-time flag. Used by the About tab and the
+/// settings top bar to show a "homemade" hint.
+enum BuildProvenance {
+    /// Jan's Developer ID Team ID, as printed by `print_team_id.sh`
+    /// against a signed release build.
+    private static let expectedTeamID = "JHV68VH5AC"
+
+    static let isOfficialBuild: Bool = {
+        var staticCode: SecStaticCode?
+        guard SecStaticCodeCreateWithPath(Bundle.main.bundleURL as CFURL, [], &staticCode) == errSecSuccess,
+              let code = staticCode else {
+            return false
+        }
+        guard SecStaticCodeCheckValidity(code, [], nil) == errSecSuccess else {
+            return false
+        }
+        var signingInformation: CFDictionary?
+        guard SecCodeCopySigningInformation(code, SecCSFlags(rawValue: kSecCSSigningInformation), &signingInformation) == errSecSuccess,
+              let info = signingInformation as? [String: Any],
+              let teamID = info[kSecCodeInfoTeamIdentifier as String] as? String else {
+            return false
+        }
+        return teamID == expectedTeamID
+    }()
 }

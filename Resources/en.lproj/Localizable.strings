@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Horizontal";
 "PagingDirectionVertical" = "Vertical";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Homemade";
+"GetOfficialVersionLabel" = "Grab the Official Build";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "How should the grid be sorted after reset?";

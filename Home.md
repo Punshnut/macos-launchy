@@ -63,5 +63,3 @@ AGPL-3.0.
   a place in your daily routine.
 
 Made with love.
-
-<!-- publish script test 1790496019 -->

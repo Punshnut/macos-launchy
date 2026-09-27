@@ -6,6 +6,8 @@ you'd use to compile the app from source and run it locally.
 - `build_app.sh` - builds a universal (Apple Silicon + Intel) `Launchy.app` from the
   Swift package, embeds Sparkle, and compiles the app icon. No signing or
   notarization involved, so the resulting app runs unsigned on your own machine.
+- `publish_wiki.sh` - publishes the `wiki/` folder to the live GitHub wiki via
+  `git subtree push`. See [CONTRIBUTING.md](../CONTRIBUTING.md#updating-the-wiki).
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full walkthrough, including setup
 requirements and how to run the build.

@@ -66,6 +66,17 @@ Since this build isn't signed or notarized, macOS Gatekeeper will flag it the
 first time you open it. That's expected: right-click the app, choose "Open",
 and confirm. You only need to do this once.
 
+## Updating the Wiki
+
+The [project wiki](https://github.com/Punshnut/macos-launchy/wiki) is published from the `wiki/` folder in this repo, so doc changes go through a normal PR like any other change:
+
+1. Edit the relevant `wiki/*.md` file(s) and open a PR against `dev` as usual.
+2. Once merged, publish it to the live wiki:
+   ```bash
+   ./scripts/publish_wiki.sh
+   ```
+   This adds a one-time `wiki` git remote pointing at `macos-launchy.wiki.git` if it isn't there yet, then pushes `wiki/` to it via `git subtree push`.
+
 ## Sending a pull request
 
 - Branch off `dev`, not `main`.

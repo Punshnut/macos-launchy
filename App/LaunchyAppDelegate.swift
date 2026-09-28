@@ -1531,6 +1531,20 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         )
     }
 
+    /// Immediately warms icons for the first page of search results, no debounce, for instant first paint.
+    private func preheatSearchFirstPageIcons(_ apps: [AppItem]) {
+        let uniqueApps = uniqueAppsByBundleID(apps)
+        guard uniqueApps.isEmpty == false else { return }
+        let mode = activeLauncherMode()
+        applicationDiscovery.preheatIcons(
+            for: uniqueApps,
+            targetDimension: preferredIconRenderDimension(for: mode),
+            qualities: [.low],
+            screenScale: launcherScreenScale(),
+            limit: uniqueApps.count
+        )
+    }
+
     /// Warms icons for the currently visible pages to avoid visual pop-in while paging.
     private func warmVisiblePageIcons(_ apps: [AppItem]) {
         visiblePageWarmupTask?.cancel()
@@ -2028,8 +2042,14 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                     pageCapacity: config.pageCapacity
                 )
             },
+            onVisiblePagesChanged: { [weak self] apps in
+                self?.prewarmLikelyPageIcons(apps)
+            },
             onPageSwitchPrewarm: { [weak self] apps in
                 self?.prewarmLikelyPageIcons(apps)
+            },
+            onSearchResultsFirstPage: { [weak self] apps in
+                self?.preheatSearchFirstPageIcons(apps)
             },
             iconProvider: { [weak self] app, dimension, quality, scale in
                 guard let self else { return nil }

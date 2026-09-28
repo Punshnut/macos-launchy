@@ -252,6 +252,8 @@ struct LauncherView: View {
     var onVisiblePagesChanged: (([AppItem]) -> Void)?
     /// Callback fired before a page switch to prewarm likely icon work.
     var onPageSwitchPrewarm: (([AppItem]) -> Void)?
+    /// Callback fired immediately (no debounce) when new search results land, with the first page's apps.
+    var onSearchResultsFirstPage: (([AppItem]) -> Void)?
     /// Provides the icon that should be for a specific app.
     var iconProvider: @Sendable (AppItem, CGFloat, IconRenderQuality, CGFloat) -> NSImage? = { app, _, _, _ in app.iconImage }
 
@@ -830,6 +832,8 @@ struct LauncherView: View {
     private var highQualityRequestDelay: TimeInterval { performanceTuning.highQualityRequestDelay }
     private var searchInputDebounceNanoseconds: UInt64 { performanceTuning.searchInputDebounceNanoseconds }
     private var searchMetadataDebounceNanoseconds: UInt64 { performanceTuning.searchMetadataDebounceNanoseconds }
+    /// Shorter debounce for a search session's first keystroke, which has nothing to coalesce with yet.
+    private let firstKeystrokeSearchDebounceNanoseconds: UInt64 = 12_000_000
     private var visiblePagesDebounceNanoseconds: UInt64 { performanceTuning.visiblePagesDebounceNanoseconds }
     private var scrollCoalescingNanoseconds: UInt64 { performanceTuning.scrollCoalescingNanoseconds }
     private var pageRasterizationThreshold: CGFloat { performanceTuning.pageRasterizationThreshold }
@@ -960,6 +964,7 @@ struct LauncherView: View {
         onItemOrderChange: (([LauncherItem], [Int]) -> Void)? = nil,
         onVisiblePagesChanged: (([AppItem]) -> Void)? = nil,
         onPageSwitchPrewarm: (([AppItem]) -> Void)? = nil,
+        onSearchResultsFirstPage: (([AppItem]) -> Void)? = nil,
         iconProvider: @escaping @Sendable (AppItem, CGFloat, IconRenderQuality, CGFloat) -> NSImage? = { app, _, _, _ in app.iconImage }
     ) {
         self.itemCatalog = itemCatalog
@@ -976,6 +981,7 @@ struct LauncherView: View {
         self.onItemOrderChange = onItemOrderChange
         self.onVisiblePagesChanged = onVisiblePagesChanged
         self.onPageSwitchPrewarm = onPageSwitchPrewarm
+        self.onSearchResultsFirstPage = onSearchResultsFirstPage
         self.iconProvider = iconProvider
         let metadata = Self.buildSearchMetadata(from: itemCatalog)
         _orderedItems = State(initialValue: itemCatalog)
@@ -3148,6 +3154,10 @@ struct LauncherView: View {
         pendingSearchPageReset = false
         clampSearchSelectionIfNeeded()
         alignSearchSelectionWithCurrentPageIfNeeded()
+        if hasActiveSearchQuery, let onSearchResultsFirstPage {
+            let firstPageApps = Self.collectApps(from: itemsForPage(0, sizes: displayPageSizes))
+            onSearchResultsFirstPage(firstPageApps)
+        }
         notifyVisiblePagesChanged()
     }
 
@@ -3165,8 +3175,16 @@ struct LauncherView: View {
         }
 
         isSearchLoading = true
+        // Skip the coalescing delay on the first keystroke of a new search session -- there's
+        // nothing yet to coalesce with, so the debounce would only add latency.
+        let isFirstKeystrokeOfSession = lastNormalizedSearchQuery.isEmpty
+        let delay = isFirstKeystrokeOfSession
+            ? min(searchInputDebounceNanoseconds, firstKeystrokeSearchDebounceNanoseconds)
+            : searchInputDebounceNanoseconds
         searchDebounceTask = Task {
-            try? await Task.sleep(nanoseconds: searchInputDebounceNanoseconds)
+            if delay > 0 {
+                try? await Task.sleep(nanoseconds: delay)
+            }
             guard Task.isCancelled == false else { return }
             await MainActor.run {
                 updateFilteredItems()

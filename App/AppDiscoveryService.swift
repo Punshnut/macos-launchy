@@ -65,6 +65,8 @@ final class AppDiscoveryService {
     private let appCachePersistenceQueue = DispatchQueue(label: "com.launchy.app-cache-persistence", qos: .utility)
     private let appCacheURL: URL
     private var cachedAppsByBundleID: [String: CachedAppRecord]
+    /// Directory holding disk-persisted `.low`-quality icon thumbnails, warm across app relaunches.
+    private let iconDiskCacheDirectory: URL
     private lazy var defaultApplicationIconData: Data? = {
         let icon: NSImage
         if #available(macOS 12.0, *) {
@@ -102,6 +104,7 @@ final class AppDiscoveryService {
         self.appCacheURL = supportDirectory.appendingPathComponent("app-catalog.json")
         self.cachedAppsByBundleID = Self.loadCachedApps(from: appCacheURL)
         self.appearanceCacheToken = Self.appearanceToken(for: nil)
+        self.iconDiskCacheDirectory = supportDirectory.appendingPathComponent("IconThumbnails", isDirectory: true)
 
         configureIconCacheLimits()
     }
@@ -305,9 +308,17 @@ final class AppDiscoveryService {
             return cached
         }
 
+        if quality == .low, let diskCached = loadDiskCachedLowIcon(for: app) {
+            cachePreparedIcon(diskCached, forKey: cacheKey, bundleIdentifier: app.bundleIdentifier)
+            return diskCached
+        }
+
         guard let baseIcon = resolveIcon(for: app) else { return nil }
         let sized = resizedIcon(baseIcon, pixelDimension: pixelDimension, quality: quality)
         cachePreparedIcon(sized, forKey: cacheKey, bundleIdentifier: app.bundleIdentifier)
+        if quality == .low {
+            saveDiskCachedLowIcon(sized, for: app)
+        }
         return sized
     }
 
@@ -591,6 +602,7 @@ final class AppDiscoveryService {
             }
         }
         preparedIconKeysByBundleID[bundleIdentifier] = nil
+        removeDiskCachedLowIcon(for: bundleIdentifier)
     }
 
     /// Returns the modification date of the app bundle if available.
@@ -599,6 +611,60 @@ final class AppDiscoveryService {
             return nil
         }
         return values.contentModificationDate
+    }
+
+    /// Sanitizes a bundle identifier into a safe on-disk file name.
+    private func diskCacheFileURL(for bundleIdentifier: String) -> URL {
+        let safeName = bundleIdentifier.replacingOccurrences(of: "/", with: "_")
+        return iconDiskCacheDirectory.appendingPathComponent("\(safeName).png")
+    }
+
+    /// Loads a persisted `.low`-quality icon thumbnail from disk, validating it isn't stale.
+    private func loadDiskCachedLowIcon(for app: AppItem) -> NSImage? {
+        guard let bundleURL = app.bundleURL else { return nil }
+        let fileURL = diskCacheFileURL(for: app.bundleIdentifier)
+        guard fileSystem.fileExists(atPath: fileURL.path) else { return nil }
+        guard let fileAttributes = try? fileSystem.attributesOfItem(atPath: fileURL.path),
+              let fileModificationDate = fileAttributes[.modificationDate] as? Date else {
+            return nil
+        }
+        if let bundleModificationDate = bundleModificationDate(bundleURL),
+           bundleModificationDate > fileModificationDate {
+            // App was updated after the thumbnail was cached -- treat as stale.
+            return nil
+        }
+        guard let data = try? Data(contentsOf: fileURL), let image = NSImage(data: data) else {
+            return nil
+        }
+        return image
+    }
+
+    /// Persists a `.low`-quality icon thumbnail to disk, fire-and-forget on a background queue.
+    private func saveDiskCachedLowIcon(_ image: NSImage, for app: AppItem) {
+        let bundleIdentifier = app.bundleIdentifier
+        let fileURL = diskCacheFileURL(for: bundleIdentifier)
+        let directory = iconDiskCacheDirectory
+        let fileManager = fileSystem
+        guard let tiffData = image.tiffRepresentation,
+              let bitmap = NSBitmapImageRep(data: tiffData),
+              let pngData = bitmap.representation(using: .png, properties: [:]) else {
+            return
+        }
+        iconPreparationQueue.async {
+            if fileManager.fileExists(atPath: directory.path) == false {
+                try? fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+            }
+            try? pngData.write(to: fileURL, options: .atomic)
+        }
+    }
+
+    /// Removes a bundle's persisted icon thumbnail, e.g. after an app update invalidates it.
+    private func removeDiskCachedLowIcon(for bundleIdentifier: String) {
+        let fileURL = diskCacheFileURL(for: bundleIdentifier)
+        let fileManager = fileSystem
+        iconPreparationQueue.async {
+            try? fileManager.removeItem(at: fileURL)
+        }
     }
 
     /// Directories scanned when discovering applications, optionally including ~/Applications.

@@ -39,6 +39,6 @@ work.
 
 ## Still stuck?
 
-Open an [issue](https://github.com/Punshnut/macos-launchy/issues), we're
+Open an [issue](https://github.com/Punshnut/macos-launchy/issues), I'm
 happy to help, and if something in these docs is out of date or unclear,
 a pull request fixing it is welcome too, see [Contributing](Contributing).

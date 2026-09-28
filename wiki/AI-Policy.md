@@ -27,7 +27,7 @@ your own explanation of why it's relevant. Keep quoted snippets short.
 
 AI can be a real help if English isn't your first language. If you're using
 it to polish your wording, make sure the result still sounds like you. For
-translations, we'd rather you write in your native language and include the
+translations, I'd rather you write in your native language and include the
 AI translation in a quote block alongside it.
 
 This policy is adapted from [uv's AI policy].

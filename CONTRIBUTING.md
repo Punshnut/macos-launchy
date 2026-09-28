@@ -89,5 +89,5 @@ The [project wiki](https://github.com/Punshnut/macos-launchy/wiki) is published 
 
 ## Questions or stuck?
 
-Open an issue, we're happy to help. And if anything in this guide is out of
+Open an issue, I'm happy to help. And if anything in this guide is out of
 date or confusing, a pull request fixing it is welcome too.

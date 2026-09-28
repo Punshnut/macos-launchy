@@ -78,7 +78,7 @@ and confirm. You only need to do this once.
 
 ## Questions or stuck?
 
-Open an issue, we're happy to help. And if anything here is out of date or
+Open an issue, I'm happy to help. And if anything here is out of date or
 confusing, a pull request fixing it is welcome too.
 
 ---

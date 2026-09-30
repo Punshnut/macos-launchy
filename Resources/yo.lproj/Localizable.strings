@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Pẹ̀tẹ́lẹ̀";
 "PagingDirectionVertical" = "Ináàró";
 "BetaLabel" = "Bẹ́tà";
+"PrivateBuildLabel" = "Ìkọ́lé ilé";
+"GetOfficialVersionLabel" = "Gba ẹ̀dà ìṣàkóso";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Báwo ni a ṣe yẹ kí a ṣètò gírídì lẹ́yìn ìtúnṣe?";

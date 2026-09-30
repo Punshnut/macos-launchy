@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Vaaka";
 "PagingDirectionVertical" = "Pysty";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Kotitekoinen";
+"GetOfficialVersionLabel" = "Hanki virallinen versio";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Kuinka ruudukko järjestetään nollauksen jälkeen?";

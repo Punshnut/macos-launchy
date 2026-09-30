@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "แนวนอน";
 "PagingDirectionVertical" = "แนวตั้ง";
 "BetaLabel" = "เบต้า";
+"PrivateBuildLabel" = "บิลด์โฮมเมด";
+"GetOfficialVersionLabel" = "รับเวอร์ชันทางการ";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "ต้องการจัดเรียงกริดอย่างไรหลังรีเซ็ต?";

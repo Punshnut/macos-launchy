@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "横";
 "PagingDirectionVertical" = "縦";
 "BetaLabel" = "ベータ";
+"PrivateBuildLabel" = "自家製ビルド";
+"GetOfficialVersionLabel" = "公式版を入手";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "リセット後、グリッドをどう並べ替えますか？";

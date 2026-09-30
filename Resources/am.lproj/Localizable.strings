@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "አግድም";
 "PagingDirectionVertical" = "ቁመት";
 "BetaLabel" = "ቤታ";
+"PrivateBuildLabel" = "የቤት ውስጥ ስሪት";
+"GetOfficialVersionLabel" = "ኦፊሴላዊ ስሪት ያግኙ";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "ከዳግም ማስጀመር በኋላ ፍርግሩ እንዴት ይሰርዛል?";

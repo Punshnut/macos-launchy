@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Horizontal";
 "PagingDirectionVertical" = "Vertical";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Hecho en casa";
+"GetOfficialVersionLabel" = "Consigue la versión oficial";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "¿Cómo debe ordenarse la cuadrícula después de restablecer?";

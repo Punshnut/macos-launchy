@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "ပြင်ညီ";
 "PagingDirectionVertical" = "ဒေါင်လိုက်";
 "BetaLabel" = "ဘီတာ";
+"PrivateBuildLabel" = "အိမ်တွင်းလုပ်";
+"GetOfficialVersionLabel" = "တရားဝင်ဗားရှင်းရယူရန်";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "ပြန်စတင်ပြီးနောက် grid ကို ဘယ်လို စီမယ်လဲ?";

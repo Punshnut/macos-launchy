@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Horizontal";
 "PagingDirectionVertical" = "Vertical";
 "BetaLabel" = "Bêta";
+"PrivateBuildLabel" = "Fait maison";
+"GetOfficialVersionLabel" = "Obtenir la version officielle";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Comment trier la grille après la réinitialisation ?";

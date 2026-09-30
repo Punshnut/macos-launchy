@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "கிடைமட்ட";
 "PagingDirectionVertical" = "செங்குத்து";
 "BetaLabel" = "பீட்டா";
+"PrivateBuildLabel" = "சொந்தமாக உருவாக்கியது";
+"GetOfficialVersionLabel" = "அதிகாரப்பூர்வ பதிப்பைப் பெறவும்";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "மீட்டமைத்த பின் கட்டத்தை எப்படி வரிசைப்படுத்த வேண்டும்?";

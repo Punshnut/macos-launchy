@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "A kwance";
 "PagingDirectionVertical" = "Tsaye";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Ginin gida";
+"GetOfficialVersionLabel" = "Samu sigar hukuma";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Ta yaya za a tsara grid bayan sake saiti?";

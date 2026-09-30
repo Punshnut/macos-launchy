@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Vízszintes";
 "PagingDirectionVertical" = "Függőleges";
 "BetaLabel" = "Béta";
+"PrivateBuildLabel" = "Házi készítésű";
+"GetOfficialVersionLabel" = "Hivatalos verzió beszerzése";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Hogyan rendezze a rácsot visszaállítás után?";

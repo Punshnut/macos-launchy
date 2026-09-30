@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Pahalang";
 "PagingDirectionVertical" = "Patayo";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Gawang-bahay";
+"GetOfficialVersionLabel" = "Kunin ang opisyal na bersyon";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Paano dapat isaayos ang grid pagkatapos ng reset?";

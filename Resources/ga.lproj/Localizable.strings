@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Cothrománach";
 "PagingDirectionVertical" = "Ingearach";
 "BetaLabel" = "Béite";
+"PrivateBuildLabel" = "Déanta sa bhaile";
+"GetOfficialVersionLabel" = "Faigh an leagan oifigiúil";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Conas ba chóir an greille a shórtáil tar éis athshocraithe?";

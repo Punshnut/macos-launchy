@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "水平";
 "PagingDirectionVertical" = "垂直";
 "BetaLabel" = "测试版";
+"PrivateBuildLabel" = "自制版";
+"GetOfficialVersionLabel" = "获取官方版本";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "重置后网格应如何排序？";

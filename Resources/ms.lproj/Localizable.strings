@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Mengufuk";
 "PagingDirectionVertical" = "Menegak";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Buatan sendiri";
+"GetOfficialVersionLabel" = "Dapatkan versi rasmi";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Bagaimana grid harus diisih selepas set semula?";

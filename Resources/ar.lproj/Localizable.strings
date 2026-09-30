@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "أفقي";
 "PagingDirectionVertical" = "رأسي";
 "BetaLabel" = "تجريبي";
+"PrivateBuildLabel" = "نسخة منزلية";
+"GetOfficialVersionLabel" = "احصل على النسخة الرسمية";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "كيف يجب فرز الشبكة بعد إعادة التعيين؟";

@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "افقی";
 "PagingDirectionVertical" = "عمودی";
 "BetaLabel" = "بتا";
+"PrivateBuildLabel" = "نسخه خانگی";
+"GetOfficialVersionLabel" = "دریافت نسخه رسمی";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "پس از ریست، شبکه چگونه مرتب شود؟";

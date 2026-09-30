@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Горизонтально";
 "PagingDirectionVertical" = "Вертикально";
 "BetaLabel" = "Бета";
+"PrivateBuildLabel" = "Домашняя сборка";
+"GetOfficialVersionLabel" = "Получить официальную версию";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Как отсортировать сетку после сброса?";

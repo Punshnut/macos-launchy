@@ -1381,13 +1381,12 @@ struct LauncherView: View {
         .contentShape(Rectangle())
         .collectInteractiveTapRegions(into: $interactiveTapRegions)
         .simultaneousGesture(
-            DragGesture(minimumDistance: 0, coordinateSpace: .named(launcherRootCoordinateSpaceName))
+            // A SpatialTapGesture (rather than a zero-minimum-distance DragGesture) so this
+            // doesn't compete with onDrag's NSDraggingSession start on grid cells, and so it
+            // naturally won't fire when a real drag (e.g. the page-swipe gesture) ends here,
+            // since a tap gesture requires the release to stay close to the press location.
+            SpatialTapGesture(coordinateSpace: .named(launcherRootCoordinateSpaceName))
                 .onEnded { value in
-                    // A real drag (e.g. the page-swipe gesture) also ends with a mouse-up here;
-                    // only treat this as a background tap when the release stayed close to where
-                    // it started, so finishing a swipe doesn't also dismiss the launcher.
-                    let dragDistance = hypot(value.translation.width, value.translation.height)
-                    guard dragDistance <= 4 else { return }
                     dismissLauncherViaBackgroundTap(at: value.location)
                 }
         )

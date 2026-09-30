@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "আনুভূমিক";
 "PagingDirectionVertical" = "উল্লম্ব";
 "BetaLabel" = "বিটা";
+"PrivateBuildLabel" = "ঘরোয়া সংস্করণ";
+"GetOfficialVersionLabel" = "অফিসিয়াল সংস্করণ নিন";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "রিসেটের পরে গ্রিড কীভাবে সাজাবেন?";

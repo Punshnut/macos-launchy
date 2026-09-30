@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Οριζόντια";
 "PagingDirectionVertical" = "Κάθετα";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Σπιτική έκδοση";
+"GetOfficialVersionLabel" = "Λήψη επίσημης έκδοσης";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Πώς να ταξινομηθεί το πλέγμα μετά την επαναφορά;";

@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Горизонтально";
 "PagingDirectionVertical" = "Вертикально";
 "BetaLabel" = "Бета";
+"PrivateBuildLabel" = "Домашня збірка";
+"GetOfficialVersionLabel" = "Отримати офіційну версію";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Як упорядкувати сітку після скидання?";

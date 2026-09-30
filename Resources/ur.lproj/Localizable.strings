@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "افقی";
 "PagingDirectionVertical" = "عمودی";
 "BetaLabel" = "بیٹا";
+"PrivateBuildLabel" = "گھریلو ورژن";
+"GetOfficialVersionLabel" = "سرکاری ورژن حاصل کریں";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "ری سیٹ کے بعد گرڈ کو کیسے ترتیب دیا جائے؟";

@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "क्षैतिज";
 "PagingDirectionVertical" = "ऊर्ध्वाधर";
 "BetaLabel" = "बीटा";
+"PrivateBuildLabel" = "घर में बना";
+"GetOfficialVersionLabel" = "आधिकारिक संस्करण प्राप्त करें";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "रीसेट के बाद ग्रिड को कैसे क्रमबद्ध किया जाए?";

@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Horizontální";
 "PagingDirectionVertical" = "Vertikální";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Domácí sestavení";
+"GetOfficialVersionLabel" = "Získat oficiální verzi";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Jak se má mřížka po resetu seřadit?";

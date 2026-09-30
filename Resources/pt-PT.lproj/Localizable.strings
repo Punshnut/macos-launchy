@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Horizontal";
 "PagingDirectionVertical" = "Vertical";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Feito em casa";
+"GetOfficialVersionLabel" = "Obter a versão oficial";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Como deve a grelha ser ordenada após o reset?";

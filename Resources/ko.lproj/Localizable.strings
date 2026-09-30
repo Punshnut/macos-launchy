@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "가로";
 "PagingDirectionVertical" = "세로";
 "BetaLabel" = "베타";
+"PrivateBuildLabel" = "홈메이드 빌드";
+"GetOfficialVersionLabel" = "공식 버전 받기";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "재설정 후 그리드를 어떻게 정렬할까요?";

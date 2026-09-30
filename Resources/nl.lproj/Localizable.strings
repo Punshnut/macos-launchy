@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Horizontaal";
 "PagingDirectionVertical" = "Verticaal";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Zelfgebouwd";
+"GetOfficialVersionLabel" = "Officiële versie ophalen";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Hoe moet het raster worden gesorteerd na resetten?";

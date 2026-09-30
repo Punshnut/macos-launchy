@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Mlalo";
 "PagingDirectionVertical" = "Wima";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Jengwa nyumbani";
+"GetOfficialVersionLabel" = "Pata toleo rasmi";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Gridi ipangwe vipi baada ya kuweka upya?";

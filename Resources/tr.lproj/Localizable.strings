@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Yatay";
 "PagingDirectionVertical" = "Dikey";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Ev yapımı";
+"GetOfficialVersionLabel" = "Resmi sürümü al";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Sıfırlamadan sonra ızgara nasıl sıralansın?";

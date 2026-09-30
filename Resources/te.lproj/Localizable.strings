@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "అడ్డంగా";
 "PagingDirectionVertical" = "నిలువుగా";
 "BetaLabel" = "బీటా";
+"PrivateBuildLabel" = "ఇంటి తయారీ";
+"GetOfficialVersionLabel" = "అధికారిక వెర్షన్ పొందండి";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "రీసెట్ తరువాత గ్రిడ్‌ను ఎలా క్రమబద్ధం చేయాలి?";

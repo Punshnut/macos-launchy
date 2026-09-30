@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Horizontal";
 "PagingDirectionVertical" = "Vertikal";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Selbstgebaut";
+"GetOfficialVersionLabel" = "Offizielle Version holen";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Wie soll das Raster nach dem Zurücksetzen sortiert werden?";

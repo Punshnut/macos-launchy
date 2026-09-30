@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Ngang";
 "PagingDirectionVertical" = "Dọc";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Bản tự build";
+"GetOfficialVersionLabel" = "Nhận phiên bản chính thức";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Sắp xếp lưới như thế nào sau khi đặt lại?";

@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Horitzontal";
 "PagingDirectionVertical" = "Vertical";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Fet a casa";
+"GetOfficialVersionLabel" = "Obtén la versió oficial";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Com s’ha d’ordenar la graella després de restablir?";

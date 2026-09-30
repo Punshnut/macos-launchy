@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Horizontal";
 "PagingDirectionVertical" = "Vertical";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Feito em casa";
+"GetOfficialVersionLabel" = "Obter a versão oficial";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Como a grade deve ser ordenada após o reset?";

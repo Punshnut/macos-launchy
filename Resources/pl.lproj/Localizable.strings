@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Poziomy";
 "PagingDirectionVertical" = "Pionowy";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Domowej roboty";
+"GetOfficialVersionLabel" = "Pobierz oficjalną wersję";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Jak posortować siatkę po restarcie?";

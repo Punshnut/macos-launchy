@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Horizontal";
 "PagingDirectionVertical" = "Vertikal";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Buatan sendiri";
+"GetOfficialVersionLabel" = "Dapatkan versi resmi";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Bagaimana grid harus diurutkan setelah reset?";

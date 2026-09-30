@@ -194,6 +194,8 @@
 "PagingDirectionHorizontal" = "Horisontell";
 "PagingDirectionVertical" = "Vertikal";
 "BetaLabel" = "Beta";
+"PrivateBuildLabel" = "Hembyggd";
+"GetOfficialVersionLabel" = "Hämta den officiella versionen";
 
 // Arrangement reset
 "ResetSortDialogTitle" = "Hur ska rutnätet sorteras efter återställning?";

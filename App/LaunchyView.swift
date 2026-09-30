@@ -725,34 +725,36 @@ struct LauncherView: View {
         if isRenamingApp, case let .app(app) = item {
             editableAppCell(app: app, layout: layout)
         } else {
-            Button {
+            // A plain tappable VStack rather than a Button: on macOS 27, Button's own mouse-down
+            // tracking wins the initial click before the ancestor .onDrag gets a chance to start
+            // an NSDraggingSession, so icon drag-and-drop never begins.
+            VStack(spacing: 10) {
+                iconCell(for: item, layout: layout, allowHeavyWork: allowHeavyWork)
+                    .scaleEffect(isLaunching ? 1.08 : 1.0)
+                    .opacity(isLaunching ? 0.4 : 1.0)
+                    .animation(.easeInOut(duration: 0.18), value: launchingItemID)
+                appOrFolderTitleView(for: item)
+                    .font(.system(size: 13, weight: .medium))
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(iconLabelColor())
+                    .lineLimit(2)
+                    .frame(maxWidth: .infinity)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 4)
+            .scaleEffect(isFolderBeingOpened ? 1.03 : 1.0)
+            .animation(
+                .spring(response: 0.35, dampingFraction: 0.82, blendDuration: 0.06),
+                value: activeFolder?.id
+            )
+            .contentShape(Rectangle())
+            .onTapGesture {
                 if isMultiSelectModeActive {
                     toggleSelection(for: item)
                 } else {
                     openItem(item)
                 }
-            } label: {
-                VStack(spacing: 10) {
-                    iconCell(for: item, layout: layout, allowHeavyWork: allowHeavyWork)
-                        .scaleEffect(isLaunching ? 1.08 : 1.0)
-                        .opacity(isLaunching ? 0.4 : 1.0)
-                        .animation(.easeInOut(duration: 0.18), value: launchingItemID)
-                    appOrFolderTitleView(for: item)
-                        .font(.system(size: 13, weight: .medium))
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(iconLabelColor())
-                        .lineLimit(2)
-                        .frame(maxWidth: .infinity)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 4)
-                .scaleEffect(isFolderBeingOpened ? 1.03 : 1.0)
-                .animation(
-                    .spring(response: 0.35, dampingFraction: 0.82, blendDuration: 0.06),
-                    value: activeFolder?.id
-                )
             }
-            .buttonStyle(.plain)
             .markInteractiveForDismissDetection()
         }
     }
@@ -4804,26 +4806,26 @@ struct LauncherView: View {
                 .modifier(wiggleMotion(for: app.id, layout: layout, isActive: shouldAllowWiggle(id: app.id)))
                 .environment(\.colorScheme, colorScheme)
 
-            Button {
-                openItem(.app(app))
-            } label: {
-                VStack(spacing: 10) {
-                    iconBase
+            // A plain tappable VStack rather than a Button: see launcherGridCellContent for why.
+            VStack(spacing: 10) {
+                iconBase
 
-                    Text(app.resolvedDisplayName)
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(iconLabelColor())
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
-                        .opacity(folderIconWaveToggle ? 1 : 0)
-                        .animation(folderOpenAnimation, value: folderIconWaveToggle)
-                }
-                .padding(.vertical, 6)
-                .frame(maxWidth: .infinity)
-                .opacity(folderIconWaveToggle ? 1 : 0)
-                .animation(folderOpenAnimation, value: folderIconWaveToggle)
+                Text(app.resolvedDisplayName)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(iconLabelColor())
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .opacity(folderIconWaveToggle ? 1 : 0)
+                    .animation(folderOpenAnimation, value: folderIconWaveToggle)
             }
-            .buttonStyle(.plain)
+            .padding(.vertical, 6)
+            .frame(maxWidth: .infinity)
+            .opacity(folderIconWaveToggle ? 1 : 0)
+            .animation(folderOpenAnimation, value: folderIconWaveToggle)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                openItem(.app(app))
+            }
             .markInteractiveForDismissDetection()
         }
     }

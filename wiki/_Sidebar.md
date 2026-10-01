@@ -5,6 +5,7 @@
 - [Fullscreen and Floaty Mode](Fullscreen-and-Floaty-Mode)
 - [Search](Search)
 - [Organizing Your Apps](Organizing-Your-Apps)
+- [Multi-Selection](Multi-Selection)
 - [Gestures](Gestures)
 - [Keyboard Shortcuts](Keyboard-Shortcuts)
 - [Settings Overview](Settings-Overview)

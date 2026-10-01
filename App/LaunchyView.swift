@@ -887,6 +887,12 @@ struct LauncherView: View {
     @State private var highQualityRequestEpoch: Int = 0
     @State private var lastPageChangeDate: Date?
     @State private var isLauncherVisible = true
+    @State private var hiddenAt: Date?
+    @State private var shownAt: Date?
+    @State private var pendingReopenFolder: FolderItem?
+    @State private var hidePageRevertWorkItem: DispatchWorkItem?
+    private static let hideSessionPageRevertDelay: TimeInterval = 90
+    private static let hideSessionFreshHideThreshold: TimeInterval = 2
     @State private var interactionPressureEpoch: Int = 0
     @State private var interactionPressureUntil: Date?
     @State private var appNameDraft = ""
@@ -1017,9 +1023,8 @@ struct LauncherView: View {
             } else {
                 pageSizes = normalizePageSizes(initialPageSizes, itemCount: newValue.count)
             }
-            currentPage = 0
+            ensureCurrentPageWithinBounds()
             pageDirection = .forward
-            pagerDragOffset = 0
             updateFilteredItems(using: newValue)
         }
         .onChange(of: initialPageSizes) { newValue in
@@ -1028,9 +1033,8 @@ struct LauncherView: View {
             } else {
                 pageSizes = normalizePageSizes(newValue, itemCount: itemCatalog.count)
             }
-            currentPage = 0
+            ensureCurrentPageWithinBounds()
             pageDirection = .forward
-            pagerDragOffset = 0
             notifyVisiblePagesChanged()
         }
         .onChange(of: gridConfiguration) { _ in
@@ -1049,10 +1053,12 @@ struct LauncherView: View {
         .onReceive(NotificationCenter.default.publisher(for: .launcherDidHide)) { _ in
             isLauncherVisible = false
             purgeHighQualityOverrides()
+            handleLauncherDidHideForPersistence()
         }
         .onReceive(NotificationCenter.default.publisher(for: .launcherDidShow)) { _ in
             isLauncherVisible = true
             cancelPendingHighQualityRequests()
+            handleLauncherDidShowForPersistence()
         }
         .onReceive(NotificationCenter.default.publisher(for: .launcherShouldPurgeVisualCaches)) { _ in
             purgeHighQualityOverrides()
@@ -5665,13 +5671,85 @@ struct LauncherView: View {
         return true
     }
 
-    /// Hides the launcher when the blurred background is clicked.
+    /// Hides the launcher when the blurred background is clicked. When a folder is open, a plain
+    /// click just closes the folder; Shift/Option-click hides the whole launcher and remembers the
+    /// open folder so a quick re-toggle (within 90s) reopens it automatically.
     private func dismissLauncherViaBackgroundTap(at location: CGPoint) {
         guard launcherMode == .fullscreen || launcherMode == .floaty else { return }
         guard isClosingLauncher == false else { return }
         guard didTapInteractiveView(at: location) == false else { return }
+
+        let flags = NSApp?.currentEvent?.modifierFlags.intersection(.deviceIndependentFlagsMask) ?? []
+        let modifierHeld = flags.contains(.shift) || flags.contains(.option)
+
+        if let openFolder = activeFolder {
+            if modifierHeld {
+                pendingReopenFolder = openFolder
+            } else {
+                closeActiveFolder(animated: true)
+                return
+            }
+        }
+
         isClosingLauncher = true
         animateAndDismissLauncher()
+    }
+
+    /// Records hide timing and manages the page-persistence / folder-reopen timer whenever the
+    /// launcher window finishes hiding, regardless of which path (background tap, hotkey, dock,
+    /// status item) triggered it.
+    private func handleLauncherDidHideForPersistence() {
+        let now = Date()
+        let isFreshSession: Bool
+        if let shownAt {
+            isFreshSession = now.timeIntervalSince(shownAt) > Self.hideSessionFreshHideThreshold
+        } else {
+            isFreshSession = true
+        }
+        hiddenAt = now
+
+        if isFreshSession {
+            hidePageRevertWorkItem?.cancel()
+            scheduleHidePageRevertTimer()
+        } else if hidePageRevertWorkItem == nil {
+            scheduleHidePageRevertTimer()
+        }
+    }
+
+    /// Schedules the 90s "forget where we were" timer: if the launcher stays hidden for the full
+    /// duration, clears any pending folder reopen and snaps the grid back to page 1 in the background.
+    private func scheduleHidePageRevertTimer() {
+        let workItem = DispatchWorkItem { [self] in
+            pendingReopenFolder = nil
+            if currentPage != 0 {
+                currentPage = 0
+            }
+            hidePageRevertWorkItem = nil
+        }
+        hidePageRevertWorkItem = workItem
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + Self.hideSessionPageRevertDelay,
+            execute: workItem
+        )
+    }
+
+    /// Reopens a remembered folder (if the launcher is being reshown soon enough) and records the
+    /// new "shown" timestamp used to decide whether the next hide starts a fresh 90s window.
+    private func handleLauncherDidShowForPersistence() {
+        hidePageRevertWorkItem?.cancel()
+        hidePageRevertWorkItem = nil
+
+        let elapsed = hiddenAt.map { Date().timeIntervalSince($0) } ?? .greatestFiniteMagnitude
+        if let pending = pendingReopenFolder, elapsed < Self.hideSessionPageRevertDelay {
+            pendingReopenFolder = nil
+            if activeFolder?.id != pending.id {
+                activeFolder = pending
+            }
+        } else {
+            pendingReopenFolder = nil
+        }
+
+        shownAt = Date()
     }
 
     /// Programmatically hides the launcher without needing a background tap.

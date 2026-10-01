@@ -24,5 +24,15 @@ Tap or click anywhere on the background (not a tile or folder) to close
 Launchy quickly, no need to find a keyboard shortcut if your hand's already
 off the keyboard.
 
+If you're inside a folder, that same background click just closes the
+folder and drops you back on the grid, Launchy stays open. Click the
+background again from there and it closes Launchy as usual.
+
+Want to close Launchy entirely while a folder's open, in one click? Hold
+`Shift` or `Option` while clicking the background. Launchy hides completely,
+but it remembers which folder you were in: bring Launchy back within 90
+seconds (hotkey, Dock, or menu bar) and that folder reopens automatically.
+Wait longer than that and it opens back up to the plain grid instead.
+
 See also: [Keyboard Shortcuts](Keyboard-Shortcuts) for the equivalent
 keyboard-driven paging.

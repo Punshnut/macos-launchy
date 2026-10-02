@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Seskupit složky za aplikace v nabídce Docku";
 "SettingsDockFolderGroupBody" = "Jednotlivé aplikace ponechá první abecedně, složky pod nimi při kliknutí pravým tlačítkem na ikonu Docku.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Pevná stránka";
+"PageRevertModeLastUsedPage" = "Naposledy zobrazená";
+"SettingsPageRevertLabel" = "Návrat na stránku po opětovném otevření";
+"SettingsPageRevertBody" = "Pokud byl Launchy skrytý déle než 90 sekund, může se vrátit na konkrétní stránku, nebo jednoduše zůstat na naposledy zobrazené stránce.";
+"SettingsPageRevertPageNumber" = "Stránka %d";

@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Grúpáil fillteáin i ndiaidh aipeanna i roghchlár an Dock";
 "SettingsDockFolderGroupBody" = "Fágann sé aipeanna aonair ar dtús in ord aibítre, le fillteáin thíos agus tú ag deaschliceáil deilbhín an Dock.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Leathanach seasta";
+"PageRevertModeLastUsedPage" = "Breathnaithe le déanaí";
+"SettingsPageRevertLabel" = "Fill ar an leathanach nuair a osclaítear arís é";
+"SettingsPageRevertBody" = "Má bhí Launchy i bhfolach ar feadh níos mó ná 90 soicind, is féidir leis filleadh ar leathanach ar leith nó fanacht ar an leathanach deireanach a d'fhéach tú air.";
+"SettingsPageRevertPageNumber" = "Leathanach %d";

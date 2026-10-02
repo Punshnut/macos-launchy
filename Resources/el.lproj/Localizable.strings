@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Ομαδοποίηση φακέλων μετά τις εφαρμογές στο μενού του Dock";
 "SettingsDockFolderGroupBody" = "Κρατά τις μεμονωμένες εφαρμογές πρώτες αλφαβητικά και τους φακέλους από κάτω στο δεξί κλικ του εικονιδίου Dock.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Σταθερή σελίδα";
+"PageRevertModeLastUsedPage" = "Τελευταία προβολή";
+"SettingsPageRevertLabel" = "Επιστροφή στη σελίδα κατά το άνοιγμα";
+"SettingsPageRevertBody" = "Αν το Launchy ήταν κρυφό για περισσότερο από 90 δευτερόλεπτα, μπορεί να επιστρέψει σε συγκεκριμένη σελίδα ή απλώς να παραμείνει στην τελευταία σελίδα που είδατε.";
+"SettingsPageRevertPageNumber" = "Σελίδα %d";

@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Hada manyan fayiloli bayan app a jeren Dock";
 "SettingsDockFolderGroupBody" = "Yana barin app ɗin guda ɗaya a sama cikin haruffa, manyan fayiloli suna ƙasa idan an danna dama kan gunkin Dock.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Shafi tabbatacce";
+"PageRevertModeLastUsedPage" = "Na ƙarshe da aka gani";
+"SettingsPageRevertLabel" = "Koma shafin idan an sake buɗewa";
+"SettingsPageRevertBody" = "Idan Launchy ya kasance a ɓoye fiye da dakika 90, zai iya komawa wani shafi na musamman ko kuma kawai ya tsaya a shafin da ka gani na ƙarshe.";
+"SettingsPageRevertPageNumber" = "Shafi %d";

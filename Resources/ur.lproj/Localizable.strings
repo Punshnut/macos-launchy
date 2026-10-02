@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Dock مینو میں ایپس کے بعد فولڈرز گروپ کریں";
 "SettingsDockFolderGroupBody" = "Dock آئیکن پر رائٹ کلک کرتے وقت منفرد ایپس کو پہلے حروفِ تہجی میں رکھتا ہے، فولڈرز کو ان کے نیچے حروفِ تہجی میں دکھاتا ہے۔";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "مقررہ صفحہ";
+"PageRevertModeLastUsedPage" = "آخری دیکھا گیا";
+"SettingsPageRevertLabel" = "دوبارہ کھلنے پر صفحے پر واپس جائیں";
+"SettingsPageRevertBody" = "اگر Launchy 90 سیکنڈ سے زیادہ دیر تک چھپا رہے، تو یہ کسی مخصوص صفحے پر واپس جا سکتا ہے یا محض آپ کے آخری دیکھے گئے صفحے پر رہ سکتا ہے۔";
+"SettingsPageRevertPageNumber" = "صفحہ %d";

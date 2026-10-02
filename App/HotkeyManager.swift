@@ -274,6 +274,7 @@ struct HotkeyDescriptor: Equatable, Hashable, Codable {
     ]
 }
 
+/// Hardware media/function keys (volume, brightness, playback) that can be bound as a hotkey.
 enum MediaKey: UInt16, Codable, CaseIterable {
     case volumeUp = 0
     case volumeDown = 1

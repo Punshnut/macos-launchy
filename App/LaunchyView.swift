@@ -17,11 +17,13 @@ extension Notification.Name {
     static let launcherShouldPurgeVisualCaches = Notification.Name("launchyLauncherShouldPurgeVisualCaches")
 }
 
+/// Identifies the folder and app involved in an in-progress folder-internal drag.
 private struct FolderDragContext {
     let folderID: UUID
     let app: AppItem
 }
 
+/// Identifies where an app currently lives: at the root grid or nested inside a folder.
 private enum AppLocation {
     case root(index: Int)
     case folder(folderIndex: Int, appIndex: Int)
@@ -37,11 +39,13 @@ private enum PagerInteractionSource {
     case scroll
 }
 
+/// State needed to finish an animated page switch once its offset settles.
 private struct PendingPagerAnimationFinalization: Equatable {
     let logicalPage: Int?
     let terminalOffset: CGFloat
 }
 
+/// Snapshot of an app removed from its page, kept around to compute its reinsertion point.
 private struct RemovedAppContext {
     var items: [LauncherItem]
     var app: AppItem
@@ -239,6 +243,10 @@ struct LauncherView: View {
     var gridConfiguration: LauncherGridConfiguration = LauncherGridConfiguration.configuration(for: .small, mode: .floaty)
     /// Orientation used when paging between grids.
     var pagingOrientation: PagingOrientation = .horizontal
+    /// Which page the launcher reverts to after being idle/hidden for a while.
+    var pageRevertMode: PageRevertMode = .fixedPage
+    /// The fixed page index (0-based) used when `pageRevertMode == .fixedPage`.
+    var standardPageIndex: Int = 0
     /// Whether items should collapse upward to fill earlier gaps.
     var fillsGapsAutomatically: Bool = true
     /// Callback fired when the user requests to open settings from a context menu.
@@ -264,6 +272,7 @@ struct LauncherView: View {
     private let wiggleHorizontalSwayFactor: CGFloat = 0.018
     private let wiggleVerticalBobFactor: CGFloat = 0.0085
     private let wiggleAnchor = UnitPoint(x: 0.5, y: 0.2)
+    /// Scale applied to the grid during the fullscreen fly-in animation; neutral (1) outside fullscreen mode.
     private var fullscreenGridEntranceScale: CGFloat {
         guard launcherMode == .fullscreen else { return 1 }
         return 0.95 + 0.05 * CGFloat(fullscreenGridEntranceProgress)
@@ -435,6 +444,7 @@ struct LauncherView: View {
         content.compositingGroup()
     }
 
+    /// Invisible left/right hover zones that page the grid while a drag lingers near an edge.
     @ViewBuilder
     private func dragEdgePagingOverlay(canReorder: Bool) -> some View {
         let isEnabled = canReorder && isDragEdgePagingEnabled
@@ -448,6 +458,7 @@ struct LauncherView: View {
         .allowsHitTesting(isEnabled)
     }
 
+    /// One edge-paging hover target; drops into it page the grid by `pageDelta`.
     @ViewBuilder
     private func dragEdgePagingZone(pageDelta: Int, isEnabled: Bool) -> some View {
         Color.clear
@@ -564,6 +575,7 @@ struct LauncherView: View {
         pageRenderingWrapper(grid)
     }
 
+    /// Lays out a single page's items, using a fixed row/column grid or a `LazyVGrid` depending on the paging renderer.
     @ViewBuilder
     private func launcherGridPageContent(
         layout: LauncherLayoutMetrics,
@@ -633,6 +645,7 @@ struct LauncherView: View {
         }
     }
 
+    /// Wraps one grid cell with launch/rename/selection state and drag/drop affordances.
     @ViewBuilder
     private func launcherGridPageItem(
         _ item: LauncherItem,
@@ -759,16 +772,19 @@ struct LauncherView: View {
         }
     }
 
+    /// Opacity applied to the grid during the fullscreen fly-in animation; neutral (1) outside fullscreen mode.
     private var fullscreenGridEntranceOpacity: Double {
         guard launcherMode == .fullscreen else { return 1 }
         return fullscreenGridEntranceProgress
     }
 
+    /// Saturation applied to the grid during the fullscreen fly-in animation; neutral (1) outside fullscreen mode.
     private var fullscreenGridEntranceSaturation: Double {
         guard launcherMode == .fullscreen else { return 1 }
         return 0.72 + 0.28 * fullscreenGridEntranceProgress
     }
 
+    /// Vertical offset applied to the grid during the fullscreen fly-in animation; neutral (0) outside fullscreen mode.
     private var fullscreenGridEntranceOffset: CGFloat {
         guard launcherMode == .fullscreen else { return 0 }
         return pixelAlign((1 - CGFloat(fullscreenGridEntranceProgress)) * fullscreenGridEntranceTranslation)
@@ -827,6 +843,7 @@ struct LauncherView: View {
     private let pagerButtonHitExpansion: CGFloat = 12
     private let dragEdgePagingInterval: TimeInterval = 1.0
     private let dragEdgePagingZoneWidth: CGFloat = 56
+    /// Performance tuning profile for the screen currently hosting the launcher window.
     private var performanceTuning: PerformanceTuning {
         PerformanceCapabilityLayer.shared.tuning(for: hostingWindow()?.screen)
     }
@@ -965,6 +982,8 @@ struct LauncherView: View {
         launcherMode: LauncherMode = .floaty,
         gridConfiguration: LauncherGridConfiguration = LauncherGridConfiguration.configuration(for: .small, mode: .floaty),
         pagingOrientation: PagingOrientation = .horizontal,
+        pageRevertMode: PageRevertMode = .fixedPage,
+        standardPageIndex: Int = 0,
         fillsGapsAutomatically: Bool = true,
         onToggleLauncherModeRequested: (() -> Void)? = nil,
         onSettingsRequested: (() -> Void)? = nil,
@@ -982,6 +1001,8 @@ struct LauncherView: View {
         self.launcherMode = launcherMode
         self.gridConfiguration = gridConfiguration
         self.pagingOrientation = pagingOrientation
+        self.pageRevertMode = pageRevertMode
+        self.standardPageIndex = standardPageIndex
         self.fillsGapsAutomatically = fillsGapsAutomatically
         self.onToggleLauncherModeRequested = onToggleLauncherModeRequested
         self.onSettingsRequested = onSettingsRequested
@@ -1404,6 +1425,7 @@ struct LauncherView: View {
         fillsGapsAutomatically == false && searchText.isEmpty
     }
 
+    /// Page sizes to render right now: densely packed search results, or the arranged page sizes otherwise.
     private var displayPageSizes: [Int] {
         guard filteredItemList.isEmpty == false else { return [] }
         if searchText.isEmpty == false {
@@ -3746,6 +3768,7 @@ struct LauncherView: View {
         return nil
     }
 
+    /// Distance in slots between an item's current index and a target index, used to scale drag-preview effects.
     private func neighborDistance<T: Identifiable & Equatable>(
         for id: T.ID,
         in items: [T],
@@ -5717,12 +5740,16 @@ struct LauncherView: View {
     }
 
     /// Schedules the 90s "forget where we were" timer: if the launcher stays hidden for the full
-    /// duration, clears any pending folder reopen and snaps the grid back to page 1 in the background.
+    /// duration, clears any pending folder reopen and, when `pageRevertMode == .fixedPage`, snaps
+    /// the grid back to `standardPageIndex` in the background (left untouched for `.lastUsedPage`).
     private func scheduleHidePageRevertTimer() {
         let workItem = DispatchWorkItem { [self] in
             pendingReopenFolder = nil
-            if currentPage != 0 {
-                currentPage = 0
+            if pageRevertMode == .fixedPage {
+                let target = clampPageIndex(standardPageIndex)
+                if currentPage != target {
+                    currentPage = target
+                }
             }
             hidePageRevertWorkItem = nil
         }

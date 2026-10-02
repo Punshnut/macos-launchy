@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Csoportosítsa a mappákat az appok után a Dock menüben";
 "SettingsDockFolderGroupBody" = "Önálló appokat előbb, ábécé sorrendben tartja, a mappákat alattuk a Dock ikonra jobb kattintáskor.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Rögzített oldal";
+"PageRevertModeLastUsedPage" = "Legutóbb megtekintett";
+"SettingsPageRevertLabel" = "Visszatérés az oldalra újranyitáskor";
+"SettingsPageRevertBody" = "Ha a Launchy 90 másodpercnél tovább volt rejtve, visszatérhet egy adott oldalra, vagy egyszerűen az utoljára megtekintett oldalon maradhat.";
+"SettingsPageRevertPageNumber" = "%d. oldal";

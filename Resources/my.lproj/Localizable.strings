@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Dock မီနူးတွင် အပ်များနောက် ဖိုင်တွဲများကို စု";
 "SettingsDockFolderGroupBody" = "Dock အိုင်ကွန်ကို right-click ပြုလုပ်သောအခါ ပုဂ္ဂလိကအပ်များကို အက္ခရာစဉ်ဖြင့် အပေါ်သို့ ထားပြီး ဖိုင်တွဲများကို အောက်တွင် အက္ခရာစဉ်ဖြင့် ပြပါသည်။";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "သတ်မှတ်စာမျက်နှာ";
+"PageRevertModeLastUsedPage" = "နောက်ဆုံးကြည့်ခဲ့သည့်";
+"SettingsPageRevertLabel" = "ပြန်ဖွင့်သည့်အခါ စာမျက်နှာသို့ ပြန်သွားမည်";
+"SettingsPageRevertBody" = "Launchy သည် ၉၀ စက္ကန့်ထက်ပို၍ ဖျောက်ထားခဲ့လျှင်၊ သတ်မှတ်ထားသော စာမျက်နှာသို့ ပြန်သွားနိုင်သည် သို့မဟုတ် သင်နောက်ဆုံးကြည့်ခဲ့သည့် စာမျက်နှာတွင်သာ ရှိနေနိုင်သည်။";
+"SettingsPageRevertPageNumber" = "စာမျက်နှာ %d";

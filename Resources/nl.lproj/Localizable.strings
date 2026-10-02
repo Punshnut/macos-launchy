@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Groepeer mappen na apps in Dock-menu";
 "SettingsDockFolderGroupBody" = "Toont losse apps eerst alfabetisch, met mappen alfabetisch eronder bij rechtsklik op het Dock-icoon.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Vaste pagina";
+"PageRevertModeLastUsedPage" = "Laatst bekeken";
+"SettingsPageRevertLabel" = "Terugkeren naar pagina bij heropenen";
+"SettingsPageRevertBody" = "Als Launchy langer dan 90 seconden verborgen is geweest, kan het teruggaan naar een specifieke pagina of gewoon op de laatst bekeken pagina blijven.";
+"SettingsPageRevertPageNumber" = "Pagina %d";

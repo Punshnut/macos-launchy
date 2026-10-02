@@ -2021,6 +2021,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             launcherMode: currentSettings.selectedLauncherMode,
             gridConfiguration: config,
             pagingOrientation: currentSettings.pagingOrientation,
+            pageRevertMode: currentSettings.pageRevertMode,
+            standardPageIndex: currentSettings.standardPageIndex,
             fillsGapsAutomatically: currentSettings.fillsGapsAutomatically,
             onToggleLauncherModeRequested: { [weak self] in
                 self?.toggleLauncherModeShortcut()

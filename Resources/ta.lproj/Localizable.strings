@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Dock மெனுவில் செயலிகளுக்கு பின் கோப்புறைகளை குழுவாக்கு";
 "SettingsDockFolderGroupBody" = "Dock ஐகானை வலது சொடுக்கு செய்வதில் தனித்த செயலிகள் முதலில் அகரவரிசையில், கோப்புறைகள் அவற்றின் கீழ் அகரவரிசையில் காண்பிக்கப்படும்.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "நிலையான பக்கம்";
+"PageRevertModeLastUsedPage" = "கடைசியாகப் பார்த்தது";
+"SettingsPageRevertLabel" = "மீண்டும் திறக்கும்போது பக்கத்திற்குத் திரும்பு";
+"SettingsPageRevertBody" = "Launchy 90 வினாடிகளுக்கு மேல் மறைந்திருந்தால், அது ஒரு குறிப்பிட்ட பக்கத்திற்குத் திரும்பலாம் அல்லது நீங்கள் கடைசியாகப் பார்த்த பக்கத்திலேயே இருக்கலாம்.";
+"SettingsPageRevertPageNumber" = "பக்கம் %d";

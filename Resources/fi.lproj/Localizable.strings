@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Ryhmitä kansiot sovellusten jälkeen Dock-valikossa";
 "SettingsDockFolderGroupBody" = "Pitää yksittäiset sovellukset ensin aakkosissa, kansiot niiden alla Dock-kuvaketta oikealla napsauttaessa.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Kiinteä sivu";
+"PageRevertModeLastUsedPage" = "Viimeksi katsottu";
+"SettingsPageRevertLabel" = "Palaa sivulle, kun avataan uudelleen";
+"SettingsPageRevertBody" = "Jos Launchy on ollut piilossa yli 90 sekuntia, se voi palata tiettyyn sivuun tai pysyä viimeksi katsotulla sivulla.";
+"SettingsPageRevertPageNumber" = "Sivu %d";

@@ -125,6 +125,7 @@ enum SettingsWindowAppKitBridge {
 
 // MARK: - Alert Presentation Helpers
 
+/// Presents native NSAlert-based confirmation flows for destructive settings actions.
 final class SettingsWindowAlertPresenter {
     @MainActor
     /// Starts two-step arrangement reset confirmation flow.
@@ -270,6 +271,7 @@ final class SettingsWindowAlertPresenter {
 
 // MARK: - Hotkey Recorder
 
+/// SwiftUI wrapper exposing `HotkeyRecorderTextField` for shortcut capture.
 struct HotkeyRecorderField: NSViewRepresentable {
     var hotkey: HotkeyDescriptor?
     var placeholder: String
@@ -310,6 +312,7 @@ struct HotkeyRecorderField: NSViewRepresentable {
     }
 }
 
+/// Custom text field that captures a keyboard shortcut while in recording mode.
 final class HotkeyRecorderTextField: NSTextField {
     var hotkey: HotkeyDescriptor? {
         didSet { updateDisplay() }
@@ -496,6 +499,7 @@ final class HotkeyRecorderTextField: NSTextField {
 
 // MARK: - Hosting Infrastructure
 
+/// Resolves the AppKit NSWindow hosting a SwiftUI view hierarchy.
 struct HostingWindowFinder: NSViewRepresentable {
     let onResolve: (NSWindow?) -> Void
 
@@ -516,6 +520,7 @@ struct HostingWindowFinder: NSViewRepresentable {
     }
 }
 
+/// SwiftUI wrapper around `NSVisualEffectView` for frosted-glass backgrounds.
 struct FrostedBackgroundView: NSViewRepresentable {
     let material: NSVisualEffectView.Material
 
@@ -539,6 +544,7 @@ struct FrostedBackgroundView: NSViewRepresentable {
 
 // MARK: - Settings Window Controller
 
+/// Owns the settings NSWindow, its SwiftUI content, and window chrome/lifecycle.
 final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     private let coordinator = SettingsWindowCoordinator()
     private let hostingController: NSHostingController<SettingsWindow>
@@ -572,6 +578,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         window.level = .statusBar
         window.collectionBehavior.insert(.fullScreenAuxiliary)
         window.collectionBehavior.insert(.canJoinAllSpaces)
+        // Hide the native traffic lights; SettingsWindow.swift draws its own custom traffic-light
+        // dots so the controls match the app's glass chrome instead of the system style.
         window.standardWindowButton(.closeButton)?.isHidden = true
         window.standardWindowButton(.miniaturizeButton)?.isHidden = true
         window.standardWindowButton(.zoomButton)?.isHidden = true

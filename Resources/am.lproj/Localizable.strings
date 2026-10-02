@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "በDock ምናሌ ውስጥ ፎልደሮችን ከመተግበሪያዎች በኋላ ያደራጁ";
 "SettingsDockFolderGroupBody" = "የብቸኛ መተግበሪያዎችን በፊት በማስደራጀት ይቆያል፣ ፎልደሮች በጀርባ ይታያሉ በDock አዶ ላይ በቀኝ ጠቅ ሲደረግ።";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "የተወሰነ ገጽ";
+"PageRevertModeLastUsedPage" = "መጨረሻ የታየ";
+"SettingsPageRevertLabel" = "እንደገና ሲከፈት ወደ ገጹ ይመለሱ";
+"SettingsPageRevertBody" = "Launchy ከ90 ሰከንድ በላይ ተደብቆ ከነበረ፣ ወደ ተወሰነ ገጽ ሊመለስ ወይም እርስዎ መጨረሻ ወደተመለከቱት ገጽ ብቻ ሊቆይ ይችላል።";
+"SettingsPageRevertPageNumber" = "ገጽ %d";

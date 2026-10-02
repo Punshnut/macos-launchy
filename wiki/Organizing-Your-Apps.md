@@ -74,10 +74,22 @@ apps in one go.
 
 If you leave Launchy on page 3 and hide it, reopening within about 90
 seconds puts you right back on page 3, handy for a quick in-and-out without
-paging over again. Leave it hidden longer than that and it settles back to
-page 1 in the background, so the next time you open it you're not stuck
-picking up in the middle of a stale session. This is automatic, there's
-nothing to configure.
+paging over again. Leave it hidden longer than that and it settles back to a
+"home" page in the background, so the next time you open it you're not
+stuck picking up in the middle of a stale session.
+
+By default that home page is page 1, but you can change this in Settings →
+Visuals: pick a different fixed page, or tell Launchy to always stay on
+whichever page you last viewed instead of reverting at all. See
+[Settings Overview](Settings-Overview) for details.
+
+## Dock menu
+
+Right-click the Dock icon for a quick-launch menu of your apps and folders
+without opening the full grid. By default standalone apps are listed first
+alphabetically with folders grouped below them; you can turn this off in
+Settings → Visuals if you'd rather see everything interleaved in a single
+alphabetical list.
 
 ## Resetting without losing your work
 

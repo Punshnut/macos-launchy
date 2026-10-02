@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Agrupar carpetas después de las apps en el menú del Dock";
 "SettingsDockFolderGroupBody" = "Mantiene primero las apps individuales en orden alfabético y las carpetas debajo al hacer clic derecho en el ícono del Dock.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Página fija";
+"PageRevertModeLastUsedPage" = "Última vista";
+"SettingsPageRevertLabel" = "Volver a esta página al reabrir";
+"SettingsPageRevertBody" = "Si Launchy ha estado oculto durante más de 90 segundos, puede volver a una página específica o simplemente permanecer en la última página que viste.";
+"SettingsPageRevertPageNumber" = "Página %d";

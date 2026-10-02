@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Ṣọ́ọ̀ṣọ́ fọ́ọ̀dà lẹ́yìn app nínú akojọ Dock";
 "SettingsDockFolderGroupBody" = "Nigbati o ba tẹ Dock, àwọn app kọọkan máa wà lókè ní àtòkọ lẹ́tà, àwọn fọ́ọ̀dà sì wà ní isalẹ pẹ̀lú àtòkọ lẹ́tà.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Oju-iwe tó dúró";
+"PageRevertModeLastUsedPage" = "Tó wò kẹ́yìn";
+"SettingsPageRevertLabel" = "Padà sí oju-iwe nígbà tí a bá tún ṣí i";
+"SettingsPageRevertBody" = "Tí Launchy bá ti fara sin fún ju ìsẹ́jú-àáyá 90 lọ, ó lè padà sí oju-iwe kan pàtó tàbí kó kàn dúró sí oju-iwe tí o wò kẹ́yìn.";
+"SettingsPageRevertPageNumber" = "Oju-iwe %d";

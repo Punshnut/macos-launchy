@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "گروه‌بندی پوشه‌ها بعد از برنامه‌ها در منوی داک";
 "SettingsDockFolderGroupBody" = "ابتدا برنامه‌های تکی را به ترتیب الفبا نشان می‌دهد و پوشه‌ها را زیر آن هنگام راست‌کلیک روی آیکون داک.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "صفحه ثابت";
+"PageRevertModeLastUsedPage" = "آخرین صفحه مشاهده‌شده";
+"SettingsPageRevertLabel" = "بازگشت به صفحه هنگام بازگشایی";
+"SettingsPageRevertBody" = "اگر Launchy بیش از ۹۰ ثانیه پنهان بوده باشد، می‌تواند به یک صفحه خاص بازگردد یا به‌سادگی در آخرین صفحه‌ای که مشاهده کرده‌اید بماند.";
+"SettingsPageRevertPageNumber" = "صفحه %d";

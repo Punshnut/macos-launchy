@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "ডক মেনুতে অ্যাপের পরে ফোল্ডারগুলো গ্রুপ করুন";
 "SettingsDockFolderGroupBody" = "ডকে ডান-ক্লিক করলে পৃথক অ্যাপগুলো আগে বর্ণানুক্রমে দেখায়, ফোল্ডারগুলো নিচে থাকে।";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "নির্দিষ্ট পৃষ্ঠা";
+"PageRevertModeLastUsedPage" = "সর্বশেষ দেখা";
+"SettingsPageRevertLabel" = "পুনরায় খোলার সময় পৃষ্ঠায় ফিরে যান";
+"SettingsPageRevertBody" = "Launchy ৯০ সেকেন্ডের বেশি সময় লুকানো থাকলে, এটি একটি নির্দিষ্ট পৃষ্ঠায় ফিরে যেতে পারে বা শুধু আপনার সর্বশেষ দেখা পৃষ্ঠায় থাকতে পারে।";
+"SettingsPageRevertPageNumber" = "পৃষ্ঠা %d";

@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Dock मेनू में ऐप्स के बाद फ़ोल्डरों को समूहित करें";
 "SettingsDockFolderGroupBody" = "राइट-क्लिक पर पहले अकेली ऐप्स को वर्णक्रम में दिखाता है, फ़ोल्डर नीचे दिखते हैं।";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "निश्चित पृष्ठ";
+"PageRevertModeLastUsedPage" = "अंतिम देखा गया";
+"SettingsPageRevertLabel" = "फिर से खोलने पर पृष्ठ पर वापस जाएं";
+"SettingsPageRevertBody" = "अगर Launchy 90 सेकंड से अधिक समय तक छिपा रहता है, तो यह किसी विशेष पृष्ठ पर वापस जा सकता है या बस आपके द्वारा अंतिम बार देखे गए पृष्ठ पर बना रह सकता है।";
+"SettingsPageRevertPageNumber" = "पृष्ठ %d";

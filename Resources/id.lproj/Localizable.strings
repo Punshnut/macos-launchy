@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Kelompokkan folder setelah aplikasi di menu Dock";
 "SettingsDockFolderGroupBody" = "Menempatkan aplikasi tunggal dulu secara alfabetis, folder di bawahnya saat klik kanan ikon Dock.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Halaman tetap";
+"PageRevertModeLastUsedPage" = "Terakhir dilihat";
+"SettingsPageRevertLabel" = "Kembali ke halaman saat dibuka kembali";
+"SettingsPageRevertBody" = "Jika Launchy telah disembunyikan selama lebih dari 90 detik, aplikasi dapat kembali ke halaman tertentu atau tetap berada di halaman yang terakhir Anda lihat.";
+"SettingsPageRevertPageNumber" = "Halaman %d";

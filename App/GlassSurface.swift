@@ -1,7 +1,7 @@
 import SwiftUI
 import AppKit
 
-/// Visual weight for a glass surface. `.prominent` tints with the accent color on macOS 26+.
+/// Visual weight for a glass surface. `.prominent` tints with a softened (reduced-opacity) accent color on macOS 26+.
 enum GlassTint {
     case regular
     case prominent
@@ -24,7 +24,7 @@ extension View {
         if #available(macOS 26, *) {
             self.glassEffect(
                 tint == .prominent
-                    ? .regular.tint(.accentColor).interactive(interactive)
+                    ? .regular.tint(Color.accentColor.opacity(0.55)).interactive(interactive)
                     : .regular.interactive(interactive),
                 in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
             )

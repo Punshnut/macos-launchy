@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "จัดโฟลเดอร์ไว้หลังแอปในเมนู Dock";
 "SettingsDockFolderGroupBody" = "เมื่อคลิกขวาที่ไอคอน Dock จะแสดงแอปเดี่ยวตามลำดับตัวอักษรก่อน ตามด้วยโฟลเดอร์เรียงตัวอักษรด้านล่าง";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "หน้าคงที่";
+"PageRevertModeLastUsedPage" = "หน้าที่ดูล่าสุด";
+"SettingsPageRevertLabel" = "กลับไปยังหน้าเมื่อเปิดอีกครั้ง";
+"SettingsPageRevertBody" = "หาก Launchy ถูกซ่อนไว้นานกว่า 90 วินาที แอปสามารถกลับไปยังหน้าที่กำหนดไว้ หรือคงอยู่ที่หน้าที่คุณดูล่าสุดก็ได้";
+"SettingsPageRevertPageNumber" = "หน้า %d";

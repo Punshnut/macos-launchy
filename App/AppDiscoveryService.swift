@@ -3,6 +3,7 @@ import Accelerate
 import ImageIO
 import UniformTypeIdentifiers
 
+/// Render fidelity tiers for icon rasterization, trading sharpness for memory/CPU cost.
 enum IconRenderQuality: String {
     case low
     case balanced
@@ -1194,6 +1195,7 @@ final class AppDiscoveryService {
     }
 }
 
+/// On-disk persisted snapshot of a discovered app, used to restore entries when a scan misses them.
 private struct CachedAppRecord: Codable {
     var id: UUID
     var displayName: String

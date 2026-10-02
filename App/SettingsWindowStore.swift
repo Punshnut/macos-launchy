@@ -94,6 +94,21 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         LauncherSettingsPersistence.setPagingOrientation(orientation)
     }
 
+    /// Persists the idle page-revert mode.
+    func setPageRevertMode(_ mode: PageRevertMode) {
+        guard settingsSnapshot.pageRevertMode != mode else { return }
+        settingsSnapshot.pageRevertMode = mode
+        LauncherSettingsPersistence.setPageRevertMode(mode)
+    }
+
+    /// Persists the fixed page index used when `pageRevertMode == .fixedPage`.
+    func setStandardPageIndex(_ index: Int) {
+        let clamped = max(0, index)
+        guard settingsSnapshot.standardPageIndex != clamped else { return }
+        settingsSnapshot.standardPageIndex = clamped
+        LauncherSettingsPersistence.setStandardPageIndex(clamped)
+    }
+
     /// Persists the launcher mode selection.
     func setLauncherMode(_ mode: LauncherMode) {
         guard settingsSnapshot.selectedLauncherMode != mode else { return }

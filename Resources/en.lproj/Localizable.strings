@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Group folders after apps in Dock menu";
 "SettingsDockFolderGroupBody" = "Keeps standalone apps alphabetized first, with folders alphabetized beneath them when right-clicking the Dock icon.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Fixed Page";
+"PageRevertModeLastUsedPage" = "Last Viewed";
+"SettingsPageRevertLabel" = "Return to page when reopened";
+"SettingsPageRevertBody" = "If Launchy has been hidden for more than 90 seconds, it can jump back to a specific page or simply stay on whatever page you were last viewing.";
+"SettingsPageRevertPageNumber" = "Page %d";

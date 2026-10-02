@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Gruppera mappar efter appar i Dock-menyn";
 "SettingsDockFolderGroupBody" = "Behåller fristående appar först i alfabetisk ordning, med mappar alfabetiskt under dem vid högerklick på Dock-ikonen.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Fast sida";
+"PageRevertModeLastUsedPage" = "Senast visad";
+"SettingsPageRevertLabel" = "Återgå till sida vid återöppning";
+"SettingsPageRevertBody" = "Om Launchy har varit dold i mer än 90 sekunder kan den hoppa tillbaka till en specifik sida eller bara stanna på den sida du senast visade.";
+"SettingsPageRevertPageNumber" = "Sida %d";

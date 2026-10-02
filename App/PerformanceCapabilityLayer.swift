@@ -2,17 +2,20 @@ import AppKit
 import CoreGraphics
 import Darwin
 
+/// Coarse CPU architecture bucket used to pick conservative defaults for older Intel Macs.
 enum HardwareClass: String, Equatable {
     case appleSilicon
     case intel
 }
 
+/// Coarse performance tier derived from core count and memory, used to scale cache/debounce tuning.
 enum PerformanceClass: String, Equatable {
     case low
     case medium
     case high
 }
 
+/// Snapshot of hardware/display traits that drive Launchy's rendering and caching tuning.
 struct PerformanceCapability: Equatable {
     let hardwareClass: HardwareClass
     let performanceClass: PerformanceClass
@@ -29,6 +32,7 @@ struct PerformanceCapability: Equatable {
     }
 }
 
+/// Derived runtime tuning values (cache sizes, debounce intervals) used throughout the launcher.
 struct PerformanceTuning: Equatable {
     let highQualityIconCacheLimit: Int
     let highQualityRequestDelay: TimeInterval
@@ -41,6 +45,7 @@ struct PerformanceTuning: Equatable {
     let pageRasterizationThreshold: CGFloat
 }
 
+/// Shared, cached source of per-screen hardware capability and tuning values for the launcher.
 final class PerformanceCapabilityLayer: @unchecked Sendable {
     static let shared = PerformanceCapabilityLayer()
 

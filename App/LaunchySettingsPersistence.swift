@@ -189,6 +189,36 @@ enum LauncherSettingsPersistence {
         }
     }
 
+    /// Returns the idle page-revert mode.
+    static func pageRevertMode(userDefaults: UserDefaults = .standard) -> PageRevertMode {
+        loadSettings(userDefaults: userDefaults).pageRevertMode
+    }
+
+    /// Saves the idle page-revert mode.
+    static func setPageRevertMode(
+        _ mode: PageRevertMode,
+        userDefaults: UserDefaults = .standard
+    ) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.pageRevertMode = mode
+        }
+    }
+
+    /// Returns the fixed page index used when `pageRevertMode == .fixedPage`.
+    static func standardPageIndex(userDefaults: UserDefaults = .standard) -> Int {
+        loadSettings(userDefaults: userDefaults).standardPageIndex
+    }
+
+    /// Saves the fixed page index used when `pageRevertMode == .fixedPage`.
+    static func setStandardPageIndex(
+        _ index: Int,
+        userDefaults: UserDefaults = .standard
+    ) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.standardPageIndex = max(0, index)
+        }
+    }
+
     /// Returns background style preference.
     static func preferredBackgroundStyle(
         userDefaults: UserDefaults = .standard

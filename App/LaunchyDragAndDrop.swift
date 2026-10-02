@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Keyboard-modifier-driven variants of a grid drag: plain reorder, position swap, or folder merge.
 enum DragModifierMode {
     case normal
     case swap
@@ -10,6 +11,7 @@ enum DragModifierMode {
     }
 }
 
+/// Maps a drag's pointer location to the nearest grid slot/item index for insertion or hover previews.
 private struct GridDropTargetResolver {
     let columns: Int
     let rows: Int

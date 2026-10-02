@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "I-grupo ang mga folder pagkatapos ng apps sa Dock menu";
 "SettingsDockFolderGroupBody" = "Inilalagay muna ang mga solong app ayon sa alpabeto, mga folder sa ibaba kapag right-click sa Dock icon.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Nakapirming pahina";
+"PageRevertModeLastUsedPage" = "Huling tiningnan";
+"SettingsPageRevertLabel" = "Bumalik sa pahina kapag muling binuksan";
+"SettingsPageRevertBody" = "Kung natago nang mahigit 90 segundo ang Launchy, maaari itong bumalik sa isang tiyak na pahina o manatili lamang sa huling pahinang iyong tiningnan.";
+"SettingsPageRevertPageNumber" = "Pahina %d";

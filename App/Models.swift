@@ -316,6 +316,21 @@ enum PagingOrientation: String, CaseIterable, Hashable, Codable {
     }
 }
 
+/// Configures which page the launcher returns to after being idle/hidden for a while.
+enum PageRevertMode: String, CaseIterable, Hashable, Codable {
+    case fixedPage
+    case lastUsedPage
+
+    var displayName: String {
+        switch self {
+        case .fixedPage:
+            return String(localized: "PageRevertModeFixedPage")
+        case .lastUsedPage:
+            return String(localized: "PageRevertModeLastUsedPage")
+        }
+    }
+}
+
 /// Sorting strategy applied when rebuilding the grid from scratch.
 enum ArrangementResetSorting: String, CaseIterable, Hashable, Codable {
     case alphabetical
@@ -483,6 +498,10 @@ struct LauncherSettings: Hashable, Codable {
     var iconSizePreference: IconSizePreference
     /// Whether launcher paging should move horizontally or vertically.
     var pagingOrientation: PagingOrientation
+    /// Which page the launcher reverts to after being idle/hidden for a while.
+    var pageRevertMode: PageRevertMode
+    /// The fixed page index (0-based) used when `pageRevertMode == .fixedPage`.
+    var standardPageIndex: Int
     init(
         isVisibleOnAllSpaces: Bool,
         launchesAtLogin: Bool,
@@ -503,7 +522,9 @@ struct LauncherSettings: Hashable, Codable {
         hasCompletedIntroduction: Bool,
         shouldScanUserApplicationsFolder: Bool,
         iconSizePreference: IconSizePreference,
-        pagingOrientation: PagingOrientation
+        pagingOrientation: PagingOrientation,
+        pageRevertMode: PageRevertMode = .fixedPage,
+        standardPageIndex: Int = 0
     ) {
         self.isVisibleOnAllSpaces = isVisibleOnAllSpaces
         self.launchesAtLogin = launchesAtLogin
@@ -525,6 +546,8 @@ struct LauncherSettings: Hashable, Codable {
         self.shouldScanUserApplicationsFolder = shouldScanUserApplicationsFolder
         self.iconSizePreference = iconSizePreference
         self.pagingOrientation = pagingOrientation
+        self.pageRevertMode = pageRevertMode
+        self.standardPageIndex = standardPageIndex
     }
 }
 
@@ -578,6 +601,8 @@ extension LauncherSettings {
         case shouldScanUserApplicationsFolder
         case iconSizePreference
         case pagingOrientation
+        case pageRevertMode
+        case standardPageIndex
     }
 
     init(from decoder: Decoder) throws {
@@ -611,7 +636,9 @@ extension LauncherSettings {
             hasCompletedIntroduction: try container.decodeIfPresent(Bool.self, forKey: .hasCompletedIntroduction) ?? false,
             shouldScanUserApplicationsFolder: try container.decodeIfPresent(Bool.self, forKey: .shouldScanUserApplicationsFolder) ?? true,
             iconSizePreference: try container.decodeIfPresent(IconSizePreference.self, forKey: .iconSizePreference) ?? .small,
-            pagingOrientation: try container.decodeIfPresent(PagingOrientation.self, forKey: .pagingOrientation) ?? .horizontal
+            pagingOrientation: try container.decodeIfPresent(PagingOrientation.self, forKey: .pagingOrientation) ?? .horizontal,
+            pageRevertMode: try container.decodeIfPresent(PageRevertMode.self, forKey: .pageRevertMode) ?? .fixedPage,
+            standardPageIndex: try container.decodeIfPresent(Int.self, forKey: .standardPageIndex) ?? 0
         )
     }
 
@@ -638,6 +665,8 @@ extension LauncherSettings {
         try container.encode(hiddenSpecialEntryIDs, forKey: .hiddenSpecialEntryIDs)
         try container.encode(iconSizePreference, forKey: .iconSizePreference)
         try container.encode(pagingOrientation, forKey: .pagingOrientation)
+        try container.encode(pageRevertMode, forKey: .pageRevertMode)
+        try container.encode(standardPageIndex, forKey: .standardPageIndex)
     }
 }
 

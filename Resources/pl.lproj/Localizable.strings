@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Grupuj foldery po aplikacjach w menu Dock";
 "SettingsDockFolderGroupBody" = "Trzyma pojedyncze aplikacje najpierw alfabetycznie, foldery poniżej przy kliknięciu prawym na ikonę Dock.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Stała strona";
+"PageRevertModeLastUsedPage" = "Ostatnio przeglądana";
+"SettingsPageRevertLabel" = "Powrót do strony po ponownym otwarciu";
+"SettingsPageRevertBody" = "Jeśli Launchy był ukryty dłużej niż 90 sekund, może wrócić do konkretnej strony lub po prostu pozostać na ostatnio przeglądanej stronie.";
+"SettingsPageRevertPageNumber" = "Strona %d";

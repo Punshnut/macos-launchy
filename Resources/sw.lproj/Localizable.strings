@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Panga folda baada ya programu kwenye menyu ya Dock";
 "SettingsDockFolderGroupBody" = "Huonyesha programu pekee kwanza kwa mpangilio wa alfabeti, folda zikiwa chini unapo-bofya kulia ikoni ya Dock.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Ukurasa maalum";
+"PageRevertModeLastUsedPage" = "Uliotazamwa mwisho";
+"SettingsPageRevertLabel" = "Rudi kwenye ukurasa ufunguapo tena";
+"SettingsPageRevertBody" = "Ikiwa Launchy imefichwa kwa zaidi ya sekunde 90, inaweza kurudi kwenye ukurasa maalum au kubaki tu kwenye ukurasa uliotazama mwisho.";
+"SettingsPageRevertPageNumber" = "Ukurasa %d";

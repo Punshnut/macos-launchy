@@ -396,6 +396,7 @@ final class IntroductionWindowController: NSWindowController {
         window.collectionBehavior.insert(.fullScreenAuxiliary)
         window.collectionBehavior.insert(.canJoinAllSpaces)
         window.level = .screenSaver
+        // Hide native traffic lights; this window relies on its own chrome/skip controls instead.
         window.standardWindowButton(.closeButton)?.isHidden = true
         window.standardWindowButton(.miniaturizeButton)?.isHidden = true
         window.standardWindowButton(.zoomButton)?.isHidden = true

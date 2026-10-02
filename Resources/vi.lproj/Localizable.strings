@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Nhóm thư mục sau ứng dụng trong menu Dock";
 "SettingsDockFolderGroupBody" = "Khi nhấp chuột phải vào biểu tượng Dock, ứng dụng đơn lẻ được xếp theo ABC trước, thư mục ở bên dưới cũng theo ABC.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Trang cố định";
+"PageRevertModeLastUsedPage" = "Trang xem gần nhất";
+"SettingsPageRevertLabel" = "Quay lại trang khi mở lại";
+"SettingsPageRevertBody" = "Nếu Launchy đã ẩn hơn 90 giây, ứng dụng có thể quay lại một trang cụ thể hoặc chỉ cần ở lại trang bạn xem gần nhất.";
+"SettingsPageRevertPageNumber" = "Trang %d";

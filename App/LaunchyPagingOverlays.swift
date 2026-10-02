@@ -370,6 +370,7 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
         coordinator.stopMonitoring()
     }
 
+    /// Owns the NSEvent monitors and maps keyboard events into paging/navigation callbacks.
     @MainActor
     final class Coordinator {
         var isEnabled: Bool = true {

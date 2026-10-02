@@ -94,10 +94,8 @@ struct SettingsWindow: View {
 
     private var windowControls: some View {
         HStack(spacing: 8) {
-            ForEach(WindowControlKind.allCases) { control in
-                WindowControlDot(kind: control) {
-                    performWindowAction(for: control)
-                }
+            WindowControlsGroup { control in
+                performWindowAction(for: control)
             }
             Spacer()
         }
@@ -240,6 +238,8 @@ struct SettingsWindow: View {
                 iconSizeSlider
                 panelDivider
                 pagingOrientationPicker
+                panelDivider
+                pageRevertPicker
                 iconBehaviorListSection
             }
         }
@@ -397,6 +397,47 @@ struct SettingsWindow: View {
             .frame(maxWidth: .infinity, alignment: .center)
 
             Text(String(localized: "SettingsPagingDirectionBody"))
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+
+    private var pageRevertPicker: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(String(localized: "SettingsPageRevertLabel"))
+                .font(.subheadline)
+                .fontWeight(.semibold)
+
+            Picker("", selection: Binding(
+                get: { settingsStore.settingsSnapshot.pageRevertMode },
+                set: { settingsStore.setPageRevertMode($0) }
+            )) {
+                ForEach(PageRevertMode.allCases, id: \.self) { mode in
+                    Text(mode.displayName).tag(mode)
+                }
+            }
+            .labelsHidden()
+            .pickerStyle(.segmented)
+            .frame(maxWidth: 320)
+            .frame(maxWidth: .infinity, alignment: .center)
+
+            if settingsStore.settingsSnapshot.pageRevertMode == .fixedPage {
+                Stepper(
+                    String(
+                        format: String(localized: "SettingsPageRevertPageNumber"),
+                        settingsStore.settingsSnapshot.standardPageIndex + 1
+                    ),
+                    value: Binding(
+                        get: { settingsStore.settingsSnapshot.standardPageIndex + 1 },
+                        set: { settingsStore.setStandardPageIndex($0 - 1) }
+                    ),
+                    in: 1...99
+                )
+                .frame(maxWidth: 320)
+                .frame(maxWidth: .infinity, alignment: .center)
+            }
+
+            Text(String(localized: "SettingsPageRevertBody"))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -1269,7 +1310,7 @@ private struct TabButtonView: View {
                     .font(.system(size: 14, weight: .semibold))
             }
             .foregroundColor(
-                isSelected ? Color.accentColor : Color.primary.opacity(isHovered ? 0.92 : 0.68)
+                isSelected ? Color.primary : Color.primary.opacity(isHovered ? 0.92 : 0.68)
             )
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
@@ -1336,10 +1377,27 @@ private struct ZoomHoverIcon: View {
     }
 }
 
+/// Hosts the three traffic-light dots; each one hovers, reveals its glyph, and wobbles
+/// independently rather than reacting as a synchronized group.
+struct WindowControlsGroup: View {
+    let action: (WindowControlKind) -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(WindowControlKind.allCases) { control in
+                WindowControlDot(kind: control) {
+                    action(control)
+                }
+            }
+        }
+    }
+}
+
 struct WindowControlDot: View {
     let kind: WindowControlKind
     let action: () -> Void
     @State private var isHovering = false
+    @State private var wobble = false
 
     var body: some View {
         Button(action: action) {
@@ -1360,9 +1418,26 @@ struct WindowControlDot: View {
                 .overlay(
                     Circle().stroke(Color.black.opacity(0.12), lineWidth: 0.5)
                 )
+                .scaleEffect(x: wobble ? 1.16 : 1.0, y: wobble ? 0.86 : 1.0)
         }
         .buttonStyle(.plain)
-        .onHover { isHovering = $0 }
+        .onHover { hovering in
+            isHovering = hovering
+            guard hovering else {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.55)) {
+                    wobble = false
+                }
+                return
+            }
+            withAnimation(.spring(response: 0.28, dampingFraction: 0.38)) {
+                wobble = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.28) {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.55)) {
+                    wobble = false
+                }
+            }
+        }
     }
 }
 

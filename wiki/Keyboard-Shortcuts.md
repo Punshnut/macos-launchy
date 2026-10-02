@@ -15,6 +15,10 @@ while your eyes are still on something else.
 | Open Settings | `Cmd` + `,` |
 | Jump to a specific page | `Control` + a number key (`1`-`9`, `0` for page 10) |
 
+Paging direction (and which arrow keys page you) follows the paging
+orientation set in Settings → Visuals — horizontal by default, or vertical
+if you've switched it. See [Settings Overview](Settings-Overview).
+
 ## Picking a hotkey
 
 Launchy doesn't ship with a preset show/hide hotkey, so setting one is

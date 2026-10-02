@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Dock 메뉴에서 앱 다음에 폴더를 정렬";
 "SettingsDockFolderGroupBody" = "Dock 아이콘을 오른쪽 클릭할 때 단일 앱을 먼저, 폴더를 그 아래에 알파벳 순으로 표시합니다.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "고정 페이지";
+"PageRevertModeLastUsedPage" = "마지막으로 본 페이지";
+"SettingsPageRevertLabel" = "다시 열 때 돌아갈 페이지";
+"SettingsPageRevertBody" = "Launchy가 90초 넘게 숨겨져 있었다면 특정 페이지로 돌아가거나 마지막으로 보던 페이지에 그대로 머무를 수 있습니다.";
+"SettingsPageRevertPageNumber" = "페이지 %d";

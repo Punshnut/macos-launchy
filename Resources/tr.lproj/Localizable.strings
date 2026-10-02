@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Dock menüsünde uygulamalardan sonra klasörleri grupla";
 "SettingsDockFolderGroupBody" = "Dock simgesine sağ tıklandığında bağımsız uygulamalar önce alfabetik, klasörler hemen altında alfabetik sıralanır.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Sabit sayfa";
+"PageRevertModeLastUsedPage" = "Son görüntülenen";
+"SettingsPageRevertLabel" = "Yeniden açıldığında sayfaya dön";
+"SettingsPageRevertBody" = "Launchy 90 saniyeden uzun süre gizliyse, belirli bir sayfaya geri dönebilir veya en son görüntülediğiniz sayfada kalabilir.";
+"SettingsPageRevertPageNumber" = "Sayfa %d";

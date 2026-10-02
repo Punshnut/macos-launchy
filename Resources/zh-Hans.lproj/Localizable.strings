@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "在 Dock 菜单中将文件夹排列在应用之后";
 "SettingsDockFolderGroupBody" = "右键 Dock 图标时，先按字母顺序列出独立应用，其下按字母顺序列出文件夹。";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "固定页面";
+"PageRevertModeLastUsedPage" = "最后浏览的页面";
+"SettingsPageRevertLabel" = "重新打开时返回的页面";
+"SettingsPageRevertBody" = "如果 Launchy 已隐藏超过 90 秒，它可以跳回到指定页面，或者只是停留在您最后查看的页面。";
+"SettingsPageRevertPageNumber" = "第 %d 页";

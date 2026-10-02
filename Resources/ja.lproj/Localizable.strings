@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Dock メニューでアプリの後にフォルダを並べる";
 "SettingsDockFolderGroupBody" = "Dock アイコンを右クリックしたとき、単体アプリを先にアルファベット順、フォルダをその下に並べます。";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "固定ページ";
+"PageRevertModeLastUsedPage" = "最後に表示したページ";
+"SettingsPageRevertLabel" = "再表示時に戻るページ";
+"SettingsPageRevertBody" = "Launchyが90秒以上非表示になっていた場合、特定のページに戻るか、最後に表示していたページのままにするかを選べます。";
+"SettingsPageRevertPageNumber" = "ページ %d";

@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Групувати папки після застосунків у меню Dock";
 "SettingsDockFolderGroupBody" = "При правому кліку на іконку Dock спершу показує окремі застосунки за алфавітом, папки під ними теж за алфавітом.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Фіксована сторінка";
+"PageRevertModeLastUsedPage" = "Остання переглянута";
+"SettingsPageRevertLabel" = "Повернення на сторінку при повторному відкритті";
+"SettingsPageRevertBody" = "Якщо Launchy був прихований довше 90 секунд, він може повернутися на певну сторінку або просто залишитися на останній переглянутій сторінці.";
+"SettingsPageRevertPageNumber" = "Сторінка %d";

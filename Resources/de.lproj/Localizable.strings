@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Ordner nach Apps im Dock-Menü gruppieren";
 "SettingsDockFolderGroupBody" = "Listet einzelne Apps zuerst alphabetisch, Ordner alphabetisch darunter beim Rechtsklick auf das Dock-Symbol.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Feste Seite";
+"PageRevertModeLastUsedPage" = "Zuletzt angesehen";
+"SettingsPageRevertLabel" = "Zu welcher Seite zurückkehren";
+"SettingsPageRevertBody" = "Wenn Launchy länger als 90 Sekunden ausgeblendet war, kann es zu einer bestimmten Seite zurückspringen oder einfach auf der zuletzt angezeigten Seite bleiben.";
+"SettingsPageRevertPageNumber" = "Seite %d";

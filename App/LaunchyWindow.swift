@@ -50,7 +50,7 @@ final class LauncherWindowController: NSWindowController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    /// Centers the floaty panel window and constrains it to the visible screen area.
+    /// Extra height added above the base floaty content size for breathing room.
     private static let floatyTopExtension: CGFloat = 82
 
     /// Computes a centered floaty-panel frame clamped to the visible bounds of the target screen.

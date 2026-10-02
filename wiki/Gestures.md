@@ -18,6 +18,10 @@ This matters most in fullscreen mode with a lot of pages, browsing by
 gesture is often faster than reaching for arrow keys if your hand's already
 on a trackpad or mouse.
 
+Swapping to vertical paging in Settings → Visuals flips the direction
+these gestures move in: swipes/scrolls go up and down instead of
+left/right. See [Settings Overview](Settings-Overview).
+
 ## Dismissing
 
 Tap or click anywhere on the background (not a tile or folder) to close

@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Kumpulkan folder selepas app dalam menu Dock";
 "SettingsDockFolderGroupBody" = "Aplikasi tunggal disusun dahulu mengikut abjad, folder di bawahnya apabila klik kanan ikon Dock.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "Halaman tetap";
+"PageRevertModeLastUsedPage" = "Terakhir dilihat";
+"SettingsPageRevertLabel" = "Kembali ke halaman apabila dibuka semula";
+"SettingsPageRevertBody" = "Jika Launchy telah tersembunyi lebih daripada 90 saat, ia boleh kembali ke halaman tertentu atau terus kekal pada halaman yang terakhir anda lihat.";
+"SettingsPageRevertPageNumber" = "Halaman %d";

@@ -223,3 +223,9 @@
 "SettingsDockFolderGroupToggle" = "Dock మెనూలో యాప్‌ల తర్వాత ఫోల్డర్లను సమూహీకరించండి";
 "SettingsDockFolderGroupBody" = "Dock ఐకాన్‌పై రైట్-క్లిక్ చేసినప్పుడు ఒక్కొక్క యాప్‌ను ముందు అక్షరక్రమంలో, ఫోల్డర్లను క్రింద అక్షరక్రమంలో చూపిస్తుంది.";
 
+// Idle page revert
+"PageRevertModeFixedPage" = "స్థిర పేజీ";
+"PageRevertModeLastUsedPage" = "చివరిగా చూసినది";
+"SettingsPageRevertLabel" = "మళ్లీ తెరిచినప్పుడు పేజీకి తిరిగి వెళ్లండి";
+"SettingsPageRevertBody" = "Launchy 90 సెకన్ల కంటే ఎక్కువసేపు దాగి ఉంటే, అది ఒక నిర్దిష్ట పేజీకి తిరిగి వెళ్లవచ్చు లేదా మీరు చివరిగా చూసిన పేజీలోనే ఉండవచ్చు.";
+"SettingsPageRevertPageNumber" = "పేజీ %d";

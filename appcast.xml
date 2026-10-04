@@ -9,15 +9,66 @@
     <language>en</language>
 
     <item>
-      <title>Launchy 2026.7</title>
-      <pubDate>Sat, 25 Jul 2026 19:23:29 +0200</pubDate>
+      <title>Launchy 2026.8</title>
+      <pubDate>Sun, 04 Oct 2026 05:15:28 +0200</pubDate>
+      <description><![CDATA[
+<style>
+  body { font: -apple-system-body; color: #1d1d1f; margin: 16px; line-height: 1.4; }
+  @media (prefers-color-scheme: dark) { body { color: #f5f5f7; } }
+  h2 { font-size: 1.05em; margin: 18px 0 6px; }
+  ul { list-style: none; padding: 0; margin: 0; }
+  li { margin: 6px 0; }
+  .tag { display: inline-block; min-width: 58px; text-align: center; font-size: 10px;
+         font-weight: 700; color: #fff; border-radius: 4px; padding: 2px 6px; margin-right: 8px; }
+  .new { background: #2e8b3e; } .fix { background: #e8891c; }
+  .perf { background: #2a7fd4; } .improve { background: #7a4fd6; }
+  .tagline { opacity: 0.7; margin-top: 18px; }
+</style>
+<p>A feature release bringing Liquid Glass to macOS 26+, a configurable idle page-revert, smoother live search, and a handful of drag-and-drop and dismiss-gesture fixes. Launchy is now also licensed under AGPL-3.0.</p>
+<h2>Features</h2>
+<ul>
+  <li><span class="tag new">NEW</span>Adopted Liquid Glass on macOS 26+ for settings, floaty launcher, search bar, and onboarding, with material fallbacks for older systems</li>
+  <li><span class="tag new">NEW</span>Added configurable idle page-revert setting</li>
+  <li><span class="tag new">NEW</span>Softened accent-color vibrancy and polished the traffic lights</li>
+  <li><span class="tag new">NEW</span>Folders now close on background tap instead of hiding the launcher</li>
+  <li><span class="tag new">NEW</span>Launchy now remembers the current page and folder across quick toggles</li>
+  <li><span class="tag new">NEW</span>Self-built copies are now detected via code-signature check, with a hint linking to the official release</li>
+</ul>
+<h2>Performance</h2>
+<ul>
+  <li><span class="tag perf">PERF</span>Prewarmed search-result icons and cached low-res thumbnails to disk for smoother live search</li>
+</ul>
+<h2>Fixes</h2>
+<ul>
+  <li><span class="tag fix">FIX</span>Fixed grid and folder icon drag-and-drop on macOS 27</li>
+  <li><span class="tag fix">FIX</span>Fixed grid, folder, and search bar clicks being swallowed by the click-outside-to-dismiss gesture</li>
+  <li><span class="tag fix">FIX</span>Restored background tap-to-dismiss</li>
+  <li><span class="tag fix">FIX</span>Fixed the launcher not appearing when Launchy is selected in the app switcher, not just on Dock icon click (#11)</li>
+  <li><span class="tag fix">FIX</span>Fixed intentionally empty folders being dropped when restoring the arrangement (#16)</li>
+  <li><span class="tag fix">FIX</span>Hardened global hotkey registration for future macOS releases with an event-monitor fallback and failure logging</li>
+  <li><span class="tag fix">FIX</span>Documented the icon-catalog build target mismatch</li>
+</ul>
+<h2>Localization</h2>
+<ul>
+  <li><span class="tag improve">IMPROVE</span>Added missing translations for system-tool tile strings and the donation callout in all languages</li>
+  <li><span class="tag improve">IMPROVE</span>Added missing PrivateBuildLabel and GetOfficialVersionLabel translations</li>
+</ul>
+<h2>Licensing &amp; Documentation</h2>
+<ul>
+  <li><span class="tag improve">IMPROVE</span>Relicensed the project from MIT to AGPL-3.0</li>
+  <li><span class="tag improve">IMPROVE</span>Added public build scripts plus CONTRIBUTING and AI_POLICY docs</li>
+  <li><span class="tag improve">IMPROVE</span>Rewrote the wiki as a use-case-driven user guide and added a wiki publish script</li>
+  <li><span class="tag improve">IMPROVE</span>Switched docs and wiki to a consistent first-person voice</li>
+</ul>
+<p class="tagline"><em>Launchy is the free open-source Launchpad alternative macOS users have been waiting for. Fullscreen mode mirrors the classic Launchpad experience but adds richer controls, while Floaty Mode doubles as a HUD with fast toggles that match the new macOS design without changing the behavior you rely on. It scans your apps, caches icons, and keeps a responsive grid ready on every Space - a universal binary that runs natively on both Apple Silicon (M-series) and Intel Macs, all completely free.</em></p>
+      ]]></description>
       <enclosure
     url="https://github.com/Punshnut/macos-launchy/releases/latest/download/Launchy.dmg"
-    sparkle:shortVersionString="2026.7"
-    sparkle:version="1"
-    length="9264113"
+    sparkle:shortVersionString="2026.8"
+    sparkle:version="2"
+    length="9830356"
     type="application/octet-stream"
-    sparkle:edSignature="TaLGgLoC1Jrt+xsV5KhAhRsUdcubjRKpv4RjbUVg3btdRb1S+6dmp1K/dkDt9tfMa23GTifr9GAzQU4V+FS2Cg==" />
+    sparkle:edSignature="BWxE7zf1IuVIxbvX7PXQTTnuWf+CqMWXbdhIMBJEOnSJnroZvCiMXerHIBm3pEJT+rGAohDbOtE3xvbv+s+EBQ==" />
       <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
     </item>
   </channel>

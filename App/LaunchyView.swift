@@ -4665,6 +4665,7 @@ struct LauncherView: View {
             .contentShape(Rectangle().inset(by: -hitExpansion))
             .buttonStyle(.plain)
             .disabled(disabled)
+            .markInteractiveForDismissDetection()
             .simultaneousGesture(
                 LongPressGesture(minimumDuration: 0, maximumDistance: 36)
                     .onChanged { _ in

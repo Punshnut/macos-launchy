@@ -185,7 +185,9 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
                 return
             }
 
-            let primaryDelta = pagingOrientation == .vertical ? -event.scrollingDeltaY : event.scrollingDeltaX
+            let primaryDelta = effectivelyPrecise
+                ? (pagingOrientation == .vertical ? -event.scrollingDeltaY : event.scrollingDeltaX)
+                : wheelPrimaryDelta(for: event)
 
             if effectivelyPrecise, abs(primaryDelta) > 0.01 {
                 hasActivePagedScroll = true
@@ -224,6 +226,15 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
                 }
                 hasActivePagedScroll = false
             }
+        }
+
+        /// Resolves the wheel delta for paging. Plain wheels only report vertical deltas, so horizontal paging
+        /// falls back to whichever axis moved more. The sign is left as macOS reports it, so the direction
+        /// follows the system natural-scrolling setting.
+        private func wheelPrimaryDelta(for event: NSEvent) -> CGFloat {
+            let useHorizontalAxis = pagingOrientation == .horizontal
+                && abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY)
+            return useHorizontalAxis ? event.scrollingDeltaX : event.scrollingDeltaY
         }
 
         /// Maps discrete scrolls (e.g. mouse wheel) to next/previous page triggers.

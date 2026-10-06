@@ -678,7 +678,6 @@ struct LauncherView: View {
                         .transition(.opacity)
                 }
             }
-            .contentShape(Rectangle())
             .contextMenu {
                 itemContextMenu(for: item)
             }
@@ -742,16 +741,22 @@ struct LauncherView: View {
             // tracking wins the initial click before the ancestor .onDrag gets a chance to start
             // an NSDraggingSession, so icon drag-and-drop never begins.
             VStack(spacing: 10) {
+                // Hit area is the icon and label only, not the full grid cell (issue #19): on wide
+                // displays the cell is much wider than the icon, so the gaps would otherwise launch.
                 iconCell(for: item, layout: layout, allowHeavyWork: allowHeavyWork)
                     .scaleEffect(isLaunching ? 1.08 : 1.0)
                     .opacity(isLaunching ? 0.4 : 1.0)
                     .animation(.easeInOut(duration: 0.18), value: launchingItemID)
+                    .contentShape(Rectangle())
+                    .markInteractiveForDismissDetection()
                 appOrFolderTitleView(for: item)
                     .font(.system(size: 13, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(iconLabelColor())
                     .lineLimit(2)
                     .frame(maxWidth: .infinity)
+                    .contentShape(Rectangle())
+                    .markInteractiveForDismissDetection()
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 4)
@@ -760,7 +765,6 @@ struct LauncherView: View {
                 .spring(response: 0.35, dampingFraction: 0.82, blendDuration: 0.06),
                 value: activeFolder?.id
             )
-            .contentShape(Rectangle())
             .onTapGesture {
                 if isMultiSelectModeActive {
                     toggleSelection(for: item)
@@ -768,7 +772,6 @@ struct LauncherView: View {
                     openItem(item)
                 }
             }
-            .markInteractiveForDismissDetection()
         }
     }
 

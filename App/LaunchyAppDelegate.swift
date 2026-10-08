@@ -1283,7 +1283,12 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Restores focus to launch target or previous app.
+    /// Restores focus to launch target or previous app. Must be called synchronously
+    /// from within the dismiss gesture's own call stack (not from an animation
+    /// completion handler several run-loop turns later) — activating another app
+    /// that far removed from the original input event gets silently ignored by
+    /// macOS, which is what left Launchy stuck as the active app after a Dock-opened
+    /// launcher was dismissed by clicking its background.
     func focusPreferredApplicationAfterLauncherHides() {
         if activatePendingLaunchIfPossible() {
             return
@@ -1317,9 +1322,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Brings back the previously focused app when no launch target is waiting.
-    private func activateLastFocusedApplicationIfAvailable() {
-        guard let app = lastFocusedApplication, app.isTerminated == false else { return }
+    @discardableResult
+    private func activateLastFocusedApplicationIfAvailable() -> Bool {
+        guard let app = lastFocusedApplication, app.isTerminated == false else { return false }
         app.activate(options: [.activateAllWindows, .activateIgnoringOtherApps])
+        return true
     }
 
     /// Records show timestamp and resets hide-related bookkeeping.
@@ -1404,6 +1411,15 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
+        // Restore focus synchronously, in the same call stack as the user's dismiss
+        // gesture, rather than inside the fade animation's completion handler (which
+        // runs several run-loop turns later, via NSAnimationContext + Task hops).
+        // Activating another app from that far outside the original input event got
+        // silently ignored by macOS, leaving Launchy stuck as the active app.
+        if restoreFocus {
+            focusPreferredApplicationAfterLauncherHides()
+        }
+
         isAnimatingLauncherHide = true
         controller.fadeOutWindow { @MainActor [weak self] in
             guard let self else { return }
@@ -1411,9 +1427,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             shrinkIconCachesForHiddenLauncher()
             markLauncherDidHide()
             NotificationCenter.default.post(name: .launcherDidHide, object: nil)
-            if restoreFocus {
-                focusPreferredApplicationAfterLauncherHides()
-            }
             completion()
         }
     }

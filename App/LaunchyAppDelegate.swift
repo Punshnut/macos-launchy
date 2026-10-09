@@ -1311,6 +1311,12 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         application.activate(options: [.activateAllWindows, .activateIgnoringOtherApps])
         pendingLaunchedApplication = nil
         pendingLaunchBundleIdentifier = nil
+
+        // When this launched app later quits, macOS hands activation back to Launchy
+        // (it was frontmost right before the launched app took over), which fires
+        // applicationDidBecomeActive and would otherwise reopen the launcher as if
+        // the user had Cmd-Tabbed or Dock-clicked it. Suppress that one reveal.
+        suppressLauncherRevealOnNextActivation = true
         return true
     }
 

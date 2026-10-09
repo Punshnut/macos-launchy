@@ -86,9 +86,9 @@ every Settings tab, not just a feature list.
 
 ## License & support
 
-- **License:** AGPL-3.0, effective 2026-09-11. Versions released before this date remain available under the original MIT license, which cannot be retroactively revoked; all new releases going forward are AGPL-3.0.
+**License:** AGPL-3.0, effective 2026-09-11. Versions released before this date remain available under the original MIT license, which cannot be retroactively revoked; all new releases going forward are AGPL-3.0.
 
-[Website](https://feuerbacher.me/projects/launchy) (currently there's not much to see)
+[Website](https://feuerbacher.me/projects/launchy) / [Wiki](https://github.com/Punshnut/macos-launchy/wiki)
 
 ## Get Launchy
 

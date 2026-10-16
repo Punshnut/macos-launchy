@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Padà sí oju-iwe nígbà tí a bá tún ṣí i";
 "SettingsPageRevertBody" = "Tí Launchy bá ti fara sin fún ju ìsẹ́jú-àáyá 90 lọ, ó lè padà sí oju-iwe kan pàtó tàbí kó kàn dúró sí oju-iwe tí o wò kẹ́yìn.";
 "SettingsPageRevertPageNumber" = "Oju-iwe %d";
+"ItemActionDeleteFolder" = "Pa folda rẹ́";
+"ItemActionRemoveFromFolder" = "Yọ kúrò nínú folda";

@@ -184,11 +184,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Reopens the launcher when the Dock icon is clicked while the app is already running.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        if flag {
-            refocusLauncherWindowIfVisible()
-        } else {
-            showLauncherWindowAfterActivation()
-        }
+        // `flag` is true whenever any window (e.g. Settings) is visible, so it says nothing about the launcher.
+        // showLauncherWindowAfterActivation already refocuses a visible launcher and presents a hidden one.
+        showLauncherWindowAfterActivation()
         return true
     }
 

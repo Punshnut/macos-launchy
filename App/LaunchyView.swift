@@ -2683,7 +2683,15 @@ struct LauncherView: View {
             }
             activeFolder = folder
         }
+        refreshItemCachesAfterContentEdit(updated)
         persistOrderChange()
+    }
+
+    /// Refreshes the grid cache and search metadata after an in-place edit (e.g. rename).
+    /// `LauncherItem` equality is id-only, so `onChange(of: orderedItems)` does not fire for these edits.
+    private func refreshItemCachesAfterContentEdit(_ items: [LauncherItem]) {
+        scheduleSearchMetadataRebuild(for: items)
+        updateFilteredItems(using: items)
     }
 
     /// Lifts an app out of an open folder so it can participate in root-grid drag flow.
@@ -6452,6 +6460,12 @@ struct LauncherView: View {
             }
             .disabled(app.bundleURL == nil)
 
+            if isApp(app, inFolderWithID: activeFolder?.id ?? UUID()) {
+                Button(String(localized: "ItemActionRemoveFromFolder")) {
+                    moveAppOutOfFolderToPage(item, targetPage: currentPage)
+                }
+            }
+
             Menu(String(localized: "ItemActionMoveToFolder")) {
                 folderMoveMenu(for: multiSelectAppTargets(for: item))
             }
@@ -6481,7 +6495,10 @@ struct LauncherView: View {
             }
         case .folder(let folder):
             Button(String(localized: "ItemActionFolderDetails")) {
-                showItemDetails(item)
+                // Let the context menu dismiss before running the modal alert.
+                DispatchQueue.main.async {
+                    showItemDetails(item)
+                }
             }
 
             Button(String(localized: "ItemActionRenameFolder")) {
@@ -6498,7 +6515,59 @@ struct LauncherView: View {
             Menu(String(localized: "ItemActionMoveToPage")) {
                 pageMoveMenu(for: item)
             }
+
+            Button(String(localized: "ItemActionDeleteFolder"), role: .destructive) {
+                dissolveFolder(folder)
+            }
         }
+    }
+
+    /// Removes a folder and returns its apps to the root grid at the folder's position.
+    private func dissolveFolder(_ folder: FolderItem) {
+        guard let index = orderedItems.firstIndex(where: { item in
+            if case let .folder(existing) = item { return existing.id == folder.id }
+            return false
+        }) else { return }
+        guard case let .folder(current) = orderedItems[index] else { return }
+
+        if activeFolder?.id == folder.id {
+            closeActiveFolder()
+        }
+
+        var items = orderedItems
+        items.remove(at: index)
+        items.insert(contentsOf: current.apps.map { LauncherItem.app($0) }, at: index)
+
+        let updatedSizes = pageSizesAfterDissolvingFolder(
+            activePageSizes(for: orderedItems.count),
+            folderIndex: index,
+            appCount: current.apps.count,
+            resultingCount: items.count
+        )
+        withAnimation(gridSpringAnimation) {
+            orderedItems = items
+            updateFilteredItems(using: items)
+        }
+        pageSizes = updatedSizes
+        ensureCurrentPageWithinBounds()
+        persistOrderChange(using: updatedSizes)
+    }
+
+    /// Grows the folder's page by the net number of items added when it is dissolved.
+    private func pageSizesAfterDissolvingFolder(
+        _ sizes: [Int],
+        folderIndex: Int,
+        appCount: Int,
+        resultingCount: Int
+    ) -> [Int] {
+        if fillsGapsAutomatically {
+            return densePageSizes(for: resultingCount)
+        }
+        var updated = sizes
+        let page = pageIndex(forLinearIndex: folderIndex, sizes: updated) ?? max(updated.count - 1, 0)
+        guard updated.indices.contains(page) else { return normalizePageSizes(updated, itemCount: resultingCount) }
+        updated[page] += appCount - 1
+        return trimTrailingEmptyPages(updated)
     }
 
     /// Context submenu listing destination folders for selected apps.
@@ -6732,7 +6801,12 @@ struct LauncherView: View {
         isEditingFolderName = false
         isFolderNameFieldFocused = false
         folderNameDraft = resolved
-        if resolved != folder.name {
+        // Resolve the current name by id; `folder` may be a stale capture from the view builder.
+        let currentName = orderedItems.lazy.compactMap { item -> String? in
+            if case let .folder(existing) = item, existing.id == folder.id { return existing.name }
+            return nil
+        }.first ?? folder.name
+        if resolved != currentName {
             applyFolderRename(folder, newName: resolved)
         }
     }
@@ -6806,6 +6880,7 @@ struct LauncherView: View {
         }
 
         orderedItems = items
+        refreshItemCachesAfterContentEdit(items)
         persistOrderChange()
     }
 
@@ -7357,7 +7432,8 @@ struct LauncherView: View {
         NSApp.activate(ignoringOtherApps: true)
         let alertWindow = alert.window
         alertWindow.level = .statusBar
-        alertWindow.collectionBehavior.insert([.moveToActiveSpace, .fullScreenAuxiliary, .canJoinAllSpaces])
+        // `.moveToActiveSpace` and `.canJoinAllSpaces` are mutually exclusive; AppKit rejects the combination.
+        alertWindow.collectionBehavior.insert([.fullScreenAuxiliary, .canJoinAllSpaces])
         alertWindow.makeKeyAndOrderFront(nil)
         alertWindow.orderFrontRegardless()
 

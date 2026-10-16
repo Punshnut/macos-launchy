@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Visszatérés az oldalra újranyitáskor";
 "SettingsPageRevertBody" = "Ha a Launchy 90 másodpercnél tovább volt rejtve, visszatérhet egy adott oldalra, vagy egyszerűen az utoljára megtekintett oldalon maradhat.";
 "SettingsPageRevertPageNumber" = "%d. oldal";
+"ItemActionDeleteFolder" = "Mappa törlése";
+"ItemActionRemoveFromFolder" = "Eltávolítás a mappából";

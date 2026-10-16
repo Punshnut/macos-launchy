@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Återgå till sida vid återöppning";
 "SettingsPageRevertBody" = "Om Launchy har varit dold i mer än 90 sekunder kan den hoppa tillbaka till en specifik sida eller bara stanna på den sida du senast visade.";
 "SettingsPageRevertPageNumber" = "Sida %d";
+"ItemActionDeleteFolder" = "Ta bort mapp";
+"ItemActionRemoveFromFolder" = "Ta bort från mapp";

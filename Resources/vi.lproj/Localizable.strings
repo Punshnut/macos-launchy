@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Quay lại trang khi mở lại";
 "SettingsPageRevertBody" = "Nếu Launchy đã ẩn hơn 90 giây, ứng dụng có thể quay lại một trang cụ thể hoặc chỉ cần ở lại trang bạn xem gần nhất.";
 "SettingsPageRevertPageNumber" = "Trang %d";
+"ItemActionDeleteFolder" = "Xóa thư mục";
+"ItemActionRemoveFromFolder" = "Xóa khỏi thư mục";

@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "再表示時に戻るページ";
 "SettingsPageRevertBody" = "Launchyが90秒以上非表示になっていた場合、特定のページに戻るか、最後に表示していたページのままにするかを選べます。";
 "SettingsPageRevertPageNumber" = "ページ %d";
+"ItemActionDeleteFolder" = "フォルダを削除";
+"ItemActionRemoveFromFolder" = "フォルダから取り出す";

@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Volver a esta página al reabrir";
 "SettingsPageRevertBody" = "Si Launchy ha estado oculto durante más de 90 segundos, puede volver a una página específica o simplemente permanecer en la última página que viste.";
 "SettingsPageRevertPageNumber" = "Página %d";
+"ItemActionDeleteFolder" = "Eliminar carpeta";
+"ItemActionRemoveFromFolder" = "Quitar de la carpeta";

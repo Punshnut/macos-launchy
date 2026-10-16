@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "পুনরায় খোলার সময় পৃষ্ঠায় ফিরে যান";
 "SettingsPageRevertBody" = "Launchy ৯০ সেকেন্ডের বেশি সময় লুকানো থাকলে, এটি একটি নির্দিষ্ট পৃষ্ঠায় ফিরে যেতে পারে বা শুধু আপনার সর্বশেষ দেখা পৃষ্ঠায় থাকতে পারে।";
 "SettingsPageRevertPageNumber" = "পৃষ্ঠা %d";
+"ItemActionDeleteFolder" = "ফোল্ডার মুছুন";
+"ItemActionRemoveFromFolder" = "ফোল্ডার থেকে সরান";

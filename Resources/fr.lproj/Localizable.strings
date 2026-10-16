@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Revenir à cette page à la réouverture";
 "SettingsPageRevertBody" = "Si Launchy est resté masqué plus de 90 secondes, il peut revenir à une page précise ou simplement rester sur la dernière page consultée.";
 "SettingsPageRevertPageNumber" = "Page %d";
+"ItemActionDeleteFolder" = "Supprimer le dossier";
+"ItemActionRemoveFromFolder" = "Retirer du dossier";

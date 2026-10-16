@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "กลับไปยังหน้าเมื่อเปิดอีกครั้ง";
 "SettingsPageRevertBody" = "หาก Launchy ถูกซ่อนไว้นานกว่า 90 วินาที แอปสามารถกลับไปยังหน้าที่กำหนดไว้ หรือคงอยู่ที่หน้าที่คุณดูล่าสุดก็ได้";
 "SettingsPageRevertPageNumber" = "หน้า %d";
+"ItemActionDeleteFolder" = "ลบโฟลเดอร์";
+"ItemActionRemoveFromFolder" = "นำออกจากโฟลเดอร์";

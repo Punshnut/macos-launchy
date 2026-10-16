@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Tornar a la pàgina en reobrir";
 "SettingsPageRevertBody" = "Si Launchy ha estat amagat durant més de 90 segons, pot tornar a una pàgina específica o simplement quedar-se a l'última pàgina que vas veure.";
 "SettingsPageRevertPageNumber" = "Pàgina %d";
+"ItemActionDeleteFolder" = "Elimina la carpeta";
+"ItemActionRemoveFromFolder" = "Treu de la carpeta";

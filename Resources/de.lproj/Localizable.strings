@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Zu welcher Seite zurückkehren";
 "SettingsPageRevertBody" = "Wenn Launchy länger als 90 Sekunden ausgeblendet war, kann es zu einer bestimmten Seite zurückspringen oder einfach auf der zuletzt angezeigten Seite bleiben.";
 "SettingsPageRevertPageNumber" = "Seite %d";
+"ItemActionDeleteFolder" = "Ordner löschen";
+"ItemActionRemoveFromFolder" = "Aus Ordner entfernen";

@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Powrót do strony po ponownym otwarciu";
 "SettingsPageRevertBody" = "Jeśli Launchy był ukryty dłużej niż 90 sekund, może wrócić do konkretnej strony lub po prostu pozostać na ostatnio przeglądanej stronie.";
 "SettingsPageRevertPageNumber" = "Strona %d";
+"ItemActionDeleteFolder" = "Usuń folder";
+"ItemActionRemoveFromFolder" = "Usuń z folderu";

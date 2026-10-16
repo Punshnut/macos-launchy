@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Rudi kwenye ukurasa ufunguapo tena";
 "SettingsPageRevertBody" = "Ikiwa Launchy imefichwa kwa zaidi ya sekunde 90, inaweza kurudi kwenye ukurasa maalum au kubaki tu kwenye ukurasa uliotazama mwisho.";
 "SettingsPageRevertPageNumber" = "Ukurasa %d";
+"ItemActionDeleteFolder" = "Futa folda";
+"ItemActionRemoveFromFolder" = "Ondoa kwenye folda";

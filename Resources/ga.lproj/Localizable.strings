@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Fill ar an leathanach nuair a osclaítear arís é";
 "SettingsPageRevertBody" = "Má bhí Launchy i bhfolach ar feadh níos mó ná 90 soicind, is féidir leis filleadh ar leathanach ar leith nó fanacht ar an leathanach deireanach a d'fhéach tú air.";
 "SettingsPageRevertPageNumber" = "Leathanach %d";
+"ItemActionDeleteFolder" = "Scrios an fillteán";
+"ItemActionRemoveFromFolder" = "Bain den fhillteán";

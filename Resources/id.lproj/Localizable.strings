@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Kembali ke halaman saat dibuka kembali";
 "SettingsPageRevertBody" = "Jika Launchy telah disembunyikan selama lebih dari 90 detik, aplikasi dapat kembali ke halaman tertentu atau tetap berada di halaman yang terakhir Anda lihat.";
 "SettingsPageRevertPageNumber" = "Halaman %d";
+"ItemActionDeleteFolder" = "Hapus folder";
+"ItemActionRemoveFromFolder" = "Keluarkan dari folder";

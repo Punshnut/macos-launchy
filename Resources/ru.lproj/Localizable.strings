@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Возврат на страницу при повторном открытии";
 "SettingsPageRevertBody" = "Если Launchy был скрыт дольше 90 секунд, он может вернуться на определённую страницу или просто остаться на последней просмотренной странице.";
 "SettingsPageRevertPageNumber" = "Страница %d";
+"ItemActionDeleteFolder" = "Удалить папку";
+"ItemActionRemoveFromFolder" = "Убрать из папки";

@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "العودة إلى الصفحة عند إعادة الفتح";
 "SettingsPageRevertBody" = "إذا ظل Launchy مخفيًا لأكثر من 90 ثانية، يمكنه العودة إلى صفحة محددة أو البقاء ببساطة في آخر صفحة شاهدتها.";
 "SettingsPageRevertPageNumber" = "صفحة %d";
+"ItemActionDeleteFolder" = "حذف المجلد";
+"ItemActionRemoveFromFolder" = "إزالة من المجلد";

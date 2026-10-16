@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "دوبارہ کھلنے پر صفحے پر واپس جائیں";
 "SettingsPageRevertBody" = "اگر Launchy 90 سیکنڈ سے زیادہ دیر تک چھپا رہے، تو یہ کسی مخصوص صفحے پر واپس جا سکتا ہے یا محض آپ کے آخری دیکھے گئے صفحے پر رہ سکتا ہے۔";
 "SettingsPageRevertPageNumber" = "صفحہ %d";
+"ItemActionDeleteFolder" = "فولڈر حذف کریں";
+"ItemActionRemoveFromFolder" = "فولڈر سے ہٹائیں";

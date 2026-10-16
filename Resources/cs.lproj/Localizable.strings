@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Návrat na stránku po opětovném otevření";
 "SettingsPageRevertBody" = "Pokud byl Launchy skrytý déle než 90 sekund, může se vrátit na konkrétní stránku, nebo jednoduše zůstat na naposledy zobrazené stránce.";
 "SettingsPageRevertPageNumber" = "Stránka %d";
+"ItemActionDeleteFolder" = "Smazat složku";
+"ItemActionRemoveFromFolder" = "Odebrat ze složky";

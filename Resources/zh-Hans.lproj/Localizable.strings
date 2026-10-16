@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "重新打开时返回的页面";
 "SettingsPageRevertBody" = "如果 Launchy 已隐藏超过 90 秒，它可以跳回到指定页面，或者只是停留在您最后查看的页面。";
 "SettingsPageRevertPageNumber" = "第 %d 页";
+"ItemActionDeleteFolder" = "删除文件夹";
+"ItemActionRemoveFromFolder" = "从文件夹中移除";

@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Koma shafin idan an sake buɗewa";
 "SettingsPageRevertBody" = "Idan Launchy ya kasance a ɓoye fiye da dakika 90, zai iya komawa wani shafi na musamman ko kuma kawai ya tsaya a shafin da ka gani na ƙarshe.";
 "SettingsPageRevertPageNumber" = "Shafi %d";
+"ItemActionDeleteFolder" = "Share fayil";
+"ItemActionRemoveFromFolder" = "Cire daga fayil";

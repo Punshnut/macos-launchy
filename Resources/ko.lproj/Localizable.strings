@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "다시 열 때 돌아갈 페이지";
 "SettingsPageRevertBody" = "Launchy가 90초 넘게 숨겨져 있었다면 특정 페이지로 돌아가거나 마지막으로 보던 페이지에 그대로 머무를 수 있습니다.";
 "SettingsPageRevertPageNumber" = "페이지 %d";
+"ItemActionDeleteFolder" = "폴더 삭제";
+"ItemActionRemoveFromFolder" = "폴더에서 제거";

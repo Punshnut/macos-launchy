@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "फिर से खोलने पर पृष्ठ पर वापस जाएं";
 "SettingsPageRevertBody" = "अगर Launchy 90 सेकंड से अधिक समय तक छिपा रहता है, तो यह किसी विशेष पृष्ठ पर वापस जा सकता है या बस आपके द्वारा अंतिम बार देखे गए पृष्ठ पर बना रह सकता है।";
 "SettingsPageRevertPageNumber" = "पृष्ठ %d";
+"ItemActionDeleteFolder" = "फ़ोल्डर हटाएँ";
+"ItemActionRemoveFromFolder" = "फ़ोल्डर से निकालें";

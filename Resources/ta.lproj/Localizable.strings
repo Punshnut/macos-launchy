@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "மீண்டும் திறக்கும்போது பக்கத்திற்குத் திரும்பு";
 "SettingsPageRevertBody" = "Launchy 90 வினாடிகளுக்கு மேல் மறைந்திருந்தால், அது ஒரு குறிப்பிட்ட பக்கத்திற்குத் திரும்பலாம் அல்லது நீங்கள் கடைசியாகப் பார்த்த பக்கத்திலேயே இருக்கலாம்.";
 "SettingsPageRevertPageNumber" = "பக்கம் %d";
+"ItemActionDeleteFolder" = "கோப்புறையை நீக்கு";
+"ItemActionRemoveFromFolder" = "கோப்புறையிலிருந்து நீக்கு";

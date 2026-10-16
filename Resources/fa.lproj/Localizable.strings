@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "بازگشت به صفحه هنگام بازگشایی";
 "SettingsPageRevertBody" = "اگر Launchy بیش از ۹۰ ثانیه پنهان بوده باشد، می‌تواند به یک صفحه خاص بازگردد یا به‌سادگی در آخرین صفحه‌ای که مشاهده کرده‌اید بماند.";
 "SettingsPageRevertPageNumber" = "صفحه %d";
+"ItemActionDeleteFolder" = "حذف پوشه";
+"ItemActionRemoveFromFolder" = "حذف از پوشه";

@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "እንደገና ሲከፈት ወደ ገጹ ይመለሱ";
 "SettingsPageRevertBody" = "Launchy ከ90 ሰከንድ በላይ ተደብቆ ከነበረ፣ ወደ ተወሰነ ገጽ ሊመለስ ወይም እርስዎ መጨረሻ ወደተመለከቱት ገጽ ብቻ ሊቆይ ይችላል።";
 "SettingsPageRevertPageNumber" = "ገጽ %d";
+"ItemActionDeleteFolder" = "አቃፊ ሰርዝ";
+"ItemActionRemoveFromFolder" = "ከአቃፊ አስወግድ";

@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Palaa sivulle, kun avataan uudelleen";
 "SettingsPageRevertBody" = "Jos Launchy on ollut piilossa yli 90 sekuntia, se voi palata tiettyyn sivuun tai pysyä viimeksi katsotulla sivulla.";
 "SettingsPageRevertPageNumber" = "Sivu %d";
+"ItemActionDeleteFolder" = "Poista kansio";
+"ItemActionRemoveFromFolder" = "Poista kansiosta";

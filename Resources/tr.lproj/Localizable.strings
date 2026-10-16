@@ -229,3 +229,5 @@
 "SettingsPageRevertLabel" = "Yeniden açıldığında sayfaya dön";
 "SettingsPageRevertBody" = "Launchy 90 saniyeden uzun süre gizliyse, belirli bir sayfaya geri dönebilir veya en son görüntülediğiniz sayfada kalabilir.";
 "SettingsPageRevertPageNumber" = "Sayfa %d";
+"ItemActionDeleteFolder" = "Klasörü sil";
+"ItemActionRemoveFromFolder" = "Klasörden çıkar";

@@ -605,7 +605,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             let isOnscreen = window.occlusionState.contains(.visible)
             let alpha = window.alphaValue
 
-            if isVisible && isOnscreen && alpha > 0.8 {
+            // Occlusion and alpha are unreliable (fade-in, other Spaces, fullscreen apps); only a hidden window is a failure.
+            if isVisible {
                 self.pendingFloatyVisibilityCheckID = nil
                 return
             }
@@ -641,8 +642,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         guard currentSettings.selectedLauncherMode == .floaty else { return }
 
         LaunchyLogger.error("Falling back to fullscreen because floaty presentation failed (\(trigger))")
+        // Session-only: keep the user's persisted Floaty preference intact.
         currentSettings.selectedLauncherMode = .fullscreen
-        LauncherSettingsPersistence.setLauncherMode(.fullscreen)
         applyLauncherMode()
         ensureEscapeHatchUI(lastWindow: window)
     }

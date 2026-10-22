@@ -36,12 +36,22 @@ space and it lands there directly; drop it right onto another tile without
 a modifier held and it reorders in, everything after it shifts down to make
 room.
 
-## Taking an app out of a folder
+## Taking apps out of a folder
 
-Open a folder and drag an app to the edge of the folder card, past a small
-threshold near the border, and release. Launchy reads that as "take this
-back out" and returns the app to the root grid instead of leaving it
-stranded inside the folder.
+The quickest way: open the folder, right-click the app, and choose
+**Remove from Folder**. The app lands on the page you're currently viewing.
+
+You can also drag it out. Open a folder and drag an app to the edge of the
+folder card, past a small threshold near the border, and release. Launchy
+reads that as "take this back out" and returns the app to the root grid
+instead of leaving it stranded inside the folder.
+
+## Deleting a folder
+
+Right-click a folder and choose **Delete Folder**. The folder disappears and
+its apps go back onto the grid where the folder was. Nothing is hidden or
+uninstalled, you just lose the grouping. The same menu has **Folder
+Details**, which lists the apps inside.
 
 ## Changed your mind mid-drag?
 

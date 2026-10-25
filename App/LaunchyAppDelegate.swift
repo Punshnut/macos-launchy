@@ -186,6 +186,10 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         // `flag` is true whenever any window (e.g. Settings) is visible, so it says nothing about the launcher.
         // showLauncherWindowAfterActivation already refocuses a visible launcher and presents a hidden one.
+        // A reopen is always an explicit request: drop any stale reveal suppression and claim
+        // activation so a late activation of the previously frontmost app can't win the click.
+        suppressLauncherRevealOnNextActivation = false
+        NSApp.activate(ignoringOtherApps: true)
         showLauncherWindowAfterActivation()
         return true
     }
@@ -1307,7 +1311,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             return false
         }
 
-        application.activate(options: [.activateAllWindows, .activateIgnoringOtherApps])
+        activateApplicationReliably(application)
         pendingLaunchedApplication = nil
         pendingLaunchBundleIdentifier = nil
 
@@ -1330,8 +1334,33 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     @discardableResult
     private func activateLastFocusedApplicationIfAvailable() -> Bool {
         guard let app = lastFocusedApplication, app.isTerminated == false else { return false }
-        app.activate(options: [.activateAllWindows, .activateIgnoringOtherApps])
+        activateApplicationReliably(app)
         return true
+    }
+
+    /// Activates another app and double-checks it took effect. On macOS 14+ activation is
+    /// cooperative: the active app must yield activation, and requests made mid-event can
+    /// be dropped, which left Launchy active after a Dock-opened launcher was dismissed.
+    private func activateApplicationReliably(_ app: NSRunningApplication) {
+        requestActivation(of: app)
+
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 150_000_000)
+            guard let self,
+                  app.isTerminated == false,
+                  app.isActive == false,
+                  launcherWindowManager?.window?.isVisible != true else { return }
+            requestActivation(of: app)
+        }
+    }
+
+    private func requestActivation(of app: NSRunningApplication) {
+        if #available(macOS 14.0, *) {
+            NSApp.yieldActivation(to: app)
+            app.activate(options: [.activateAllWindows])
+        } else {
+            app.activate(options: [.activateAllWindows, .activateIgnoringOtherApps])
+        }
     }
 
     /// Records show timestamp and resets hide-related bookkeeping.

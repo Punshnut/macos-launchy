@@ -80,6 +80,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Bootstraps settings, items, and window state.
+    /// Drops the Dock icon as early as possible so hidden-Dock users don't see it flash at launch.
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        if LauncherSettingsPersistence.loadSettings().isDockIconHidden {
+            NSApp.setActivationPolicy(.accessory)
+        }
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         LaunchyLogger.startup()
         LaunchyLogger.log("applicationDidFinishLaunching")
@@ -142,6 +149,11 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Reapplies menu pruning after the app is foregrounded and reveals the launcher (e.g. on Cmd-Tab), mirroring the Dock-icon reopen behavior.
     func applicationDidBecomeActive(_ notification: Notification) {
         enforceMinimalMainMenu()
+        // Self-heal: a stray .regular policy must not keep the Dock icon alive when it is hidden.
+        if currentSettings.isDockIconHidden, NSApp.activationPolicy() != .accessory,
+           currentSettings.isMenuBarIconHidden == false {
+            NSApp.setActivationPolicy(.accessory)
+        }
 
         if hasHandledInitialActivation == false {
             hasHandledInitialActivation = true
@@ -655,6 +667,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Ensures at least one UI affordance remains reachable even when floaty fails.
     private func ensureEscapeHatchUI(lastWindow: NSWindow?) {
         updateStatusItemVisibility()
+        // Only override the Hide Dock icon setting when nothing else would leave the app reachable.
+        guard currentSettings.isMenuBarIconHidden else { return }
         NSApp.setActivationPolicy(.regular)
         if lastWindow?.isVisible != true {
             NSApp.activate(ignoringOtherApps: true)
@@ -669,7 +683,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
                 NSApp.activate(ignoringOtherApps: true)
             }
         } else {
-            NSApp.setActivationPolicy(.accessory)
+            if NSApp.activationPolicy() != .accessory {
+                NSApp.setActivationPolicy(.accessory)
+            }
             NSApp.dockTile.display()
         }
 

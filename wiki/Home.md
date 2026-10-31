@@ -78,8 +78,7 @@ before that date remain available under the original MIT license, which
 can't be retroactively revoked; all new releases going forward are
 AGPL-3.0.
 
-- [Website](https://feuerbacher.me/projects/launchy) (currently there's not
-  much to see)
+- [Website](https://feuerbacher.me/projects/launchy)
 - [Download Launchy for free](https://github.com/Punshnut/macos-launchy/releases/latest)
   and enjoy automatic updates.
 - [Donate on Ko-Fi](https://ko-fi.com/janfeuerbacher) if Launchy has earned

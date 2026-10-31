@@ -9,8 +9,8 @@
     <language>en</language>
 
     <item>
-      <title>Launchy 2026.8</title>
-      <pubDate>Sun, 04 Oct 2026 05:15:28 +0200</pubDate>
+      <title>Launchy 2026.9</title>
+      <pubDate>Sat, 31 Oct 2026 08:49:32 +0100</pubDate>
       <description><![CDATA[
 <style>
   body { font: -apple-system-body; color: #1d1d1f; margin: 16px; line-height: 1.4; }
@@ -24,51 +24,41 @@
   .perf { background: #2a7fd4; } .improve { background: #7a4fd6; }
   .tagline { opacity: 0.7; margin-top: 18px; }
 </style>
-<p>A feature release bringing Liquid Glass to macOS 26+, a configurable idle page-revert, smoother live search, and a handful of drag-and-drop and dismiss-gesture fixes. Launchy is now also licensed under AGPL-3.0.</p>
+<p>A maintenance release focused on Dock and focus behavior, folder management, and click and scroll handling, plus a round of code cleanup and wiki improvements.</p>
 <h2>Features</h2>
 <ul>
-  <li><span class="tag new">NEW</span>Adopted Liquid Glass on macOS 26+ for settings, floaty launcher, search bar, and onboarding, with material fallbacks for older systems</li>
-  <li><span class="tag new">NEW</span>Added configurable idle page-revert setting</li>
-  <li><span class="tag new">NEW</span>Softened accent-color vibrancy and polished the traffic lights</li>
-  <li><span class="tag new">NEW</span>Folders now close on background tap instead of hiding the launcher</li>
-  <li><span class="tag new">NEW</span>Launchy now remembers the current page and folder across quick toggles</li>
-  <li><span class="tag new">NEW</span>Self-built copies are now detected via code-signature check, with a hint linking to the official release</li>
-</ul>
-<h2>Performance</h2>
-<ul>
-  <li><span class="tag perf">PERF</span>Prewarmed search-result icons and cached low-res thumbnails to disk for smoother live search</li>
+  <li><span class="tag new">NEW</span>Added “Delete folder” and “Remove from folder” actions (localized)</li>
 </ul>
 <h2>Fixes</h2>
 <ul>
-  <li><span class="tag fix">FIX</span>Fixed grid and folder icon drag-and-drop on macOS 27</li>
-  <li><span class="tag fix">FIX</span>Fixed grid, folder, and search bar clicks being swallowed by the click-outside-to-dismiss gesture</li>
-  <li><span class="tag fix">FIX</span>Restored background tap-to-dismiss</li>
-  <li><span class="tag fix">FIX</span>Fixed the launcher not appearing when Launchy is selected in the app switcher, not just on Dock icon click (#11)</li>
-  <li><span class="tag fix">FIX</span>Fixed intentionally empty folders being dropped when restoring the arrangement (#16)</li>
-  <li><span class="tag fix">FIX</span>Hardened global hotkey registration for future macOS releases with an event-monitor fallback and failure logging</li>
-  <li><span class="tag fix">FIX</span>Documented the icon-catalog build target mismatch</li>
+  <li><span class="tag fix">FIX</span>Fixed the Dock icon reappearing when “Hide Dock icon” is enabled (#21)</li>
+  <li><span class="tag fix">FIX</span>Fixed focus handover when the launcher opened from the Dock is dismissed, and made Launchy claim activation on Dock reopen (#22)</li>
+  <li><span class="tag fix">FIX</span>Fixed Floaty mode losing its selection when the presentation check fails (#20)</li>
+  <li><span class="tag fix">FIX</span>Fixed the launcher reopening when an app launched from it quits (#23)</li>
+  <li><span class="tag fix">FIX</span>Fixed folder names not refreshing after a rename, folders reopening with settings open, and folder details</li>
+  <li><span class="tag fix">FIX</span>Restored focus to the previous app synchronously on dismiss</li>
+  <li><span class="tag fix">FIX</span>Limited the app icon hit area to the icon and its label (#19)</li>
+  <li><span class="tag fix">FIX</span>Fixed mouse wheel paging in horizontal mode, which now follows natural scrolling (#17)</li>
+  <li><span class="tag fix">FIX</span>Registered the page-arrow hitboxes so clicks no longer dismiss the launcher</li>
 </ul>
-<h2>Localization</h2>
+<h2>Maintenance</h2>
 <ul>
-  <li><span class="tag improve">IMPROVE</span>Added missing translations for system-tool tile strings and the donation callout in all languages</li>
-  <li><span class="tag improve">IMPROVE</span>Added missing PrivateBuildLabel and GetOfficialVersionLabel translations</li>
+  <li><span class="tag improve">IMPROVE</span>Removed dead code, unreachable OS fallbacks, and unused strings</li>
 </ul>
-<h2>Licensing &amp; Documentation</h2>
+<h2>Documentation</h2>
 <ul>
-  <li><span class="tag improve">IMPROVE</span>Relicensed the project from MIT to AGPL-3.0</li>
-  <li><span class="tag improve">IMPROVE</span>Added public build scripts plus CONTRIBUTING and AI_POLICY docs</li>
-  <li><span class="tag improve">IMPROVE</span>Rewrote the wiki as a use-case-driven user guide and added a wiki publish script</li>
-  <li><span class="tag improve">IMPROVE</span>Switched docs and wiki to a consistent first-person voice</li>
+  <li><span class="tag improve">IMPROVE</span>Documented “Remove from folder” and “Delete folder” in the wiki</li>
+  <li><span class="tag improve">IMPROVE</span>Fixed wiki inaccuracies and added a Tips and Tricks page</li>
 </ul>
 <p class="tagline"><em>Launchy is the free open-source Launchpad alternative macOS users have been waiting for. Fullscreen mode mirrors the classic Launchpad experience but adds richer controls, while Floaty Mode doubles as a HUD with fast toggles that match the new macOS design without changing the behavior you rely on. It scans your apps, caches icons, and keeps a responsive grid ready on every Space - a universal binary that runs natively on both Apple Silicon (M-series) and Intel Macs, all completely free.</em></p>
       ]]></description>
       <enclosure
     url="https://github.com/Punshnut/macos-launchy/releases/latest/download/Launchy.dmg"
-    sparkle:shortVersionString="2026.8"
-    sparkle:version="2"
-    length="9830356"
+    sparkle:shortVersionString="2026.9"
+    sparkle:version="3"
+    length="9841559"
     type="application/octet-stream"
-    sparkle:edSignature="BWxE7zf1IuVIxbvX7PXQTTnuWf+CqMWXbdhIMBJEOnSJnroZvCiMXerHIBm3pEJT+rGAohDbOtE3xvbv+s+EBQ==" />
+    sparkle:edSignature="7+E20Q84BIPbG4AMQW82CygheOyqak06ltVHBdWdFCHUjXfm5Sbfp45Snrv6L5D/0J6j55/+hko6sJts8AleAg==" />
       <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
     </item>
   </channel>

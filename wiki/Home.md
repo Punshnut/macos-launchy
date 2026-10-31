@@ -20,6 +20,28 @@ Launchy is a universal binary, so it runs at full native speed on both Apple
 Silicon and Intel Macs, no Rosetta involved. It's free, open source, and
 auto-updates itself once installed.
 
+## Launchy in 60 seconds
+
+1. **Open it.** Press `Cmd` + `Shift` + `Space` (change it any time in
+   Settings → Shortcuts).
+2. **Type** a few letters of an app's name and press `Return`.
+3. **Make it yours.** Right-click a tile to rename or hide it, hold `Option`
+   while dragging to build a folder, and press `Escape` to back out.
+
+## Which mode fits?
+
+| | Fullscreen | Floaty |
+| --- | --- | --- |
+| Feels like | The classic Launchpad | A quick-launch palette |
+| Best for | Browsing and organizing | Jumping to one app and back to work |
+| Icons per page | 7x5, 6x4, or 5x3 | 7x5 or 6x4 |
+
+## Private by design
+
+No accounts, no telemetry, and everything stays on your Mac. Launchy is
+translated into 40 languages and supports VoiceOver and right-to-left
+layouts.
+
 ## Where to start
 
 New to Launchy? Start here:
@@ -35,6 +57,7 @@ Once you're up and running, these pages cover specific things you can do:
 - [Organizing Your Apps](Organizing-Your-Apps) - folders, custom names,
   hiding clutter, and rearranging the grid.
 - [Gestures](Gestures) - paging with a trackpad or mouse.
+- [Tips and Tricks](Tips-and-Tricks) - the small power moves in one place.
 - [Keyboard Shortcuts](Keyboard-Shortcuts) - every default and configurable
   shortcut, and how to pick ones that fit your workflow.
 - [Settings Overview](Settings-Overview) - a tour of every tab in Settings

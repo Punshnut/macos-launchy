@@ -10,12 +10,14 @@ The biggest tab, covering how the grid looks and behaves:
 - **Launch at Login** and the **fullscreen ↔ floaty layout picker**, so you
   can set your preferred presentation mode directly instead of only toggling
   it with a hotkey.
-- **Background style**: standard, light blur, transparent, or solid color
-  (with a color palette for the solid option).
-- **Icon size**: small, medium, or large. Large only applies in fullscreen;
-  floaty mode caps at medium to keep the compact layout usable.
+- **Background style**: standard, light blur, transparent, or solid color.
+  The solid option comes with a palette of twelve colors (System, Graphite,
+  Indigo, Blue, Cyan, Teal, Green, Mint, Yellow, Orange, Pink, Purple).
+- **Icon size**: small, medium, or large, which also sets how many apps fit
+  on a page (7x5, 6x4, and 5x3). Large only applies in fullscreen; floaty
+  mode caps at medium to keep the compact layout usable.
 - **Paging direction**: horizontal or vertical, which also determines which
-  way swipes and arrow keys move between pages — see
+  way swipes and arrow keys move between pages - see
   [Gestures](Gestures) and [Keyboard Shortcuts](Keyboard-Shortcuts).
 - **Return to page when reopened**: after Launchy has been hidden for a
   while, it can snap back to a fixed page you choose, or simply stay on
@@ -32,15 +34,17 @@ your desktop aesthetic and habits.
 
 Where you manage what's visible in the main grid without uninstalling
 anything: mute noisy or rarely-used apps, pin hidden entries near the top
-so they're still quick to reach, and turn on scanning `~/Applications` if
+so they're still quick to reach (**Show hidden apps first**), and turn on scanning `~/Applications` if
 you keep apps there (off by default, since most people don't). See
 [Organizing Your Apps](Organizing-Your-Apps) for the reasoning behind
 hiding vs. deleting.
 
 ## Shortcuts
 
-Sets the launcher hotkey, the fullscreen <-> floaty toggle, and the hot
-corner. Launchy stays reachable through this hotkey even if you've hidden
+Sets the launcher hotkey (default `Cmd` + `Shift` + `Space`, with a Reset
+button), the optional fullscreen ↔ floaty toggle, and the hot corner: pick
+any of the four screen corners, and macOS may ask for Input Monitoring the
+first time you turn it on. Launchy stays reachable through this hotkey even if you've hidden
 both the Dock icon and the menu bar icon elsewhere, so it's safe to tuck
 Launchy away and rely entirely on the shortcut. See
 [Keyboard Shortcuts](Keyboard-Shortcuts) for the full rundown of what you
@@ -48,8 +52,11 @@ can bind.
 
 This tab also holds:
 
-- **Reset arrangement**, which gives you a clean slate for tile positions
-  while keeping the naming and hiding work you've already done. See
+- **Reset icon arrangement**, which gives you a clean slate for tile
+  positions while keeping the naming and hiding work you've already done.
+  Launchy first asks how to sort the fresh grid (alphabetical A → Z, or
+  discovery order, the way it finds apps on disk) and then asks you to
+  confirm before anything is deleted. See
   [Organizing Your Apps](Organizing-Your-Apps) for what survives a reset
   and what doesn't.
 - **Backup**: manual export and restore, alongside a note on the automatic

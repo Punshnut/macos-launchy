@@ -8,23 +8,39 @@ while your eyes are still on something else.
 
 | Action | Shortcut |
 | --- | --- |
-| Show / hide Launchy | Configurable in Settings, no default |
-| Toggle fullscreen <-> floaty | Configurable in Settings, no default |
+| Show / hide Launchy | `Cmd` + `Shift` + `Space` (default, configurable in Settings) |
+| Toggle fullscreen ↔ floaty | Not set by default, configurable in Settings |
 | Launch top search result | `Return` |
 | Move between pages | Left / right arrow keys |
-| Open Settings | `Cmd` + `,` |
 | Jump to a specific page | `Control` + a number key (`1`-`9`, `0` for page 10) |
+| Step back / close | `Escape` (see below) |
+| Open Settings | `Cmd` + `,` |
 
 Paging direction (and which arrow keys page you) follows the paging
-orientation set in Settings → Visuals — horizontal by default, or vertical
+orientation set in Settings → Visuals - horizontal by default, or vertical
 if you've switched it. See [Settings Overview](Settings-Overview).
+
+## Escape steps back, one layer at a time
+
+`Escape` always undoes the most recent thing you did, so you can tap it
+repeatedly without thinking about where you are:
+
+1. Cancels a rename in progress.
+2. Leaves multi-select mode.
+3. Closes an open folder.
+4. Clears the search field.
+5. Hides Launchy.
 
 ## Picking a hotkey
 
-Launchy doesn't ship with a preset show/hide hotkey, so setting one is
-usually the first thing worth doing. `Shift` + `Space` is a comfortable,
-Launchpad-style choice that rarely conflicts with anything else; `Ctrl` +
-`X` is a solid fallback if that combo's already taken.
+The default show/hide hotkey is `Cmd` + `Shift` + `Space`. To change it,
+open Settings → Shortcuts, click the field, and press the combo you want.
+Press `Delete` to clear it, or **Reset** to bring the default back. If the
+default clashes with something, `Ctrl` + `X` is a solid alternative.
+
+Below it sits an optional second shortcut that flips between fullscreen and
+floaty. It's empty until you record one, and you can clear it again at any
+time.
 
 You're not limited to letters and modifiers either: hotkeys can use
 numbers, punctuation, arrow keys, function keys, keypad keys, and media

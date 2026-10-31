@@ -7,6 +7,7 @@
 - [Organizing Your Apps](Organizing-Your-Apps)
 - [Multi-Selection](Multi-Selection)
 - [Gestures](Gestures)
+- [Tips and Tricks](Tips-and-Tricks)
 - [Keyboard Shortcuts](Keyboard-Shortcuts)
 - [Settings Overview](Settings-Overview)
 - [Troubleshooting](Troubleshooting)

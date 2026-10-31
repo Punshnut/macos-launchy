@@ -12,8 +12,9 @@ not just launch one and get back to work.
 
 Fullscreen is where the heavier organizing tools live: right-click any tile
 to rename it, hide it, move it, create a folder, or reveal it in Finder.
-Pages hold up to 7x5 apps each, and you can jump straight to any page by
-holding `Control` and tapping a number key.
+How many apps fit on a page depends on your icon size: 7x5 at Small, 6x4 at
+Medium, and 5x3 at Large. You can jump straight to any page by holding
+`Control` and tapping a number key.
 
 Use fullscreen when you're:
 
@@ -28,6 +29,9 @@ taking over the screen. It's built for speed: summon it, type a couple of
 letters, hit `Return`, and you're back in whatever you were doing, with the
 app you wanted now open.
 
+Floaty caps Large icons at Medium (6x4), so the panel stays compact
+even if you've picked Large for fullscreen.
+
 Floaty mode is best when you're:
 
 - Mid-task and just need to jump to one more app without losing context.
@@ -38,9 +42,10 @@ Floaty mode is best when you're:
 ## Switching between them
 
 Both modes share one grid, so nothing about your layout, folders, or custom
-names changes when you switch. Set a fullscreen <-> floaty toggle shortcut
-in Settings (Shortcuts tab) and flip between them instantly, use whichever
-one matches the moment instead of committing to one or the other.
+names changes when you switch. Pick your default under Settings → Visuals
+(**Launcher layout**), or record a fullscreen ↔ floaty toggle shortcut in
+Settings → Shortcuts and flip between them instantly. Use whichever one
+matches the moment instead of committing to one or the other.
 
 See [Keyboard Shortcuts](Keyboard-Shortcuts) for the toggle shortcut, and
 [Organizing Your Apps](Organizing-Your-Apps) for what you can do with the

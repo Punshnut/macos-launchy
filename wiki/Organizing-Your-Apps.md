@@ -11,6 +11,17 @@ context menu with the relevant actions: rename, hide, move, add or remove
 folders, reveal in Finder, or reset gaps. This is the fastest way to get to
 any single action without hunting through Settings.
 
+A few actions are easy to miss:
+
+- **Move to Page** sends an app or folder to a specific page, or lets you
+  **Create New Page** at the beginning, at the end, or between two existing
+  pages.
+- **Right-clicking empty background** drops in a brand-new folder whenever
+  you need one.
+- **Folder Details** lists every app inside a folder, and **Rename Folder**
+  lets you rename it in place. New folders start out as "unnamed" until you
+  give them a name.
+
 ## Building folders
 
 Hold `Option` while dragging one app onto another to create a folder, or
@@ -18,8 +29,9 @@ drop an app into an existing folder the same way. This is the move for
 grouping things you use together, work apps, creative tools, games, so they
 read as one tile instead of scattering across pages.
 
-Folder membership survives resets, see below, so once you've grouped
-something it stays grouped.
+Folders are part of your saved arrangement, so a full reset removes them
+(see "Resetting without losing your work" below). Launchy also keeps
+automatic backups, so a grouping you care about is easy to get back.
 
 ## Rearranging without the chaos
 
@@ -103,10 +115,13 @@ alphabetical list.
 
 ## Resetting without losing your work
 
-If your grid gets into a state you don't like, Settings has a "reset the
-grid" option for a clean slate. Custom names and hidden states stay intact
-across a reset, so you're not throwing away the naming and hiding work
-you've already done, just the positions.
+If your grid gets into a state you don't like, **Reset icon arrangement**
+(Settings → Shortcuts) gives you a clean slate. You choose how the new grid
+is sorted (alphabetical, or in the order Launchy finds apps) and confirm
+before anything happens. Custom names and hidden states stay intact across a
+reset, so you're not throwing away the naming and hiding work you've
+already done, just the positions. Folders are removed by a reset, so
+export a backup first if you're attached to them.
 
 ## Backups, just in case
 

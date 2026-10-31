@@ -69,13 +69,7 @@ final class AppDiscoveryService {
     /// Directory holding disk-persisted `.low`-quality icon thumbnails, warm across app relaunches.
     private let iconDiskCacheDirectory: URL
     private lazy var defaultApplicationIconData: Data? = {
-        let icon: NSImage
-        if #available(macOS 12.0, *) {
-            icon = workspaceInterface.icon(for: UTType.applicationBundle)
-        } else {
-            icon = workspaceInterface.icon(forFileType: "app")
-        }
-        return normalizedIconData(for: icon)
+        normalizedIconData(for: workspaceInterface.icon(for: UTType.applicationBundle))
     }()
     /// Global icon scale used to cap memory usage.
     private static let iconResolutionScale: CGFloat = 0.65
@@ -509,7 +503,7 @@ final class AppDiscoveryService {
     ) -> Int {
         let effectiveScale = max(screenScale, 1)
         let scaledTarget = max(targetDimension, 1) * effectiveScale * Self.iconResolutionScale
-        // Never render below 1:1 – avoids upscaling/blurriness on non-retina displays.
+        // Never render below 1:1 - avoids upscaling/blurriness on non-retina displays.
         let minimum = Int(ceil(max(targetDimension, 1)))
         let target = max(Int(ceil(scaledTarget)), minimum)
         // On non-retina displays iconResolutionScale causes sub-1:1 rendering, so allow the
@@ -720,7 +714,7 @@ final class AppDiscoveryService {
 
     /// Rough cost estimate used to bound NSCache memory usage for icons.
     private func imageCost(_ image: NSImage) -> Int {
-        // NSWorkspace app icons carry 7+ bitmap representations (16–1024px).
+        // NSWorkspace app icons carry 7+ bitmap representations (16-1024px).
         // Summing all reps gives NSCache an accurate cost so it can enforce limits correctly.
         let bitmapReps = image.representations.compactMap { $0 as? NSBitmapImageRep }
         if !bitmapReps.isEmpty {

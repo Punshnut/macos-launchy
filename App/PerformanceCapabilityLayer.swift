@@ -1,5 +1,4 @@
 import AppKit
-import CoreGraphics
 import Darwin
 
 /// Coarse CPU architecture bucket used to pick conservative defaults for older Intel Macs.
@@ -250,10 +249,8 @@ final class PerformanceCapabilityLayer: @unchecked Sendable {
                 return rate
             }
         }
-        if #available(macOS 12.0, *) {
-            if let maxRate = screen?.maximumFramesPerSecond, maxRate > 0 {
-                return Double(maxRate)
-            }
+        if let maxRate = screen?.maximumFramesPerSecond, maxRate > 0 {
+            return Double(maxRate)
         }
         return nil
     }

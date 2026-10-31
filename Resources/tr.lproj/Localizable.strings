@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Simge düzenini sıfırla...";
 "SettingsResetArrangementBody" = "Kayıtlı sıralama ve klasörleri siler, sayfaları yeniden oluşturur. Özel adlar ve gizli uygulamalar kalır.";
 "ResetArrangementDialogTitle" = "Simge düzeni sıfırlansın mı?";
-"ResetArrangementDialogBody" = "Bu işlem kayıtlı sıralamayı, klasörleri ve sayfa düzenini siler. Devam etmek için RESET yaz.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Launcher ızgarasının dışında kalacak uygulamaları seç.";
 "SettingsHiddenAppsColumnApp" = "Uygulama";
 "SettingsHiddenAppsColumnHidden" = "Gizli";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Başlatıcı ayarları";
 "StatusBarInfoButton" = "Launchy bilgisi";
-"StatusBarSettingsButton" = "Ayarlar";
 "MenuItemSettings" = "Ayarlar...";
 "MenuItemShowLauncher" = "Launcher’ı göster";
 "MenuItemCheckUpdates" = "Güncellemeleri denetle...";
 "MenuItemQuitLaunchy" = "Launchy’den çık";
-"DebugMenuLabel" = "Hata ayıklama";
-"DebugMenuReloadApps" = "Uygulamaları yeniden yükle";
-"DebugMenuResetSettings" = "Ayarları sıfırla";
-"DebugMenuToggleStyles" = "Test arka plan stillerini aç/kapat";
 
 // Grid
-"GridSearchPlaceholder" = "Uygulamaları ara";
 "GridSearchLabel" = "Ara";
 "GridSearchClearButton" = "Arama metnini temizle";
 "GridSearchEmptyHint" = "Başka bir arama terimi dene.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Aç";
 "ItemActionRenameApp" = "Uygulamayı yeniden adlandır";
-"ItemRenameAppPromptBody" = "Bu uygulama için özel bir ad gir. Sıfırlamak için boş bırak.";
 "ItemActionShowInFinder" = "Finder’da göster";
 "ItemActionHideApp" = "Uygulamayı gizle";
 "ItemActionMoveToFolder" = "Klasöre taşı";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Klasör oluştur";
 "ItemActionFolderDetails" = "Klasör ayrıntıları";
 "ItemActionRenameFolder" = "Klasörü yeniden adlandır";
-"ItemRenameFolderPromptBody" = "Bu klasör için bir ad gir.";
 "ItemDetailBundleIDFormat" = "Paket kimliği: %@";
 "ItemDetailLocationFormat" = "Konum: %@";
 "ItemDetailCustomNameFormat" = "Özel ad: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Hiç uygulama seçilmedi";
 "CommonCancelButton" = "İptal";
 "CommonOKButton" = "Tamam";
-"CommonSaveButton" = "Kaydet";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Simge boyutu";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Bu, kayıtlı sıralamayı, klasörleri ve sayfa düzenini siler. Özel uygulama adları ve gizli uygulamalar korunur.";
 "SortOrderAlphabetical" = "Alfabetik";
 "SortOrderDiscovery" = "Keşif sırası";
-"SortOrderAlphabeticalDetail" = "Uygulama adına göre A → Z";
-"SortOrderDiscoveryDetail" = "Launchy bulduğu sırayla";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Yedekle ve Geri Yükle";

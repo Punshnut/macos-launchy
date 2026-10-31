@@ -1,5 +1,4 @@
 import Foundation
-import Dispatch
 import Darwin
 
 /// Watches key application directories and notifies when their contents change.

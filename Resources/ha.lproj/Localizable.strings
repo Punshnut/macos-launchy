@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Sake saita tsarin gumaka...";
 "SettingsResetArrangementBody" = "Yana goge jerin da aka ajiye da fayiloli, yana sake gina shafuka daga tushe. Sunayen app na al’ada da ɓoyayyu suna ci gaba da kasancewa.";
 "ResetArrangementDialogTitle" = "Sake saita tsarin gumaka?";
-"ResetArrangementDialogBody" = "Wannan yana goge oda, fayiloli, da tsarin shafuka da aka adana. Rubuta RESET don ci gaba.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Zaɓi waɗanne apps za su kasance a waje da grid ɗin masu ƙaddamarwa.";
 "SettingsHiddenAppsColumnApp" = "Manhaja";
 "SettingsHiddenAppsColumnHidden" = "An ɓoye";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Saitunan Launcher";
 "StatusBarInfoButton" = "Bayanin Launchy";
-"StatusBarSettingsButton" = "Saituna";
 "MenuItemSettings" = "Saituna...";
 "MenuItemShowLauncher" = "Nuna mai ƙaddamarwa";
 "MenuItemCheckUpdates" = "Duba sabuntawa...";
 "MenuItemQuitLaunchy" = "Fita daga Launchy";
-"DebugMenuLabel" = "Gyara";
-"DebugMenuReloadApps" = "Sake loda apps";
-"DebugMenuResetSettings" = "Sake saita saituna";
-"DebugMenuToggleStyles" = "Canza salon bango na gwaji";
 
 // Grid
-"GridSearchPlaceholder" = "Nemo apps";
 "GridSearchLabel" = "Bincike";
 "GridSearchClearButton" = "Goge rubutun bincike";
 "GridSearchEmptyHint" = "Gwada kalmar bincike daban.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Buɗe";
 "ItemActionRenameApp" = "Sake suna manhaja";
-"ItemRenameAppPromptBody" = "Shigar da suna na musamman don wannan manhaja. Bar shi babu komai don sake saitawa.";
 "ItemActionShowInFinder" = "Nuna a Finder";
 "ItemActionHideApp" = "Boye manhaja";
 "ItemActionMoveToFolder" = "Matsar zuwa fayil";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Ƙirƙiri fayil";
 "ItemActionFolderDetails" = "Bayanan fayil";
 "ItemActionRenameFolder" = "Canja sunan fayil";
-"ItemRenameFolderPromptBody" = "Shigar da suna don wannan fayil.";
 "ItemDetailBundleIDFormat" = "ID ɗin bundle: %@";
 "ItemDetailLocationFormat" = "Wuri: %@";
 "ItemDetailCustomNameFormat" = "Sunan musamman: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Babu apps da aka zaɓa";
 "CommonCancelButton" = "Soke";
 "CommonOKButton" = "To";
-"CommonSaveButton" = "Ajiye";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Girman alama";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Wannan zai goge jerin da aka ajiye, fayiloli da tsarin shafi. Za a kiyaye sunayen app na al’ada da waɗanda aka ɓoye.";
 "SortOrderAlphabetical" = "Haruffa";
 "SortOrderDiscovery" = "Tsarin gano abubuwa";
-"SortOrderAlphabeticalDetail" = "A → Z bisa sunan app";
-"SortOrderDiscoveryDetail" = "Yadda Launchy ke samun su";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Ajiyar bayanai da Mayarwa";

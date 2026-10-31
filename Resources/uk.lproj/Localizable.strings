@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Скинути розташування іконок...";
 "SettingsResetArrangementBody" = "Видаляє збережений порядок і теки та будує сторінки заново. Користувацькі назви й приховані програми залишаються.";
 "ResetArrangementDialogTitle" = "Скинути розташування іконок?";
-"ResetArrangementDialogBody" = "Це видалить збережений порядок, папки й макет сторінок. Введіть RESET, щоб продовжити.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Оберіть програми, які не з’являтимуться в сітці лаунчера.";
 "SettingsHiddenAppsColumnApp" = "Додаток";
 "SettingsHiddenAppsColumnHidden" = "Приховано";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Налаштування стартера";
 "StatusBarInfoButton" = "Інформація про Launchy";
-"StatusBarSettingsButton" = "Налаштування";
 "MenuItemSettings" = "Налаштування...";
 "MenuItemShowLauncher" = "Показати лаунчер";
 "MenuItemCheckUpdates" = "Перевірити оновлення...";
 "MenuItemQuitLaunchy" = "Вийти з Launchy";
-"DebugMenuLabel" = "Відлагодження";
-"DebugMenuReloadApps" = "Перезавантажити додатки";
-"DebugMenuResetSettings" = "Скинути налаштування";
-"DebugMenuToggleStyles" = "Переключити тестові стилі фону";
 
 // Grid
-"GridSearchPlaceholder" = "Шукати програми";
 "GridSearchLabel" = "Пошук";
 "GridSearchClearButton" = "Очистити текст пошуку";
 "GridSearchEmptyHint" = "Спробуйте інший пошуковий запит.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Відкрити";
 "ItemActionRenameApp" = "Перейменувати додаток";
-"ItemRenameAppPromptBody" = "Введіть власну назву для цього додатку. Залиште пустим, щоб скинути.";
 "ItemActionShowInFinder" = "Показати у Finder";
 "ItemActionHideApp" = "Сховати додаток";
 "ItemActionMoveToFolder" = "Перемістити до папки";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Створити папку";
 "ItemActionFolderDetails" = "Деталі папки";
 "ItemActionRenameFolder" = "Перейменувати папку";
-"ItemRenameFolderPromptBody" = "Введіть назву для цієї папки.";
 "ItemDetailBundleIDFormat" = "Ідентифікатор пакету: %@";
 "ItemDetailLocationFormat" = "Розташування: %@";
 "ItemDetailCustomNameFormat" = "Власна назва: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Жодних програм не вибрано";
 "CommonCancelButton" = "Скасувати";
 "CommonOKButton" = "ОК";
-"CommonSaveButton" = "Зберегти";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Розмір іконок";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Це видалить збережений порядок, теки та макет сторінок. Користувацькі назви й приховані програми збережуться.";
 "SortOrderAlphabetical" = "За абеткою";
 "SortOrderDiscovery" = "В порядку знаходження";
-"SortOrderAlphabeticalDetail" = "A → Z за назвою програми";
-"SortOrderDiscoveryDetail" = "У порядку знаходження Launchy";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Резервувати та відновити";

@@ -295,8 +295,6 @@ private func isTypeableCharacter(_ string: String) -> Bool {
 
 /// Non-activating floating panel for the "floaty" launcher mode.
 final class FloatyLauncherWindow: NSPanel {
-    static let entranceSlideOffset: CGFloat = 32
-
     /// Convenience initializer that applies the NSPanel style mask we need.
     convenience init(contentRect: NSRect) {
         self.init(

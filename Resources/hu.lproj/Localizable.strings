@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Ikonelrendezés reset...";
 "SettingsResetArrangementBody" = "Törli a mentett sorrendet és mappákat, majd újraépíti az oldalakat. Az egyedi nevek és rejtett appok megmaradnak.";
 "ResetArrangementDialogTitle" = "Ikonelrendezés reset?";
-"ResetArrangementDialogBody" = "Ez törli a mentett sorrendet, mappákat és oldalelrendezést. A folytatáshoz írd be: RESET.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Válaszd ki, mely alkalmazások maradjanak kívül a launcher rácson.";
 "SettingsHiddenAppsColumnApp" = "Alkalmazás";
 "SettingsHiddenAppsColumnHidden" = "Rejtett";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Launcher beállítások";
 "StatusBarInfoButton" = "Launchy információ";
-"StatusBarSettingsButton" = "Beállítások";
 "MenuItemSettings" = "Beállítások...";
 "MenuItemShowLauncher" = "Launcher megjelenítése";
 "MenuItemCheckUpdates" = "Frissítések keresése...";
 "MenuItemQuitLaunchy" = "Launchy kilépés";
-"DebugMenuLabel" = "Hibakeresés";
-"DebugMenuReloadApps" = "Appok újratöltése";
-"DebugMenuResetSettings" = "Beállítások resetelése";
-"DebugMenuToggleStyles" = "Teszt háttérstílusok kapcsolása";
 
 // Grid
-"GridSearchPlaceholder" = "Appok keresése";
 "GridSearchLabel" = "Keresés";
 "GridSearchClearButton" = "Keresési szöveg törlése";
 "GridSearchEmptyHint" = "Próbálj másik keresőkifejezést.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Megnyitás";
 "ItemActionRenameApp" = "App átnevezése";
-"ItemRenameAppPromptBody" = "Adj meg egy egyedi nevet az appnak. Hagyd üresen a resethez.";
 "ItemActionShowInFinder" = "Megjelenítés Finderben";
 "ItemActionHideApp" = "App elrejtése";
 "ItemActionMoveToFolder" = "Áthelyezés mappába";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Mappa létrehozása";
 "ItemActionFolderDetails" = "Mappa részletei";
 "ItemActionRenameFolder" = "Mappa átnevezése";
-"ItemRenameFolderPromptBody" = "Adj meg egy nevet a mappának.";
 "ItemDetailBundleIDFormat" = "Csomag ID: %@";
 "ItemDetailLocationFormat" = "Hely: %@";
 "ItemDetailCustomNameFormat" = "Egyedi név: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Nincs app kiválasztva";
 "CommonCancelButton" = "Mégse";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "Mentés";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Ikonméret";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Ez törli a mentett sorrendet, mappákat és oldalelrendezést. Az egyedi appnevek és a rejtett appok megmaradnak.";
 "SortOrderAlphabetical" = "Ábécésorrend";
 "SortOrderDiscovery" = "Felfedezési sorrend";
-"SortOrderAlphabeticalDetail" = "A → Z az app neve szerint";
-"SortOrderDiscoveryDetail" = "Ahogy a Launchy megtalálja";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Biztonsági mentés és visszaállítás";

@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "የአዶ አቀማመጥ እንደገና አስጀምር...";
 "SettingsResetArrangementBody" = "ያስቀመጡትን ቅደም ተከተልና ፎልደሮችን ያስወግዳል፤ ገጾችን ከእንደገና ይገነባል። ብጁ የመተግበሪያ ስሞችና የተደበቁ መተግበሪያዎች ይቆያሉ።";
 "ResetArrangementDialogTitle" = "የአዶ አቀማመጥ ይቀመጥ?";
-"ResetArrangementDialogBody" = "ይህ የተቀመጡ ቅደም ተከተሎችን፣ ፎልደሮችን እና የገጽ አቀማመጥን ይሰርዛል። ለመቀጠል RESET ይተይፉ።";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "ከላንቸሩ ግሪድ ውጭ የሚቆዩ መተግበሪያዎችን ይምረጡ።";
 "SettingsHiddenAppsColumnApp" = "መተግበሪያ";
 "SettingsHiddenAppsColumnHidden" = "የተደበቀ";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "የላንቸር ቅንብሮች";
 "StatusBarInfoButton" = "Launchy መረጃ";
-"StatusBarSettingsButton" = "ቅንብሮች";
 "MenuItemSettings" = "ቅንብሮች...";
 "MenuItemShowLauncher" = "ላንቸርን አሳይ";
 "MenuItemCheckUpdates" = "አዳዲስ ስሪቶችን ይመልከቱ...";
 "MenuItemQuitLaunchy" = "Launchy ውጣ";
-"DebugMenuLabel" = "ዲበግ";
-"DebugMenuReloadApps" = "መተግበሪያዎችን እንደገና ጫን";
-"DebugMenuResetSettings" = "ቅንብሮችን እንደገና አስጀምር";
-"DebugMenuToggleStyles" = "የፈተና የጀርባ ቅጦችን ቀይር";
 
 // Grid
-"GridSearchPlaceholder" = "መተግበሪያዎችን ፈልግ";
 "GridSearchLabel" = "ፈልግ";
 "GridSearchClearButton" = "የፍለጋ ጽሑፍ አጽዳ";
 "GridSearchEmptyHint" = "ሌላ የፍለጋ ቃል ይሞክሩ።";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "ክፈት";
 "ItemActionRenameApp" = "መተግበሪያን ስሙን ቀይር";
-"ItemRenameAppPromptBody" = "ለዚህ መተግበሪያ ብጁ ስም አስገባ። ለመመለስ ባዶ ተው።";
 "ItemActionShowInFinder" = "በFinder ውስጥ አሳይ";
 "ItemActionHideApp" = "መተግበሪያ ደብቅ";
 "ItemActionMoveToFolder" = "ወደ ፎልደር አስተላልፍ";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "ፎልደር ፍጠር";
 "ItemActionFolderDetails" = "የፎልደር ዝርዝር";
 "ItemActionRenameFolder" = "ፎልደር ስሙን ቀይር";
-"ItemRenameFolderPromptBody" = "ለዚህ ፎልደር ስም አስገባ።";
 "ItemDetailBundleIDFormat" = "የጥቅል መለያ: %@";
 "ItemDetailLocationFormat" = "አካባቢ: %@";
 "ItemDetailCustomNameFormat" = "ብጁ ስም: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "ምንም መተግበሪያ አልተመረጠም";
 "CommonCancelButton" = "ሰርዝ";
 "CommonOKButton" = "እሺ";
-"CommonSaveButton" = "አስቀምጥ";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "የአዶ መጠን";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "ያስቀመጡትን ቅደም ተከተል፣ ፎልደሮች፣ የገጽ እቅድ ይሰርዛል። የተግባር ብጁ ስሞችና የተደበቁ መተግበሪያዎች ይቆያሉ።";
 "SortOrderAlphabetical" = "ፊደላዊ";
 "SortOrderDiscovery" = "የመግኘት ቅደም ተከተል";
-"SortOrderAlphabeticalDetail" = "በመተግበሪያ ስም A → Z";
-"SortOrderDiscoveryDetail" = "Launchy እንደሚገኝባቸው";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "ማቀላጠፍ እና መመለስ";

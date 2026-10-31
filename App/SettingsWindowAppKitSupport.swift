@@ -137,7 +137,7 @@ final class SettingsWindowAlertPresenter {
         if let window = hostingWindow as? NSWindow {
             presentSortingSheet(on: window, initialSorting: initialSorting) { sorting in
                 guard let sorting else { return }
-                presentResetSheet(on: window, sorting: sorting) { confirmed in
+                presentResetSheet(on: window) { confirmed in
                     guard confirmed else { return }
                     onConfirm(sorting)
                 }
@@ -145,8 +145,7 @@ final class SettingsWindowAlertPresenter {
         } else {
             let sorting = presentSortingChoiceModal(initialSorting: initialSorting)
             guard let selectedSorting = sorting else { return }
-            let confirmed = presentResetConfirmationModal(sorting: selectedSorting)
-            if confirmed {
+            if presentResetConfirmationModal() {
                 onConfirm(selectedSorting)
             }
         }
@@ -177,7 +176,6 @@ final class SettingsWindowAlertPresenter {
     @MainActor
     private static func presentResetSheet(
         on window: NSWindow,
-        sorting: ArrangementResetSorting,
         completion: @escaping (Bool) -> Void
     ) {
         let alert = resetAlert()
@@ -192,18 +190,7 @@ final class SettingsWindowAlertPresenter {
     private static func presentSortingChoiceModal(
         initialSorting: ArrangementResetSorting
     ) -> ArrangementResetSorting? {
-        let alert = NSAlert()
-        alert.alertStyle = .informational
-        alert.messageText = String(localized: "ResetSortDialogTitle")
-        alert.informativeText = String(localized: "ResetSortDialogBody")
-        alert.addButton(withTitle: ArrangementResetSorting.alphabetical.displayName)
-        alert.addButton(withTitle: ArrangementResetSorting.discovery.displayName)
-        alert.addButton(withTitle: String(localized: "CommonCancelButton"))
-
-        let defaultIndex = initialSorting == .discovery ? 1 : 0
-        alert.buttons[defaultIndex].keyEquivalent = "\r"
-
-        let response = presentModalAlert(alert)
+        let response = presentModalAlert(sortingAlert(initialSorting: initialSorting))
 
         switch response {
         case .alertFirstButtonReturn:
@@ -217,12 +204,8 @@ final class SettingsWindowAlertPresenter {
 
     /// Presents reset confirmation as modal fallback.
     @MainActor
-    private static func presentResetConfirmationModal(
-        sorting: ArrangementResetSorting
-    ) -> Bool {
-        let alert = resetAlert()
-        let response = presentModalAlert(alert)
-        return response == .alertFirstButtonReturn
+    private static func presentResetConfirmationModal() -> Bool {
+        presentModalAlert(resetAlert()) == .alertFirstButtonReturn
     }
 
     /// Creates reset confirmation alert contents.
@@ -263,9 +246,7 @@ final class SettingsWindowAlertPresenter {
         alertWindow.makeKeyAndOrderFront(nil)
         alertWindow.orderFrontRegardless()
 
-        let response = alert.runModal()
-
-        return response
+        return alert.runModal()
     }
 }
 

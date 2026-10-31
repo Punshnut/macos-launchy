@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "ఐకాన్ అమరికను రీసెట్ చేయండి...";
 "SettingsResetArrangementBody" = "సేవ్ చేసిన క్రమం, ఫోల్డర్లను తొలగించి పేజీలను కొత్తగా నిర్మిస్తుంది. కస్టమ్ పేర్లు, దాచిన యాప్‌లు అలాగే ఉంటాయి.";
 "ResetArrangementDialogTitle" = "ఐకాన్ అమరికను రీసెట్ చేయాలా?";
-"ResetArrangementDialogBody" = "ఇది మీ సేవ్ చేసిన క్రమం, ఫోల్డర్లు, మరియు పేజీ లేఅవుట్‌ను తొలగిస్తుంది. కొనసాగించడానికి RESET టైప్ చేయండి.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "లాంచర్ గ్రిడ్‌కి వెలుపల ఉండే యాప్‌లను ఎంచుకోండి.";
 "SettingsHiddenAppsColumnApp" = "అప్లికేషన్";
 "SettingsHiddenAppsColumnHidden" = "దాచినవి";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "లాంచర్ సెట్టింగ్స్";
 "StatusBarInfoButton" = "Launchy సమాచారం";
-"StatusBarSettingsButton" = "సెట్టింగ్స్";
 "MenuItemSettings" = "సెట్టింగ్స్...";
 "MenuItemShowLauncher" = "లాంచర్‌ను చూపండి";
 "MenuItemCheckUpdates" = "అప్‌డేట్స్‌ను చెక్ చేయండి...";
 "MenuItemQuitLaunchy" = "Launchy నుండి బయటకి";
-"DebugMenuLabel" = "డీబగ్";
-"DebugMenuReloadApps" = "యాప్‌లను మళ్లీ లోడ్ చేయండి";
-"DebugMenuResetSettings" = "సెట్టింగ్స్ రీసెట్ చేయండి";
-"DebugMenuToggleStyles" = "టెస్ట్ బ్యాక్‌గ్రౌండ్ స్టైళ్లను టాగిల్ చేయండి";
 
 // Grid
-"GridSearchPlaceholder" = "యాప్‌లను శోధించండి";
 "GridSearchLabel" = "శోధించండి";
 "GridSearchClearButton" = "శోధన టెక్స్ట్‌ను క్లియర్ చేయండి";
 "GridSearchEmptyHint" = "ఇంకొక శోధన పదాన్ని ప్రయత్నించండి.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "తెరవండి";
 "ItemActionRenameApp" = "యాప్ పేరు మార్చండి";
-"ItemRenameAppPromptBody" = "ఈ యాప్‌కు కస్టమ్ పేరు ఇవ్వండి. రీసెట్ చేయడానికి ఖాళీగా ఉంచండి.";
 "ItemActionShowInFinder" = "Finder లో చూపండి";
 "ItemActionHideApp" = "యాప్‌ను దాచండి";
 "ItemActionMoveToFolder" = "ఫోల్డర్‌కు తరలించండి";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "ఫోల్డర్ సృష్టించండి";
 "ItemActionFolderDetails" = "ఫోల్డర్ వివరాలు";
 "ItemActionRenameFolder" = "ఫోల్డర్ పేరు మార్చండి";
-"ItemRenameFolderPromptBody" = "ఈ ఫోల్డర్‌కు పేరు ఇవ్వండి.";
 "ItemDetailBundleIDFormat" = "బండిల్ ఐడి: %@";
 "ItemDetailLocationFormat" = "స్థానం: %@";
 "ItemDetailCustomNameFormat" = "కస్టమ్ పేరు: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "ఏ యాప్స్ ఎంచుకోలేదు";
 "CommonCancelButton" = "రద్దు";
 "CommonOKButton" = "సరే";
-"CommonSaveButton" = "సేవ్ చేయండి";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "ఐకాన్ పరిమాణం";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "ఇది సేవ్ చేసిన క్రమం, ఫోల్డర్లు, పేజ్ లేఅవుట్‌ను తొలగిస్తుంది. కస్టమ్ యాప్ పేర్లు మరియు దాచిన యాప్‌లు నిలిచి ఉంటాయి.";
 "SortOrderAlphabetical" = "ఆక్షరక్రమం";
 "SortOrderDiscovery" = "డిస్కవరీ క్రమం";
-"SortOrderAlphabeticalDetail" = "యాప్ పేరువారీగా A → Z";
-"SortOrderDiscoveryDetail" = "Launchy కనిపెట్టిన క్రమంలో";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "బ్యాకప్ & రీస్టోర్";

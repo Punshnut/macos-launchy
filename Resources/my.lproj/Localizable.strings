@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "အိုင်ကွန် စီစဉ်မှု ပြန်သတ်မှတ်...";
 "SettingsResetArrangementBody" = "သိမ်းထားသော စီစဉ်မှုနှင့် ဖိုင်တွဲများကို ဖျက်၍ စာမျက်နှာများကို ပြန်တည်ဆောက်ပါသည်။ မိမိပုံစံအပ်အမည်များနှင့် ဖျောက်ထားသောအပ်များ ဆက်ရှိနေမည်။";
 "ResetArrangementDialogTitle" = "အိုင်ကွန် စီစဉ်မှုကို ပြန်သတ်မှတ်မလား?";
-"ResetArrangementDialogBody" = "သင်သိမ်းထားတဲ့ အစဉ်၊ folder တွေ နှင့် စာမျက်နှာ layout ကို ဖျက်ပါမယ်။ ဆက်လက်ရန် RESET ကို ရိုက်ပါ။";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "launcher grid အပြင်ဘက်မှာရှိနေမယ့် app များကို ရွေးပါ။";
 "SettingsHiddenAppsColumnApp" = "Application";
 "SettingsHiddenAppsColumnHidden" = "ဖျောက်ထားသော";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Launcher settings";
 "StatusBarInfoButton" = "Launchy info";
-"StatusBarSettingsButton" = "Settings";
 "MenuItemSettings" = "Settings...";
 "MenuItemShowLauncher" = "Launcher ကိုပြ";
 "MenuItemCheckUpdates" = "အပ်ဒိတ်များ စစ်ဆေးပါ...";
 "MenuItemQuitLaunchy" = "Launchy မှ ထွက်";
-"DebugMenuLabel" = "Debug";
-"DebugMenuReloadApps" = "App များ ပြန်တင်ပါ";
-"DebugMenuResetSettings" = "Settings ကို Reset လုပ်ပါ";
-"DebugMenuToggleStyles" = "Test Background Styles ကို toggle လုပ်ပါ";
 
 // Grid
-"GridSearchPlaceholder" = "App များရှာဖွေပါ";
 "GridSearchLabel" = "ရှာဖွေပါ";
 "GridSearchClearButton" = "Search text ကို ဖျက်ပါ";
 "GridSearchEmptyHint" = "အခြား search term တစ်ခု စမ်းကြည့်ပါ။";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "ဖွင့်";
 "ItemActionRenameApp" = "App အမည်ပြောင်း";
-"ItemRenameAppPromptBody" = "ဒီ app အတွက် custom အမည် ထည့်ပါ။ Reset လုပ်ချင်ရင် အလွတ်ထားပါ။";
 "ItemActionShowInFinder" = "Finder တွင် ပြပါ";
 "ItemActionHideApp" = "App ဖျောက်";
 "ItemActionMoveToFolder" = "Folder သို့ ပြောင်းရွှေ့";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Folder ဖန်တီး";
 "ItemActionFolderDetails" = "Folder အသေးစိတ်";
 "ItemActionRenameFolder" = "Folder အမည်ပြောင်း";
-"ItemRenameFolderPromptBody" = "ဒီ folder အတွက် အမည်ထည့်ပါ။";
 "ItemDetailBundleIDFormat" = "Bundle ID: %@";
 "ItemDetailLocationFormat" = "တည်နေရာ: %@";
 "ItemDetailCustomNameFormat" = "Custom Name: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "App မရွေးထားပါ";
 "CommonCancelButton" = "ပယ်ဖျက်";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "သိမ်းပါ";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "အိုင်ကွန်အရွယ်အစား";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "သင့်သိမ်းထားသော စီစဉ်မှု၊ ဖိုင်တွဲများနှင့် စာမျက်နှာအပြင်အဆင်ကို ဖျက်သွားမည်။ မိမိပုံစံအပ်အမည်များနှင့် ဖျောက်ထားသောအပ်များကို ဆက်လက်ထားရှိမည်။";
 "SortOrderAlphabetical" = "အက္ခရာစဉ်";
 "SortOrderDiscovery" = "ရှာတွေ့စဉ်";
-"SortOrderAlphabeticalDetail" = "အပ်အမည်အလိုက် A → Z";
-"SortOrderDiscoveryDetail" = "Launchy တွေ့သလို";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "မိတ္တူကူးပြီး ပြန်လည်ထည့်သွင်းပါ";

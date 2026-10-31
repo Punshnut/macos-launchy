@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Επαναφορά διάταξης εικονιδίων...";
 "SettingsResetArrangementBody" = "Διαγράφει την αποθηκευμένη σειρά και τους φακέλους και ξαναχτίζει τις σελίδες από την αρχή. Τα προσαρμοσμένα ονόματα και οι κρυφές εφαρμογές διατηρούνται.";
 "ResetArrangementDialogTitle" = "Επαναφορά διάταξης εικονιδίων;";
-"ResetArrangementDialogBody" = "Αυτό διαγράφει την αποθηκευμένη σειρά, τους φακέλους και τη διάταξη σελίδων. Πληκτρολογήστε RESET για συνέχεια.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Επιλέξτε ποιες εφαρμογές μένουν εκτός του πλέγματος του εκκινητή.";
 "SettingsHiddenAppsColumnApp" = "Εφαρμογή";
 "SettingsHiddenAppsColumnHidden" = "Κρυφό";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Ρυθμίσεις εκκινητή";
 "StatusBarInfoButton" = "Πληροφορίες Launchy";
-"StatusBarSettingsButton" = "Ρυθμίσεις";
 "MenuItemSettings" = "Ρυθμίσεις...";
 "MenuItemShowLauncher" = "Εμφάνιση εκκινητή";
 "MenuItemCheckUpdates" = "Έλεγχος για ενημερώσεις...";
 "MenuItemQuitLaunchy" = "Έξοδος από το Launchy";
-"DebugMenuLabel" = "Debug";
-"DebugMenuReloadApps" = "Επαναφόρτωση εφαρμογών";
-"DebugMenuResetSettings" = "Επαναφορά ρυθμίσεων";
-"DebugMenuToggleStyles" = "Εναλλαγή δοκιμαστικών στυλ φόντου";
 
 // Grid
-"GridSearchPlaceholder" = "Αναζήτηση εφαρμογών";
 "GridSearchLabel" = "Αναζήτηση";
 "GridSearchClearButton" = "Εκκαθάριση κειμένου αναζήτησης";
 "GridSearchEmptyHint" = "Δοκιμάστε διαφορετικό όρο αναζήτησης.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Άνοιγμα";
 "ItemActionRenameApp" = "Μετονομασία εφαρμογής";
-"ItemRenameAppPromptBody" = "Εισαγάγετε προσαρμοσμένο όνομα για αυτή την εφαρμογή. Αφήστε κενό για επαναφορά.";
 "ItemActionShowInFinder" = "Εμφάνιση στο Finder";
 "ItemActionHideApp" = "Απόκρυψη εφαρμογής";
 "ItemActionMoveToFolder" = "Μετακίνηση σε φάκελο";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Δημιουργία φακέλου";
 "ItemActionFolderDetails" = "Λεπτομέρειες φακέλου";
 "ItemActionRenameFolder" = "Μετονομασία φακέλου";
-"ItemRenameFolderPromptBody" = "Εισαγάγετε όνομα για αυτόν τον φάκελο.";
 "ItemDetailBundleIDFormat" = "Bundle ID: %@";
 "ItemDetailLocationFormat" = "Τοποθεσία: %@";
 "ItemDetailCustomNameFormat" = "Προσαρμοσμένο όνομα: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Δεν επιλέχθηκαν εφαρμογές";
 "CommonCancelButton" = "Ακύρωση";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "Αποθήκευση";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Μέγεθος εικονιδίου";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Αυτό διαγράφει την αποθηκευμένη σειρά, τους φακέλους και τη διάταξη σελίδας. Τα προσαρμοσμένα ονόματα και οι κρυφές εφαρμογές διατηρούνται.";
 "SortOrderAlphabetical" = "Αλφαβητικά";
 "SortOrderDiscovery" = "Σειρά εντοπισμού";
-"SortOrderAlphabeticalDetail" = "A → Z ανά όνομα εφαρμογής";
-"SortOrderDiscoveryDetail" = "Όπως τις βρίσκει το Launchy";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Δημιουργία αντιγράφου & επαναφορά";

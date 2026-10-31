@@ -1,5 +1,4 @@
 import AppKit
-import Combine
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -342,7 +341,6 @@ final class SettingsWindowStore: NSObject, ObservableObject {
     /// Reconciles the stored launch-at-login flag with the authoritative state from System Settings.
     /// Called on window open so the toggle always reflects what the user set in System Settings.
     private func syncLoginItemStateFromSystem() {
-        guard #available(macOS 13.0, *) else { return }
         let systemEnabled = LaunchAtLoginManager.isCurrentlyEnabled
         guard settingsSnapshot.launchesAtLogin != systemEnabled else { return }
         settingsSnapshot.launchesAtLogin = systemEnabled

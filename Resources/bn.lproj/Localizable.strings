@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "আইকনের বিন্যাস রিসেট করুন...";
 "SettingsResetArrangementBody" = "এটি আপনার সংরক্ষিত ক্রম ও ফোল্ডার মুছে দিয়ে শুরু থেকে পেজ বানায়। কাস্টম অ্যাপ নাম ও লুকানো অ্যাপ থাকবে।";
 "ResetArrangementDialogTitle" = "আইকন বিন্যাস রিসেট করবেন?";
-"ResetArrangementDialogBody" = "এতে আপনার সংরক্ষিত ক্রম, ফোল্ডার ও পেজ লেআউট মুছে যাবে। চালিয়ে যেতে RESET লিখুন।";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "কোন অ্যাপগুলো লঞ্চার গ্রিডের বাইরে থাকবে তা বেছে নিন।";
 "SettingsHiddenAppsColumnApp" = "অ্যাপ্লিকেশন";
 "SettingsHiddenAppsColumnHidden" = "লুকানো";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "লঞ্চার সেটিংস";
 "StatusBarInfoButton" = "Launchy তথ্য";
-"StatusBarSettingsButton" = "সেটিংস";
 "MenuItemSettings" = "সেটিংস...";
 "MenuItemShowLauncher" = "লঞ্চার দেখান";
 "MenuItemCheckUpdates" = "আপডেট চেক করুন...";
 "MenuItemQuitLaunchy" = "Launchy বন্ধ করুন";
-"DebugMenuLabel" = "ডিবাগ";
-"DebugMenuReloadApps" = "অ্যাপ রিলোড করুন";
-"DebugMenuResetSettings" = "সেটিংস রিসেট করুন";
-"DebugMenuToggleStyles" = "টেস্ট ব্যাকগ্রাউন্ড স্টাইল টগল করুন";
 
 // Grid
-"GridSearchPlaceholder" = "অ্যাপ খুঁজুন";
 "GridSearchLabel" = "খুঁজুন";
 "GridSearchClearButton" = "সার্চ লেখা মুছুন";
 "GridSearchEmptyHint" = "ভিন্ন সার্চ টার্ম চেষ্টা করুন।";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "খুলুন";
 "ItemActionRenameApp" = "অ্যাপের নাম বদলান";
-"ItemRenameAppPromptBody" = "এই অ্যাপের জন্য কাস্টম নাম দিন। রিসেট করতে ফাঁকা রাখুন।";
 "ItemActionShowInFinder" = "Finder-এ দেখান";
 "ItemActionHideApp" = "অ্যাপ লুকান";
 "ItemActionMoveToFolder" = "ফোল্ডারে সরান";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "ফোল্ডার তৈরি করুন";
 "ItemActionFolderDetails" = "ফোল্ডারের বিস্তারিত";
 "ItemActionRenameFolder" = "ফোল্ডারের নাম বদলান";
-"ItemRenameFolderPromptBody" = "এই ফোল্ডারের জন্য একটি নাম দিন।";
 "ItemDetailBundleIDFormat" = "বাণ্ডল আইডি: %@";
 "ItemDetailLocationFormat" = "অবস্থান: %@";
 "ItemDetailCustomNameFormat" = "কাস্টম নাম: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "কোনো অ্যাপ নির্বাচিত নয়";
 "CommonCancelButton" = "বাতিল";
 "CommonOKButton" = "ঠিক আছে";
-"CommonSaveButton" = "সংরক্ষণ করুন";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "আইকনের আকার";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "এটি আপনার সংরক্ষিত ক্রম, ফোল্ডার ও পেজ লেআউট মুছে দেবে। কাস্টম অ্যাপ নাম ও লুকানো অ্যাপ থাকবে।";
 "SortOrderAlphabetical" = "বর্ণানুক্রমিক";
 "SortOrderDiscovery" = "আবিষ্কারক্রম";
-"SortOrderAlphabeticalDetail" = "অ্যাপ নাম অনুযায়ী A → Z";
-"SortOrderDiscoveryDetail" = "Launchy যেভাবে খুঁজে পায়";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "ব্যাকআপ ও পুনরুদ্ধার";

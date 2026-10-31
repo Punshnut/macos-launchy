@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Reset susunan ikon...";
 "SettingsResetArrangementBody" = "Memadam susunan dan folder tersimpan, kemudian bina semula halaman dari awal. Nama app tersuai kekal, app tersembunyi kekal tersembunyi.";
 "ResetArrangementDialogTitle" = "Reset susunan ikon?";
-"ResetArrangementDialogBody" = "Ini memadamkan susunan, folder, dan susun atur halaman yang disimpan. Taip RESET untuk meneruskan.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Pilih aplikasi yang kekal di luar grid pelancar.";
 "SettingsHiddenAppsColumnApp" = "Aplikasi";
 "SettingsHiddenAppsColumnHidden" = "Tersembunyi";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Tetapan pelancar";
 "StatusBarInfoButton" = "Maklumat Launchy";
-"StatusBarSettingsButton" = "Tetapan";
 "MenuItemSettings" = "Tetapan...";
 "MenuItemShowLauncher" = "Tunjukkan pelancar";
 "MenuItemCheckUpdates" = "Semak kemas kini...";
 "MenuItemQuitLaunchy" = "Keluar Launchy";
-"DebugMenuLabel" = "Nyahpepijat";
-"DebugMenuReloadApps" = "Muat semula aplikasi";
-"DebugMenuResetSettings" = "Reset tetapan";
-"DebugMenuToggleStyles" = "Togol gaya latar belakang ujian";
 
 // Grid
-"GridSearchPlaceholder" = "Cari aplikasi";
 "GridSearchLabel" = "Cari";
 "GridSearchClearButton" = "Kosongkan teks carian";
 "GridSearchEmptyHint" = "Cuba istilah carian yang lain.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Buka";
 "ItemActionRenameApp" = "Namakan semula aplikasi";
-"ItemRenameAppPromptBody" = "Masukkan nama tersuai untuk aplikasi ini. Biarkan kosong untuk reset.";
 "ItemActionShowInFinder" = "Tunjukkan dalam Finder";
 "ItemActionHideApp" = "Sembunyikan aplikasi";
 "ItemActionMoveToFolder" = "Pindah ke folder";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Cipta folder";
 "ItemActionFolderDetails" = "Butiran folder";
 "ItemActionRenameFolder" = "Namakan semula folder";
-"ItemRenameFolderPromptBody" = "Masukkan nama untuk folder ini.";
 "ItemDetailBundleIDFormat" = "ID Pakej: %@";
 "ItemDetailLocationFormat" = "Lokasi: %@";
 "ItemDetailCustomNameFormat" = "Nama tersuai: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Tiada aplikasi dipilih";
 "CommonCancelButton" = "Batal";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "Simpan";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Saiz ikon";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Ini memadam susunan yang disimpan, folder, dan susun atur halaman. Nama app tersuai dan app tersembunyi akan dikekalkan.";
 "SortOrderAlphabetical" = "Abjad";
 "SortOrderDiscovery" = "Ikut penemuan";
-"SortOrderAlphabeticalDetail" = "A → Z mengikut nama app";
-"SortOrderDiscoveryDetail" = "Seperti yang Launchy temui";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Sandar & Pulih";

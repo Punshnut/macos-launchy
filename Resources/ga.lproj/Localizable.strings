@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Athshocraigh socrú deilbhíní...";
 "SettingsResetArrangementBody" = "Scriosann sé an t‑ordú agus na fillteáin shábháilte agus atógann sé na leathanaigh. Fanann ainmneacha saincheaptha agus aipeanna ceilte.";
 "ResetArrangementDialogTitle" = "Athshocraigh socrú deilbhíní?";
-"ResetArrangementDialogBody" = "Scriosann sé seo d'ordú sábháilte, d'fhillteáin, agus leagan amach na leathanach. Clóscríobh RESET chun leanúint ar aghaidh.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Roghnaigh na feidhmchláir a fhanann as greille an tosaitheora.";
 "SettingsHiddenAppsColumnApp" = "Feidhmchlár";
 "SettingsHiddenAppsColumnHidden" = "I bhfolach";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Socruithe an tosaitheora";
 "StatusBarInfoButton" = "Eolas Launchy";
-"StatusBarSettingsButton" = "Socruithe";
 "MenuItemSettings" = "Socruithe...";
 "MenuItemShowLauncher" = "Taispeáin an tosaitheoir";
 "MenuItemCheckUpdates" = "Seiceáil le haghaidh nuashonruithe...";
 "MenuItemQuitLaunchy" = "Scoir Launchy";
-"DebugMenuLabel" = "Dífhabhtaigh";
-"DebugMenuReloadApps" = "Athluchtaigh aipeanna";
-"DebugMenuResetSettings" = "Athshocraigh socruithe";
-"DebugMenuToggleStyles" = "Scoránaigh stíleanna cúlra tástála";
 
 // Grid
-"GridSearchPlaceholder" = "Cuardaigh aipeanna";
 "GridSearchLabel" = "Cuardaigh";
 "GridSearchClearButton" = "Glan téacs an chuardaigh";
 "GridSearchEmptyHint" = "Bain triail as téarma cuardaigh eile.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Oscail";
 "ItemActionRenameApp" = "Athainmnigh an aip";
-"ItemRenameAppPromptBody" = "Iontráil ainm saincheaptha don aip seo. Fág folamh chun athshocrú.";
 "ItemActionShowInFinder" = "Taispeáin san Aimsitheoir";
 "ItemActionHideApp" = "Folaigh an aip";
 "ItemActionMoveToFolder" = "Bog go fillteán";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Cruthaigh fillteán";
 "ItemActionFolderDetails" = "Sonraí fillteáin";
 "ItemActionRenameFolder" = "Athainmnigh an fillteán";
-"ItemRenameFolderPromptBody" = "Iontráil ainm don fhillteán seo.";
 "ItemDetailBundleIDFormat" = "Aitheantas bundle: %@";
 "ItemDetailLocationFormat" = "Suíomh: %@";
 "ItemDetailCustomNameFormat" = "Ainm saincheaptha: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Níl aipeanna roghnaithe";
 "CommonCancelButton" = "Cealaigh";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "Sábháil";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Méid deilbhín";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Scriosann sé seo an t‑ordú, na fillteáin agus leagan amach na leathanach a sábháladh. Coinneofar ainmneacha saincheaptha agus aipeanna ceilte.";
 "SortOrderAlphabetical" = "Aibítreach";
 "SortOrderDiscovery" = "Ord Fionnachtana";
-"SortOrderAlphabeticalDetail" = "A → Z de réir ainm na haipe";
-"SortOrderDiscoveryDetail" = "De réir mar a aimsíonn Launchy iad";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Cúltaca agus Athchóirigh";

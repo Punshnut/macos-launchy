@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "รีเซ็ตการจัดเรียงไอคอน...";
 "SettingsResetArrangementBody" = "ลบลำดับและโฟลเดอร์ที่บันทึกไว้แล้วสร้างหน้าใหม่ตั้งแต่ต้น ชื่อกำหนดเองและแอปที่ซ่อนยังคงอยู่.";
 "ResetArrangementDialogTitle" = "รีเซ็ตการจัดเรียงไอคอน?";
-"ResetArrangementDialogBody" = "สิ่งนี้จะลบการจัดเรียง โฟลเดอร์ และเลย์เอาต์หน้าที่บันทึกไว้ พิมพ์ RESET เพื่อดำเนินการต่อ";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "เลือกแอปที่จะไม่อยู่ในกริดของ Launcher";
 "SettingsHiddenAppsColumnApp" = "แอปพลิเคชัน";
 "SettingsHiddenAppsColumnHidden" = "ซ่อน";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "การตั้งค่า Launcher";
 "StatusBarInfoButton" = "ข้อมูล Launchy";
-"StatusBarSettingsButton" = "การตั้งค่า";
 "MenuItemSettings" = "การตั้งค่า...";
 "MenuItemShowLauncher" = "แสดง Launcher";
 "MenuItemCheckUpdates" = "ตรวจสอบการอัปเดต...";
 "MenuItemQuitLaunchy" = "ออกจาก Launchy";
-"DebugMenuLabel" = "ดีบัก";
-"DebugMenuReloadApps" = "โหลดแอปใหม่";
-"DebugMenuResetSettings" = "รีเซ็ตการตั้งค่า";
-"DebugMenuToggleStyles" = "สลับสไตล์พื้นหลังทดสอบ";
 
 // Grid
-"GridSearchPlaceholder" = "ค้นหาแอป";
 "GridSearchLabel" = "ค้นหา";
 "GridSearchClearButton" = "ล้างข้อความค้นหา";
 "GridSearchEmptyHint" = "ลองคำค้นหาอื่น";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "เปิด";
 "ItemActionRenameApp" = "เปลี่ยนชื่อแอป";
-"ItemRenameAppPromptBody" = "ใส่ชื่อเฉพาะสำหรับแอปนี้ ปล่อยว่างเพื่อรีเซ็ต";
 "ItemActionShowInFinder" = "แสดงใน Finder";
 "ItemActionHideApp" = "ซ่อนแอป";
 "ItemActionMoveToFolder" = "ย้ายไปโฟลเดอร์";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "สร้างโฟลเดอร์";
 "ItemActionFolderDetails" = "รายละเอียดโฟลเดอร์";
 "ItemActionRenameFolder" = "เปลี่ยนชื่อโฟลเดอร์";
-"ItemRenameFolderPromptBody" = "ใส่ชื่อสำหรับโฟลเดอร์นี้";
 "ItemDetailBundleIDFormat" = "Bundle ID: %@";
 "ItemDetailLocationFormat" = "ตำแหน่ง: %@";
 "ItemDetailCustomNameFormat" = "ชื่อเฉพาะ: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "ยังไม่มีแอปที่ถูกเลือก";
 "CommonCancelButton" = "ยกเลิก";
 "CommonOKButton" = "ตกลง";
-"CommonSaveButton" = "บันทึก";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "ขนาดไอคอน";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "การกระทำนี้จะลบลำดับที่บันทึกไว้ โฟลเดอร์ และเลย์เอาต์หน้า ชื่อแอปแบบกำหนดเองและแอปที่ซ่อนจะยังคงอยู่.";
 "SortOrderAlphabetical" = "เรียงตามตัวอักษร";
 "SortOrderDiscovery" = "ลำดับการค้นพบ";
-"SortOrderAlphabeticalDetail" = "A → Z ตามชื่อแอป";
-"SortOrderDiscoveryDetail" = "ตามที่ Launchy พบ";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "สำรองและกู้คืน";

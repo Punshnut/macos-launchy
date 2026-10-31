@@ -815,7 +815,7 @@ struct SettingsWindow: View {
         }
         .aspectRatio(contentMode: .fit)
         .frame(width: 32, height: 32)
-        .cornerRadius(6)
+        .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 
     // MARK: - About Content
@@ -1083,7 +1083,7 @@ struct SettingsWindow: View {
         }
         .aspectRatio(contentMode: .fit)
         .frame(width: 32, height: 32)
-        .cornerRadius(6)
+        .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 
     /// Launches the onboarding flow from the About tab without marking completion.

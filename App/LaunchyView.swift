@@ -857,7 +857,6 @@ struct LauncherView: View {
     /// Shorter debounce for a search session's first keystroke, which has nothing to coalesce with yet.
     private let firstKeystrokeSearchDebounceNanoseconds: UInt64 = 12_000_000
     private var visiblePagesDebounceNanoseconds: UInt64 { performanceTuning.visiblePagesDebounceNanoseconds }
-    private var scrollCoalescingNanoseconds: UInt64 { performanceTuning.scrollCoalescingNanoseconds }
     private var pageRasterizationThreshold: CGFloat { performanceTuning.pageRasterizationThreshold }
 
     @State private var orderedItems: [LauncherItem]
@@ -956,8 +955,6 @@ struct LauncherView: View {
     @State private var pageSwitchSignpostID: OSSignpostID = .invalid
     @State private var pendingPagerAnimationFinalization: PendingPagerAnimationFinalization?
     @State private var isScrollGestureActive = false
-    @State private var pendingScrollDelta: CGFloat = 0
-    @State private var scrollUpdateScheduled = false
     @State private var lastPagerInteractionSource: PagerInteractionSource = .drag
     @State private var queuedPageShifts: [Int] = []
     @State private var visiblePagesTask: Task<Void, Never>?
@@ -1422,10 +1419,6 @@ struct LauncherView: View {
                     dismissLauncherViaBackgroundTap(at: value.location)
                 }
         )
-    }
-
-    private var usesGappedLayout: Bool {
-        fillsGapsAutomatically == false && searchText.isEmpty
     }
 
     /// Page sizes to render right now: densely packed search results, or the arranged page sizes otherwise.
@@ -1973,9 +1966,7 @@ struct LauncherView: View {
         }
 
         isScrollGestureActive = true
-        let scale: CGFloat = 1.0
-        flushPendingScrollDelta(pageSpan: width)
-        applyPagerScrollDelta(primaryDelta * scale, pageSpan: width)
+        applyPagerScrollDelta(primaryDelta, pageSpan: width)
 
     }
 
@@ -2735,59 +2726,6 @@ struct LauncherView: View {
             captureDragOrigin(for: extracted)
             draggedFolderApp = nil
         }
-    }
-
-    /// Opens a folder overlay mid-drag so the app can be dropped into a specific position.
-    private func openFolderForDrag(_ folder: FolderItem, draggedItem: LauncherItem) {
-        guard case .app = draggedItem else { return }
-        primeFolderOverlayOpenAnimation()
-        folderPreviewMatchID = nil
-        folderIconWaveToggle = false
-        withAnimation(folderOpenAnimation) {
-            activeFolder = folder
-        }
-    }
-
-    /// Starts a delayed folder merge after hovering over a target item.
-    private func handleFolderHover(dragged: LauncherItem, onto target: LauncherItem) {
-        guard case .app = dragged else {
-            cancelFolderHover()
-            return
-        }
-        guard dragged.id != target.id else { return }
-
-        let isModifierMode = currentDragModifierMode() == .folderMerge
-        if folderHoverTargetID == target.id && folderHoverInModifierMode == isModifierMode {
-            return
-        }
-
-        cancelFolderHover()
-        folderHoverInModifierMode = isModifierMode
-
-        let action: () -> Void
-        let delay: TimeInterval
-
-        switch target {
-        case .app:
-            action = { mergeItemsIfNeeded(dragged: dragged, onto: target) }
-            delay = isModifierMode ? 1.0 : 0.6
-        case .folder(let folder):
-            if isModifierMode {
-                action = { openFolderForDrag(folder, draggedItem: dragged) }
-                delay = 1.0
-            } else {
-                action = { mergeItemsIfNeeded(dragged: dragged, onto: target) }
-                delay = 0.6
-            }
-        }
-
-        let work = DispatchWorkItem {
-            action()
-            folderHoverTargetID = nil
-        }
-        folderHoverWorkItem = work
-        folderHoverTargetID = target.id
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: work)
     }
 
     /// Cancels any pending folder merge hover.
@@ -4094,16 +4032,6 @@ struct LauncherView: View {
         .animation(nil, value: resolvedIcon?.hash ?? 0)
     }
 
-    /// Chooses currently displayable icon for app tile (base or high-quality override).
-    private func displayIcon(for app: AppItem, layout: LauncherLayoutMetrics) -> NSImage? {
-        // Prefer any cached high-quality icon to avoid visible swaps when entering wiggle/drag.
-        if let detailed = highQualityIconOverrides[app.id] {
-            return detailed
-        }
-        let request = baseIconRequest(for: layout)
-        return resolvedIcon(for: app, dimension: request.dimension, quality: request.quality) ?? app.iconImage
-    }
-
     /// Schedules deferred high-quality icon request for visible app tiles.
     private func requestHighQualityIconIfNeeded(for app: AppItem, layout: LauncherLayoutMetrics) {
         guard highQualityIconOverrides[app.id] == nil else { return }
@@ -5241,28 +5169,6 @@ struct LauncherView: View {
         lastPerformanceCapability = capability
     }
 
-    /// Accumulates scroll delta for coalesced page navigation processing.
-    private func queueScrollDelta(_ delta: CGFloat, pageSpan: CGFloat) {
-        guard delta != 0 else { return }
-        if scrollCoalescingNanoseconds == 0 {
-            applyPagerScrollDelta(delta, pageSpan: pageSpan)
-            return
-        }
-        pendingScrollDelta += delta
-        guard scrollUpdateScheduled == false else { return }
-        scrollUpdateScheduled = true
-        let delay = scrollCoalescingNanoseconds
-        if delay > 0 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .nanoseconds(Int(delay))) { [self] in
-                applyPendingScrollDelta(pageSpan: pageSpan)
-            }
-        } else {
-            DispatchQueue.main.async { [self] in
-                applyPendingScrollDelta(pageSpan: pageSpan)
-            }
-        }
-    }
-
     /// Applies one live pager delta immediately, preserving a continuous gesture-to-animation handoff.
     private func applyPagerScrollDelta(_ delta: CGFloat, pageSpan: CGFloat) {
         guard delta != 0 else { return }
@@ -5270,25 +5176,9 @@ struct LauncherView: View {
         lastPagerDragDate = Date()
     }
 
-    /// Applies buffered scroll deltas to page offset and navigation state.
-    private func applyPendingScrollDelta(pageSpan: CGFloat) {
-        scrollUpdateScheduled = false
-        let delta = pendingScrollDelta
-        pendingScrollDelta = 0
-        guard delta != 0 else { return }
-        applyPagerScrollDelta(delta, pageSpan: pageSpan)
-    }
-
-    /// Forces immediate application of buffered scroll deltas.
-    private func flushPendingScrollDelta(pageSpan: CGFloat) {
-        guard pendingScrollDelta != 0 || scrollUpdateScheduled else { return }
-        applyPendingScrollDelta(pageSpan: pageSpan)
-    }
-
     /// Finalizes scroll gesture and settles to nearest page.
     private func endScrollGesture(pageSpan: CGFloat) {
         let signpostID = Self.beginSignpost("PagerInputEnd")
-        flushPendingScrollDelta(pageSpan: pageSpan)
         isScrollGestureActive = false
         settlePagerOffset(pageSpan: pageSpan)
         Self.endSignpost("PagerInputEnd", id: signpostID)
@@ -6242,7 +6132,7 @@ struct LauncherView: View {
         guard isMultiSelectModeActive == false else { return }
         cancelExpansionAutoCollapse()
         expansionAutoCollapseTask = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            try? await Task.sleep(for: .seconds(5))
             guard searchControlsExpanded && isMultiSelectModeActive == false else { return }
             updateSearchControlsExpansion(to: false)
             expansionAutoCollapseTask = nil
@@ -6945,10 +6835,6 @@ struct LauncherView: View {
         persistOrderChange(using: pageSizes)
         currentPage = min(currentPage, fullPageCount - 1)
         pagerDragOffset = 0
-    }
-
-    private func hideApp(_ app: AppItem) {
-        hideApps([app])
     }
 
     /// Moves an app into an existing folder.

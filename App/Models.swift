@@ -157,16 +157,6 @@ enum LauncherItem: Identifiable, Hashable {
         }
     }
 
-    /// Bundle identifiers contained within the item, useful for persistence.
-    var bundleIdentifiers: [String] {
-        switch self {
-        case .app(let app):
-            return [app.bundleIdentifier]
-        case .folder(let folder):
-            return folder.apps.map(\.bundleIdentifier)
-        }
-    }
-
     static func == (lhs: LauncherItem, rhs: LauncherItem) -> Bool {
         lhs.id == rhs.id
     }
@@ -343,16 +333,6 @@ enum ArrangementResetSorting: String, CaseIterable, Hashable, Codable {
             return String(localized: "SortOrderAlphabetical")
         case .discovery:
             return String(localized: "SortOrderDiscovery")
-        }
-    }
-
-    /// Short description shown in confirmation dialogs.
-    var summary: String {
-        switch self {
-        case .alphabetical:
-            return String(localized: "SortOrderAlphabeticalDetail")
-        case .discovery:
-            return String(localized: "SortOrderDiscoveryDetail")
         }
     }
 }

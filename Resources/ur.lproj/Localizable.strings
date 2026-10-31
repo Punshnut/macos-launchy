@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "آئیکن ترتیب ری سیٹ کریں...";
 "SettingsResetArrangementBody" = "محفوظ ترتیب اور فولڈرز کو حذف کر کے صفحات کو نئے سرے سے بناتا ہے۔ حسبِ ضرورت نام اور مخفی ایپس برقرار رہتی ہیں۔";
 "ResetArrangementDialogTitle" = "آئیکن ترتیب ری سیٹ کریں؟";
-"ResetArrangementDialogBody" = "یہ آپ کی محفوظ ترتیب، فولڈرز، اور صفحہ لے آؤٹ حذف کر دے گا۔ جاری رکھنے کے لیے RESET ٹائپ کریں۔";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "منتخب کریں کہ کون سی ایپس لانچر گرڈ سے باہر رہیں۔";
 "SettingsHiddenAppsColumnApp" = "ایپلیکیشن";
 "SettingsHiddenAppsColumnHidden" = "چھپا ہوا";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "لانچر سیٹنگز";
 "StatusBarInfoButton" = "Launchy معلومات";
-"StatusBarSettingsButton" = "سیٹنگز";
 "MenuItemSettings" = "سیٹنگز...";
 "MenuItemShowLauncher" = "لانچر دکھائیں";
 "MenuItemCheckUpdates" = "اپ ڈیٹس چیک کریں...";
 "MenuItemQuitLaunchy" = "Launchy بند کریں";
-"DebugMenuLabel" = "ڈیبگ";
-"DebugMenuReloadApps" = "ایپس دوبارہ لوڈ کریں";
-"DebugMenuResetSettings" = "سیٹنگز ری سیٹ کریں";
-"DebugMenuToggleStyles" = "ٹیسٹ بیک گراؤنڈ اسٹائلز ٹوگل کریں";
 
 // Grid
-"GridSearchPlaceholder" = "ایپس تلاش کریں";
 "GridSearchLabel" = "تلاش";
 "GridSearchClearButton" = "سرچ متن صاف کریں";
 "GridSearchEmptyHint" = "کوئی اور سرچ اصطلاح آزمائیں۔";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "کھولیں";
 "ItemActionRenameApp" = "ایپ کا نام بدلیں";
-"ItemRenameAppPromptBody" = "اس ایپ کے لیے کسٹم نام درج کریں۔ ری سیٹ کے لیے خالی چھوڑ دیں۔";
 "ItemActionShowInFinder" = "Finder میں دکھائیں";
 "ItemActionHideApp" = "ایپ چھپائیں";
 "ItemActionMoveToFolder" = "فولڈر میں منتقل کریں";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "فولڈر بنائیں";
 "ItemActionFolderDetails" = "فولڈر کی تفصیل";
 "ItemActionRenameFolder" = "فولڈر کا نام بدلیں";
-"ItemRenameFolderPromptBody" = "اس فولڈر کے لیے نام درج کریں۔";
 "ItemDetailBundleIDFormat" = "بنڈل آئی ڈی: %@";
 "ItemDetailLocationFormat" = "مقام: %@";
 "ItemDetailCustomNameFormat" = "کسٹم نام: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "کوئی ایپ منتخب نہیں";
 "CommonCancelButton" = "منسوخ کریں";
 "CommonOKButton" = "ٹھیک ہے";
-"CommonSaveButton" = "محفوظ کریں";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "آئیکن کا سائز";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "یہ محفوظ ترتیب، فولڈرز اور صفحہ لے آؤٹ کو حذف کر دے گا۔ حسبِ ضرورت ایپ نام اور مخفی ایپس برقرار رہیں گی۔";
 "SortOrderAlphabetical" = "حروفِ تہجی";
 "SortOrderDiscovery" = "دریافت ترتیب";
-"SortOrderAlphabeticalDetail" = "ایپ نام کے لحاظ سے A → Z";
-"SortOrderDiscoveryDetail" = "جس ترتیب سے Launchy ڈھونڈتا ہے";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "بیک اپ اور بحالی";

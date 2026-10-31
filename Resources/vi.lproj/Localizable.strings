@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Đặt lại thứ tự biểu tượng...";
 "SettingsResetArrangementBody" = "Xóa thứ tự và thư mục đã lưu rồi xây dựng lại các trang từ đầu. Tên tùy chỉnh và ứng dụng ẩn vẫn giữ nguyên.";
 "ResetArrangementDialogTitle" = "Đặt lại thứ tự biểu tượng?";
-"ResetArrangementDialogBody" = "Điều này xóa thứ tự, thư mục và bố cục trang đã lưu của bạn. Gõ RESET để tiếp tục.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Chọn ứng dụng không xuất hiện trong lưới khởi chạy.";
 "SettingsHiddenAppsColumnApp" = "Ứng dụng";
 "SettingsHiddenAppsColumnHidden" = "Đã ẩn";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Cài đặt trình khởi chạy";
 "StatusBarInfoButton" = "Thông tin Launchy";
-"StatusBarSettingsButton" = "Cài đặt";
 "MenuItemSettings" = "Cài đặt...";
 "MenuItemShowLauncher" = "Hiển thị trình khởi chạy";
 "MenuItemCheckUpdates" = "Kiểm tra cập nhật...";
 "MenuItemQuitLaunchy" = "Thoát Launchy";
-"DebugMenuLabel" = "Gỡ lỗi";
-"DebugMenuReloadApps" = "Tải lại ứng dụng";
-"DebugMenuResetSettings" = "Đặt lại cài đặt";
-"DebugMenuToggleStyles" = "Chuyển đổi kiểu nền thử nghiệm";
 
 // Grid
-"GridSearchPlaceholder" = "Tìm ứng dụng";
 "GridSearchLabel" = "Tìm";
 "GridSearchClearButton" = "Xóa văn bản tìm kiếm";
 "GridSearchEmptyHint" = "Thử từ tìm kiếm khác.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Mở";
 "ItemActionRenameApp" = "Đổi tên ứng dụng";
-"ItemRenameAppPromptBody" = "Nhập tên tùy chỉnh cho ứng dụng này. Để trống để đặt lại.";
 "ItemActionShowInFinder" = "Hiển thị trong Finder";
 "ItemActionHideApp" = "Ẩn ứng dụng";
 "ItemActionMoveToFolder" = "Chuyển vào thư mục";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Tạo thư mục";
 "ItemActionFolderDetails" = "Chi tiết thư mục";
 "ItemActionRenameFolder" = "Đổi tên thư mục";
-"ItemRenameFolderPromptBody" = "Nhập tên cho thư mục này.";
 "ItemDetailBundleIDFormat" = "ID gói: %@";
 "ItemDetailLocationFormat" = "Vị trí: %@";
 "ItemDetailCustomNameFormat" = "Tên tùy chỉnh: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Chưa chọn ứng dụng nào";
 "CommonCancelButton" = "Hủy";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "Lưu";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Kích thước biểu tượng";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Điều này xóa thứ tự đã lưu, thư mục và bố cục trang. Tên ứng dụng tùy chỉnh và ứng dụng ẩn sẽ được giữ lại.";
 "SortOrderAlphabetical" = "Thứ tự chữ cái";
 "SortOrderDiscovery" = "Thứ tự tìm thấy";
-"SortOrderAlphabeticalDetail" = "A → Z theo tên ứng dụng";
-"SortOrderDiscoveryDetail" = "Theo thứ tự Launchy tìm thấy";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Sao lưu & Khôi phục";

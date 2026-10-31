@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Сбросить расположение иконок...";
 "SettingsResetArrangementBody" = "Удаляет сохранённый порядок и папки и заново строит страницы. Пользовательские названия и скрытые приложения остаются.";
 "ResetArrangementDialogTitle" = "Сбросить расположение иконок?";
-"ResetArrangementDialogBody" = "Это удалит сохранённый порядок, папки и макет страниц. Введите RESET, чтобы продолжить.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Выберите приложения, которые не показываются в сетке лаунчера.";
 "SettingsHiddenAppsColumnApp" = "Приложение";
 "SettingsHiddenAppsColumnHidden" = "Скрыто";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Настройки лаунчера";
 "StatusBarInfoButton" = "Информация о Launchy";
-"StatusBarSettingsButton" = "Настройки";
 "MenuItemSettings" = "Настройки...";
 "MenuItemShowLauncher" = "Показать лаунчер";
 "MenuItemCheckUpdates" = "Проверить обновления...";
 "MenuItemQuitLaunchy" = "Выйти из Launchy";
-"DebugMenuLabel" = "Отладка";
-"DebugMenuReloadApps" = "Перезагрузить приложения";
-"DebugMenuResetSettings" = "Сбросить настройки";
-"DebugMenuToggleStyles" = "Переключить тестовые стили фона";
 
 // Grid
-"GridSearchPlaceholder" = "Искать приложения";
 "GridSearchLabel" = "Поиск";
 "GridSearchClearButton" = "Очистить текст поиска";
 "GridSearchEmptyHint" = "Попробуйте другой запрос.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Открыть";
 "ItemActionRenameApp" = "Переименовать приложение";
-"ItemRenameAppPromptBody" = "Введите собственное имя для этого приложения. Оставьте пустым, чтобы сбросить.";
 "ItemActionShowInFinder" = "Показать в Finder";
 "ItemActionHideApp" = "Скрыть приложение";
 "ItemActionMoveToFolder" = "Переместить в папку";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Создать папку";
 "ItemActionFolderDetails" = "Сведения о папке";
 "ItemActionRenameFolder" = "Переименовать папку";
-"ItemRenameFolderPromptBody" = "Введите имя для этой папки.";
 "ItemDetailBundleIDFormat" = "ID пакета: %@";
 "ItemDetailLocationFormat" = "Расположение: %@";
 "ItemDetailCustomNameFormat" = "Особенное имя: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Приложения не выбраны";
 "CommonCancelButton" = "Отмена";
 "CommonOKButton" = "ОК";
-"CommonSaveButton" = "Сохранить";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Размер иконок";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Это удалит сохранённый порядок, папки и макет страниц. Пользовательские названия и скрытые приложения сохранятся.";
 "SortOrderAlphabetical" = "По алфавиту";
 "SortOrderDiscovery" = "В порядке обнаружения";
-"SortOrderAlphabeticalDetail" = "A → Z по названию приложения";
-"SortOrderDiscoveryDetail" = "В порядке обнаружения Launchy";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Резервное копирование и восстановление";

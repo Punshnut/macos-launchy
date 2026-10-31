@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Rejesha mpangilio wa ikoni...";
 "SettingsResetArrangementBody" = "Huondoa mpangilio na folda ulizohifadhi na kujenga upya kurasa kutoka mwanzo. Majina maalum na app zilizofichwa hubaki.";
 "ResetArrangementDialogTitle" = "Rejesha mpangilio wa ikoni?";
-"ResetArrangementDialogBody" = "Hii inafuta upangaji uliohifadhiwa, folda, na mpangilio wa kurasa. Andika RESET kuendelea.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Chagua programu zitakazobaki nje ya mtandao wa chombo.";
 "SettingsHiddenAppsColumnApp" = "Programu";
 "SettingsHiddenAppsColumnHidden" = "Imefichwa";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Mipangilio ya Launcher";
 "StatusBarInfoButton" = "Maelezo ya Launchy";
-"StatusBarSettingsButton" = "Mipangilio";
 "MenuItemSettings" = "Mipangilio...";
 "MenuItemShowLauncher" = "Onyesha chombo";
 "MenuItemCheckUpdates" = "Angalia masasisho...";
 "MenuItemQuitLaunchy" = "Acha Launchy";
-"DebugMenuLabel" = "Kani";
-"DebugMenuReloadApps" = "Pakia tena programu";
-"DebugMenuResetSettings" = "Rejesha mipangilio";
-"DebugMenuToggleStyles" = "Badilisha mitindo ya mandhari ya majaribio";
 
 // Grid
-"GridSearchPlaceholder" = "Tafuta programu";
 "GridSearchLabel" = "Tafuta";
 "GridSearchClearButton" = "Futa maandishi ya utafutaji";
 "GridSearchEmptyHint" = "Jaribu neno tofauti la utafutaji.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Fungua";
 "ItemActionRenameApp" = "Badilisha jina la programu";
-"ItemRenameAppPromptBody" = "Ingiza jina maalum la programu hii. Acha tupu kurejesha.";
 "ItemActionShowInFinder" = "Onyesha katika Finder";
 "ItemActionHideApp" = "Ficha programu";
 "ItemActionMoveToFolder" = "Hamisha kwenda folda";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Tengeneza folda";
 "ItemActionFolderDetails" = "Maelezo ya folda";
 "ItemActionRenameFolder" = "Badilisha jina la folda";
-"ItemRenameFolderPromptBody" = "Ingiza jina la folda hii.";
 "ItemDetailBundleIDFormat" = "Kitambulisho cha kifurushi: %@";
 "ItemDetailLocationFormat" = "Mahali: %@";
 "ItemDetailCustomNameFormat" = "Jina maalum: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Hakuna programu zilizochaguliwa";
 "CommonCancelButton" = "Ghairi";
 "CommonOKButton" = "Sawa";
-"CommonSaveButton" = "Hifadhi";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Ukubwa wa ikoni";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Hii huondoa mpangilio uliohifadhiwa, folda na mpangilio wa ukurasa. Majina uliyopachika na app zilizofichwa zitabaki.";
 "SortOrderAlphabetical" = "Kialfabeti";
 "SortOrderDiscovery" = "Mpangilio wa kugundua";
-"SortOrderAlphabeticalDetail" = "A → Z kwa jina la app";
-"SortOrderDiscoveryDetail" = "Launchy anavyowapata";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Hifadhi nakala na rejesha";

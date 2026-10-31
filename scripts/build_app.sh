@@ -39,7 +39,7 @@ INFO_PLIST="$PROJECT_ROOT/Resources/Info.plist"
 ICON_BUNDLE="$PROJECT_ROOT/Resources/Launchy.icon"
 ICON_NAME="Launchy"
 # Resolved artifacts (e.g. Sparkle.xcframework) live under the arch-specific --build-path
-# used below, not a shared ".build/artifacts" — computed once the first arch is known.
+# used below, not a shared ".build/artifacts" - computed once the first arch is known.
 SPARKLE_FRAMEWORK_SRC="${SPARKLE_FRAMEWORK_SRC:-}"
 BUILD_LOG="$PROJECT_ROOT/.derived/build_app.log"
 TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/launchy-build.XXXXXX")"
@@ -92,7 +92,7 @@ create_app_icon() {
   # actool requires --minimum-deployment-target 26.0 to compile it, but that only affects
   # this icon-catalog compile step. It flattens down to a normal Assets.car/.icns that the
   # app still loads fine on its real floor (LSMinimumSystemVersion 13.0 / Package.swift .v13).
-  # Do not "fix" this to match the app's deployment target — it will break the icon compile.
+  # Do not "fix" this to match the app's deployment target - it will break the icon compile.
   xcrun actool "$ICON_BUNDLE" --compile "$actool_out" \
     --output-format human-readable-text --notices --warnings --errors \
     --output-partial-info-plist "$TMP_DIR/actool-partial-Info.plist" \

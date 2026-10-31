@@ -17,11 +17,6 @@ enum LauncherSettingsPersistence {
         )
     }
 
-    /// Resets all settings to defaults.
-    static func resetSettings(userDefaults: UserDefaults = .standard) {
-        saveSettings(LauncherSettings.defaults, userDefaults: userDefaults)
-    }
-
     /// Returns current launcher mode.
     static func launcherMode(userDefaults: UserDefaults = .standard) -> LauncherMode {
         loadSettings(userDefaults: userDefaults).selectedLauncherMode
@@ -34,11 +29,6 @@ enum LauncherSettingsPersistence {
         }
     }
 
-    /// Returns whether menu bar icon is visible.
-    static func showMenuBarIcon(userDefaults: UserDefaults = .standard) -> Bool {
-        loadSettings(userDefaults: userDefaults).isMenuBarIconVisible
-    }
-
     /// Saves menu bar icon visibility.
     static func setShowMenuBarIcon(_ isVisible: Bool, userDefaults: UserDefaults = .standard) {
         updateSettings(userDefaults: userDefaults) { settings in
@@ -49,11 +39,6 @@ enum LauncherSettingsPersistence {
     /// Convenience setter for hidden menu bar icon state.
     static func setMenuBarIconHidden(_ isHidden: Bool, userDefaults: UserDefaults = .standard) {
         setShowMenuBarIcon(!isHidden, userDefaults: userDefaults)
-    }
-
-    /// Returns whether Dock icon is visible.
-    static func showDockIcon(userDefaults: UserDefaults = .standard) -> Bool {
-        loadSettings(userDefaults: userDefaults).isDockIconVisible
     }
 
     /// Saves Dock icon visibility.
@@ -108,13 +93,6 @@ enum LauncherSettingsPersistence {
         updateSettings(userDefaults: userDefaults) { settings in
             settings.hiddenBundleIDs = identifiers
         }
-    }
-
-    /// Returns hidden special entry IDs.
-    static func hiddenSpecialEntryIdentifiers(
-        userDefaults: UserDefaults = .standard
-    ) -> [String] {
-        loadSettings(userDefaults: userDefaults).hiddenSpecialEntryIDs
     }
 
     /// Saves hidden special entry IDs.
@@ -217,13 +195,6 @@ enum LauncherSettingsPersistence {
         updateSettings(userDefaults: userDefaults) { settings in
             settings.standardPageIndex = max(0, index)
         }
-    }
-
-    /// Returns background style preference.
-    static func preferredBackgroundStyle(
-        userDefaults: UserDefaults = .standard
-    ) -> LauncherSettings.PreferredBackgroundStyle {
-        loadSettings(userDefaults: userDefaults).backgroundStylePreference
     }
 
     /// Saves background style preference.

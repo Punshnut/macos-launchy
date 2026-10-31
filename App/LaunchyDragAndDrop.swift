@@ -548,11 +548,6 @@ struct GridReorderDropDelegate: DropDelegate {
         return max(min(pageItemCount, available), 0)
     }
 
-    /// Converts 2D grid coordinates into a page-local linear index.
-    private func linearIndexInPage(row: Int, column: Int) -> Int {
-        row * layout.columnsPerPage + column
-    }
-
     /// Converts an absolute item index into a page-local index when visible.
     private func indexInCurrentPage(forAbsoluteIndex index: Int) -> Int? {
         let local = index - pageStartIndex

@@ -51,7 +51,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private var shouldAutoPresentOnFirstActivation = false
     private var isAnimatingLauncherHide = false
     private var suppressLauncherRevealOnNextActivation = false
-    private var visiblePageWarmupTask: Task<Void, Never>?
     private var pendingFloatyVisibilityCheckID: UUID?
     private var hasUsedFloatyFallback = false
     private var hasScheduledRunloopProbe = false
@@ -241,8 +240,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         memoryPressureSource = nil
         memoryMaintenanceTimer?.cancel()
         memoryMaintenanceTimer = nil
-        visiblePageWarmupTask?.cancel()
-        visiblePageWarmupTask = nil
         removalConfirmationTimer?.cancel()
         removalConfirmationTimer = nil
     }
@@ -250,33 +247,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Allows menu items to kick off a manual Sparkle check.
     func checkForUpdatesFromMenu() {
         updaterController.checkForUpdates(nil)
-    }
-
-    /// Reloads applications via the debug menu, clearing stale icon caches beforehand.
-    func reloadAppsFromDebugMenu() {
-        applicationDiscovery.clearIconCache()
-        refreshLauncherItems()
-        applyLauncherMode()
-    }
-
-    /// Restores the default settings payload and reapplies it to the live UI.
-    func resetSettingsFromDebugMenu() {
-        LauncherSettingsPersistence.resetSettings()
-        handleSettingsChange()
-    }
-
-    /// Cycles through the available background styles to help preview launcher appearance.
-    func toggleTestBackgroundStyles() {
-        let styles = LauncherSettings.PreferredBackgroundStyle.allCases
-        guard let currentIndex = styles.firstIndex(of: currentSettings.backgroundStylePreference) else {
-            return
-        }
-
-        let nextIndex = (currentIndex + 1) % styles.count
-        let nextStyle = styles[nextIndex]
-        currentSettings.backgroundStylePreference = nextStyle
-        LauncherSettingsPersistence.setPreferredBackgroundStyle(nextStyle)
-        applyLauncherMode()
     }
 
     /// Performs the ordered initialization steps required before the UI appears.
@@ -323,7 +293,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Silently corrects the persisted flag when the user toggled it in System Settings without
     /// using Launchy's own UI, so the in-app toggle stays honest.
     private func syncLoginItemStateFromSystem() {
-        guard #available(macOS 13.0, *) else { return }
         let systemEnabled = LaunchAtLoginManager.isCurrentlyEnabled
         guard currentSettings.launchesAtLogin != systemEnabled else { return }
         currentSettings.launchesAtLogin = systemEnabled
@@ -337,28 +306,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         Task { @MainActor [weak self] in
             await Task.yield()
             self?.removeDefaultMainMenuItems()
-        }
-    }
-
-    /// Presents floaty launcher shortly after launch.
-    private func scheduleFloatyStartupPresentationIfNeeded() {
-        guard currentSettings.selectedLauncherMode == .floaty else { return }
-
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            if self.launcherWindowManager == nil {
-                self.applyLauncherMode()
-                return
-            }
-            guard let controller = self.launcherWindowManager else { return }
-            if controller.window?.isVisible == true {
-                return
-            }
-            self.activateApplicationForCurrentModeIfNeeded()
-            self.presentLauncherWindow(reason: "startup-floaty")
-            self.prefetchMinimalIconsForVisibleLauncher()
-            NotificationCenter.default.post(name: .launcherDidShow, object: nil)
-            self.markLauncherDidShow()
         }
     }
 
@@ -454,7 +401,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Clears expensive caches and cancels in-flight warmups when the system signals low memory.
     private func handleMemoryPressure(event: DispatchSource.MemoryPressureEvent) {
         LaunchyLogger.log("memory pressure event: \(event.rawValue)")
-        visiblePageWarmupTask?.cancel()
         applicationDiscovery.shrinkCachesForHiddenLauncher()
         NotificationCenter.default.post(name: .launcherShouldPurgeVisualCaches, object: nil)
     }
@@ -511,7 +457,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         )
 
         if aggressive {
-            visiblePageWarmupTask?.cancel()
             NotificationCenter.default.post(name: .launcherShouldPurgeVisualCaches, object: nil)
         }
 
@@ -1304,7 +1249,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Restores focus to launch target or previous app. Must be called synchronously
     /// from within the dismiss gesture's own call stack (not from an animation
-    /// completion handler several run-loop turns later) — activating another app
+    /// completion handler several run-loop turns later) - activating another app
     /// that far removed from the original input event gets silently ignored by
     /// macOS, which is what left Launchy stuck as the active app after a Dock-opened
     /// launcher was dismissed by clicking its background.
@@ -1361,7 +1306,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         requestActivation(of: app)
 
         Task { @MainActor [weak self] in
-            try? await Task.sleep(nanoseconds: 150_000_000)
+            try? await Task.sleep(for: .milliseconds(150))
             guard let self,
                   app.isTerminated == false,
                   app.isActive == false,
@@ -1606,28 +1551,6 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
             screenScale: launcherScreenScale(),
             limit: uniqueApps.count
         )
-    }
-
-    /// Warms icons for the currently visible pages to avoid visual pop-in while paging.
-    private func warmVisiblePageIcons(_ apps: [AppItem]) {
-        visiblePageWarmupTask?.cancel()
-        let uniqueApps = uniqueAppsByBundleID(apps)
-        guard uniqueApps.isEmpty == false else { return }
-        let mode = activeLauncherMode()
-        let dimension = preferredIconRenderDimension(for: mode)
-        let limit = min(uniqueApps.count, pageCapacity(for: mode) * 2)
-        visiblePageWarmupTask = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 50_000_000)
-            guard Task.isCancelled == false else { return }
-            let slice = Array(uniqueApps.prefix(limit))
-            applicationDiscovery.preheatIcons(
-                for: slice,
-                targetDimension: dimension,
-                qualities: [.low, .medium],
-                screenScale: launcherScreenScale(),
-                limit: limit
-            )
-        }
     }
 
     /// Warms a conservative icon slice before page switches.

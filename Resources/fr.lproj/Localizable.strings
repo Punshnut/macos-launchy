@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Réinitialiser l’agencement des icônes...";
 "SettingsResetArrangementBody" = "Supprime l’ordre et les dossiers enregistrés, puis reconstruit les pages. Les noms personnalisés et les apps masquées restent.";
 "ResetArrangementDialogTitle" = "Réinitialiser l’agencement des icônes ?";
-"ResetArrangementDialogBody" = "Cela supprime l’ordre, les dossiers et la disposition des pages sauvegardés. Tapez RESET pour continuer.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Choisissez quelles apps restent hors de la grille du lanceur.";
 "SettingsHiddenAppsColumnApp" = "Application";
 "SettingsHiddenAppsColumnHidden" = "Masquée";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Paramètres du launcher";
 "StatusBarInfoButton" = "Informations Launchy";
-"StatusBarSettingsButton" = "Réglages";
 "MenuItemSettings" = "Réglages...";
 "MenuItemShowLauncher" = "Afficher le lanceur";
 "MenuItemCheckUpdates" = "Rechercher des mises à jour...";
 "MenuItemQuitLaunchy" = "Quitter Launchy";
-"DebugMenuLabel" = "Débogage";
-"DebugMenuReloadApps" = "Recharger les apps";
-"DebugMenuResetSettings" = "Réinitialiser les réglages";
-"DebugMenuToggleStyles" = "Basculer les styles de fond de test";
 
 // Grid
-"GridSearchPlaceholder" = "Rechercher des applications";
 "GridSearchLabel" = "Rechercher";
 "GridSearchClearButton" = "Effacer le texte de recherche";
 "GridSearchEmptyHint" = "Essayez une autre recherche.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Ouvrir";
 "ItemActionRenameApp" = "Renommer l’app";
-"ItemRenameAppPromptBody" = "Saisissez un nom personnalisé pour cette app. Laissez vide pour réinitialiser.";
 "ItemActionShowInFinder" = "Afficher dans le Finder";
 "ItemActionHideApp" = "Masquer l’app";
 "ItemActionMoveToFolder" = "Déplacer vers un dossier";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Créer un dossier";
 "ItemActionFolderDetails" = "Détails du dossier";
 "ItemActionRenameFolder" = "Renommer le dossier";
-"ItemRenameFolderPromptBody" = "Saisissez un nom pour ce dossier.";
 "ItemDetailBundleIDFormat" = "ID du bundle : %@";
 "ItemDetailLocationFormat" = "Emplacement : %@";
 "ItemDetailCustomNameFormat" = "Nom personnalisé : %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Aucune app sélectionnée";
 "CommonCancelButton" = "Annuler";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "Enregistrer";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Taille des icônes";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Cela supprime l’ordre enregistré, les dossiers et la mise en page. Les noms personnalisés et les apps masquées sont conservés.";
 "SortOrderAlphabetical" = "Alphabétique";
 "SortOrderDiscovery" = "Ordre de découverte";
-"SortOrderAlphabeticalDetail" = "A → Z par nom d’app";
-"SortOrderDiscoveryDetail" = "Tel que Launchy les trouve";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Sauvegarder et restaurer";

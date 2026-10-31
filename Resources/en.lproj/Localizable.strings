@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Reset icon arrangement...";
 "SettingsResetArrangementBody" = "Deletes your saved ordering and folders, then rebuilds pages from scratch. Custom app names stay, hidden apps stay hidden.";
 "ResetArrangementDialogTitle" = "Reset icon arrangement?";
-"ResetArrangementDialogBody" = "This deletes your saved ordering, folders, and page layout. Type RESET to continue.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Choose which applications stay out of the launcher grid.";
 "SettingsHiddenAppsColumnApp" = "Application";
 "SettingsHiddenAppsColumnHidden" = "Hidden";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Launcher settings";
 "StatusBarInfoButton" = "Launchy info";
-"StatusBarSettingsButton" = "Settings";
 "MenuItemSettings" = "Settings...";
 "MenuItemShowLauncher" = "Show Launcher";
 "MenuItemCheckUpdates" = "Check for Updates...";
 "MenuItemQuitLaunchy" = "Quit Launchy";
-"DebugMenuLabel" = "Debug";
-"DebugMenuReloadApps" = "Reload Apps";
-"DebugMenuResetSettings" = "Reset Settings";
-"DebugMenuToggleStyles" = "Toggle Test Background Styles";
 
 // Grid
-"GridSearchPlaceholder" = "Search apps";
 "GridSearchLabel" = "Search";
 "GridSearchClearButton" = "Clear search text";
 "GridSearchEmptyHint" = "Try a different search term.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Open";
 "ItemActionRenameApp" = "Rename App";
-"ItemRenameAppPromptBody" = "Enter a custom name for this app. Leave empty to reset.";
 "ItemActionShowInFinder" = "Show in Finder";
 "ItemActionHideApp" = "Hide App";
 "ItemActionMoveToFolder" = "Move to Folder";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Create Folder";
 "ItemActionFolderDetails" = "Folder Details";
 "ItemActionRenameFolder" = "Rename Folder";
-"ItemRenameFolderPromptBody" = "Enter a name for this folder.";
 "ItemDetailBundleIDFormat" = "Bundle ID: %@";
 "ItemDetailLocationFormat" = "Location: %@";
 "ItemDetailCustomNameFormat" = "Custom Name: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "No apps selected";
 "CommonCancelButton" = "Cancel";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "Save";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Icon size";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "This deletes your saved ordering, folders, and page layout. Custom app names and hidden apps will be kept.";
 "SortOrderAlphabetical" = "Alphabetical";
 "SortOrderDiscovery" = "Discovery order";
-"SortOrderAlphabeticalDetail" = "A → Z by app name";
-"SortOrderDiscoveryDetail" = "As Launchy finds them";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Back up & Restore";

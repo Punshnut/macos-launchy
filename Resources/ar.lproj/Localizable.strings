@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "إعادة ضبط ترتيب الأيقونات...";
 "SettingsResetArrangementBody" = "يحذف الترتيب والمجلدات التي حفظتها ثم يعيد بناء الصفحات من جديد. تُبقي أسماء التطبيقات المخصصة والتطبيقات المخفية.";
 "ResetArrangementDialogTitle" = "إعادة ضبط ترتيب الأيقونات؟";
-"ResetArrangementDialogBody" = "هذا يحذف الترتيب، المجلدات، وتخطيط الصفحات المحفوظ. اكتب RESET للمتابعة.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "اختر التطبيقات التي تبقى خارج شبكة المشغل.";
 "SettingsHiddenAppsColumnApp" = "تطبيق";
 "SettingsHiddenAppsColumnHidden" = "مخفي";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "إعدادات المشغل";
 "StatusBarInfoButton" = "معلومات Launchy";
-"StatusBarSettingsButton" = "الإعدادات";
 "MenuItemSettings" = "الإعدادات...";
 "MenuItemShowLauncher" = "إظهار المشغل";
 "MenuItemCheckUpdates" = "بحث عن تحديثات...";
 "MenuItemQuitLaunchy" = "إغلاق Launchy";
-"DebugMenuLabel" = "تصحيح";
-"DebugMenuReloadApps" = "إعادة تحميل التطبيقات";
-"DebugMenuResetSettings" = "إعادة ضبط الإعدادات";
-"DebugMenuToggleStyles" = "تبديل أنماط الخلفية التجريبية";
 
 // Grid
-"GridSearchPlaceholder" = "ابحث عن التطبيقات";
 "GridSearchLabel" = "بحث";
 "GridSearchClearButton" = "مسح نص البحث";
 "GridSearchEmptyHint" = "جرّب مصطلح بحث مختلف.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "فتح";
 "ItemActionRenameApp" = "إعادة تسمية التطبيق";
-"ItemRenameAppPromptBody" = "أدخل اسمًا مخصصًا لهذا التطبيق. اتركه فارغًا لإعادة التعيين.";
 "ItemActionShowInFinder" = "إظهار في Finder";
 "ItemActionHideApp" = "إخفاء التطبيق";
 "ItemActionMoveToFolder" = "نقل إلى مجلد";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "إنشاء مجلد";
 "ItemActionFolderDetails" = "تفاصيل المجلد";
 "ItemActionRenameFolder" = "إعادة تسمية المجلد";
-"ItemRenameFolderPromptBody" = "أدخل اسمًا لهذا المجلد.";
 "ItemDetailBundleIDFormat" = "معرف الحزمة: %@";
 "ItemDetailLocationFormat" = "الموقع: %@";
 "ItemDetailCustomNameFormat" = "الاسم المخصص: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "لا توجد تطبيقات محددة";
 "CommonCancelButton" = "إلغاء";
 "CommonOKButton" = "حسنًا";
-"CommonSaveButton" = "حفظ";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "حجم الأيقونة";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "سيحذف هذا الترتيب المحفوظ والمجلدات وتخطيط الصفحات. ستبقى أسماء التطبيقات المخصصة والتطبيقات المخفية.";
 "SortOrderAlphabetical" = "أبجدي";
 "SortOrderDiscovery" = "ترتيب الاكتشاف";
-"SortOrderAlphabeticalDetail" = "A → Z حسب اسم التطبيق";
-"SortOrderDiscoveryDetail" = "كما يعثر عليها Launchy";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "النسخ الاحتياطي والاستعادة";

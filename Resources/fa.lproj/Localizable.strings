@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "بازنشانی چیدمان آیکن‌ها...";
 "SettingsResetArrangementBody" = "ترتیب و پوشه‌های ذخیره‌شده را حذف می‌کند و صفحات را از نو می‌سازد. نام‌های سفارشی و برنامه‌های مخفی حفظ می‌شوند.";
 "ResetArrangementDialogTitle" = "چیدمان آیکن‌ها بازنشانی شود؟";
-"ResetArrangementDialogBody" = "این کار ترتیب ذخیره‌شده، پوشه‌ها و چیدمان صفحه‌ها را حذف می‌کند. برای ادامه RESET را تایپ کنید.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "انتخاب کنید کدام برنامه‌ها بیرون از شبکهٔ لانچر بمانند.";
 "SettingsHiddenAppsColumnApp" = "برنامه";
 "SettingsHiddenAppsColumnHidden" = "پنهان";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "تنظیمات لانچر";
 "StatusBarInfoButton" = "اطلاعات Launchy";
-"StatusBarSettingsButton" = "تنظیمات";
 "MenuItemSettings" = "تنظیمات...";
 "MenuItemShowLauncher" = "نمایش لانچر";
 "MenuItemCheckUpdates" = "بررسی به‌روزرسانی‌ها...";
 "MenuItemQuitLaunchy" = "خروج از Launchy";
-"DebugMenuLabel" = "اشکال‌زدایی";
-"DebugMenuReloadApps" = "بارگذاری دوباره برنامه‌ها";
-"DebugMenuResetSettings" = "بازنشانی تنظیمات";
-"DebugMenuToggleStyles" = "تعویض سبک‌های پس‌زمینهٔ آزمایشی";
 
 // Grid
-"GridSearchPlaceholder" = "جست‌وجوی برنامه‌ها";
 "GridSearchLabel" = "جست‌وجو";
 "GridSearchClearButton" = "پاک کردن متن جست‌وجو";
 "GridSearchEmptyHint" = "عبارت جست‌وجوی دیگری را امتحان کنید.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "باز کردن";
 "ItemActionRenameApp" = "تغییر نام برنامه";
-"ItemRenameAppPromptBody" = "برای این برنامه نام سفارشی وارد کنید. برای بازنشانی خالی بگذارید.";
 "ItemActionShowInFinder" = "نمایش در Finder";
 "ItemActionHideApp" = "پنهان کردن برنامه";
 "ItemActionMoveToFolder" = "انتقال به پوشه";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "ایجاد پوشه";
 "ItemActionFolderDetails" = "جزئیات پوشه";
 "ItemActionRenameFolder" = "تغییر نام پوشه";
-"ItemRenameFolderPromptBody" = "نامی برای این پوشه وارد کنید.";
 "ItemDetailBundleIDFormat" = "شناسه بسته: %@";
 "ItemDetailLocationFormat" = "مکان: %@";
 "ItemDetailCustomNameFormat" = "نام سفارشی: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "هیچ برنامه‌ای انتخاب نشده";
 "CommonCancelButton" = "لغو";
 "CommonOKButton" = "تأیید";
-"CommonSaveButton" = "ذخیره";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "اندازه آیکون";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "این کار ترتیب ذخیره‌شده، پوشه‌ها و چیدمان صفحه را حذف می‌کند. نام‌های سفارشی و برنامه‌های مخفی حفظ می‌شوند.";
 "SortOrderAlphabetical" = "الفبایی";
 "SortOrderDiscovery" = "ترتیب کشف";
-"SortOrderAlphabeticalDetail" = "A → Z بر اساس نام برنامه";
-"SortOrderDiscoveryDetail" = "همان‌طور که Launchy پیدا می‌کند";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "پشتیبان‌گیری و بازیابی";

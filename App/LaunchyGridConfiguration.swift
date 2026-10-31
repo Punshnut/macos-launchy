@@ -7,9 +7,6 @@ struct LauncherGridConfiguration: Equatable {
 
     /// Total number of apps displayed on a single grid page.
     var pageCapacity: Int { max(columnsPerPage, 1) * max(rowsPerPage, 1) }
-    /// Backwards-compatible alias until callers migrate to `pageCapacity`.
-    var appsPerPage: Int { pageCapacity }
-
     /// Returns a configuration tuned for the selected icon size and launcher mode.
     static func configuration(
         for iconSizePreference: IconSizePreference,

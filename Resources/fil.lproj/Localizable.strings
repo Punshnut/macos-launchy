@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "I-reset ang ayos ng icon...";
 "SettingsResetArrangementBody" = "Binubura ang naka-save na ayos at mga folder at binubuo muli ang mga pahina. Nananatili ang custom na pangalan at nakatagong app.";
 "ResetArrangementDialogTitle" = "I-reset ang ayos ng icon?";
-"ResetArrangementDialogBody" = "Buburahin nito ang nai-save mong pagkakasunod, mga folder, at layout ng page. I-type ang RESET para magpatuloy.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Piliin kung aling apps ang mananatiling wala sa launcher grid.";
 "SettingsHiddenAppsColumnApp" = "Aplikasyon";
 "SettingsHiddenAppsColumnHidden" = "Nakatago";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Mga setting ng launcher";
 "StatusBarInfoButton" = "Impormasyon ng Launchy";
-"StatusBarSettingsButton" = "Mga Setting";
 "MenuItemSettings" = "Mga Setting...";
 "MenuItemShowLauncher" = "Ipakita ang Launcher";
 "MenuItemCheckUpdates" = "Tingnan ang mga update...";
 "MenuItemQuitLaunchy" = "Isara ang Launchy";
-"DebugMenuLabel" = "Debug";
-"DebugMenuReloadApps" = "I-reload ang mga app";
-"DebugMenuResetSettings" = "I-reset ang Settings";
-"DebugMenuToggleStyles" = "I-toggle ang test background styles";
 
 // Grid
-"GridSearchPlaceholder" = "Maghanap ng mga app";
 "GridSearchLabel" = "Maghanap";
 "GridSearchClearButton" = "I-clear ang teksto ng paghahanap";
 "GridSearchEmptyHint" = "Subukan ang ibang termino sa paghahanap.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Buksan";
 "ItemActionRenameApp" = "Palitan ang pangalan ng app";
-"ItemRenameAppPromptBody" = "Maglagay ng custom na pangalan para sa app na ito. Iwanang walang laman para i-reset.";
 "ItemActionShowInFinder" = "Ipakita sa Finder";
 "ItemActionHideApp" = "Itago ang App";
 "ItemActionMoveToFolder" = "Ilipat sa Folder";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Gumawa ng Folder";
 "ItemActionFolderDetails" = "Mga detalye ng Folder";
 "ItemActionRenameFolder" = "Palitan ang pangalan ng Folder";
-"ItemRenameFolderPromptBody" = "Maglagay ng pangalan para sa folder na ito.";
 "ItemDetailBundleIDFormat" = "Bundle ID: %@";
 "ItemDetailLocationFormat" = "Lokasyon: %@";
 "ItemDetailCustomNameFormat" = "Custom na Pangalan: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Walang napiling app";
 "CommonCancelButton" = "Kanselahin";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "I-save";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Laki ng icon";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Buburahin nito ang na-save mong pagkakasunod, mga folder, at layout ng pahina. Mananatili ang custom na pangalan at mga nakatagong app.";
 "SortOrderAlphabetical" = "Alphabetical";
 "SortOrderDiscovery" = "Discovery order";
-"SortOrderAlphabeticalDetail" = "A → Z batay sa pangalan ng app";
-"SortOrderDiscoveryDetail" = "Habang natatagpuan ni Launchy";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Mag-backup at Mag-restore";

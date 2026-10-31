@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Rẹ́seti ìṣètò aami...";
 "SettingsResetArrangementBody" = "Ó pa àtòjọ àti àwọn pọọ̀dà tí a fipamọ́, ó sì tún kó ojúewé pọ̀ láti ìpilẹ̀. Àwọn orúkọ àdáni àti app to farapamọ́ máa ṣèlẹ̀.";
 "ResetArrangementDialogTitle" = "Ṣe fẹ́ rẹ́seti ìṣètò aami?";
-"ResetArrangementDialogBody" = "Èyí yóò pa ìṣètò tí o fipamọ́, àwọn folda, àti àkópọ̀ ojúewé rẹ́. Tẹ RESET láti tẹ̀síwájú.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Yan àwọn app tí yóò wà níta gridi lánsà.";
 "SettingsHiddenAppsColumnApp" = "App";
 "SettingsHiddenAppsColumnHidden" = "Farasin";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Settings lánsà";
 "StatusBarInfoButton" = "Ìtàn Launchy";
-"StatusBarSettingsButton" = "Settings";
 "MenuItemSettings" = "Settings...";
 "MenuItemShowLauncher" = "Fi lánsà hàn";
 "MenuItemCheckUpdates" = "Ṣàyẹ̀wò fún àwọn ìmúlò tuntun...";
 "MenuItemQuitLaunchy" = "Jade Launchy";
-"DebugMenuLabel" = "Debọ́gì";
-"DebugMenuReloadApps" = "Tun àwọn app wọlé";
-"DebugMenuResetSettings" = "Rẹ́seti Settings";
-"DebugMenuToggleStyles" = "Tọ́gùlù àwọn àṣà ẹ̀yìn ìdánwò";
 
 // Grid
-"GridSearchPlaceholder" = "Ṣàwárí àwọn app";
 "GridSearchLabel" = "Ṣàwárí";
 "GridSearchClearButton" = "Pa ọrọ ìṣàwárí mọ́";
 "GridSearchEmptyHint" = "Gbìyànjú ọ̀rọ̀ ìṣàwárí míì.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Ṣí";
 "ItemActionRenameApp" = "Tún orúkọ app ṣe";
-"ItemRenameAppPromptBody" = "Tẹ orúkọ àtọkànwá fún app yìí. Fi sí òfo láti rẹ́seti.";
 "ItemActionShowInFinder" = "Fi hàn ní Finder";
 "ItemActionHideApp" = "Pa app mọ́";
 "ItemActionMoveToFolder" = "Gbe lọ sí folda";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Dá folda";
 "ItemActionFolderDetails" = "Àlàyé folda";
 "ItemActionRenameFolder" = "Tún orúkọ folda ṣe";
-"ItemRenameFolderPromptBody" = "Tẹ orúkọ fún folda yìí.";
 "ItemDetailBundleIDFormat" = "ID Apo: %@";
 "ItemDetailLocationFormat" = "Ibi: %@";
 "ItemDetailCustomNameFormat" = "Orúkọ àtọkànwá: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Kò sí app tí a yàn";
 "CommonCancelButton" = "Fagilee";
 "CommonOKButton" = "Ó dáa";
-"CommonSaveButton" = "Fipamọ́";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Iwọn aami";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Èyí máa pa àtòjọ fipamọ́ rẹ, àwọn pọọ̀dà àti àtẹ̀jáde ojúewé rẹ́. Àwọn orúkọ app ti a ṣe àdáni àti àwọn app to farapamọ́ yóò wà láìyípadà.";
 "SortOrderAlphabetical" = "Alfabẹ́ẹ̀tì";
 "SortOrderDiscovery" = "Ìtọ́sọ́nà ìwárí";
-"SortOrderAlphabeticalDetail" = "A → Z gẹ́gẹ́ bí orúkọ app";
-"SortOrderDiscoveryDetail" = "Gẹ́gẹ́ bí Launchy ṣe ń rí wọn";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Afẹyinti & Atunṣe";

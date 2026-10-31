@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Resetovat uspořádání ikon...";
 "SettingsResetArrangementBody" = "Smaže uložené pořadí a složky a znovu postaví stránky od začátku. Vlastní názvy a skryté aplikace zůstanou.";
 "ResetArrangementDialogTitle" = "Resetovat uspořádání ikon?";
-"ResetArrangementDialogBody" = "Tímto se smažou uložené pořadí, složky a rozložení stránek. Pro pokračování napište RESET.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Vyberte, které aplikace zůstanou mimo mřížku spouštěče.";
 "SettingsHiddenAppsColumnApp" = "Aplikace";
 "SettingsHiddenAppsColumnHidden" = "Skryté";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Nastavení spouštěče";
 "StatusBarInfoButton" = "Informace o Launchy";
-"StatusBarSettingsButton" = "Nastavení";
 "MenuItemSettings" = "Nastavení...";
 "MenuItemShowLauncher" = "Zobrazit spouštěč";
 "MenuItemCheckUpdates" = "Zkontrolovat aktualizace...";
 "MenuItemQuitLaunchy" = "Ukončit Launchy";
-"DebugMenuLabel" = "Ladění";
-"DebugMenuReloadApps" = "Znovu načíst aplikace";
-"DebugMenuResetSettings" = "Resetovat nastavení";
-"DebugMenuToggleStyles" = "Přepnout testovací styly pozadí";
 
 // Grid
-"GridSearchPlaceholder" = "Hledat aplikace";
 "GridSearchLabel" = "Hledat";
 "GridSearchClearButton" = "Vymazat text vyhledávání";
 "GridSearchEmptyHint" = "Zkuste jiný vyhledávací výraz.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Otevřít";
 "ItemActionRenameApp" = "Přejmenovat aplikaci";
-"ItemRenameAppPromptBody" = "Zadejte vlastní název této aplikace. Pro reset ponechte prázdné.";
 "ItemActionShowInFinder" = "Zobrazit ve Finderu";
 "ItemActionHideApp" = "Skrýt aplikaci";
 "ItemActionMoveToFolder" = "Přesunout do složky";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Vytvořit složku";
 "ItemActionFolderDetails" = "Podrobnosti složky";
 "ItemActionRenameFolder" = "Přejmenovat složku";
-"ItemRenameFolderPromptBody" = "Zadejte název této složky.";
 "ItemDetailBundleIDFormat" = "ID balíčku: %@";
 "ItemDetailLocationFormat" = "Umístění: %@";
 "ItemDetailCustomNameFormat" = "Vlastní název: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Žádné aplikace nejsou vybrány";
 "CommonCancelButton" = "Zrušit";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "Uložit";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Velikost ikony";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Toto smaže uložené pořadí, složky a rozložení stránek. Vlastní názvy a skryté aplikace zůstanou zachovány.";
 "SortOrderAlphabetical" = "Abecedně";
 "SortOrderDiscovery" = "Podle nalezení";
-"SortOrderAlphabeticalDetail" = "A → Z podle názvu aplikace";
-"SortOrderDiscoveryDetail" = "Jak je Launchy nachází";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Zálohovat a obnovit";

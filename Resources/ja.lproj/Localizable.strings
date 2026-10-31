@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "アイコンの配置をリセット...";
 "SettingsResetArrangementBody" = "保存済みの並びとフォルダを削除し、ページを再構築します。カスタム名と非表示アプリはそのままです。";
 "ResetArrangementDialogTitle" = "アイコン配置をリセットしますか？";
-"ResetArrangementDialogBody" = "保存された順序、フォルダ、ページレイアウトを削除します。続行するには RESET を入力してください。";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "ランチャーのグリッドから除外するアプリを選んでください。";
 "SettingsHiddenAppsColumnApp" = "アプリ";
 "SettingsHiddenAppsColumnHidden" = "非表示";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "ランチャーの設定";
 "StatusBarInfoButton" = "Launchy 情報";
-"StatusBarSettingsButton" = "設定";
 "MenuItemSettings" = "設定...";
 "MenuItemShowLauncher" = "ランチャーを表示";
 "MenuItemCheckUpdates" = "アップデートを確認...";
 "MenuItemQuitLaunchy" = "Launchy を終了";
-"DebugMenuLabel" = "デバッグ";
-"DebugMenuReloadApps" = "アプリを再読み込み";
-"DebugMenuResetSettings" = "設定をリセット";
-"DebugMenuToggleStyles" = "テスト用背景スタイルを切り替え";
 
 // Grid
-"GridSearchPlaceholder" = "アプリを検索";
 "GridSearchLabel" = "検索";
 "GridSearchClearButton" = "検索文字列をクリア";
 "GridSearchEmptyHint" = "別の検索語を試してください。";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "開く";
 "ItemActionRenameApp" = "アプリ名を変更";
-"ItemRenameAppPromptBody" = "このアプリにカスタム名を入力してください。空欄にするとリセットされます。";
 "ItemActionShowInFinder" = "Finder で表示";
 "ItemActionHideApp" = "アプリを非表示";
 "ItemActionMoveToFolder" = "フォルダに移動";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "フォルダを作成";
 "ItemActionFolderDetails" = "フォルダの詳細";
 "ItemActionRenameFolder" = "フォルダ名を変更";
-"ItemRenameFolderPromptBody" = "このフォルダに名前を入力してください。";
 "ItemDetailBundleIDFormat" = "バンドル ID：%@";
 "ItemDetailLocationFormat" = "場所：%@";
 "ItemDetailCustomNameFormat" = "カスタム名：%@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "アプリが選択されていません";
 "CommonCancelButton" = "キャンセル";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "保存";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "アイコンサイズ";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "保存された並び順、フォルダ、ページレイアウトを削除します。カスタム名と非表示アプリは保持されます。";
 "SortOrderAlphabetical" = "アルファベット順";
 "SortOrderDiscovery" = "検出順";
-"SortOrderAlphabeticalDetail" = "アプリ名の A → Z";
-"SortOrderDiscoveryDetail" = "Launchy が見つけた順";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "バックアップと復元";

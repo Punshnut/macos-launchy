@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "重置图标排列...";
 "SettingsResetArrangementBody" = "删除已保存的顺序和文件夹，并从头重建页面。自定义名称和隐藏的应用将被保留。";
 "ResetArrangementDialogTitle" = "重置图标排列？";
-"ResetArrangementDialogBody" = "这会删除保存的排序、文件夹与页面布局。输入 RESET 继续。";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "选择哪些应用不显示在启动器网格中。";
 "SettingsHiddenAppsColumnApp" = "应用";
 "SettingsHiddenAppsColumnHidden" = "隐藏";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "启动器设置";
 "StatusBarInfoButton" = "Launchy 信息";
-"StatusBarSettingsButton" = "设置";
 "MenuItemSettings" = "设置...";
 "MenuItemShowLauncher" = "显示启动器";
 "MenuItemCheckUpdates" = "检查更新...";
 "MenuItemQuitLaunchy" = "退出 Launchy";
-"DebugMenuLabel" = "调试";
-"DebugMenuReloadApps" = "重新加载应用";
-"DebugMenuResetSettings" = "重置设置";
-"DebugMenuToggleStyles" = "切换测试背景样式";
 
 // Grid
-"GridSearchPlaceholder" = "搜索应用";
 "GridSearchLabel" = "搜索";
 "GridSearchClearButton" = "清除搜索内容";
 "GridSearchEmptyHint" = "尝试不同的搜索词。";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "打开";
 "ItemActionRenameApp" = "重命名应用";
-"ItemRenameAppPromptBody" = "为该应用输入自定义名称。留空则恢复原状。";
 "ItemActionShowInFinder" = "在 Finder 中显示";
 "ItemActionHideApp" = "隐藏应用";
 "ItemActionMoveToFolder" = "移到文件夹";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "创建文件夹";
 "ItemActionFolderDetails" = "文件夹详情";
 "ItemActionRenameFolder" = "重命名文件夹";
-"ItemRenameFolderPromptBody" = "为此文件夹输入名称。";
 "ItemDetailBundleIDFormat" = "Bundle ID：%@";
 "ItemDetailLocationFormat" = "位置：%@";
 "ItemDetailCustomNameFormat" = "自定义名称：%@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "未选择任何应用";
 "CommonCancelButton" = "取消";
 "CommonOKButton" = "确定";
-"CommonSaveButton" = "保存";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "图标大小";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "这会删除已保存的顺序、文件夹和页面布局。自定义应用名称和隐藏的应用将被保留。";
 "SortOrderAlphabetical" = "按字母";
 "SortOrderDiscovery" = "发现顺序";
-"SortOrderAlphabeticalDetail" = "按应用名称 A → Z";
-"SortOrderDiscoveryDetail" = "按 Launchy 的发现顺序";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "备份与恢复";

@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Restableix la disposició d'icones...";
 "SettingsResetArrangementBody" = "Suprimeix l’ordre i les carpetes desades i reconstrueix les pàgines des de zero. Els noms personalitzats i les apps amagades es mantenen.";
 "ResetArrangementDialogTitle" = "Restablir la disposició d'icones?";
-"ResetArrangementDialogBody" = "Això esborra l'ordre, les carpetes i la disposició de pàgina desades. Escriu RESET per continuar.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Tria quines aplicacions es mantenen fora de la graella del llançador.";
 "SettingsHiddenAppsColumnApp" = "Aplicació";
 "SettingsHiddenAppsColumnHidden" = "Amagat";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Configuració del llançador";
 "StatusBarInfoButton" = "Informació de Launchy";
-"StatusBarSettingsButton" = "Configuració";
 "MenuItemSettings" = "Configuració...";
 "MenuItemShowLauncher" = "Mostra el llançador";
 "MenuItemCheckUpdates" = "Comprova si hi ha actualitzacions...";
 "MenuItemQuitLaunchy" = "Surt de Launchy";
-"DebugMenuLabel" = "Depuració";
-"DebugMenuReloadApps" = "Recarrega les apps";
-"DebugMenuResetSettings" = "Restableix la configuració";
-"DebugMenuToggleStyles" = "Activa els estils de fons de prova";
 
 // Grid
-"GridSearchPlaceholder" = "Cerca apps";
 "GridSearchLabel" = "Cerca";
 "GridSearchClearButton" = "Esborra el text de cerca";
 "GridSearchEmptyHint" = "Prova un altre terme de cerca.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Obre";
 "ItemActionRenameApp" = "Canvia el nom de l'app";
-"ItemRenameAppPromptBody" = "Introdueix un nom personalitzat per a aquesta app. Deixa-ho buit per restablir.";
 "ItemActionShowInFinder" = "Mostra al Finder";
 "ItemActionHideApp" = "Amaga l'app";
 "ItemActionMoveToFolder" = "Mou a la carpeta";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Crea una carpeta";
 "ItemActionFolderDetails" = "Detalls de la carpeta";
 "ItemActionRenameFolder" = "Canvia el nom de la carpeta";
-"ItemRenameFolderPromptBody" = "Introdueix un nom per a aquesta carpeta.";
 "ItemDetailBundleIDFormat" = "ID del paquet: %@";
 "ItemDetailLocationFormat" = "Ubicació: %@";
 "ItemDetailCustomNameFormat" = "Nom personalitzat: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "No hi ha apps seleccionades";
 "CommonCancelButton" = "Cancel·la";
 "CommonOKButton" = "D'acord";
-"CommonSaveButton" = "Desa";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Mida de la icona";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Això suprimeix l’ordre desat, les carpetes i la disposició de pàgina. Es conserven els noms personalitzats i les apps amagades.";
 "SortOrderAlphabetical" = "Alfabètic";
 "SortOrderDiscovery" = "Ordre de descobriment";
-"SortOrderAlphabeticalDetail" = "A → Z per nom d’app";
-"SortOrderDiscoveryDetail" = "Tal com Launchy les troba";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Còpia i restauració";

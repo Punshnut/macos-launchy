@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Återställ ikonlayout...";
 "SettingsResetArrangementBody" = "Tar bort sparad ordning och mappar och bygger om sidor från början. Anpassade namn och dolda appar behålls.";
 "ResetArrangementDialogTitle" = "Återställ ikonlayout?";
-"ResetArrangementDialogBody" = "Detta raderar din sparade ordning, mappar och sidlayout. Skriv RESET för att fortsätta.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Välj vilka appar som ska ligga utanför launcher-rutnätet.";
 "SettingsHiddenAppsColumnApp" = "App";
 "SettingsHiddenAppsColumnHidden" = "Dold";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Launcher-inställningar";
 "StatusBarInfoButton" = "Launchy-info";
-"StatusBarSettingsButton" = "Inställningar";
 "MenuItemSettings" = "Inställningar...";
 "MenuItemShowLauncher" = "Visa launcher";
 "MenuItemCheckUpdates" = "Sök efter uppdateringar...";
 "MenuItemQuitLaunchy" = "Avsluta Launchy";
-"DebugMenuLabel" = "Debug";
-"DebugMenuReloadApps" = "Ladda om appar";
-"DebugMenuResetSettings" = "Återställ inställningar";
-"DebugMenuToggleStyles" = "Växla testbakgrundsstilar";
 
 // Grid
-"GridSearchPlaceholder" = "Sök appar";
 "GridSearchLabel" = "Sök";
 "GridSearchClearButton" = "Rensa söktext";
 "GridSearchEmptyHint" = "Prova en annan sökterm.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Öppna";
 "ItemActionRenameApp" = "Byt namn på app";
-"ItemRenameAppPromptBody" = "Ange ett anpassat namn för den här appen. Lämna tomt för att återställa.";
 "ItemActionShowInFinder" = "Visa i Finder";
 "ItemActionHideApp" = "Dölj app";
 "ItemActionMoveToFolder" = "Flytta till mapp";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Skapa mapp";
 "ItemActionFolderDetails" = "Mappdetaljer";
 "ItemActionRenameFolder" = "Byt namn på mapp";
-"ItemRenameFolderPromptBody" = "Ange ett namn för den här mappen.";
 "ItemDetailBundleIDFormat" = "Bundle-ID: %@";
 "ItemDetailLocationFormat" = "Plats: %@";
 "ItemDetailCustomNameFormat" = "Anpassat namn: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Inga appar valda";
 "CommonCancelButton" = "Avbryt";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "Spara";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Ikonstorlek";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Detta tar bort sparad ordning, mappar och sidlayout. Anpassade appnamn och dolda appar behålls.";
 "SortOrderAlphabetical" = "Alfabetiskt";
 "SortOrderDiscovery" = "Upptäcktsordning";
-"SortOrderAlphabeticalDetail" = "A → Z efter appnamn";
-"SortOrderDiscoveryDetail" = "I den ordning Launchy hittar dem";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Säkerhetskopiera och återställ";

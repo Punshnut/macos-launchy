@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Pictogramindeling resetten...";
 "SettingsResetArrangementBody" = "Verwijdert de opgeslagen volgorde en mappen en bouwt de pagina's opnieuw op. Aangepaste namen en verborgen apps blijven.";
 "ResetArrangementDialogTitle" = "Pictogramindeling resetten?";
-"ResetArrangementDialogBody" = "Dit verwijdert je opgeslagen volgorde, mappen en pagina-indeling. Typ RESET om door te gaan.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Kies welke toepassingen buiten het launcher-raster blijven.";
 "SettingsHiddenAppsColumnApp" = "Toepassing";
 "SettingsHiddenAppsColumnHidden" = "Verborgen";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Launcher-instellingen";
 "StatusBarInfoButton" = "Launchy-info";
-"StatusBarSettingsButton" = "Instellingen";
 "MenuItemSettings" = "Instellingen...";
 "MenuItemShowLauncher" = "Launcher tonen";
 "MenuItemCheckUpdates" = "Controleren op updates...";
 "MenuItemQuitLaunchy" = "Launchy afsluiten";
-"DebugMenuLabel" = "Debug";
-"DebugMenuReloadApps" = "Apps opnieuw laden";
-"DebugMenuResetSettings" = "Instellingen resetten";
-"DebugMenuToggleStyles" = "Test-achtergrondstijlen schakelen";
 
 // Grid
-"GridSearchPlaceholder" = "Apps zoeken";
 "GridSearchLabel" = "Zoeken";
 "GridSearchClearButton" = "Zoektekst wissen";
 "GridSearchEmptyHint" = "Probeer een andere zoekterm.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Open";
 "ItemActionRenameApp" = "App hernoemen";
-"ItemRenameAppPromptBody" = "Voer een aangepaste naam in voor deze app. Laat leeg om te resetten.";
 "ItemActionShowInFinder" = "Toon in Finder";
 "ItemActionHideApp" = "App verbergen";
 "ItemActionMoveToFolder" = "Verplaats naar map";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Map maken";
 "ItemActionFolderDetails" = "Mapdetails";
 "ItemActionRenameFolder" = "Map hernoemen";
-"ItemRenameFolderPromptBody" = "Voer een naam in voor deze map.";
 "ItemDetailBundleIDFormat" = "Bundel-ID: %@";
 "ItemDetailLocationFormat" = "Locatie: %@";
 "ItemDetailCustomNameFormat" = "Aangepaste naam: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Geen apps geselecteerd";
 "CommonCancelButton" = "Annuleren";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "Opslaan";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Pictogramgrootte";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Hiermee verwijder je de opgeslagen volgorde, mappen en paginalay-out. Aangepaste app-namen en verborgen apps blijven behouden.";
 "SortOrderAlphabetical" = "Alfabetisch";
 "SortOrderDiscovery" = "Ontdekkingsvolgorde";
-"SortOrderAlphabeticalDetail" = "A → Z op app-naam";
-"SortOrderDiscoveryDetail" = "Zoals Launchy ze vindt";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Back-up en herstel";

@@ -103,8 +103,6 @@
 "SettingsResetArrangementButton" = "Icon-Anordnung zurücksetzen...";
 "SettingsResetArrangementBody" = "Löscht die gespeicherte Reihenfolge und Ordner und baut die Seiten neu auf. Benutzerdefinierte App-Namen und versteckte Apps bleiben erhalten.";
 "ResetArrangementDialogTitle" = "Icon-Anordnung zurücksetzen?";
-"ResetArrangementDialogBody" = "Dies löscht die gespeicherte Reihenfolge, Ordner und Seitenanordnung. Gib RESET ein, um fortzufahren.";
-"ResetArrangementConfirmWord" = "RESET";
 "SettingsHiddenAppsSectionBody" = "Wähle, welche Apps nicht im Launcher-Raster erscheinen.";
 "SettingsHiddenAppsColumnApp" = "Anwendung";
 "SettingsHiddenAppsColumnHidden" = "Versteckt";
@@ -131,18 +129,12 @@
 // Status bar & menus
 "StatusBarLauncherSettingsButton" = "Launcher-Einstellungen";
 "StatusBarInfoButton" = "Launchy-Informationen";
-"StatusBarSettingsButton" = "Einstellungen";
 "MenuItemSettings" = "Einstellungen...";
 "MenuItemShowLauncher" = "Launcher anzeigen";
 "MenuItemCheckUpdates" = "Nach Updates suchen...";
 "MenuItemQuitLaunchy" = "Launchy beenden";
-"DebugMenuLabel" = "Debug";
-"DebugMenuReloadApps" = "Apps neu laden";
-"DebugMenuResetSettings" = "Einstellungen zurücksetzen";
-"DebugMenuToggleStyles" = "Test-Hintergrundstile umschalten";
 
 // Grid
-"GridSearchPlaceholder" = "Apps durchsuchen";
 "GridSearchLabel" = "Suchen";
 "GridSearchClearButton" = "Suchtext löschen";
 "GridSearchEmptyHint" = "Versuche einen anderen Suchbegriff.";
@@ -157,7 +149,6 @@
 // Item actions
 "ItemActionOpen" = "Öffnen";
 "ItemActionRenameApp" = "App umbenennen";
-"ItemRenameAppPromptBody" = "Gib einen eigenen Namen für diese App ein. Leer lassen, um zurückzusetzen.";
 "ItemActionShowInFinder" = "Im Finder anzeigen";
 "ItemActionHideApp" = "App ausblenden";
 "ItemActionMoveToFolder" = "In Ordner verschieben";
@@ -172,7 +163,6 @@
 "ItemActionCreateFolder" = "Ordner erstellen";
 "ItemActionFolderDetails" = "Ordnerdetails";
 "ItemActionRenameFolder" = "Ordner umbenennen";
-"ItemRenameFolderPromptBody" = "Gib einen Namen für diesen Ordner ein.";
 "ItemDetailBundleIDFormat" = "Bundle-ID: %@";
 "ItemDetailLocationFormat" = "Speicherort: %@";
 "ItemDetailCustomNameFormat" = "Eigener Name: %@";
@@ -181,7 +171,6 @@
 "ItemNoAppsSelected" = "Keine Apps ausgewählt";
 "CommonCancelButton" = "Abbrechen";
 "CommonOKButton" = "OK";
-"CommonSaveButton" = "Sichern";
 
 // Launcher visuals
 "SettingsIconSizeLabel" = "Symbolgröße";
@@ -203,8 +192,6 @@
 "ResetSortDialogNote" = "Dadurch werden gespeicherte Reihenfolge, Ordner und Seitenlayout gelöscht. Benutzerdefinierte App-Namen und versteckte Apps bleiben erhalten.";
 "SortOrderAlphabetical" = "Alphabetisch";
 "SortOrderDiscovery" = "Entdeckungsreihenfolge";
-"SortOrderAlphabeticalDetail" = "A → Z nach App-Namen";
-"SortOrderDiscoveryDetail" = "Wie Launchy sie findet";
 
 // Backup & restore
 "BackupRestoreSectionTitle" = "Sichern & Wiederherstellen";

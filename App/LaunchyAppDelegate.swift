@@ -67,6 +67,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     private let elevatedMemoryThreshold: UInt64 = 650 * 1024 * 1024
     private let criticalMemoryThreshold: UInt64 = 850 * 1024 * 1024
     private var lastLauncherVisibilityChange = Date()
+    /// Set on a Dock reopen; lets one early resign (e.g. Stage Manager handing activation back) be answered by re-claiming activation.
+    private var dockReopenReclaimDeadline: Date?
     private var needsRefreshOnNextShow = false
 
     /// Opts out of AppKit's automatic window-state restoration so the SwiftUI `Settings`
@@ -190,7 +192,25 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Hides the launcher when Launchy loses focus (e.g., user clicks away).
     func applicationDidResignActive(_ notification: Notification) {
-        hideLauncherWindow(restoreFocus: false)
+        // A Dock click can briefly flip activation right after the launcher appears. Treating that
+        // as "clicked away" would close it instantly and leave no app active, so re-check first.
+        let isWithinShowGrace = launcherWindowManager?.window?.isVisible == true
+            && Date().timeIntervalSince(lastLauncherVisibilityChange) < 0.4
+        guard isWithinShowGrace else {
+            hideLauncherWindow(restoreFocus: false)
+            return
+        }
+        Task { @MainActor [weak self] in
+            guard let self, NSApp.isActive == false else { return }
+            if let deadline = dockReopenReclaimDeadline, deadline > Date() {
+                // Stage Manager can hand activation away right after a Dock click; claim it back once.
+                dockReopenReclaimDeadline = nil
+                NSApp.activate(ignoringOtherApps: true)
+                return
+            }
+            // Activation really went elsewhere; hand focus back so Launchy isn't left frontmost without a window.
+            hideLauncherWindow(restoreFocus: true)
+        }
     }
 
     /// Reopens the launcher when the Dock icon is clicked while the app is already running.
@@ -200,6 +220,8 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         // A reopen is always an explicit request: drop any stale reveal suppression and claim
         // activation so a late activation of the previously frontmost app can't win the click.
         suppressLauncherRevealOnNextActivation = false
+        recordFrontmostApplicationForRestoration()
+        dockReopenReclaimDeadline = Date().addingTimeInterval(0.6)
         NSApp.activate(ignoringOtherApps: true)
         showLauncherWindowAfterActivation()
         return true

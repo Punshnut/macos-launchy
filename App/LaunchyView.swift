@@ -5726,14 +5726,10 @@ struct LauncherView: View {
         var body: some View {
             switch style {
             case .standard:
-                if launcherMode == .floaty {
-                    if colorScheme == .dark {
-                        floatyStandardBlurBackground()
-                    } else {
-                        lightBlurBackground()
-                    }
-                } else {
+                if colorScheme == .dark {
                     darkBlurBackground()
+                } else {
+                    lightBlurBackground()
                 }
             case .light:
                 lightBlurBackground()
@@ -5742,15 +5738,6 @@ struct LauncherView: View {
             case .transparent:
                 Color.clear
             }
-        }
-
-        /// Darkens the floaty background with the same in-window HUD tint as the search bar.
-        private func floatyStandardBlurBackground() -> VisualEffectBackground {
-            blurBackground(
-                material: .hudWindow,
-                blendingMode: .withinWindow,
-                preferredAppearance: .vibrantDark
-            )
         }
 
         /// Builds dark blur material for fullscreen and dark states.
@@ -6253,9 +6240,8 @@ struct LauncherView: View {
     private var usesDarkSearchBarAppearance: Bool {
         if backgroundStylePreference == .transparent { return true }
         if backgroundStylePreference == .standard {
-            // Floaty in light system appearance uses a light window background, so match it.
-            if launcherMode == .floaty && colorScheme == .light { return false }
-            return true
+            // Light system appearance uses a light blur background in both modes, so match it.
+            return colorScheme == .dark
         }
         return false
     }
@@ -6273,9 +6259,6 @@ struct LauncherView: View {
 
         switch backgroundStylePreference {
         case .standard:
-            if launcherMode == .fullscreen {
-                return true
-            }
             return colorScheme == .dark
         case .light:
             return false
@@ -6299,7 +6282,9 @@ struct LauncherView: View {
     /// Decides whether the empty state should stick to light text for better contrast.
     private var shouldUseLightEmptyStateText: Bool {
         switch backgroundStylePreference {
-        case .standard, .transparent:
+        case .standard:
+            return colorScheme == .dark
+        case .transparent:
             return true
         case .light:
             return false

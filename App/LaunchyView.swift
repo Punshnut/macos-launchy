@@ -753,6 +753,7 @@ struct LauncherView: View {
                     .font(.system(size: 13, weight: .medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(iconLabelColor())
+                    .shadow(color: labelShadowColor, radius: 1.5, y: 0.5)
                     .lineLimit(2)
                     .frame(maxWidth: .infinity)
                     .contentShape(Rectangle())
@@ -4782,6 +4783,7 @@ struct LauncherView: View {
                 Text(app.resolvedDisplayName)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(iconLabelColor())
+                    .shadow(color: labelShadowColor, radius: 1.5, y: 0.5)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                     .opacity(folderIconWaveToggle ? 1 : 0)
@@ -6237,13 +6239,26 @@ struct LauncherView: View {
     }
 
     /// Whether the search bar should use the darker tinted style.
-    private var usesDarkSearchBarAppearance: Bool {
-        if backgroundStylePreference == .transparent { return true }
-        if backgroundStylePreference == .standard {
-            // Light system appearance uses a light blur background in both modes, so match it.
+    private var usesDarkSearchBarAppearance: Bool { backdropIsDark }
+
+    /// Single source of truth for text contrast: true when the backdrop is dark and text must be light.
+    private var backdropIsDark: Bool {
+        switch backgroundStylePreference {
+        case .standard:
             return colorScheme == .dark
+        case .light:
+            return false
+        case .solid:
+            return solidBackgroundColor.nsColor.launchy_perceivedBrightness < 0.6
+        case .transparent:
+            // Wallpaper is unknown, so white text with a shadow is the safest choice.
+            return true
         }
-        return false
+    }
+
+    /// Soft halo behind small text so it stays readable over mixed wallpapers.
+    private var labelShadowColor: Color {
+        backdropIsDark ? Color.black.opacity(0.4) : Color.white.opacity(0.35)
     }
 
     /// Picks an icon label color that keeps adequate contrast against the selected background.
@@ -6251,23 +6266,8 @@ struct LauncherView: View {
         shouldUseLightIconText() ? Color.white : Color.black.opacity(0.9)
     }
 
-    /// Heuristic to detect when light text will contrast better with the backdrop.
-    private func shouldUseLightIconText() -> Bool {
-        if activeFolder != nil {
-            return true
-        }
-
-        switch backgroundStylePreference {
-        case .standard:
-            return colorScheme == .dark
-        case .light:
-            return false
-        case .solid:
-            return solidBackgroundColor.nsColor.launchy_perceivedBrightness < 0.75
-        case .transparent:
-            return colorScheme == .dark
-        }
-    }
+    /// Whether light text contrasts better with the backdrop (folders render the same background).
+    private func shouldUseLightIconText() -> Bool { backdropIsDark }
 
     /// Primary color used in the empty state view to stay readable on any backdrop.
     private var emptyStatePrimaryForegroundColor: Color {
@@ -6279,34 +6279,12 @@ struct LauncherView: View {
         shouldUseLightEmptyStateText ? Color.white.opacity(0.72) : Color.black.opacity(0.65)
     }
 
-    /// Decides whether the empty state should stick to light text for better contrast.
-    private var shouldUseLightEmptyStateText: Bool {
-        switch backgroundStylePreference {
-        case .standard:
-            return colorScheme == .dark
-        case .transparent:
-            return true
-        case .light:
-            return false
-        case .solid:
-            return solidBackgroundColor.nsColor.launchy_perceivedBrightness < 0.95
-        }
-    }
+    /// Decides whether the empty state should use light text for better contrast.
+    private var shouldUseLightEmptyStateText: Bool { backdropIsDark }
 
-    /// Pager controls stay white unless the solid background is nearly pure white.
+    /// Pager controls follow the backdrop so they stay visible on light backgrounds.
     private var pagerControlForegroundColor: Color {
-        shouldUseLightPagerControls ? Color.white : Color.black.opacity(0.9)
-    }
-
-    /// Determines whether pager buttons/dots should invert to a darker tint.
-    private var shouldUseLightPagerControls: Bool {
-        switch backgroundStylePreference {
-        case .solid:
-            let brightness = solidBackgroundColor.nsColor.launchy_perceivedBrightness
-            return brightness < 0.95
-        default:
-            return true
-        }
+        backdropIsDark ? Color.white : Color.black.opacity(0.9)
     }
 
     /// Launches the first matched app when a user submits the search field.

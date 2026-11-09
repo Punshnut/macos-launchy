@@ -5738,7 +5738,9 @@ struct LauncherView: View {
             case .solid:
                 Color(nsColor: solidBackgroundColor.nsColor)
             case .transparent:
-                Color.clear
+                // Alpha-0 pixels let clicks fall through to apps behind the window.
+                // A near-invisible fill keeps the window hit-testable for click-to-dismiss.
+                Color.black.opacity(0.001)
             }
         }
 

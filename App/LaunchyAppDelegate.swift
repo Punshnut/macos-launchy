@@ -1441,7 +1441,9 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         controller.fadeOutWindow { @MainActor [weak self] in
             guard let self else { return }
             isAnimatingLauncherHide = false
-            shrinkIconCachesForHiddenLauncher()
+            // Icon caches are intentionally kept across hide/show so reopening does not
+            // re-decode every icon on the main thread; the idle release in
+            // AppDiscoveryService still frees them after inactivity.
             markLauncherDidHide()
             NotificationCenter.default.post(name: .launcherDidHide, object: nil)
             completion()

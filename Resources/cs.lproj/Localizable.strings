@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Střední";
 "IconSizeLarge" = "Velká";
 "SettingsIconSizeLargeNote" = "Velká velikost ikon se použije jen v režimu celé obrazovky; plovoucí režim používá střední.";
+"SettingsCustomGridToggle" = "Vlastní mřížka";
+"SettingsCustomGridColumns" = "Sloupce: %d";
+"SettingsCustomGridRows" = "Řádky: %d";
 "SettingsPagingDirectionLabel" = "Směr stránkování";
 "SettingsPagingDirectionBody" = "Vertikální stránkování posouvá stránky nahoru a dolů. Ukazatele se v režimu celé obrazovky přesunou doleva a v plovoucím zůstanou dole.";
 "PagingDirectionHorizontal" = "Horizontální";

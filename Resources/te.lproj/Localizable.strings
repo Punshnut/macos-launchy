@@ -178,6 +178,9 @@
 "IconSizeMedium" = "మధ్యస్థం";
 "IconSizeLarge" = "పెద్దది";
 "SettingsIconSizeLargeNote" = "పెద్ద ఐకాన్ పరిమాణం పూర్తి స్క్రీన్‌లో మాత్రమే వర్తిస్తుంది; ఫ్లోటీ మధ్యస్థాన్ని ఉపయోగిస్తుంది.";
+"SettingsCustomGridToggle" = "అనుకూల గ్రిడ్";
+"SettingsCustomGridColumns" = "నిలువు వరుసలు: %d";
+"SettingsCustomGridRows" = "అడ్డు వరుసలు: %d";
 "SettingsPagingDirectionLabel" = "పేజింగ్ దిశ";
 "SettingsPagingDirectionBody" = "నిలువుగా పేజింగ్ పేజీలను పైకి కిందికి కదిలిస్తుంది. సూచికలు పూర్తి స్క్రీన్‌లో ఎడమకు చేరి, ఫ్లోటీలో క్రింద ఉంటాయి.";
 "PagingDirectionHorizontal" = "అడ్డంగా";

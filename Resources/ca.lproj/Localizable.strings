@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Mitjana";
 "IconSizeLarge" = "Gran";
 "SettingsIconSizeLargeNote" = "La mida gran només s'aplica en pantalla completa; el mode flotant usa la mitjana.";
+"SettingsCustomGridToggle" = "Quadrícula personalitzada";
+"SettingsCustomGridColumns" = "Columnes: %d";
+"SettingsCustomGridRows" = "Files: %d";
 "SettingsPagingDirectionLabel" = "Direcció de paginació";
 "SettingsPagingDirectionBody" = "La paginació vertical mou les pàgines amunt i avall. Els indicadors es mouen a l'esquerra en pantalla completa i es mantenen a baix en mode flotant.";
 "PagingDirectionHorizontal" = "Horitzontal";

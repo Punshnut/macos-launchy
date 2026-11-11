@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Media";
 "IconSizeLarge" = "Grande";
 "SettingsIconSizeLargeNote" = "La dimensione grande vale solo a schermo intero; in modalità flottante viene usata la media.";
+"SettingsCustomGridToggle" = "Griglia personalizzata";
+"SettingsCustomGridColumns" = "Colonne: %d";
+"SettingsCustomGridRows" = "Righe: %d";
 "SettingsPagingDirectionLabel" = "Direzione di scorrimento";
 "SettingsPagingDirectionBody" = "Lo scorrimento verticale sposta le pagine su e giù. Gli indicatori vanno a sinistra a schermo intero e restano in basso in modalità flottante.";
 "PagingDirectionHorizontal" = "Orizzontale";

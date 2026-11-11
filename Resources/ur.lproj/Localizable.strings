@@ -178,6 +178,9 @@
 "IconSizeMedium" = "درمیانہ";
 "IconSizeLarge" = "بڑا";
 "SettingsIconSizeLargeNote" = "بڑا آئیکن سائز صرف فل اسکرین میں لاگو ہوتا ہے؛ فلوٹی درمیانہ استعمال کرتا ہے۔";
+"SettingsCustomGridToggle" = "حسبِ ضرورت گرڈ";
+"SettingsCustomGridColumns" = "کالم: %d";
+"SettingsCustomGridRows" = "قطاریں: %d";
 "SettingsPagingDirectionLabel" = "صفحہ بندی کی سمت";
 "SettingsPagingDirectionBody" = "عمودی صفحہ بندی صفحات کو اوپر نیچے لے جاتی ہے۔ اشارے فل اسکرین میں بائیں طرف اور فلوٹی میں نیچے رہتے ہیں۔";
 "PagingDirectionHorizontal" = "افقی";

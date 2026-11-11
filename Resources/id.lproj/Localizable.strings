@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Sedang";
 "IconSizeLarge" = "Besar";
 "SettingsIconSizeLargeNote" = "Ukuran ikon besar hanya berlaku di layar penuh; mode floaty memakai ukuran sedang.";
+"SettingsCustomGridToggle" = "Kisi kustom";
+"SettingsCustomGridColumns" = "Kolom: %d";
+"SettingsCustomGridRows" = "Baris: %d";
 "SettingsPagingDirectionLabel" = "Arah halaman";
 "SettingsPagingDirectionBody" = "Penelusuran vertikal memindahkan halaman ke atas dan bawah. Indikator pindah ke kiri di layar penuh dan tetap di bawah di mode floaty.";
 "PagingDirectionHorizontal" = "Horizontal";

@@ -178,6 +178,9 @@
 "IconSizeMedium" = "मध्यम";
 "IconSizeLarge" = "बड़ा";
 "SettingsIconSizeLargeNote" = "बड़ा आइकन आकार सिर्फ फुलस्क्रीन में लागू होता है; फ्लोटी में मध्यम इस्तेमाल होता है।";
+"SettingsCustomGridToggle" = "कस्टम ग्रिड";
+"SettingsCustomGridColumns" = "कॉलम: %d";
+"SettingsCustomGridRows" = "पंक्तियाँ: %d";
 "SettingsPagingDirectionLabel" = "पेजिंग दिशा";
 "SettingsPagingDirectionBody" = "ऊर्ध्वाधर पेजिंग पेजों को ऊपर-नीचे करती है। संकेतक फुलस्क्रीन में बाईं ओर और फ्लोटी में नीचे रहते हैं।";
 "PagingDirectionHorizontal" = "क्षैतिज";

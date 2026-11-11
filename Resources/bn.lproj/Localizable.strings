@@ -178,6 +178,9 @@
 "IconSizeMedium" = "মাঝারি";
 "IconSizeLarge" = "বড়";
 "SettingsIconSizeLargeNote" = "বড় আইকন আকার শুধু ফুলস্ক্রিনে প্রযোজ্য; ফ্লোটি মাঝারি ব্যবহার করে।";
+"SettingsCustomGridToggle" = "কাস্টম গ্রিড";
+"SettingsCustomGridColumns" = "কলাম: %d";
+"SettingsCustomGridRows" = "সারি: %d";
 "SettingsPagingDirectionLabel" = "পেজিংয়ের দিক";
 "SettingsPagingDirectionBody" = "উল্লম্ব পেজিং পৃষ্ঠাগুলোকে উপরে-নিচে সরায়। ফুলস্ক্রিনে সূচকগুলো বাম পাশে যায় এবং ফ্লোটিতে নিচে থাকে।";
 "PagingDirectionHorizontal" = "আনুভূমিক";

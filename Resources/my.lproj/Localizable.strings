@@ -178,6 +178,9 @@
 "IconSizeMedium" = "အလယ်";
 "IconSizeLarge" = "အကြီး";
 "SettingsIconSizeLargeNote" = "အကြီးအိုင်ကွန်အရွယ်အစားသည် မျက်နှာပြင်အပြည့်တွင်သာ အသုံးပြုနိုင်ပြီး floaty တွင် အလယ်အသုံးပြုသည်။";
+"SettingsCustomGridToggle" = "စိတ်ကြိုက်ဂရစ်";
+"SettingsCustomGridColumns" = "ကော်လံ: %d";
+"SettingsCustomGridRows" = "အတန်း: %d";
 "SettingsPagingDirectionLabel" = "စာမျက်နှာရွှေ့သည့်ဦးတည်ချက်";
 "SettingsPagingDirectionBody" = "ဗတိကပ်စာမျက်နှာရွှေ့ခြင်းသည် စာမျက်နှာများကို အပေါ်အောက်ရွှေ့သည်။ ပြ Indcators များသည် မျက်နှာပြင်အပြည့်တွင် ဘယ်ဘက်သို့ ရွှေ့ပြီး floaty တွင် အောက်ဖက်တွင်ကျန်မည်။";
 "PagingDirectionHorizontal" = "ပြင်ညီ";

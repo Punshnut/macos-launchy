@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Keskikoko";
 "IconSizeLarge" = "Suuri";
 "SettingsIconSizeLargeNote" = "Suuri kuvakekoko toimii vain koko näytöllä; kelluva tila käyttää keskikokoa.";
+"SettingsCustomGridToggle" = "Mukautettu ruudukko";
+"SettingsCustomGridColumns" = "Sarakkeet: %d";
+"SettingsCustomGridRows" = "Rivit: %d";
 "SettingsPagingDirectionLabel" = "Sivutuksen suunta";
 "SettingsPagingDirectionBody" = "Pystysuuntainen sivutus siirtää sivuja ylös ja alas. Ilmaisimet siirtyvät vasemmalle koko näytöllä ja pysyvät alhaalla kelluvassa tilassa.";
 "PagingDirectionHorizontal" = "Vaaka";

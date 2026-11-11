@@ -178,6 +178,9 @@
 "IconSizeMedium" = "இடை";
 "IconSizeLarge" = "பெரியது";
 "SettingsIconSizeLargeNote" = "பெரிய சின்ன அளவு முழுத்திரையில் மட்டும் பொருந்தும்; மிதக்கும் முறையில் இடை அளவு பயன்படுத்தப்படும்.";
+"SettingsCustomGridToggle" = "தனிப்பயன் கட்டம்";
+"SettingsCustomGridColumns" = "நெடுவரிசைகள்: %d";
+"SettingsCustomGridRows" = "வரிசைகள்: %d";
 "SettingsPagingDirectionLabel" = "பக்கத்திரையின் திசை";
 "SettingsPagingDirectionBody" = "நிலம்பட்டு பக்கத்திரை மேலே கீழே நகர்த்தும். குறியீடுகள் முழுத்திரையில் இடப்புறம் சென்று, மிதக்கும் முறையில் அடியில் இருக்கும்.";
 "PagingDirectionHorizontal" = "கிடைமட்ட";

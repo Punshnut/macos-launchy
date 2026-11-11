@@ -119,7 +119,7 @@ struct LauncherLayoutMetrics {
             1
         )
         let base = min(widthAllowance, heightAllowance)
-        let desiredMax: CGFloat = launcherMode == .floaty ? 102 : 140
+        let desiredMax: CGFloat = 140
         let desiredMin: CGFloat = launcherMode == .floaty ? 70 : 96
 
         guard base.isFinite, base > 0 else {

@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Orta";
 "IconSizeLarge" = "Büyük";
 "SettingsIconSizeLargeNote" = "Büyük simge boyutu yalnızca tam ekranda geçerlidir; floaty modda orta kullanılır.";
+"SettingsCustomGridToggle" = "Özel ızgara";
+"SettingsCustomGridColumns" = "Sütunlar: %d";
+"SettingsCustomGridRows" = "Satırlar: %d";
 "SettingsPagingDirectionLabel" = "Sayfalama yönü";
 "SettingsPagingDirectionBody" = "Dikey sayfalama sayfaları yukarı ve aşağı hareket ettirir. Göstergeler tam ekranda sola gider, floaty modda altta kalır.";
 "PagingDirectionHorizontal" = "Yatay";

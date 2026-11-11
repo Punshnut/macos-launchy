@@ -4,6 +4,21 @@ import SwiftUI
 /// Configures and presents the right window type for the selected launcher mode.
 final class LauncherWindowController: NSWindowController {
     private static let preferredFloatyContentSize = NSSize(width: 1040, height: 830)
+    /// User-selected scale applied on top of the default floaty size.
+    var floatyScale: CGFloat
+
+    /// Applies a new floaty scale and resizes the panel right away when it is on screen.
+    func applyFloatyScale(_ scale: CGFloat) {
+        guard scale != floatyScale else { return }
+        floatyScale = scale
+        guard launcherMode == .floaty, let window, window.isVisible else { return }
+        let target = Self.floatyFrame(
+            for: Self.preferredFloatyContentSize,
+            scale: scale,
+            on: window.screen ?? ScreenProvider.screenUnderMouseOrMain()
+        )
+        window.setFrame(target, display: true, animate: true)
+    }
     private let launcherContentHost: NSHostingController<LauncherView>
     private let launcherMode: LauncherMode
     private let entranceContentOffset: CGFloat = 48
@@ -12,7 +27,8 @@ final class LauncherWindowController: NSWindowController {
     private var entranceContentOrigin: NSPoint = .zero
 
     /// Wraps the provided SwiftUI content inside either a panel or fullscreen window.
-    init(rootView: LauncherView, launcherMode: LauncherMode) {
+    init(rootView: LauncherView, launcherMode: LauncherMode, floatyScale: CGFloat = 1) {
+        self.floatyScale = floatyScale
         LaunchyLogger.log("LauncherWindowController init: mode=\(launcherMode)")
         launcherContentHost = NSHostingController(rootView: rootView)
         launcherContentHost.view.wantsLayer = true
@@ -25,7 +41,7 @@ final class LauncherWindowController: NSWindowController {
         switch launcherMode {
         case .floaty:
             LaunchyLogger.log("LauncherWindowController init: building floaty window")
-            let frame = Self.floatyFrame(for: Self.preferredFloatyContentSize, on: presentationScreen)
+            let frame = Self.floatyFrame(for: Self.preferredFloatyContentSize, scale: floatyScale, on: presentationScreen)
             let floatyPanel = FloatyLauncherWindow(contentRect: frame)
             floatyPanel.contentViewController = launcherContentHost
             floatyPanel.applyRoundedCorners(radius: 32)
@@ -54,7 +70,8 @@ final class LauncherWindowController: NSWindowController {
     private static let floatyTopExtension: CGFloat = 82
 
     /// Computes a centered floaty-panel frame clamped to the visible bounds of the target screen.
-    private static func floatyFrame(for size: NSSize, on screen: NSScreen?) -> NSRect {
+    /// `scale` then grows or shrinks the whole panel around its centre, never beyond the screen.
+    private static func floatyFrame(for size: NSSize, scale: CGFloat = 1, on screen: NSScreen?) -> NSRect {
         guard let screen = screen ?? NSScreen.main else {
             return NSRect(origin: .zero, size: size)
         }
@@ -74,7 +91,16 @@ final class LauncherWindowController: NSWindowController {
         if y < visible.minY {
             y = visible.minY
         }
-        return NSRect(x: x, y: y, width: width, height: height)
+        let base = NSRect(x: x, y: y, width: width, height: height)
+        guard scale != 1 else { return base }
+
+        let maxScale = min(visible.width * 0.94 / base.width, visible.height * 0.94 / base.height)
+        let effective = min(scale, maxScale)
+        let scaledWidth = base.width * effective
+        let scaledHeight = base.height * effective
+        let scaledX = min(max(base.midX - scaledWidth / 2, visible.minX), visible.maxX - scaledWidth)
+        let scaledY = min(max(base.midY - scaledHeight / 2, visible.minY), visible.maxY - scaledHeight)
+        return NSRect(x: scaledX, y: scaledY, width: scaledWidth, height: scaledHeight)
     }
 
     /// Adjusts the preferred floaty content size based on the currently targeted screen.
@@ -197,7 +223,7 @@ final class LauncherWindowController: NSWindowController {
 
         switch launcherMode {
         case .floaty:
-            let targetFrame = Self.floatyFrame(for: Self.preferredFloatyContentSize, on: targetScreen)
+            let targetFrame = Self.floatyFrame(for: Self.preferredFloatyContentSize, scale: floatyScale, on: targetScreen)
             if window.frame != targetFrame {
                 window.setFrame(targetFrame, display: false)
             }

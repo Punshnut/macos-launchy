@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Matsakaici";
 "IconSizeLarge" = "Babba";
 "SettingsIconSizeLargeNote" = "Girman alama babba yana aiki ne kawai a cikakken allo; yanayin floaty yana amfani da matsakaici.";
+"SettingsCustomGridToggle" = "Grid na musamman";
+"SettingsCustomGridColumns" = "Ginshiƙai: %d";
+"SettingsCustomGridRows" = "Layuka: %d";
 "SettingsPagingDirectionLabel" = "Hanyar shafewa";
 "SettingsPagingDirectionBody" = "Shafewa tsaye na motsa shafuka sama da ƙasa. Alamomi suna zuwa hagu a cikakken allo, suna tsaya ƙasa a floaty.";
 "PagingDirectionHorizontal" = "A kwance";

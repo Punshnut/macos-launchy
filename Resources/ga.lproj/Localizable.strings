@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Meánach";
 "IconSizeLarge" = "Mór";
 "SettingsIconSizeLargeNote" = "Ní bhaineann an méid mór ach le lánscáileán; úsáideann snámhphainéal meánach.";
+"SettingsCustomGridToggle" = "Eangach shaincheaptha";
+"SettingsCustomGridColumns" = "Colúin: %d";
+"SettingsCustomGridRows" = "Sraitheanna: %d";
 "SettingsPagingDirectionLabel" = "Treo leathanaigh";
 "SettingsPagingDirectionBody" = "Bogann leathanaigh ingearacha suas agus síos. Bogann táscairí go clé i lánscáileán agus fanann siad ag bun i mód snámhphainéil.";
 "PagingDirectionHorizontal" = "Cothrománach";

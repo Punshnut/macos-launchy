@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Середній";
 "IconSizeLarge" = "Великий";
 "SettingsIconSizeLargeNote" = "Великий розмір діє лише у повноекранному режимі; плаваючий режим використовує середній.";
+"SettingsCustomGridToggle" = "Власна сітка";
+"SettingsCustomGridColumns" = "Стовпці: %d";
+"SettingsCustomGridRows" = "Рядки: %d";
 "SettingsPagingDirectionLabel" = "Напрямок сторінок";
 "SettingsPagingDirectionBody" = "Вертикальна пагінація рухає сторінки вгору-вниз. Індикатори йдуть ліворуч у повноекранному режимі й залишаються внизу в плаваючому.";
 "PagingDirectionHorizontal" = "Горизонтально";

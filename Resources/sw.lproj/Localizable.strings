@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Wastani";
 "IconSizeLarge" = "Kubwa";
 "SettingsIconSizeLargeNote" = "Ukubwa mkubwa wa ikoni unatumika tu kwenye skrini nzima; hali ya kuelea hutumia wastani.";
+"SettingsCustomGridToggle" = "Gridi maalum";
+"SettingsCustomGridColumns" = "Safu wima: %d";
+"SettingsCustomGridRows" = "Safu mlalo: %d";
 "SettingsPagingDirectionLabel" = "Mwelekeo wa kurasa";
 "SettingsPagingDirectionBody" = "Kurasa wima husogeza kurasa juu na chini. Viashiria huhamia kushoto ukiwa skrini nzima na hubaki chini ukiwa kwenye hali ya kuelea.";
 "PagingDirectionHorizontal" = "Mlalo";

@@ -178,6 +178,9 @@
 "IconSizeMedium" = "ปานกลาง";
 "IconSizeLarge" = "ใหญ่";
 "SettingsIconSizeLargeNote" = "ขนาดไอคอนใหญ่ใช้ได้เฉพาะโหมดเต็มหน้าจอ; โหมดลอยใช้ขนาดปานกลาง";
+"SettingsCustomGridToggle" = "กริดกำหนดเอง";
+"SettingsCustomGridColumns" = "คอลัมน์: %d";
+"SettingsCustomGridRows" = "แถว: %d";
 "SettingsPagingDirectionLabel" = "ทิศทางการเลื่อนหน้า";
 "SettingsPagingDirectionBody" = "การเลื่อนแนวตั้งจะเลื่อนหน้าขึ้นลง ตัวบอกตำแหน่งย้ายไปทางซ้ายในโหมดเต็มหน้าจอ และอยู่ล่างสุดในโหมดลอย";
 "PagingDirectionHorizontal" = "แนวนอน";

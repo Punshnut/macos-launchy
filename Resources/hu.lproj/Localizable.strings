@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Közepes";
 "IconSizeLarge" = "Nagy";
 "SettingsIconSizeLargeNote" = "A nagy ikonméret csak teljes képernyőn érvényes; a lebegő mód közepeset használ.";
+"SettingsCustomGridToggle" = "Egyéni rács";
+"SettingsCustomGridColumns" = "Oszlopok: %d";
+"SettingsCustomGridRows" = "Sorok: %d";
 "SettingsPagingDirectionLabel" = "Lapozás iránya";
 "SettingsPagingDirectionBody" = "A függőleges lapozás fel-le mozgatja az oldalakat. A jelölők teljes képernyőn balra kerülnek, lebegő módban alul maradnak.";
 "PagingDirectionHorizontal" = "Vízszintes";

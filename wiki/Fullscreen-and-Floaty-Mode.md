@@ -13,7 +13,8 @@ not just launch one and get back to work.
 Fullscreen is where the heavier organizing tools live: right-click any tile
 to rename it, hide it, move it, create a folder, or reveal it in Finder.
 How many apps fit on a page depends on your icon size: 7x5 at Small, 6x4 at
-Medium, and 5x3 at Large. You can jump straight to any page by holding
+Medium, and 5x3 at Large. Prefer something else? Turn on **Custom grid** in
+Settings → Visuals and choose any grid from 3x2 up to 10x7. You can jump straight to any page by holding
 `Control` and tapping a number key.
 
 Use fullscreen when you're:
@@ -29,8 +30,13 @@ taking over the screen. It's built for speed: summon it, type a couple of
 letters, hit `Return`, and you're back in whatever you were doing, with the
 app you wanted now open.
 
-Floaty caps Large icons at Medium (6x4), so the panel stays compact
-even if you've picked Large for fullscreen.
+Floaty uses Medium (6x4) when you've picked Large for fullscreen, so the
+panel stays compact. Icons in floaty follow the grid, so Small and Medium
+look different, and a Custom grid works here too.
+
+You can also change how big the panel is. With floaty selected, use the
+**Floaty Panel** slider in Settings → Visuals (70% to 130%). Icons scale
+with the panel, and it always stays within your screen.
 
 Floaty mode is best when you're:
 

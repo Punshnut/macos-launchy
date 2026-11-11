@@ -10,12 +10,22 @@ The biggest tab, covering how the grid looks and behaves:
 - **Launch at Login** and the **fullscreen ↔ floaty layout picker**, so you
   can set your preferred presentation mode directly instead of only toggling
   it with a hotkey.
+- **Floaty panel size**: with floaty selected, a slider from 70% to 130%
+  resizes the whole panel. Icons scale with it, and the panel never grows
+  beyond your screen, so on small displays sizes above 100% may have little
+  effect. The change shows right away if the panel is open.
 - **Background style**: standard, light blur, transparent, or solid color.
   The solid option comes with a palette of twelve colors (System, Graphite,
   Indigo, Blue, Cyan, Teal, Green, Mint, Yellow, Orange, Pink, Purple).
 - **Icon size**: small, medium, or large, which also sets how many apps fit
-  on a page (7x5, 6x4, and 5x3). Large only applies in fullscreen; floaty
-  mode caps at medium to keep the compact layout usable.
+  on a page (7x5, 6x4, and 5x3). Icons are sized to fit the grid, so fewer
+  columns and rows mean bigger icons, in both modes. Large only applies in
+  fullscreen; floaty mode uses medium instead.
+- **Custom grid**: turn it on to pick your own number of columns (3 to 10)
+  and rows (2 to 7). It works in fullscreen and floaty, replaces the icon
+  size slider while active, and icons resize to fit. Turn it off to go back
+  to the icon size presets. Changing the grid re-flows your pages, so
+  folders and order stay as they are.
 - **Paging direction**: horizontal or vertical, which also determines which
   way swipes and arrow keys move between pages - see
   [Gestures](Gestures) and [Keyboard Shortcuts](Keyboard-Shortcuts).

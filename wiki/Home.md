@@ -34,7 +34,7 @@ auto-updates itself once installed.
 | --- | --- | --- |
 | Feels like | The classic Launchpad | A quick-launch palette |
 | Best for | Browsing and organizing | Jumping to one app and back to work |
-| Icons per page | 7x5, 6x4, or 5x3 | 7x5 or 6x4 |
+| Icons per page | 7x5, 6x4, 5x3, or your own grid | 7x5, 6x4, or your own grid |
 
 ## Private by design
 

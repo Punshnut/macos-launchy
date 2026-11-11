@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Middel";
 "IconSizeLarge" = "Groot";
 "SettingsIconSizeLargeNote" = "Groot pictogramformaat geldt alleen in volledig scherm; floaty gebruikt middel.";
+"SettingsCustomGridToggle" = "Aangepast raster";
+"SettingsCustomGridColumns" = "Kolommen: %d";
+"SettingsCustomGridRows" = "Rijen: %d";
 "SettingsPagingDirectionLabel" = "Paginatierichting";
 "SettingsPagingDirectionBody" = "Verticale paginering verplaatst pagina's omhoog en omlaag. Indicatoren gaan links in volledig scherm en blijven onderaan in floaty.";
 "PagingDirectionHorizontal" = "Horizontaal";

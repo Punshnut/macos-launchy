@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Médio";
 "IconSizeLarge" = "Grande";
 "SettingsIconSizeLargeNote" = "O tamanho grande só se aplica em ecrã inteiro; o modo flutuante usa o médio.";
+"SettingsCustomGridToggle" = "Grelha personalizada";
+"SettingsCustomGridColumns" = "Colunas: %d";
+"SettingsCustomGridRows" = "Linhas: %d";
 "SettingsPagingDirectionLabel" = "Direção de paginação";
 "SettingsPagingDirectionBody" = "A paginação vertical move as páginas para cima e para baixo. Os indicadores vão para a esquerda em ecrã inteiro e ficam em baixo no modo flutuante.";
 "PagingDirectionHorizontal" = "Horizontal";

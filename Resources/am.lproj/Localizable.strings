@@ -178,6 +178,9 @@
 "IconSizeMedium" = "መካከለኛ";
 "IconSizeLarge" = "ትልቅ";
 "SettingsIconSizeLargeNote" = "ትልቅ አዶ መጠን በሙሉ ማያ ብቻ ይተገበራል፤ ፍሎቲ መካከለኛን ይጠቀማል።";
+"SettingsCustomGridToggle" = "ብጁ ፍርግርግ";
+"SettingsCustomGridColumns" = "ዓምዶች፡ %d";
+"SettingsCustomGridRows" = "ረድፎች፡ %d";
 "SettingsPagingDirectionLabel" = "የመጥለቅ አቅጣጫ";
 "SettingsPagingDirectionBody" = "ቁመት መጥለቅ ገጾችን ወደ ላይና ወደ ታች ያንቀሳቅሳል። አመልካቾች በሙሉ ማያ በግራ ይገኛሉ ፣ በፍሎቲ በታች ይቆያሉ።";
 "PagingDirectionHorizontal" = "አግድም";

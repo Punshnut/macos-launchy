@@ -7,11 +7,26 @@ struct LauncherGridConfiguration: Equatable {
 
     /// Total number of apps displayed on a single grid page.
     var pageCapacity: Int { max(columnsPerPage, 1) * max(rowsPerPage, 1) }
+    /// Allowed custom column and row counts.
+    static let columnRange = 3...10
+    static let rowRange = 2...7
+    /// Starting values for the custom grid (match the Small preset).
+    static let defaultColumns = 7
+    static let defaultRows = 5
+
     /// Returns a configuration tuned for the selected icon size and launcher mode.
+    /// A `custom` column/row pair, when provided, overrides the icon size preset.
     static func configuration(
         for iconSizePreference: IconSizePreference,
-        mode: LauncherMode
+        mode: LauncherMode,
+        custom: (columns: Int, rows: Int)? = nil
     ) -> LauncherGridConfiguration {
+        if let custom {
+            return LauncherGridConfiguration(
+                columnsPerPage: columnRange.clamped(custom.columns),
+                rowsPerPage: rowRange.clamped(custom.rows)
+            )
+        }
         let effectivePreference = iconSizePreference.effectivePreference(for: mode)
         switch effectivePreference {
         case .small:

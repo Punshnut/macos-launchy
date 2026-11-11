@@ -47,9 +47,9 @@ It scans your apps, caches icons, and keeps a responsive grid ready on every Spa
 ## Highlights
 
 - **Launchpad-level fullscreen** - A fluid, edge-to-edge canvas with blur or solid backgrounds plus right-click menus for fast sorting, folder creation, and precise arrangement.
-- **Floaty mode & HUD toggle** - Lightweight palette for quick launches; flip between floaty and fullscreen with a shortcut without losing your layout.
+- **Floaty mode & HUD toggle** - Lightweight palette for quick launches with an adjustable panel size; flip between floaty and fullscreen with a shortcut without losing your layout.
 - **Search-first launching** - Type to filter instantly; `Return` opens the top match, arrows move selection, and the grid stays responsive.
-- **Fully featured grid** - Scans /Applications, /System/Applications, and optional ~/Applications, caches icons, and keeps pages of up to 7x5 apps ready while respecting custom names and hidden items.
+- **Fully featured grid** - Scans /Applications, /System/Applications, and optional ~/Applications, caches icons, and keeps pages ready (7x5, 6x4, 5x3, or a custom grid up to 10x7) while respecting custom names and hidden items.
 - **Context-aware controls** - Right click any tile, folder, Dock, or menu bar icon to rename, hide, move, add/remove folders, show in Finder, or reset gaps without switching views.
 - **Hot corners & shortcuts** - Global toggle hotkey (`Cmd+Shift+Space` by default), optional layout-switch shortcut, plus a hot corner trigger if you prefer mouse-only activation.
 - **Startup & presence controls** - Launch at login, hide or show Dock and menu bar icons independently, and keep a menu bar status item for updates and settings.

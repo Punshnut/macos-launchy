@@ -178,6 +178,9 @@
 "IconSizeMedium" = "中";
 "IconSizeLarge" = "大";
 "SettingsIconSizeLargeNote" = "大きいアイコンサイズはフルスクリーンのみで適用され、フローティは中サイズを使います。";
+"SettingsCustomGridToggle" = "カスタムグリッド";
+"SettingsCustomGridColumns" = "列: %d";
+"SettingsCustomGridRows" = "行: %d";
 "SettingsPagingDirectionLabel" = "ページ送りの方向";
 "SettingsPagingDirectionBody" = "縦方向のページ送りはページを上下に動かします。インジケーターはフルスクリーンでは左に、フローティでは下に表示されます。";
 "PagingDirectionHorizontal" = "横";

@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Sederhana";
 "IconSizeLarge" = "Besar";
 "SettingsIconSizeLargeNote" = "Saiz ikon besar hanya digunakan dalam skrin penuh; mod terapung menggunakan saiz sederhana.";
+"SettingsCustomGridToggle" = "Grid tersuai";
+"SettingsCustomGridColumns" = "Lajur: %d";
+"SettingsCustomGridRows" = "Baris: %d";
 "SettingsPagingDirectionLabel" = "Arah penghalaman";
 "SettingsPagingDirectionBody" = "Penghalaman menegak menggerakkan halaman ke atas dan ke bawah. Penunjuk bergerak ke kiri dalam skrin penuh dan kekal di bawah dalam mod terapung.";
 "PagingDirectionHorizontal" = "Mengufuk";

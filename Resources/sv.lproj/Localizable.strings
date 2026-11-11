@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Mellan";
 "IconSizeLarge" = "Stor";
 "SettingsIconSizeLargeNote" = "Stor ikonstorlek gäller bara helskärm; flytande använder mellan.";
+"SettingsCustomGridToggle" = "Anpassat rutnät";
+"SettingsCustomGridColumns" = "Kolumner: %d";
+"SettingsCustomGridRows" = "Rader: %d";
 "SettingsPagingDirectionLabel" = "Pagineringsriktning";
 "SettingsPagingDirectionBody" = "Vertikal paginering flyttar sidor upp och ner. Indikatorer flyttas till vänster i helskärm och stannar nederst i flytande läge.";
 "PagingDirectionHorizontal" = "Horisontell";

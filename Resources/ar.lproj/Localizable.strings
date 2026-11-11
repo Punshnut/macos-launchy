@@ -178,6 +178,9 @@
 "IconSizeMedium" = "متوسط";
 "IconSizeLarge" = "كبير";
 "SettingsIconSizeLargeNote" = "حجم الأيقونة الكبير يُطبَّق في وضع ملء الشاشة فقط؛ الوضع العائم يستخدم المتوسط.";
+"SettingsCustomGridToggle" = "شبكة مخصصة";
+"SettingsCustomGridColumns" = "الأعمدة: %d";
+"SettingsCustomGridRows" = "الصفوف: %d";
 "SettingsPagingDirectionLabel" = "اتجاه التمرير";
 "SettingsPagingDirectionBody" = "التمرير العمودي يحرك الصفحات لأعلى ولأسفل. المؤشرات تنتقل لليسار في وضع ملء الشاشة وتبقى في الأسفل في الوضع العائم.";
 "PagingDirectionHorizontal" = "أفقي";

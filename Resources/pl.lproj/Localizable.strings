@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Średni";
 "IconSizeLarge" = "Duży";
 "SettingsIconSizeLargeNote" = "Duży rozmiar ikon działa tylko w trybie pełnoekranowym; tryb floaty używa średniego.";
+"SettingsCustomGridToggle" = "Własna siatka";
+"SettingsCustomGridColumns" = "Kolumny: %d";
+"SettingsCustomGridRows" = "Wiersze: %d";
 "SettingsPagingDirectionLabel" = "Kierunek przewijania";
 "SettingsPagingDirectionBody" = "Pionowe stronicowanie przesuwa strony w górę i w dół. Wskaźniki przechodzą w lewo w pełnym ekranie i zostają na dole w trybie floaty.";
 "PagingDirectionHorizontal" = "Poziomy";

@@ -476,6 +476,14 @@ struct LauncherSettings: Hashable, Codable {
     var shouldScanUserApplicationsFolder: Bool
     /// Preferred icon sizing for the launcher grid.
     var iconSizePreference: IconSizePreference
+    /// When enabled, `customGridColumns` x `customGridRows` replace the icon size preset's grid.
+    var customGridEnabled: Bool
+    /// User-selected column count (used only when `customGridEnabled`).
+    var customGridColumns: Int
+    /// User-selected row count (used only when `customGridEnabled`).
+    var customGridRows: Int
+    /// Scale applied to the floaty panel size (1.0 = default).
+    var floatyPanelScale: Double
     /// Whether launcher paging should move horizontally or vertically.
     var pagingOrientation: PagingOrientation
     /// Which page the launcher reverts to after being idle/hidden for a while.
@@ -504,7 +512,11 @@ struct LauncherSettings: Hashable, Codable {
         iconSizePreference: IconSizePreference,
         pagingOrientation: PagingOrientation,
         pageRevertMode: PageRevertMode = .fixedPage,
-        standardPageIndex: Int = 0
+        standardPageIndex: Int = 0,
+        customGridEnabled: Bool = false,
+        customGridColumns: Int = LauncherGridConfiguration.defaultColumns,
+        customGridRows: Int = LauncherGridConfiguration.defaultRows,
+        floatyPanelScale: Double = LauncherSettings.floatyPanelScaleDefault
     ) {
         self.isVisibleOnAllSpaces = isVisibleOnAllSpaces
         self.launchesAtLogin = launchesAtLogin
@@ -528,6 +540,29 @@ struct LauncherSettings: Hashable, Codable {
         self.pagingOrientation = pagingOrientation
         self.pageRevertMode = pageRevertMode
         self.standardPageIndex = standardPageIndex
+        self.customGridEnabled = customGridEnabled
+        self.customGridColumns = LauncherGridConfiguration.columnRange.clamped(customGridColumns)
+        self.customGridRows = LauncherGridConfiguration.rowRange.clamped(customGridRows)
+        self.floatyPanelScale = Self.floatyPanelScaleRange.clamped(floatyPanelScale)
+    }
+
+    static let floatyPanelScaleDefault = 1.0
+    static let floatyPanelScaleRange: ClosedRange<Double> = 0.7...1.3
+
+    /// Grid used by the launcher: the custom grid when enabled, otherwise the icon size preset.
+    func gridConfiguration(for mode: LauncherMode) -> LauncherGridConfiguration {
+        LauncherGridConfiguration.configuration(
+            for: iconSizePreference,
+            mode: mode,
+            custom: customGridEnabled ? (customGridColumns, customGridRows) : nil
+        )
+    }
+}
+
+extension ClosedRange where Bound: Comparable {
+    /// Returns `value` limited to this range.
+    func clamped(_ value: Bound) -> Bound {
+        Swift.min(Swift.max(value, lowerBound), upperBound)
     }
 }
 
@@ -583,6 +618,10 @@ extension LauncherSettings {
         case pagingOrientation
         case pageRevertMode
         case standardPageIndex
+        case customGridEnabled
+        case customGridColumns
+        case customGridRows
+        case floatyPanelScale
     }
 
     init(from decoder: Decoder) throws {
@@ -618,7 +657,11 @@ extension LauncherSettings {
             iconSizePreference: try container.decodeIfPresent(IconSizePreference.self, forKey: .iconSizePreference) ?? .small,
             pagingOrientation: try container.decodeIfPresent(PagingOrientation.self, forKey: .pagingOrientation) ?? .horizontal,
             pageRevertMode: try container.decodeIfPresent(PageRevertMode.self, forKey: .pageRevertMode) ?? .fixedPage,
-            standardPageIndex: try container.decodeIfPresent(Int.self, forKey: .standardPageIndex) ?? 0
+            standardPageIndex: try container.decodeIfPresent(Int.self, forKey: .standardPageIndex) ?? 0,
+            customGridEnabled: try container.decodeIfPresent(Bool.self, forKey: .customGridEnabled) ?? false,
+            customGridColumns: try container.decodeIfPresent(Int.self, forKey: .customGridColumns) ?? LauncherGridConfiguration.defaultColumns,
+            customGridRows: try container.decodeIfPresent(Int.self, forKey: .customGridRows) ?? LauncherGridConfiguration.defaultRows,
+            floatyPanelScale: try container.decodeIfPresent(Double.self, forKey: .floatyPanelScale) ?? LauncherSettings.floatyPanelScaleDefault
         )
     }
 
@@ -647,6 +690,10 @@ extension LauncherSettings {
         try container.encode(pagingOrientation, forKey: .pagingOrientation)
         try container.encode(pageRevertMode, forKey: .pageRevertMode)
         try container.encode(standardPageIndex, forKey: .standardPageIndex)
+        try container.encode(customGridEnabled, forKey: .customGridEnabled)
+        try container.encode(customGridColumns, forKey: .customGridColumns)
+        try container.encode(customGridRows, forKey: .customGridRows)
+        try container.encode(floatyPanelScale, forKey: .floatyPanelScale)
     }
 }
 

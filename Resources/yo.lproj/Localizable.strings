@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Arin";
 "IconSizeLarge" = "Nla";
 "SettingsIconSizeLargeNote" = "Iwọn aami nla n ṣiṣẹ nikan ni iboju kikun; floaty n lo iwọn arin.";
+"SettingsCustomGridToggle" = "Àwọn férémù àdáni";
+"SettingsCustomGridColumns" = "Àwọn ọ̀wọ́: %d";
+"SettingsCustomGridRows" = "Àwọn ìlà: %d";
 "SettingsPagingDirectionLabel" = "Ọna ìtẹ̀sí ojúewé";
 "SettingsPagingDirectionBody" = "Ìtẹ̀sí ináàró n gbe ojúewé soke ati isalẹ. Ààmì n lọ sí apa osi ní iboju kikun, tí wọn sì dúró ní isalẹ ní ọ̀nà floaty.";
 "PagingDirectionHorizontal" = "Pẹ̀tẹ́lẹ̀";

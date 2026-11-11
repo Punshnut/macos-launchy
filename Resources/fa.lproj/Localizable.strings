@@ -178,6 +178,9 @@
 "IconSizeMedium" = "متوسط";
 "IconSizeLarge" = "بزرگ";
 "SettingsIconSizeLargeNote" = "اندازه آیکون بزرگ فقط در حالت تمام‌صفحه اعمال می‌شود؛ حالت شناور از متوسط استفاده می‌کند.";
+"SettingsCustomGridToggle" = "شبکه سفارشی";
+"SettingsCustomGridColumns" = "ستون‌ها: %d";
+"SettingsCustomGridRows" = "ردیف‌ها: %d";
 "SettingsPagingDirectionLabel" = "جهت صفحه‌بندی";
 "SettingsPagingDirectionBody" = "صفحه‌بندی عمودی صفحات را بالا و پایین می‌برد. نشانگرها در تمام‌صفحه به چپ می‌روند و در حالت شناور در پایین می‌مانند.";
 "PagingDirectionHorizontal" = "افقی";

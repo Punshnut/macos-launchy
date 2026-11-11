@@ -178,6 +178,9 @@
 "IconSizeMedium" = "中";
 "IconSizeLarge" = "大";
 "SettingsIconSizeLargeNote" = "大图标仅在全屏生效，浮动模式使用中等大小。";
+"SettingsCustomGridToggle" = "自定义网格";
+"SettingsCustomGridColumns" = "列数：%d";
+"SettingsCustomGridRows" = "行数：%d";
 "SettingsPagingDirectionLabel" = "翻页方向";
 "SettingsPagingDirectionBody" = "竖向翻页上下移动页面。全屏时指示器在左侧，浮动模式时在底部。";
 "PagingDirectionHorizontal" = "水平";

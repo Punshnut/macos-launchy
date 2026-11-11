@@ -336,10 +336,41 @@ struct SettingsWindow: View {
             .frame(maxWidth: 320)
             .frame(maxWidth: .infinity, alignment: .center)
 
+            if settingsStore.settingsSnapshot.selectedLauncherMode == .floaty {
+                floatyPanelSizeSlider
+            }
+
             Text(String(localized: "SettingsLayoutPickerHelpText"))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
+    }
+
+    private var floatyPanelSizeSlider: some View {
+        let scale = settingsStore.settingsSnapshot.floatyPanelScale
+        let range = LauncherSettings.floatyPanelScaleRange
+        return VStack(spacing: 3) {
+            HStack {
+                Text(LauncherMode.floaty.displayName)
+                Spacer()
+                Text("\(Int((scale * 100).rounded()))%")
+                    .monospacedDigit()
+            }
+            .font(.caption)
+            .foregroundColor(.secondary)
+
+            Slider(
+                value: Binding(
+                    get: { scale },
+                    set: { settingsStore.setFloatyPanelScale(($0 * 20).rounded() / 20) }
+                ),
+                in: range,
+                step: 0.05
+            )
+        }
+        .frame(maxWidth: 320)
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.top, 2)
     }
 
     private var iconSizeSlider: some View {
@@ -370,11 +401,55 @@ struct SettingsWindow: View {
             }
             .frame(maxWidth: 320)
             .frame(maxWidth: .infinity, alignment: .center)
+            .disabled(customGrid.enabled)
+            .opacity(customGrid.enabled ? 0.4 : 1)
 
-            Text(String(localized: "SettingsIconSizeLargeNote"))
-                .font(.caption)
-                .foregroundColor(.secondary)
+            if customGrid.enabled == false {
+                Text(String(localized: "SettingsIconSizeLargeNote"))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Toggle(String(localized: "SettingsCustomGridToggle"), isOn: Binding(
+                get: { customGrid.enabled },
+                set: { newValue in
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        settingsStore.setCustomGrid(enabled: newValue, columns: customGrid.columns, rows: customGrid.rows)
+                    }
+                }
+            ))
+            .toggleStyle(.switch)
+            .padding(.top, 2)
+
+            if customGrid.enabled {
+                HStack(spacing: 16) {
+                    Stepper(
+                        String(format: String(localized: "SettingsCustomGridColumns"), customGrid.columns),
+                        value: Binding(
+                            get: { customGrid.columns },
+                            set: { settingsStore.setCustomGrid(enabled: true, columns: $0, rows: customGrid.rows) }
+                        ),
+                        in: LauncherGridConfiguration.columnRange
+                    )
+                    Stepper(
+                        String(format: String(localized: "SettingsCustomGridRows"), customGrid.rows),
+                        value: Binding(
+                            get: { customGrid.rows },
+                            set: { settingsStore.setCustomGrid(enabled: true, columns: customGrid.columns, rows: $0) }
+                        ),
+                        in: LauncherGridConfiguration.rowRange
+                    )
+                }
+                .frame(maxWidth: 320)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .transition(.opacity)
+            }
         }
+    }
+
+    private var customGrid: (enabled: Bool, columns: Int, rows: Int) {
+        let settings = settingsStore.settingsSnapshot
+        return (settings.customGridEnabled, settings.customGridColumns, settings.customGridRows)
     }
 
     private var pagingOrientationPicker: some View {

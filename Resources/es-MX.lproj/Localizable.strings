@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Mediano";
 "IconSizeLarge" = "Grande";
 "SettingsIconSizeLargeNote" = "El tamaño grande solo se aplica en pantalla completa; el modo flotante usa mediano.";
+"SettingsCustomGridToggle" = "Cuadrícula personalizada";
+"SettingsCustomGridColumns" = "Columnas: %d";
+"SettingsCustomGridRows" = "Filas: %d";
 "SettingsPagingDirectionLabel" = "Dirección de paginación";
 "SettingsPagingDirectionBody" = "La paginación vertical mueve las páginas arriba y abajo. Los indicadores pasan a la izquierda en pantalla completa y quedan abajo en flotante.";
 "PagingDirectionHorizontal" = "Horizontal";

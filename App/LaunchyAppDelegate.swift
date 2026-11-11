@@ -510,6 +510,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
         if modeChanged == false, let controller = launcherWindowManager {
             LaunchyLogger.log("applyLauncherMode: updating existing window controller")
+            controller.applyFloatyScale(CGFloat(currentSettings.floatyPanelScale))
             controller.update(rootView: buildLauncherView())
         } else {
             LaunchyLogger.log("applyLauncherMode: rebuilding window controller for mode \(mode)")
@@ -541,11 +542,13 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
 
     /// Returns a cached launcher controller when available, reusing window instances per mode.
     private func launcherWindowController(for mode: LauncherMode, rootView: LauncherView) -> LauncherWindowController {
+        let floatyScale = CGFloat(currentSettings.floatyPanelScale)
         if let existing = launcherWindowControllersByMode[mode] {
+            existing.applyFloatyScale(floatyScale)
             existing.update(rootView: rootView)
             return existing
         }
-        let controller = LauncherWindowController(rootView: rootView, launcherMode: mode)
+        let controller = LauncherWindowController(rootView: rootView, launcherMode: mode, floatyScale: floatyScale)
         launcherWindowControllersByMode[mode] = controller
         return controller
     }
@@ -792,6 +795,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let previousLauncherHotkey = currentSettings.launcherHotkey
         let previousLayoutHotkey = currentSettings.layoutToggleHotkey
         let previousIconSize = currentSettings.iconSizePreference
+        let previousGrid = currentSettings.gridConfiguration(for: currentSettings.selectedLauncherMode)
         let previousPagingOrientation = currentSettings.pagingOrientation
         let previousLauncherMode = currentSettings.selectedLauncherMode
         currentSettings = LauncherSettingsPersistence.loadSettings()
@@ -803,6 +807,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         let hotkeysChanged = previousLauncherHotkey != currentSettings.launcherHotkey
             || previousLayoutHotkey != currentSettings.layoutToggleHotkey
         let iconSizeChanged = previousIconSize != currentSettings.iconSizePreference
+            || previousGrid != currentSettings.gridConfiguration(for: currentSettings.selectedLauncherMode)
         _ = previousPagingOrientation != currentSettings.pagingOrientation
         let launcherModeChanged = previousLauncherMode != currentSettings.selectedLauncherMode
         if scanSettingChanged {
@@ -1017,10 +1022,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         )
         let availableApps = discovery.allVisible
 
-        let capacity = LauncherGridConfiguration.configuration(
-            for: settings.iconSizePreference,
-            mode: settings.selectedLauncherMode
-        ).pageCapacity
+        let capacity = settings.gridConfiguration(for: settings.selectedLauncherMode).pageCapacity
 
         let (restoredItems, restoredPageSizes) = restoredLayout(
             from: payload.arrangement,
@@ -1943,8 +1945,7 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
     /// Computes grid metrics from icon-size preference and launcher mode.
     private func gridConfiguration(for mode: LauncherMode? = nil) -> LauncherGridConfiguration {
         let resolvedMode = mode ?? activeLauncherMode()
-        let preference = currentSettings.iconSizePreference.effectivePreference(for: resolvedMode)
-        return LauncherGridConfiguration.configuration(for: preference, mode: resolvedMode)
+        return currentSettings.gridConfiguration(for: resolvedMode)
     }
 
     /// Convenience accessor for grid page capacity in the resolved mode.
@@ -1952,18 +1953,10 @@ final class LaunchyAppDelegate: NSObject, NSApplicationDelegate {
         gridConfiguration(for: mode).pageCapacity
     }
 
-    /// Maps mode and icon-size preference to target icon render dimension.
+    /// Target icon render dimension, close to the largest size the layout draws in the given mode.
     private func preferredIconRenderDimension(for mode: LauncherMode) -> CGFloat {
-        let effectivePreference = currentSettings.iconSizePreference.effectivePreference(for: mode)
-        let base: CGFloat = mode == .floaty ? 102 : 140
-        switch effectivePreference {
-        case .small:
-            return base
-        case .medium:
-            return base * 1.12
-        case .large:
-            return base * 1.28
-        }
+        guard mode == .floaty else { return 140 }
+        return min(130 * CGFloat(currentSettings.floatyPanelScale), 140)
     }
 
     /// Appends one slot to trailing page sizes, opening a new page when needed.

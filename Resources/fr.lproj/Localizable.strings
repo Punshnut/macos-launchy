@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Moyenne";
 "IconSizeLarge" = "Grande";
 "SettingsIconSizeLargeNote" = "La grande taille s’applique uniquement en plein écran ; le mode flottant utilise la moyenne.";
+"SettingsCustomGridToggle" = "Grille personnalisée";
+"SettingsCustomGridColumns" = "Colonnes : %d";
+"SettingsCustomGridRows" = "Lignes : %d";
 "SettingsPagingDirectionLabel" = "Sens de défilement";
 "SettingsPagingDirectionBody" = "Le défilement vertical déplace les pages vers le haut et le bas. Les indicateurs passent à gauche en plein écran et restent en bas en mode flottant.";
 "PagingDirectionHorizontal" = "Horizontal";

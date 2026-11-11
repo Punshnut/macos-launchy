@@ -178,6 +178,9 @@
 "IconSizeMedium" = "보통";
 "IconSizeLarge" = "크게";
 "SettingsIconSizeLargeNote" = "큰 아이콘 크기는 전체 화면에서만 적용됩니다. 플로티 모드는 보통을 사용합니다.";
+"SettingsCustomGridToggle" = "사용자 지정 그리드";
+"SettingsCustomGridColumns" = "열: %d";
+"SettingsCustomGridRows" = "행: %d";
 "SettingsPagingDirectionLabel" = "페이지 이동 방향";
 "SettingsPagingDirectionBody" = "세로 페이징은 페이지를 위아래로 이동합니다. 표시기는 전체 화면에서는 왼쪽으로, 플로티에서는 하단에 표시됩니다.";
 "PagingDirectionHorizontal" = "가로";

@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Средний";
 "IconSizeLarge" = "Большой";
 "SettingsIconSizeLargeNote" = "Большой размер иконок действует только в полноэкранном режиме; плавающий режим использует средний.";
+"SettingsCustomGridToggle" = "Своя сетка";
+"SettingsCustomGridColumns" = "Столбцы: %d";
+"SettingsCustomGridRows" = "Строки: %d";
 "SettingsPagingDirectionLabel" = "Направление пролистывания";
 "SettingsPagingDirectionBody" = "Вертикальное перелистывание двигает страницы вверх и вниз. Индикаторы уходят влево в полноэкранном режиме и остаются внизу в плавающем.";
 "PagingDirectionHorizontal" = "Горизонтально";

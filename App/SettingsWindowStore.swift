@@ -86,6 +86,27 @@ final class SettingsWindowStore: NSObject, ObservableObject {
         LauncherSettingsPersistence.setIconSizePreference(preference)
     }
 
+    /// Persists the custom grid override (columns x rows).
+    func setCustomGrid(enabled: Bool, columns: Int, rows: Int) {
+        let columns = LauncherGridConfiguration.columnRange.clamped(columns)
+        let rows = LauncherGridConfiguration.rowRange.clamped(rows)
+        guard settingsSnapshot.customGridEnabled != enabled
+            || settingsSnapshot.customGridColumns != columns
+            || settingsSnapshot.customGridRows != rows else { return }
+        settingsSnapshot.customGridEnabled = enabled
+        settingsSnapshot.customGridColumns = columns
+        settingsSnapshot.customGridRows = rows
+        LauncherSettingsPersistence.setCustomGrid(enabled: enabled, columns: columns, rows: rows)
+    }
+
+    /// Persists the floaty panel scale.
+    func setFloatyPanelScale(_ scale: Double) {
+        let scale = LauncherSettings.floatyPanelScaleRange.clamped(scale)
+        guard settingsSnapshot.floatyPanelScale != scale else { return }
+        settingsSnapshot.floatyPanelScale = scale
+        LauncherSettingsPersistence.setFloatyPanelScale(scale)
+    }
+
     /// Persists the paging orientation preference.
     func setPagingOrientation(_ orientation: PagingOrientation) {
         guard settingsSnapshot.pagingOrientation != orientation else { return }

@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Katamtaman";
 "IconSizeLarge" = "Malaki";
 "SettingsIconSizeLargeNote" = "Ang malaking icon ay para lang sa fullscreen; katamtaman ang gamit sa floaty mode.";
+"SettingsCustomGridToggle" = "Custom na grid";
+"SettingsCustomGridColumns" = "Mga column: %d";
+"SettingsCustomGridRows" = "Mga hilera: %d";
 "SettingsPagingDirectionLabel" = "Direksyon ng paglipat ng pahina";
 "SettingsPagingDirectionBody" = "Ang patayong paging ay naglilipat ng mga pahina pataas at pababa. Sa fullscreen lilipat ang mga indicator sa kaliwa at sa floaty mananatili sa ibaba.";
 "PagingDirectionHorizontal" = "Pahalang";

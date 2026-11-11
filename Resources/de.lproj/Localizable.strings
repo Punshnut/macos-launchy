@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Mittel";
 "IconSizeLarge" = "Groß";
 "SettingsIconSizeLargeNote" = "Große Symbole gelten nur im Vollbild; Floaty nutzt Mittel.";
+"SettingsCustomGridToggle" = "Eigenes Raster";
+"SettingsCustomGridColumns" = "Spalten: %d";
+"SettingsCustomGridRows" = "Zeilen: %d";
 "SettingsPagingDirectionLabel" = "Scrollrichtung";
 "SettingsPagingDirectionBody" = "Vertikales Blättern bewegt Seiten nach oben und unten. Indikatoren wandern im Vollbild nach links und bleiben im Floaty unten.";
 "PagingDirectionHorizontal" = "Horizontal";

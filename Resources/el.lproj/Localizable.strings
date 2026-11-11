@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Μεσαίο";
 "IconSizeLarge" = "Μεγάλο";
 "SettingsIconSizeLargeNote" = "Το μεγάλο μέγεθος ισχύει μόνο σε πλήρη οθόνη· το floaty χρησιμοποιεί μεσαίο.";
+"SettingsCustomGridToggle" = "Προσαρμοσμένο πλέγμα";
+"SettingsCustomGridColumns" = "Στήλες: %d";
+"SettingsCustomGridRows" = "Γραμμές: %d";
 "SettingsPagingDirectionLabel" = "Κατεύθυνση κύλισης";
 "SettingsPagingDirectionBody" = "Η κάθετη σελιδοποίηση μετακινεί τις σελίδες πάνω-κάτω. Οι δείκτες πάνε αριστερά σε πλήρη οθόνη και μένουν κάτω στο floaty.";
 "PagingDirectionHorizontal" = "Οριζόντια";

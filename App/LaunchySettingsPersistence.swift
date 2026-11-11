@@ -152,6 +152,30 @@ enum LauncherSettingsPersistence {
         }
     }
 
+    /// Saves the custom grid override (columns x rows).
+    static func setCustomGrid(
+        enabled: Bool,
+        columns: Int,
+        rows: Int,
+        userDefaults: UserDefaults = .standard
+    ) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.customGridEnabled = enabled
+            settings.customGridColumns = LauncherGridConfiguration.columnRange.clamped(columns)
+            settings.customGridRows = LauncherGridConfiguration.rowRange.clamped(rows)
+        }
+    }
+
+    /// Saves the floaty panel scale.
+    static func setFloatyPanelScale(
+        _ scale: Double,
+        userDefaults: UserDefaults = .standard
+    ) {
+        updateSettings(userDefaults: userDefaults) { settings in
+            settings.floatyPanelScale = LauncherSettings.floatyPanelScaleRange.clamped(scale)
+        }
+    }
+
     /// Returns paging orientation.
     static func pagingOrientation(userDefaults: UserDefaults = .standard) -> PagingOrientation {
         loadSettings(userDefaults: userDefaults).pagingOrientation

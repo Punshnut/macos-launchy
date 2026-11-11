@@ -178,6 +178,9 @@
 "IconSizeMedium" = "Medium";
 "IconSizeLarge" = "Large";
 "SettingsIconSizeLargeNote" = "Large icon size applies to fullscreen only; floaty uses medium.";
+"SettingsCustomGridToggle" = "Custom grid";
+"SettingsCustomGridColumns" = "Columns: %d";
+"SettingsCustomGridRows" = "Rows: %d";
 "SettingsPagingDirectionLabel" = "Paging direction";
 "SettingsPagingDirectionBody" = "Vertical paging moves pages up and down. Indicators move to the left in fullscreen and stay at the bottom in floaty.";
 "PagingDirectionHorizontal" = "Horizontal";

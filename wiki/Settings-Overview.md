@@ -15,7 +15,8 @@ The biggest tab, covering how the grid looks and behaves:
   beyond your screen, so on small displays sizes above 100% may have little
   effect. The change shows right away if the panel is open.
 - **Background style**: standard, light blur, transparent, or solid color.
-  The solid option comes with a palette of twelve colors (System, Graphite,
+  See [Backgrounds and Colors](Backgrounds-and-Colors) for how each style
+  looks in light and dark mode. The solid option has twelve colors (System, Graphite,
   Indigo, Blue, Cyan, Teal, Green, Mint, Yellow, Orange, Pink, Purple).
 - **Icon size**: small, medium, or large, which also sets how many apps fit
   on a page (7x5, 6x4, and 5x3). Icons are sized to fit the grid, so fewer

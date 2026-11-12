@@ -3,6 +3,7 @@
 - [Home](Home)
 - [Getting Started](Getting-Started)
 - [Fullscreen and Floaty Mode](Fullscreen-and-Floaty-Mode)
+- [Backgrounds and Colors](Backgrounds-and-Colors)
 - [Search](Search)
 - [Organizing Your Apps](Organizing-Your-Apps)
 - [Multi-Selection](Multi-Selection)

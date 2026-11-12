@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import os
+import ImageIO
 
 extension Notification.Name {
     /// Informs the launcher view that the search bar should regain focus after a mode switch.
@@ -973,6 +974,10 @@ struct LauncherView: View {
     @FocusState private var isAppNameFieldFocused: Bool
     @FocusState private var isSearchFieldFocused: Bool
     @Environment(\.colorScheme) private var colorScheme
+    /// Average wallpaper luminance (0...1) used to pick label contrast in Transparent mode.
+    @State private var wallpaperLuminance: CGFloat?
+    /// Last Transparent contrast decision, kept for hysteresis so labels don't flicker near the threshold.
+    @State private var transparentBackdropIsDark: Bool?
     @Environment(\.layoutDirection) private var layoutDirection
 
     init(
@@ -1326,10 +1331,9 @@ struct LauncherView: View {
                 .blendMode(.screen)
                 .ignoresSafeArea()
 
-                if colorScheme == .dark {
-                    Color.black.opacity(0.10)
-                        .ignoresSafeArea()
-                }
+                Color.black.opacity(colorScheme == .dark ? 0.10 : 0)
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
             }
 
             VStack(spacing: 0) {
@@ -1370,6 +1374,19 @@ struct LauncherView: View {
             }
 
             dragEdgePagingOverlay(canReorder: canReorder)
+        }
+        .animation(.easeInOut(duration: 0.25), value: backdropIsDark)
+        .onAppear { refreshWallpaperLuminanceIfNeeded() }
+        .onChange(of: backgroundStylePreference) { _ in refreshWallpaperLuminanceIfNeeded() }
+        .onChange(of: colorScheme) { _ in refreshWallpaperLuminanceIfNeeded() }
+        .onReceive(NotificationCenter.default.publisher(for: .launcherDidShow)) { _ in
+            refreshWallpaperLuminanceIfNeeded()
+        }
+        .onReceive(NSWorkspace.shared.notificationCenter.publisher(for: NSWorkspace.activeSpaceDidChangeNotification)) { _ in
+            refreshWallpaperLuminanceIfNeeded()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didChangeScreenParametersNotification)) { _ in
+            refreshWallpaperLuminanceIfNeeded()
         }
         .transaction { transaction in
             if isScrollGestureActive {
@@ -4157,7 +4174,7 @@ struct LauncherView: View {
             TextField("", text: $folderNameDraft)
                 .textFieldStyle(.plain)
                 .font(.system(size: 22, weight: .semibold))
-                .foregroundColor(iconLabelColor())
+                .foregroundColor(Color.white)
                 .multilineTextAlignment(.center)
                 .focused($isFolderNameFieldFocused)
                 .onSubmit {
@@ -4180,7 +4197,7 @@ struct LauncherView: View {
         } else {
             Text(folder.name.isEmpty ? FolderItem.defaultName : folder.name)
                 .font(.system(size: 22, weight: .semibold))
-                .foregroundColor(iconLabelColor())
+                .foregroundColor(Color.white)
                 .padding(.top, 8)
                 .onTapGesture {
                     beginFolderNameEdit(for: folder)
@@ -4347,7 +4364,7 @@ struct LauncherView: View {
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(pagerControlForegroundColor.opacity(currentPage == 0 ? 0.35 : 0.8))
+                    .foregroundColor(Color.white.opacity(currentPage == 0 ? 0.35 : 0.8))
                     .frame(width: 28, height: 28)
             }
             .padding(.horizontal, pagerButtonHitPadding)
@@ -4372,7 +4389,7 @@ struct LauncherView: View {
             } label: {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(pagerControlForegroundColor.opacity(currentPage >= totalPages - 1 ? 0.35 : 0.8))
+                    .foregroundColor(Color.white.opacity(currentPage >= totalPages - 1 ? 0.35 : 0.8))
                     .frame(width: 28, height: 28)
             }
             .padding(.horizontal, pagerButtonHitPadding)
@@ -4782,8 +4799,8 @@ struct LauncherView: View {
 
                 Text(app.resolvedDisplayName)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(iconLabelColor())
-                    .shadow(color: labelShadowColor, radius: 1.5, y: 0.5)
+                    .foregroundColor(Color.white)
+                    .shadow(color: Color.black.opacity(0.4), radius: 1.5, y: 0.5)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                     .opacity(folderIconWaveToggle ? 1 : 0)
@@ -5728,10 +5745,18 @@ struct LauncherView: View {
         var body: some View {
             switch style {
             case .standard:
-                if colorScheme == .dark {
+                if launcherMode == .fullscreen {
+                    // Launchpad-style: plain blurred desktop, independent of system appearance.
                     darkBlurBackground()
                 } else {
-                    lightBlurBackground()
+                    // Floaty follows system appearance; cross-fade so the switch feels light.
+                    ZStack {
+                        darkBlurBackground()
+                            .opacity(colorScheme == .dark ? 1 : 0)
+                        lightBlurBackground()
+                            .opacity(colorScheme == .dark ? 0 : 1)
+                    }
+                    .animation(.easeInOut(duration: 0.25), value: colorScheme)
                 }
             case .light:
                 lightBlurBackground()
@@ -6247,20 +6272,70 @@ struct LauncherView: View {
     private var backdropIsDark: Bool {
         switch backgroundStylePreference {
         case .standard:
-            return colorScheme == .dark
+            // Fullscreen always renders the dark blur; Floaty follows the system appearance.
+            return launcherMode == .fullscreen || colorScheme == .dark
         case .light:
             return false
         case .solid:
             return solidBackgroundColor.nsColor.launchy_perceivedBrightness < 0.6
         case .transparent:
-            // Wallpaper is unknown, so white text with a shadow is the safest choice.
-            return true
+            return transparentBackdropIsDark ?? Self.transparentContrastDecision(
+                luminance: wallpaperLuminance,
+                systemIsDark: colorScheme == .dark,
+                previous: nil
+            )
+        }
+    }
+
+    /// Transparent mode: wallpaper luminance biased by system appearance, with hysteresis.
+    /// Falls back to the system appearance when the wallpaper can't be sampled.
+    private static func transparentContrastDecision(
+        luminance: CGFloat?,
+        systemIsDark: Bool,
+        previous: Bool?
+    ) -> Bool {
+        guard let luminance else { return systemIsDark }
+        let threshold: CGFloat = 0.5 + (systemIsDark ? 0.08 : -0.08)
+        let band: CGFloat = 0.06
+        if let previous, abs(luminance - threshold) < band { return previous }
+        return luminance < threshold
+    }
+
+    /// True when Transparent mode is near the decision threshold or has no wallpaper sample.
+    private var transparentContrastIsUncertain: Bool {
+        guard backgroundStylePreference == .transparent else { return false }
+        guard let luminance = wallpaperLuminance else { return true }
+        let threshold: CGFloat = 0.5 + (colorScheme == .dark ? 0.08 : -0.08)
+        return abs(luminance - threshold) < 0.15
+    }
+
+    /// Re-samples the wallpaper off the main thread and updates the Transparent contrast decision.
+    private func refreshWallpaperLuminanceIfNeeded() {
+        guard backgroundStylePreference == .transparent else { return }
+        let screen = NSApp.keyWindow?.screen ?? NSScreen.main
+        let systemIsDark = colorScheme == .dark
+        let wallpaperURL = screen.flatMap { NSWorkspace.shared.desktopImageURL(for: $0) }
+        Task { @MainActor in
+            let luminance: CGFloat? = if let wallpaperURL {
+                await Task.detached(priority: .utility) {
+                    WallpaperLuminanceSampler.luminance(forImageAt: wallpaperURL)
+                }.value
+            } else {
+                nil
+            }
+            wallpaperLuminance = luminance
+            transparentBackdropIsDark = Self.transparentContrastDecision(
+                luminance: luminance,
+                systemIsDark: systemIsDark,
+                previous: transparentBackdropIsDark
+            )
         }
     }
 
     /// Soft halo behind small text so it stays readable over mixed wallpapers.
     private var labelShadowColor: Color {
-        backdropIsDark ? Color.black.opacity(0.4) : Color.white.opacity(0.35)
+        let strength = transparentContrastIsUncertain ? 0.6 : 0.4
+        return backdropIsDark ? Color.black.opacity(strength) : Color.white.opacity(strength - 0.05)
     }
 
     /// Picks an icon label color that keeps adequate contrast against the selected background.
@@ -7354,5 +7429,49 @@ private extension NSColor {
             return 1.0
         }
         return (0.299 * rgb.redComponent) + (0.587 * rgb.greenComponent) + (0.114 * rgb.blueComponent)
+    }
+}
+
+/// Samples the desktop wallpaper file to estimate how bright the area behind a transparent launcher is.
+/// Needs no screen-recording permission; returns nil when the wallpaper can't be decoded.
+enum WallpaperLuminanceSampler {
+    private static let cache = OSAllocatedUnfairLock<[URL: CGFloat]>(initialState: [:])
+
+    static func luminance(forImageAt url: URL) -> CGFloat? {
+        if let cached = cache.withLock({ $0[url] }) { return cached }
+
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: 32
+        ]
+        guard let image = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
+
+        let width = 16, height = 16
+        var pixels = [UInt8](repeating: 0, count: width * height * 4)
+        guard let context = CGContext(
+            data: &pixels,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: width * 4,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else { return nil }
+        context.interpolationQuality = .medium
+        context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+        var total: CGFloat = 0
+        for index in stride(from: 0, to: pixels.count, by: 4) {
+            let r = CGFloat(pixels[index]) / 255
+            let g = CGFloat(pixels[index + 1]) / 255
+            let b = CGFloat(pixels[index + 2]) / 255
+            total += 0.299 * r + 0.587 * g + 0.114 * b
+        }
+        let average = total / CGFloat(width * height)
+
+        cache.withLock { $0[url] = average }
+        return average
     }
 }

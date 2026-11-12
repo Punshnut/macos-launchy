@@ -50,6 +50,9 @@ New to Launchy? Start here:
   permission you might need to grant.
 - [Fullscreen and Floaty Mode](Fullscreen-and-Floaty-Mode) - what each mode
   is for, and when to reach for which one.
+- [Backgrounds and Colors](Backgrounds-and-Colors) - how each background
+  style and label color behaves in light and dark mode, in floaty and
+  fullscreen.
 
 Once you're up and running, these pages cover specific things you can do:
 

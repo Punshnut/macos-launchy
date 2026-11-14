@@ -117,6 +117,17 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         private let phaselessPageThreshold: CGFloat = 40
         /// Gap after which stale accumulation from an earlier gesture is discarded.
         private let phaselessIdleResetInterval: TimeInterval = 0.25
+        private var lastWheelPageDate: Date?
+        /// Minimum gap between wheel page changes so a fast spin moves one page, not several.
+        private let wheelPageCooldown: TimeInterval = 0.2
+
+        /// Returns true (and records the time) if a wheel page change is allowed right now.
+        private func allowWheelPage() -> Bool {
+            let now = Date()
+            if let last = lastWheelPageDate, now.timeIntervalSince(last) < wheelPageCooldown { return false }
+            lastWheelPageDate = now
+            return true
+        }
 
         init(
             pagingOrientation: PagingOrientation,
@@ -239,7 +250,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
 
         /// Maps discrete scrolls (e.g. mouse wheel) to next/previous page triggers.
         private func processDiscretePagingScroll(delta: CGFloat) {
-            guard abs(delta) >= 1 else { return }
+            guard abs(delta) >= 1, allowWheelPage() else { return }
             if delta <= -1 {
                 trigger(.next)
             } else if delta >= 1 {
@@ -267,12 +278,11 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
 
             phaselessAccumulatedDelta += delta
 
-            if phaselessAccumulatedDelta <= -phaselessPageThreshold {
-                trigger(.next)
+            if abs(phaselessAccumulatedDelta) >= phaselessPageThreshold {
+                let isNext = phaselessAccumulatedDelta < 0
                 phaselessAccumulatedDelta = 0
-            } else if phaselessAccumulatedDelta >= phaselessPageThreshold {
-                trigger(.previous)
-                phaselessAccumulatedDelta = 0
+                guard allowWheelPage() else { return }
+                trigger(isNext ? .next : .previous)
             }
         }
 
@@ -292,6 +302,7 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
             isIgnoringPreciseMomentum = false
             phaselessAccumulatedDelta = 0
             phaselessLastEventDate = nil
+            lastWheelPageDate = nil
         }
 
         private enum PageDirection {

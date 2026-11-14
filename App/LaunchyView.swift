@@ -5225,6 +5225,9 @@ struct LauncherView: View {
             return
         }
 
+        // In vertical paging, Up/Down page; Left/Right must not.
+        if isVerticalPaging { return }
+
         switch direction {
         case .backward:
             pageBackward()

@@ -82,6 +82,10 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         context.coordinator.hostView = nsView
         context.coordinator.isEnabled = isEnabled
         context.coordinator.pagingOrientation = pagingOrientation
+        context.coordinator.onScrollProgress = onScrollProgress
+        context.coordinator.onScrollEnd = onScrollEnd
+        context.coordinator.onPreviousPage = onPreviousPage
+        context.coordinator.onNextPage = onNextPage
     }
 
     /// Tears down local monitors when the overlay leaves the hierarchy.
@@ -103,10 +107,10 @@ struct ScrollWheelPagerOverlay: NSViewRepresentable {
         weak var hostView: NSView?
         var pagingOrientation: PagingOrientation
 
-        private let onScrollProgress: (ScrollEvent) -> Void
-        private let onScrollEnd: () -> Void
-        private let onPreviousPage: () -> Void
-        private let onNextPage: () -> Void
+        var onScrollProgress: (ScrollEvent) -> Void
+        var onScrollEnd: () -> Void
+        var onPreviousPage: () -> Void
+        var onNextPage: () -> Void
         private var scrollMonitor: EventMonitorToken?
         private var hasActivePagedScroll = false
         private var isIgnoringPreciseMomentum = false
@@ -384,6 +388,13 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
     /// Updates coordinator wiring and enabled state from SwiftUI.
     func updateNSView(_ nsView: KeyCaptureView, context: Context) {
         context.coordinator.hostView = nsView
+        context.coordinator.shouldCaptureArrowKeys = shouldCaptureArrowKeys
+        context.coordinator.shouldHandleEscape = shouldHandleEscape
+        context.coordinator.onPreviousPage = onPreviousPage
+        context.coordinator.onNextPage = onNextPage
+        context.coordinator.onEscape = onEscape
+        context.coordinator.onPageShortcut = onPageShortcut
+        context.coordinator.onVerticalNavigation = onVerticalNavigation
         context.coordinator.isEnabled = isEnabled
     }
 
@@ -408,13 +419,13 @@ struct KeyPressPagerOverlay: NSViewRepresentable {
         weak var hostView: NSView?
 
         private static let escapeKeyCode: UInt16 = 53
-        private let onPreviousPage: () -> Void
-        private let onNextPage: () -> Void
-        private let shouldCaptureArrowKeys: () -> Bool
-        private let shouldHandleEscape: () -> Bool
-        private let onEscape: () -> Void
-        private let onPageShortcut: ((Int) -> Void)?
-        private let onVerticalNavigation: ((VerticalArrowDirection) -> Void)?
+        var onPreviousPage: () -> Void
+        var onNextPage: () -> Void
+        var shouldCaptureArrowKeys: () -> Bool
+        var shouldHandleEscape: () -> Bool
+        var onEscape: () -> Void
+        var onPageShortcut: ((Int) -> Void)?
+        var onVerticalNavigation: ((VerticalArrowDirection) -> Void)?
         private var keyDownMonitor: EventMonitorToken?
         private var keyUpMonitor: EventMonitorToken?
 

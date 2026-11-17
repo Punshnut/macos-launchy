@@ -31,7 +31,7 @@ struct SettingsWindow: View {
 
     var body: some View {
         ZStack {
-            FrostedBackgroundView(material: .hudWindow)
+            SettingsWindowBackdrop()
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
@@ -65,7 +65,7 @@ struct SettingsWindow: View {
         .ignoresSafeArea(.all, edges: .top)
         .overlay(
             RoundedRectangle(cornerRadius: 32, style: .continuous)
-                .stroke(borderStrokeColor, lineWidth: 1)
+                .stroke(borderStrokeColor, lineWidth: usesSystemGlassEdge ? 0.5 : 1)
                 .allowsHitTesting(false)
                 .ignoresSafeArea()
         )
@@ -78,6 +78,11 @@ struct SettingsWindow: View {
         .onDisappear {
             settingsStore.prepareForDormancy()
         }
+    }
+
+    private var usesSystemGlassEdge: Bool {
+        if #available(macOS 26, *) { return true }
+        return false
     }
 
     // MARK: - Top Bar
@@ -139,6 +144,7 @@ struct SettingsWindow: View {
                         )
                     )
                 )
+                .settingsCapsulePlate()
         }
     }
 
@@ -159,23 +165,13 @@ struct SettingsWindow: View {
     // MARK: - Tabs
 
     private var tabBar: some View {
-        AdaptiveGlassContainer {
-            HStack(spacing: 6) {
-                ForEach(SettingsTab.allCases) { tab in
-                    tabButton(for: tab)
-                }
+        HStack(spacing: 6) {
+            ForEach(SettingsTab.allCases) { tab in
+                tabButton(for: tab)
             }
         }
         .padding(5)
-        .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.primary.opacity(0.09))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .stroke(Color.white.opacity(0.10), lineWidth: 0.5)
-                )
-        )
-        .shadow(color: Color.black.opacity(0.08), radius: 4, y: 2)
+        .modifier(TabBarTrack())
         .padding(.horizontal, 16)
         .padding(.top, 10)
         .padding(.bottom, 6)
@@ -293,7 +289,7 @@ struct SettingsWindow: View {
                 get: { settingsStore.settingsSnapshot.shouldScanUserApplicationsFolder },
                 set: { settingsStore.setShouldScanUserApplicationsFolder($0) }
             ))
-            .toggleStyle(.switch)
+            .settingsSwitchStyle()
 
             Text(String(format: String(localized: "SettingsUserAppsFolderBody"), userApplicationsPath))
                 .font(.caption)
@@ -306,7 +302,7 @@ struct SettingsWindow: View {
             get: { settingsStore.settingsSnapshot.launchesAtLogin },
             set: { settingsStore.setLaunchAtLogin($0) }
         ))
-        .toggleStyle(.switch)
+        .settingsSwitchStyle()
     }
 
     private var launcherLayoutPicker: some View {
@@ -320,19 +316,17 @@ struct SettingsWindow: View {
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 4)
                     .padding(.vertical, 2)
-                    .background(.quaternary, in: Capsule())
+                    .settingsCapsulePlate()
             }
 
-            Picker("", selection: Binding(
-                get: { settingsStore.settingsSnapshot.selectedLauncherMode },
-                set: { settingsStore.setLauncherMode($0) }
-            )) {
-                ForEach(LauncherMode.allCases, id: \.self) { mode in
-                    Text(mode.displayName).tag(mode)
-                }
-            }
-            .labelsHidden()
-            .pickerStyle(.segmented)
+            SettingsSegmentedPicker(
+                selection: Binding(
+                    get: { settingsStore.settingsSnapshot.selectedLauncherMode },
+                    set: { settingsStore.setLauncherMode($0) }
+                ),
+                options: Array(LauncherMode.allCases),
+                title: { $0.displayName }
+            )
             .frame(maxWidth: 320)
             .frame(maxWidth: .infinity, alignment: .center)
 
@@ -359,12 +353,12 @@ struct SettingsWindow: View {
             .font(.caption)
             .foregroundColor(.secondary)
 
-            Slider(
+            SettingsSlider(
                 value: Binding(
                     get: { scale },
                     set: { settingsStore.setFloatyPanelScale(($0 * 20).rounded() / 20) }
                 ),
-                in: range,
+                range: range,
                 step: 0.05
             )
         }
@@ -380,12 +374,12 @@ struct SettingsWindow: View {
                 .fontWeight(.semibold)
 
             VStack(spacing: 3) {
-                Slider(
+                SettingsSlider(
                     value: Binding(
                         get: { settingsStore.settingsSnapshot.iconSizePreference.sliderPosition },
                         set: { settingsStore.setIconSizePreference(IconSizePreference.fromSliderPosition($0)) }
                     ),
-                    in: 0...2,
+                    range: 0...2,
                     step: 1
                 )
 
@@ -418,21 +412,21 @@ struct SettingsWindow: View {
                     }
                 }
             ))
-            .toggleStyle(.switch)
+            .settingsSwitchStyle()
             .padding(.top, 2)
 
             if customGrid.enabled {
                 HStack(spacing: 16) {
-                    Stepper(
-                        String(format: String(localized: "SettingsCustomGridColumns"), customGrid.columns),
+                    SettingsStepper(
+                        title: String(format: String(localized: "SettingsCustomGridColumns"), customGrid.columns),
                         value: Binding(
                             get: { customGrid.columns },
                             set: { settingsStore.setCustomGrid(enabled: true, columns: $0, rows: customGrid.rows) }
                         ),
                         in: LauncherGridConfiguration.columnRange
                     )
-                    Stepper(
-                        String(format: String(localized: "SettingsCustomGridRows"), customGrid.rows),
+                    SettingsStepper(
+                        title: String(format: String(localized: "SettingsCustomGridRows"), customGrid.rows),
                         value: Binding(
                             get: { customGrid.rows },
                             set: { settingsStore.setCustomGrid(enabled: true, columns: customGrid.columns, rows: $0) }
@@ -458,16 +452,14 @@ struct SettingsWindow: View {
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
-            Picker("", selection: Binding(
-                get: { settingsStore.settingsSnapshot.pagingOrientation },
-                set: { settingsStore.setPagingOrientation($0) }
-            )) {
-                ForEach(PagingOrientation.allCases, id: \.self) { orientation in
-                    Text(orientation.displayName).tag(orientation)
-                }
-            }
-            .labelsHidden()
-            .pickerStyle(.segmented)
+            SettingsSegmentedPicker(
+                selection: Binding(
+                    get: { settingsStore.settingsSnapshot.pagingOrientation },
+                    set: { settingsStore.setPagingOrientation($0) }
+                ),
+                options: Array(PagingOrientation.allCases),
+                title: { $0.displayName }
+            )
             .frame(maxWidth: 220)
             .frame(maxWidth: .infinity, alignment: .center)
 
@@ -483,22 +475,20 @@ struct SettingsWindow: View {
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
-            Picker("", selection: Binding(
-                get: { settingsStore.settingsSnapshot.pageRevertMode },
-                set: { settingsStore.setPageRevertMode($0) }
-            )) {
-                ForEach(PageRevertMode.allCases, id: \.self) { mode in
-                    Text(mode.displayName).tag(mode)
-                }
-            }
-            .labelsHidden()
-            .pickerStyle(.segmented)
+            SettingsSegmentedPicker(
+                selection: Binding(
+                    get: { settingsStore.settingsSnapshot.pageRevertMode },
+                    set: { settingsStore.setPageRevertMode($0) }
+                ),
+                options: Array(PageRevertMode.allCases),
+                title: { $0.displayName }
+            )
             .frame(maxWidth: 320)
             .frame(maxWidth: .infinity, alignment: .center)
 
             if settingsStore.settingsSnapshot.pageRevertMode == .fixedPage {
-                Stepper(
-                    String(
+                SettingsStepper(
+                    title: String(
                         format: String(localized: "SettingsPageRevertPageNumber"),
                         settingsStore.settingsSnapshot.standardPageIndex + 1
                     ),
@@ -527,7 +517,7 @@ struct SettingsWindow: View {
                     get: { settingsStore.settingsSnapshot.isDockIconHidden },
                     set: { settingsStore.setDockIconHidden($0) }
                 ))
-                .toggleStyle(.switch)
+                .settingsSwitchStyle()
                 .labelsHidden()
             }
             .padding(.horizontal, 14)
@@ -542,7 +532,7 @@ struct SettingsWindow: View {
                     get: { settingsStore.settingsSnapshot.isMenuBarIconHidden },
                     set: { settingsStore.setMenuBarIconHidden($0) }
                 ))
-                .toggleStyle(.switch)
+                .settingsSwitchStyle()
                 .labelsHidden()
             }
             .padding(.horizontal, 14)
@@ -570,7 +560,7 @@ struct SettingsWindow: View {
                     get: { settingsStore.settingsSnapshot.sortsDockMenuFoldersLast },
                     set: { settingsStore.setSortsDockMenuFoldersLast($0) }
                 ))
-                .toggleStyle(.switch)
+                .settingsSwitchStyle()
                 .labelsHidden()
             }
             .padding(.horizontal, 14)
@@ -585,17 +575,13 @@ struct SettingsWindow: View {
                     get: { settingsStore.settingsSnapshot.fillsGapsAutomatically },
                     set: { settingsStore.setFillsGapsAutomatically($0) }
                 ))
-                .toggleStyle(.switch)
+                .settingsSwitchStyle()
                 .labelsHidden()
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
         }
-        .glassSurface(cornerRadius: GlassRadii.card)
-        .overlay(
-            RoundedRectangle(cornerRadius: GlassRadii.card, style: .continuous)
-                .stroke(Color.white.opacity(0.10), lineWidth: 0.8)
-        )
+        .settingsCardSurface(cornerRadius: GlassRadii.card, legacyStrokeOpacity: 0.10)
     }
 
     private var backgroundStyleSection: some View {
@@ -604,16 +590,14 @@ struct SettingsWindow: View {
                 .font(.subheadline)
                 .fontWeight(.semibold)
 
-            Picker("", selection: Binding(
-                get: { settingsStore.settingsSnapshot.backgroundStylePreference },
-                set: { settingsStore.setPreferredBackgroundStyle($0) }
-            )) {
-                ForEach(LauncherSettings.PreferredBackgroundStyle.allCases, id: \.self) { style in
-                    Text(style.displayName).tag(style)
-                }
-            }
-            .labelsHidden()
-            .pickerStyle(.segmented)
+            SettingsSegmentedPicker(
+                selection: Binding(
+                    get: { settingsStore.settingsSnapshot.backgroundStylePreference },
+                    set: { settingsStore.setPreferredBackgroundStyle($0) }
+                ),
+                options: Array(LauncherSettings.PreferredBackgroundStyle.allCases),
+                title: { $0.displayName }
+            )
             .frame(maxWidth: 400)
             .frame(maxWidth: .infinity, alignment: .center)
 
@@ -634,13 +618,7 @@ struct SettingsWindow: View {
                     Button {
                         settingsStore.setSolidBackgroundColor(colorOption)
                     } label: {
-                        Circle()
-                            .fill(Color(nsColor: colorOption.nsColor))
-                            .frame(width: 28, height: 28)
-                            .overlay(
-                                Circle()
-                                    .strokeBorder(isSelected ? Color.accentColor : Color.primary.opacity(0.25), lineWidth: isSelected ? 3 : 1)
-                            )
+                        SettingsSwatch(color: Color(nsColor: colorOption.nsColor), isSelected: isSelected)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(colorOption.displayName)
@@ -677,7 +655,7 @@ struct SettingsWindow: View {
                 get: { settingsStore.settingsSnapshot.hotCornerEnabled },
                 set: { settingsStore.setHotCornerEnabled($0) }
             ))
-            .toggleStyle(.switch)
+            .settingsSwitchStyle()
 
             Text(String(localized: "SettingsHotCornerBody"))
                 .font(.caption)
@@ -689,16 +667,14 @@ struct SettingsWindow: View {
                         .font(.subheadline)
                         .fontWeight(.semibold)
                     Spacer()
-                    Picker("", selection: Binding(
-                        get: { settingsStore.settingsSnapshot.hotCornerPosition },
-                        set: { settingsStore.setHotCornerPosition($0) }
-                    )) {
-                        ForEach(HotCornerPosition.allCases, id: \.self) { position in
-                            Text(position.displayName).tag(position)
-                        }
-                    }
-                    .labelsHidden()
-                    .pickerStyle(.menu)
+                    SettingsMenuPicker(
+                        selection: Binding(
+                            get: { settingsStore.settingsSnapshot.hotCornerPosition },
+                            set: { settingsStore.setHotCornerPosition($0) }
+                        ),
+                        options: Array(HotCornerPosition.allCases),
+                        title: { $0.displayName }
+                    )
                 }
 
                 Text(String(localized: "SettingsHotCornerPermissionNote"))
@@ -715,7 +691,7 @@ struct SettingsWindow: View {
             } label: {
                 Label(String(localized: "SettingsResetArrangementButton"), systemImage: "arrow.counterclockwise.circle")
             }
-            .glassProminentButtonStyle()
+            .settingsButtonStyle(prominent: true)
             .tint(.red)
 
             Text(String(localized: "SettingsResetArrangementBody"))
@@ -741,14 +717,14 @@ struct SettingsWindow: View {
                 } label: {
                     Label(String(localized: "BackupExportButton"), systemImage: "arrow.down.doc.fill")
                 }
-                .glassProminentButtonStyle()
+                .settingsButtonStyle(prominent: true)
 
                 Button {
                     settingsStore.importBackup(hostingWindow: hostingWindow)
                 } label: {
                     Label(String(localized: "BackupRestoreButton"), systemImage: "arrow.up.doc.fill")
                 }
-                .buttonStyle(.bordered)
+                .settingsButtonStyle()
             }
         }
     }
@@ -776,8 +752,7 @@ struct SettingsWindow: View {
                 )
             )
 
-            Divider()
-                .overlay(Color.white.opacity(0.05))
+            SettingsRowDivider()
 
             let orderedEntries = settingsStore.orderedHiddenEntries
             if settingsStore.discoveredApps.isEmpty {
@@ -807,17 +782,9 @@ struct SettingsWindow: View {
                 .glassListScrollBackground()
             }
         }
-        .glassSurface(cornerRadius: GlassRadii.panel)
-        .overlay(
-            RoundedRectangle(cornerRadius: GlassRadii.panel, style: .continuous)
-                .stroke(LinearGradient(
-                    colors: [Color.white.opacity(0.45), Color.white.opacity(0.08)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ), lineWidth: 1.1)
-                .blendMode(.plusLighter)
-        )
-        .shadow(color: Color.black.opacity(0.3), radius: 20, y: 14)
+        .clipShape(RoundedRectangle(cornerRadius: GlassRadii.panel, style: .continuous))
+        .settingsCardSurface(cornerRadius: GlassRadii.panel, legacyStrokeOpacity: 0.10)
+        .modifier(LegacyListShadow())
         .padding(.horizontal, 2)
         .padding(.top, 2)
     }
@@ -827,8 +794,7 @@ struct SettingsWindow: View {
             get: { settingsStore.settingsSnapshot.showHiddenAppsFirst },
             set: { settingsStore.setShowHiddenAppsFirst($0) }
         ))
-        .toggleStyle(.checkbox)
-        .controlSize(.small)
+        .settingsCheckboxStyle()
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -864,7 +830,7 @@ struct SettingsWindow: View {
             )) {
                 EmptyView()
             }
-            .toggleStyle(.switch)
+            .settingsSwitchStyle()
             .labelsHidden()
         }
         .padding(.horizontal, 20)
@@ -947,24 +913,20 @@ struct SettingsWindow: View {
                 title: String(localized: "SettingsAboutWebsiteButton"),
                 urlString: "https://feuerbacher.me/projects/launchy"
             )
-            Divider().overlay(Color.white.opacity(0.08))
+            SettingsRowDivider()
             aboutLinkRow(
                 icon: "sparkle.magnifyingglass",
                 title: String(localized: "SettingsAboutReportIssueButton"),
                 urlString: "https://github.com/Punshnut/macos-launchy/issues"
             )
-            Divider().overlay(Color.white.opacity(0.08))
+            SettingsRowDivider()
             aboutLinkRow(
                 icon: "envelope",
                 title: String(localized: "SettingsAboutSupportEmailButton"),
                 urlString: "https://github.com/Punshnut/macos-launchy"
             )
         }
-        .glassSurface(cornerRadius: GlassRadii.card)
-        .overlay(
-            RoundedRectangle(cornerRadius: GlassRadii.card, style: .continuous)
-                .stroke(Color.white.opacity(0.10), lineWidth: 0.8)
-        )
+        .settingsCardSurface(cornerRadius: GlassRadii.card, legacyStrokeOpacity: 0.10)
     }
 
     @ViewBuilder
@@ -984,8 +946,10 @@ struct SettingsWindow: View {
                 }
                 .padding(.vertical, 11)
                 .padding(.horizontal, 14)
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .settingsRowHover()
         }
     }
 
@@ -996,7 +960,7 @@ struct SettingsWindow: View {
             } label: {
                 Label(String(localized: "SettingsAboutRevisitIntroButton"), systemImage: "sparkles")
             }
-            .buttonStyle(.bordered)
+            .settingsButtonStyle()
 
             Button {
                 if let url = URL(string: "https://github.com/Punshnut/macos-launchy") {
@@ -1005,7 +969,7 @@ struct SettingsWindow: View {
             } label: {
                 Label(String(localized: "SettingsAboutGitHubButton"), systemImage: "chevron.right.circle")
             }
-            .glassProminentButtonStyle()
+            .settingsButtonStyle(prominent: true)
         }
         .frame(maxWidth: .infinity, alignment: .center)
     }
@@ -1031,47 +995,15 @@ struct SettingsWindow: View {
                 }
             }
 
-            Button {
+            DonateButton {
                 if let url = URL(string: "https://ko-fi.com/janfeuerbacher") {
                     SettingsWindowAppKitBridge.openURL(url)
                 }
-            } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: "cup.and.saucer.fill")
-                        .imageScale(.medium)
-                    Text(String(localized: "SettingsAboutDonateButton"))
-                        .fontWeight(.semibold)
-                    Spacer()
-                    Image(systemName: "arrow.up.right")
-                        .imageScale(.small)
-                        .foregroundColor(.white.opacity(0.85))
-                }
-                .padding(.vertical, 10)
-                .padding(.horizontal, 14)
-                .foregroundColor(.white)
-                .background(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color(red: 0.16, green: 0.56, blue: 1.0),
-                                    Color(red: 0.48, green: 0.24, blue: 0.9)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .shadow(color: Color.black.opacity(0.25), radius: 10, x: 0, y: 6)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .stroke(Color.white.opacity(0.22), lineWidth: 1)
-                        )
-                )
             }
-            .buttonStyle(.plain)
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .modifier(SupportCalloutSurface())
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(
@@ -1094,8 +1026,7 @@ struct SettingsWindow: View {
     // MARK: - Shared Helpers
 
     private var panelDivider: some View {
-        Divider()
-            .overlay(Color.white.opacity(0.08))
+        SettingsRowDivider()
     }
 
     private func settingsPanel<Content: View>(
@@ -1137,11 +1068,7 @@ struct SettingsWindow: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .glassSurface(cornerRadius: GlassRadii.card)
-        .overlay(
-            RoundedRectangle(cornerRadius: GlassRadii.card, style: .continuous)
-                .stroke(Color.white.opacity(0.08), lineWidth: 1)
-        )
+        .settingsCardSurface(cornerRadius: GlassRadii.card, legacyStrokeOpacity: 0.08)
     }
 
     /// Displays app icon artwork in lists with a symbol fallback.
@@ -1257,6 +1184,11 @@ private struct HotkeyRecorderRow: View {
     var showResetButton: Bool = true
     @State private var cancelToken: Int = 0
 
+    private var usesGlass: Bool {
+        if #available(macOS 26, *) { return true }
+        return false
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
@@ -1269,15 +1201,7 @@ private struct HotkeyRecorderRow: View {
                     onChange: onChange
                 )
                 .frame(width: 240, height: 34)
-                .background(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(Color.white.opacity(0.02))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .strokeBorder(Color.accentColor.opacity(0.55), lineWidth: 1.6)
-                )
-                .shadow(color: Color.accentColor.opacity(0.18), radius: 6, y: 1)
+                .settingsFieldPlate(cornerRadius: usesGlass ? 17 : 8)
 
                 HStack(spacing: 6) {
                     if showResetButton, let onReset {
@@ -1286,7 +1210,7 @@ private struct HotkeyRecorderRow: View {
                             onReset()
                         }
                         .controlSize(.small)
-                        .buttonStyle(.bordered)
+                        .settingsButtonStyle()
                     }
 
                     Button(String(localized: "SettingsShortcutClearButton")) {
@@ -1295,13 +1219,13 @@ private struct HotkeyRecorderRow: View {
                     }
                     .disabled(hotkey == nil)
                     .controlSize(.small)
-                    .buttonStyle(.bordered)
+                    .settingsButtonStyle()
                 }
                 .padding(.horizontal, 6)
                 .padding(.vertical, 4)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(Color.white.opacity(0.05))
+                        .fill(Color.white.opacity(usesGlass ? 0 : 0.05))
                 )
             }
             Text(message)
@@ -1309,15 +1233,7 @@ private struct HotkeyRecorderRow: View {
                 .foregroundStyle(.secondary)
         }
         .padding(10)
-        .glassSurface(cornerRadius: GlassRadii.card)
-        .overlay(
-            RoundedRectangle(cornerRadius: GlassRadii.card, style: .continuous)
-                .stroke(LinearGradient(
-                    colors: [Color.white.opacity(0.25), Color.white.opacity(0.06)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ), lineWidth: 1)
-        )
+        .settingsCardSurface(cornerRadius: GlassRadii.card, legacyStrokeOpacity: 0.10)
     }
 }
 
@@ -1367,6 +1283,30 @@ enum WindowControlKind: CaseIterable, Identifiable {
     }
 }
 
+/// Tab bar track: glass capsule on macOS 26+, the previous rounded tint plate below.
+private struct TabBarTrack: ViewModifier {
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
+    func body(content: Content) -> some View {
+        if reduceTransparency {
+            content.background(Capsule().fill(Color(nsColor: .controlBackgroundColor)))
+        } else if #available(macOS 26, *) {
+            content.background { Capsule().glassEffect(.regular, in: Capsule()) }
+        } else {
+            content
+                .background(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(Color.primary.opacity(0.09))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                                .stroke(Color.white.opacity(0.10), lineWidth: 0.5)
+                        )
+                )
+                .shadow(color: Color.black.opacity(0.08), radius: 4, y: 2)
+        }
+    }
+}
+
 /// Self-contained tab button whose hover state is local, preventing full-view re-renders.
 private struct TabButtonView: View {
     let tab: SettingsTab
@@ -1374,7 +1314,7 @@ private struct TabButtonView: View {
     let namespace: Namespace.ID
     let onTap: () -> Void
 
-    @State private var isHovered = false
+    @State fileprivate var isHovered = false
 
     var body: some View {
         Button(action: onTap) {
@@ -1389,26 +1329,7 @@ private struct TabButtonView: View {
             )
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(
-                ZStack {
-                    if isSelected {
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(Color.accentColor.opacity(0.28))
-                            .matchedGeometryEffect(id: "tabSelection", in: namespace)
-                            .shadow(color: Color.accentColor.opacity(0.25), radius: 5, y: 2)
-                    } else if isHovered {
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(Color.primary.opacity(0.10))
-                    }
-                }
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(
-                        isSelected ? Color.accentColor.opacity(0.50) : Color.clear,
-                        lineWidth: 1.5
-                    )
-            )
+            .background(selectionBackground)
         }
         .buttonStyle(TabPressStyle())
         .onHover { hovering in
@@ -1417,6 +1338,39 @@ private struct TabButtonView: View {
             }
         }
         .accessibilityLabel(Text(tab.title))
+    }
+}
+
+extension TabButtonView {
+    /// Selected pill: a sliding Liquid Glass capsule on macOS 26+, the previous accent pill below.
+    @ViewBuilder
+    fileprivate var selectionBackground: some View {
+        if #available(macOS 26, *) {
+            ZStack {
+                if isSelected {
+                    GlassSelectionPill()
+                        .matchedGeometryEffect(id: "tabSelection", in: namespace)
+                } else if isHovered {
+                    Capsule().fill(Color.primary.opacity(0.08))
+                }
+            }
+        } else {
+            ZStack {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(Color.accentColor.opacity(0.28))
+                        .matchedGeometryEffect(id: "tabSelection", in: namespace)
+                        .shadow(color: Color.accentColor.opacity(0.25), radius: 5, y: 2)
+                } else if isHovered {
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(Color.primary.opacity(0.10))
+                }
+            }
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(isSelected ? Color.accentColor.opacity(0.50) : Color.clear, lineWidth: 1.5)
+            )
+        }
     }
 }
 
@@ -1479,6 +1433,7 @@ struct WindowControlDot: View {
             Circle()
                 .fill(kind.color)
                 .frame(width: 14, height: 14)
+                .modifier(TrafficLightGlass(color: kind.color))
                 .overlay {
                     if isHovering {
                         if kind == .zoom {
@@ -1518,15 +1473,21 @@ struct WindowControlDot: View {
 
 // MARK: - Scroll Background Helper
 
+private struct LegacyListShadow: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 26, *) {
+            content
+        } else {
+            content.shadow(color: Color.black.opacity(0.3), radius: 20, y: 14)
+        }
+    }
+}
+
 struct GlassListScrollBackground: ViewModifier {
     /// Wraps tab content in shared panel spacing and transition defaults.
     func body(content: Content) -> some View {
         content
-            .glassSurface(cornerRadius: GlassRadii.panel)
-            .overlay(
-                RoundedRectangle(cornerRadius: GlassRadii.panel, style: .continuous)
-                    .stroke(Color.white.opacity(0.05), lineWidth: 0.8)
-            )
+            .settingsCardSurface(cornerRadius: GlassRadii.panel, legacyStrokeOpacity: 0.05)
     }
 }
 
@@ -1534,5 +1495,110 @@ extension View {
     /// Applies platform-correct translucent background for scrolling list sections.
     func glassListScrollBackground() -> some View {
         modifier(GlassListScrollBackground())
+    }
+}
+
+// MARK: - Glass helpers local to the settings window
+
+private struct SettingsSwatch: View {
+    let color: Color
+    let isSelected: Bool
+
+    var body: some View {
+        if #available(macOS 26, *) {
+            ZStack {
+                if isSelected {
+                    Circle()
+                        .fill(Color.white.opacity(0.01))
+                        .frame(width: 34, height: 34)
+                        .glassEffect(.regular.interactive(), in: Circle())
+                }
+                Circle()
+                    .fill(color)
+                    .frame(width: 24, height: 24)
+                    .overlay(Circle().strokeBorder(Color.primary.opacity(0.2), lineWidth: 0.5))
+            }
+            .frame(width: 34, height: 34)
+        } else {
+            Circle()
+                .fill(color)
+                .frame(width: 28, height: 28)
+                .overlay(
+                    Circle()
+                        .strokeBorder(isSelected ? Color.accentColor : Color.primary.opacity(0.25), lineWidth: isSelected ? 3 : 1)
+                )
+        }
+    }
+}
+
+private struct DonateButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        if #available(macOS 26, *) {
+            Button(action: action) {
+                label
+                    .foregroundStyle(Color.primary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 4)
+            }
+            .buttonStyle(.glass)
+            .buttonBorderShape(.capsule)
+            .controlSize(.large)
+        } else {
+            Button(action: action) {
+                label
+                    .foregroundColor(.white)
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(LinearGradient(
+                                colors: [Color(red: 0.16, green: 0.56, blue: 1.0), Color(red: 0.48, green: 0.24, blue: 0.9)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ))
+                            .shadow(color: Color.black.opacity(0.25), radius: 10, x: 0, y: 6)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                    .stroke(Color.white.opacity(0.22), lineWidth: 1)
+                            )
+                    )
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var label: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "cup.and.saucer.fill").imageScale(.medium)
+            Text(String(localized: "SettingsAboutDonateButton")).fontWeight(.semibold)
+            Spacer()
+            Image(systemName: "arrow.up.right")
+                .imageScale(.small)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+private struct SupportCalloutSurface: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 26, *) {
+            content.settingsCardSurface(cornerRadius: GlassRadii.card)
+        } else {
+            content
+        }
+    }
+}
+
+private struct TrafficLightGlass: ViewModifier {
+    let color: Color
+
+    func body(content: Content) -> some View {
+        if #available(macOS 26, *) {
+            content.glassEffect(.regular.tint(color.opacity(0.85)).interactive(), in: Circle())
+        } else {
+            content
+        }
     }
 }

@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "صفحة %d";
 "ItemActionDeleteFolder" = "حذف المجلد";
 "ItemActionRemoveFromFolder" = "إزالة من المجلد";
+"SettingsFolderGlassToggle" = "مجلدات Liquid Glass";
+"SettingsFolderGlassBody" = "يعرض المجلدات بتأثير Liquid Glass ويتبع إعداد Liquid Glass في macOS. يتطلب macOS 26 أو أحدث.";

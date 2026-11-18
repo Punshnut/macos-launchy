@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Stránka %d";
 "ItemActionDeleteFolder" = "Smazat složku";
 "ItemActionRemoveFromFolder" = "Odebrat ze složky";
+"SettingsFolderGlassToggle" = "Složky Liquid Glass";
+"SettingsFolderGlassBody" = "Zobrazuje složky jako Liquid Glass a řídí se nastavením Liquid Glass v macOS. Vyžaduje macOS 26 nebo novější.";

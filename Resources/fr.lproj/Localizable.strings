@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Page %d";
 "ItemActionDeleteFolder" = "Supprimer le dossier";
 "ItemActionRemoveFromFolder" = "Retirer du dossier";
+"SettingsFolderGlassToggle" = "Dossiers Liquid Glass";
+"SettingsFolderGlassBody" = "Affiche les dossiers en Liquid Glass et suit le réglage Liquid Glass de macOS. Nécessite macOS 26 ou version ultérieure.";

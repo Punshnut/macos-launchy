@@ -3953,18 +3953,6 @@ struct LauncherView: View {
         let folderIconAnimation = disableAnimations ? nil : folderOpenAnimation
 
         return ZStack {
-            RoundedRectangle(cornerRadius: folderCornerRadius, style: .continuous)
-                .fill(Color(nsColor: .quaternaryLabelColor).opacity(0.35))
-            LinearGradient(
-                colors: [Color.white.opacity(0.09), Color.black.opacity(0.04)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .clipShape(RoundedRectangle(cornerRadius: folderCornerRadius, style: .continuous))
-            .allowsHitTesting(false)
-            RoundedRectangle(cornerRadius: folderCornerRadius, style: .continuous)
-                .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
-
             VStack(alignment: .center, spacing: spacing) {
                 ForEach(0..<3, id: \.self) { rowIndex in
                     HStack(alignment: .top, spacing: spacing) {
@@ -4003,6 +3991,21 @@ struct LauncherView: View {
         .animation(nil, value: searchControlsExpanded)
         .animation(nil, value: currentPage)
         .compositingGroup()
+        .folderGlassBackground(kind: .tile, cornerRadius: folderCornerRadius) {
+            ZStack {
+                RoundedRectangle(cornerRadius: folderCornerRadius, style: .continuous)
+                    .fill(Color(nsColor: .quaternaryLabelColor).opacity(0.35))
+                LinearGradient(
+                    colors: [Color.white.opacity(0.09), Color.black.opacity(0.04)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .clipShape(RoundedRectangle(cornerRadius: folderCornerRadius, style: .continuous))
+                RoundedRectangle(cornerRadius: folderCornerRadius, style: .continuous)
+                    .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
+            }
+            .allowsHitTesting(false)
+        }
         .transaction { transaction in
             if disableAnimations {
                 transaction.animation = nil
@@ -4951,19 +4954,18 @@ struct LauncherView: View {
                 .frame(maxWidth: overlayLayout.cardWidth)
                 .scaleEffect(0.96 + 0.04 * folderOverlayOpenProgress)
                 .offset(y: (1 - folderOverlayOpenProgress) * 10)
-                .background(
-                    VisualEffectBackground(
-                        material: .hudWindow,
-                        blendingMode: .withinWindow,
-                        appearance: NSAppearance(named: .vibrantDark)
-                    )
-                    .clipShape(cardShape)
-                )
-                .overlay(
-                    cardShape
-                        .strokeBorder(Color.white.opacity(0.25))
-                )
                 .clipShape(cardShape)
+                .folderGlassBackground(kind: .overlay, cornerRadius: 22) {
+                    ZStack {
+                        VisualEffectBackground(
+                            material: .hudWindow,
+                            blendingMode: .withinWindow,
+                            appearance: NSAppearance(named: .vibrantDark)
+                        )
+                        .clipShape(cardShape)
+                        cardShape.strokeBorder(Color.white.opacity(0.25))
+                    }
+                }
                 .background(cardChrome)
                 .opacity(overlayOpacity)
                 .animation(folderOpenAnimation, value: folderIconWaveToggle)

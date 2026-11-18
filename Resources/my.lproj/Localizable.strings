@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "စာမျက်နှာ %d";
 "ItemActionDeleteFolder" = "Folder ဖျက်ရန်";
 "ItemActionRemoveFromFolder" = "Folder မှ ဖယ်ရှားရန်";
+"SettingsFolderGlassToggle" = "Liquid Glass ဖိုလ်ဒါများ";
+"SettingsFolderGlassBody" = "ဖိုလ်ဒါများကို Liquid Glass အဖြစ်ပြပြီး macOS ၏ Liquid Glass ဆက်တင်ကို လိုက်နာသည်။ macOS 26 သို့မဟုတ် ထို့ထက်မြင့်သည် လိုအပ်သည်။";

@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "পৃষ্ঠা %d";
 "ItemActionDeleteFolder" = "ফোল্ডার মুছুন";
 "ItemActionRemoveFromFolder" = "ফোল্ডার থেকে সরান";
+"SettingsFolderGlassToggle" = "Liquid Glass ফোল্ডার";
+"SettingsFolderGlassBody" = "ফোল্ডারগুলি Liquid Glass হিসেবে দেখায় এবং macOS-এর Liquid Glass সেটিং অনুসরণ করে। macOS 26 বা পরবর্তী সংস্করণ প্রয়োজন।";

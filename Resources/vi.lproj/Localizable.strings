@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Trang %d";
 "ItemActionDeleteFolder" = "Xóa thư mục";
 "ItemActionRemoveFromFolder" = "Xóa khỏi thư mục";
+"SettingsFolderGlassToggle" = "Thư mục Liquid Glass";
+"SettingsFolderGlassBody" = "Hiển thị thư mục dạng Liquid Glass và theo cài đặt Liquid Glass của macOS. Yêu cầu macOS 26 trở lên.";

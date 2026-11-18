@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Página %d";
 "ItemActionDeleteFolder" = "Eliminar pasta";
 "ItemActionRemoveFromFolder" = "Remover da pasta";
+"SettingsFolderGlassToggle" = "Pastas Liquid Glass";
+"SettingsFolderGlassBody" = "Mostra as pastas como Liquid Glass e segue a definição de Liquid Glass do macOS. Requer macOS 26 ou posterior.";

@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Shafi %d";
 "ItemActionDeleteFolder" = "Share fayil";
 "ItemActionRemoveFromFolder" = "Cire daga fayil";
+"SettingsFolderGlassToggle" = "Manyan fayiloli na Liquid Glass";
+"SettingsFolderGlassBody" = "Yana nuna manyan fayiloli a matsayin Liquid Glass kuma yana bin saitin Liquid Glass na macOS. Yana buƙatar macOS 26 ko sabo.";

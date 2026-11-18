@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Ukurasa %d";
 "ItemActionDeleteFolder" = "Futa folda";
 "ItemActionRemoveFromFolder" = "Ondoa kwenye folda";
+"SettingsFolderGlassToggle" = "Folda za Liquid Glass";
+"SettingsFolderGlassBody" = "Huonyesha folda kama Liquid Glass na hufuata mpangilio wa Liquid Glass wa macOS. Inahitaji macOS 26 au mpya zaidi.";

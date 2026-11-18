@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Leathanach %d";
 "ItemActionDeleteFolder" = "Scrios an fillteán";
 "ItemActionRemoveFromFolder" = "Bain den fhillteán";
+"SettingsFolderGlassToggle" = "Fillteáin Liquid Glass";
+"SettingsFolderGlassBody" = "Taispeánann sé fillteáin mar Liquid Glass agus leanann sé socrú Liquid Glass macOS. Teastaíonn macOS 26 nó níos nuaí.";

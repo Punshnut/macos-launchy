@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Sayfa %d";
 "ItemActionDeleteFolder" = "Klasörü sil";
 "ItemActionRemoveFromFolder" = "Klasörden çıkar";
+"SettingsFolderGlassToggle" = "Liquid Glass klasörler";
+"SettingsFolderGlassBody" = "Klasörleri Liquid Glass olarak gösterir ve macOS Liquid Glass ayarını izler. macOS 26 veya üstü gerekir.";

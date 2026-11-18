@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "పేజీ %d";
 "ItemActionDeleteFolder" = "ఫోల్డర్‌ను తొలగించండి";
 "ItemActionRemoveFromFolder" = "ఫోల్డర్ నుండి తీసివేయండి";
+"SettingsFolderGlassToggle" = "Liquid Glass ఫోల్డర్లు";
+"SettingsFolderGlassBody" = "ఫోల్డర్లను Liquid Glass గా చూపిస్తుంది మరియు macOS Liquid Glass సెట్టింగ్‌ను అనుసరిస్తుంది. macOS 26 లేదా తరువాతి వెర్షన్ అవసరం.";

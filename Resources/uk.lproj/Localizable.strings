@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Сторінка %d";
 "ItemActionDeleteFolder" = "Видалити папку";
 "ItemActionRemoveFromFolder" = "Прибрати з папки";
+"SettingsFolderGlassToggle" = "Папки Liquid Glass";
+"SettingsFolderGlassBody" = "Показує папки в стилі Liquid Glass і враховує налаштування Liquid Glass у macOS. Потрібна macOS 26 або новіша.";

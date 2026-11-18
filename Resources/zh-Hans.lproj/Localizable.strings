@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "第 %d 页";
 "ItemActionDeleteFolder" = "删除文件夹";
 "ItemActionRemoveFromFolder" = "从文件夹中移除";
+"SettingsFolderGlassToggle" = "液态玻璃文件夹";
+"SettingsFolderGlassBody" = "以液态玻璃样式显示文件夹，并遵循 macOS 的液态玻璃设置。需要 macOS 26 或更高版本。";

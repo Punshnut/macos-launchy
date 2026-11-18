@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "صفحه %d";
 "ItemActionDeleteFolder" = "حذف پوشه";
 "ItemActionRemoveFromFolder" = "حذف از پوشه";
+"SettingsFolderGlassToggle" = "پوشه‌های Liquid Glass";
+"SettingsFolderGlassBody" = "پوشه‌ها را به‌صورت Liquid Glass نمایش می‌دهد و از تنظیم Liquid Glass در macOS پیروی می‌کند. به macOS 26 یا جدیدتر نیاز دارد.";

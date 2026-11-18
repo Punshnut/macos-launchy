@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Oju-iwe %d";
 "ItemActionDeleteFolder" = "Pa folda rẹ́";
 "ItemActionRemoveFromFolder" = "Yọ kúrò nínú folda";
+"SettingsFolderGlassToggle" = "Àwọn fóldà Liquid Glass";
+"SettingsFolderGlassBody" = "Ó ń ṣe àfihàn àwọn fóldà bí Liquid Glass, ó sì ń tẹ̀lé ètò Liquid Glass ti macOS. Ó nílò macOS 26 tàbí tó tún dé lẹ́yìn.";

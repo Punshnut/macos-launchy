@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Pagina %d";
 "ItemActionDeleteFolder" = "Elimina cartella";
 "ItemActionRemoveFromFolder" = "Rimuovi dalla cartella";
+"SettingsFolderGlassToggle" = "Cartelle Liquid Glass";
+"SettingsFolderGlassBody" = "Mostra le cartelle come Liquid Glass e segue l'impostazione Liquid Glass di macOS. Richiede macOS 26 o successivo.";

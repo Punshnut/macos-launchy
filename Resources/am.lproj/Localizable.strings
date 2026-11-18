@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "ገጽ %d";
 "ItemActionDeleteFolder" = "አቃፊ ሰርዝ";
 "ItemActionRemoveFromFolder" = "ከአቃፊ አስወግድ";
+"SettingsFolderGlassToggle" = "የLiquid Glass አቃፊዎች";
+"SettingsFolderGlassBody" = "አቃፊዎችን እንደ Liquid Glass ያሳያል እና የmacOS Liquid Glass ቅንብርን ይከተላል። macOS 26 ወይም ከዚያ በላይ ያስፈልጋል።";

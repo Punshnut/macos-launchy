@@ -75,6 +75,9 @@ enum GlassRadii {
 /// Reads the system-wide knobs that influence how glass should be drawn.
 /// Blur/liquidity themselves are applied by the system inside `.glassEffect` and the glass button styles.
 enum LaunchyGlassSystem {
+    /// UserDefaults key for the opt-in "Liquid Glass folders" setting.
+    static let folderGlassDefaultsKey = "FolderLiquidGlassEnabled"
+
     /// Global "Liquid Glass" tint amount (0...1), written by System Settings > Appearance.
     static var tintAmount: Double {
         let value = UserDefaults.standard.double(forKey: "NSGlassTintAmount")
@@ -177,4 +180,65 @@ extension View {
 /// Divider used between settings rows.
 struct SettingsRowDivider: View {
     var body: some View { SettingsDivider() }
+}
+
+// MARK: - Folder surfaces
+
+/// Where a folder surface is drawn, which decides how much legacy chrome it needs.
+enum FolderGlassKind {
+    /// The folder icon in the launcher grid.
+    case tile
+    /// The opened folder card.
+    case overlay
+}
+
+/// Real Liquid Glass backdrop for folders on macOS 26+. It deliberately uses plain `.regular` glass,
+/// so the system's Liquid Glass setting (Clear/Tinted, and on macOS 27 its material/effect options) is
+/// applied by the system itself and changes the folders live. The glass is a non-interactive background
+/// layer: interactive glass would interfere with the launcher's hit-test based click-outside handling.
+/// Reduce Transparency and the legacy look below macOS 26 use `legacy`.
+private struct FolderGlassBackground<Legacy: View>: ViewModifier {
+    let kind: FolderGlassKind
+    let cornerRadius: CGFloat
+    let legacy: Legacy
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.colorSchemeContrast) private var contrast
+    /// Opt-in: Liquid Glass folders (Settings > Visuals). Off by default.
+    @AppStorage(LaunchyGlassSystem.folderGlassDefaultsKey) private var folderGlassEnabled = false
+
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        if #available(macOS 26, *), !reduceTransparency, folderGlassEnabled {
+            let tint = LaunchyGlassSystem.tintAmount
+            let isTile = kind == .tile
+            // Plain system glass, lifted off the background by a soft shadow so it pops.
+            content
+                .background {
+                    Color.clear.glassEffect(
+                        tint > 0 ? .regular.tint(Color.accentColor.opacity(0.12 * tint)) : .regular,
+                        in: shape
+                    )
+                    .allowsHitTesting(false)
+                }
+                .overlay {
+                    if contrast == .increased {
+                        shape.strokeBorder(Color.primary.opacity(0.45), lineWidth: 1)
+                    }
+                }
+                .shadow(color: Color.black.opacity(isTile ? 0.08 : 0), radius: isTile ? 3 : 0, y: isTile ? 1.5 : 0)
+        } else {
+            content.background { legacy }
+        }
+    }
+}
+
+extension View {
+    /// Folder background: Liquid Glass on macOS 26+, `legacy` otherwise (and with Reduce Transparency).
+    func folderGlassBackground<Legacy: View>(
+        kind: FolderGlassKind,
+        cornerRadius: CGFloat,
+        @ViewBuilder legacy: () -> Legacy
+    ) -> some View {
+        modifier(FolderGlassBackground(kind: kind, cornerRadius: cornerRadius, legacy: legacy()))
+    }
 }

@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Pahina %d";
 "ItemActionDeleteFolder" = "Burahin ang Folder";
 "ItemActionRemoveFromFolder" = "Alisin sa Folder";
+"SettingsFolderGlassToggle" = "Mga folder na Liquid Glass";
+"SettingsFolderGlassBody" = "Ipinapakita ang mga folder bilang Liquid Glass at sinusunod ang setting ng Liquid Glass sa macOS. Nangangailangan ng macOS 26 o mas bago.";

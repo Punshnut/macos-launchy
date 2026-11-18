@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Σελίδα %d";
 "ItemActionDeleteFolder" = "Διαγραφή φακέλου";
 "ItemActionRemoveFromFolder" = "Αφαίρεση από τον φάκελο";
+"SettingsFolderGlassToggle" = "Φάκελοι Liquid Glass";
+"SettingsFolderGlassBody" = "Εμφανίζει τους φακέλους ως Liquid Glass και ακολουθεί τη ρύθμιση Liquid Glass του macOS. Απαιτεί macOS 26 ή νεότερο.";

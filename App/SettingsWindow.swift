@@ -236,6 +236,7 @@ struct SettingsWindow: View {
                 pagingOrientationPicker
                 panelDivider
                 pageRevertPicker
+                folderGlassSection
                 iconBehaviorListSection
             }
         }
@@ -294,6 +295,23 @@ struct SettingsWindow: View {
             Text(String(format: String(localized: "SettingsUserAppsFolderBody"), userApplicationsPath))
                 .font(.caption)
                 .foregroundColor(.secondary)
+        }
+    }
+
+    @AppStorage(LaunchyGlassSystem.folderGlassDefaultsKey) private var folderGlassEnabled = false
+
+    /// Opt-in Liquid Glass folders; only offered where the system provides Liquid Glass.
+    @ViewBuilder
+    private var folderGlassSection: some View {
+        if #available(macOS 26, *) {
+            panelDivider
+            VStack(alignment: .leading, spacing: 6) {
+                Toggle(String(localized: "SettingsFolderGlassToggle"), isOn: $folderGlassEnabled)
+                    .settingsSwitchStyle()
+                Text(String(localized: "SettingsFolderGlassBody"))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
         }
     }
 

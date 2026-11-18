@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Pagina %d";
 "ItemActionDeleteFolder" = "Map verwijderen";
 "ItemActionRemoveFromFolder" = "Uit map halen";
+"SettingsFolderGlassToggle" = "Liquid Glass-mappen";
+"SettingsFolderGlassBody" = "Toont mappen als Liquid Glass en volgt de Liquid Glass-instelling van macOS. Vereist macOS 26 of nieuwer.";

@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Pàgina %d";
 "ItemActionDeleteFolder" = "Elimina la carpeta";
 "ItemActionRemoveFromFolder" = "Treu de la carpeta";
+"SettingsFolderGlassToggle" = "Carpetes Liquid Glass";
+"SettingsFolderGlassBody" = "Mostra les carpetes amb Liquid Glass i segueix l'ajust de Liquid Glass de macOS. Requereix macOS 26 o posterior.";

@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "Sivu %d";
 "ItemActionDeleteFolder" = "Poista kansio";
 "ItemActionRemoveFromFolder" = "Poista kansiosta";
+"SettingsFolderGlassToggle" = "Liquid Glass -kansiot";
+"SettingsFolderGlassBody" = "Näyttää kansiot Liquid Glass -tyylillä ja noudattaa macOS:n Liquid Glass -asetusta. Vaatii macOS 26:n tai uudemman.";

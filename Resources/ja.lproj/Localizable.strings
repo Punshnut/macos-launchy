@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "ページ %d";
 "ItemActionDeleteFolder" = "フォルダを削除";
 "ItemActionRemoveFromFolder" = "フォルダから取り出す";
+"SettingsFolderGlassToggle" = "Liquid Glassフォルダ";
+"SettingsFolderGlassBody" = "フォルダをLiquid Glassで表示し、macOSのLiquid Glass設定に従います。macOS 26以降が必要です。";

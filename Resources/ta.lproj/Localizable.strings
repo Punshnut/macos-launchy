@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "பக்கம் %d";
 "ItemActionDeleteFolder" = "கோப்புறையை நீக்கு";
 "ItemActionRemoveFromFolder" = "கோப்புறையிலிருந்து நீக்கு";
+"SettingsFolderGlassToggle" = "Liquid Glass கோப்புறைகள்";
+"SettingsFolderGlassBody" = "கோப்புறைகளை Liquid Glass ஆகக் காட்டி, macOS-இன் Liquid Glass அமைப்பைப் பின்பற்றும். macOS 26 அல்லது அதற்குப் பிந்தையது தேவை.";

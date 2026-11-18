@@ -221,3 +221,5 @@
 "SettingsPageRevertPageNumber" = "หน้า %d";
 "ItemActionDeleteFolder" = "ลบโฟลเดอร์";
 "ItemActionRemoveFromFolder" = "นำออกจากโฟลเดอร์";
+"SettingsFolderGlassToggle" = "โฟลเดอร์ Liquid Glass";
+"SettingsFolderGlassBody" = "แสดงโฟลเดอร์แบบ Liquid Glass และทำตามการตั้งค่า Liquid Glass ของ macOS ต้องใช้ macOS 26 ขึ้นไป";

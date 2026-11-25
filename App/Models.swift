@@ -353,6 +353,28 @@ struct LauncherSettings: Hashable, Codable {
         case orange
         case pink
         case purple
+        // Added later; the palette order in Settings comes from `paletteRows`.
+        case red
+        case coral
+        case gold
+        case lime
+        case forest
+        case sky
+        case navy
+        case slate
+        case lavender
+        case magenta
+        case brown
+        case sand
+
+        /// The palette as shown in Settings, two rows: cool and neutral colors first,
+        /// then green through warm to earth tones.
+        static var paletteRows: [[SolidBackgroundColor]] {
+            [
+                [.system, .graphite, .slate, .navy, .blue, .indigo, .purple, .lavender, .sky, .cyan, .teal, .mint],
+                [.forest, .green, .lime, .yellow, .gold, .orange, .coral, .red, .pink, .magenta, .brown, .sand]
+            ]
+        }
 
         /// User-facing label.
         var displayName: String {
@@ -369,6 +391,18 @@ struct LauncherSettings: Hashable, Codable {
             case .orange: return String(localized: "AccentColorOrange")
             case .purple: return String(localized: "AccentColorPurple")
             case .pink: return String(localized: "AccentColorPink")
+            case .red: return String(localized: "AccentColorRed")
+            case .coral: return String(localized: "AccentColorCoral")
+            case .gold: return String(localized: "AccentColorGold")
+            case .lime: return String(localized: "AccentColorLime")
+            case .forest: return String(localized: "AccentColorForest")
+            case .sky: return String(localized: "AccentColorSky")
+            case .navy: return String(localized: "AccentColorNavy")
+            case .slate: return String(localized: "AccentColorSlate")
+            case .lavender: return String(localized: "AccentColorLavender")
+            case .magenta: return String(localized: "AccentColorMagenta")
+            case .brown: return String(localized: "AccentColorBrown")
+            case .sand: return String(localized: "AccentColorSand")
             }
         }
 
@@ -399,6 +433,30 @@ struct LauncherSettings: Hashable, Codable {
                 return NSColor(calibratedRed: 0.52, green: 0.38, blue: 0.89, alpha: 1.0)
             case .pink:
                 return NSColor(calibratedRed: 0.94, green: 0.36, blue: 0.62, alpha: 1.0)
+            case .red:
+                return NSColor(calibratedRed: 0.85, green: 0.23, blue: 0.23, alpha: 1.0)
+            case .coral:
+                return NSColor(calibratedRed: 0.95, green: 0.45, blue: 0.36, alpha: 1.0)
+            case .gold:
+                return NSColor(calibratedRed: 0.83, green: 0.63, blue: 0.09, alpha: 1.0)
+            case .lime:
+                return NSColor(calibratedRed: 0.56, green: 0.80, blue: 0.23, alpha: 1.0)
+            case .forest:
+                return NSColor(calibratedRed: 0.12, green: 0.42, blue: 0.27, alpha: 1.0)
+            case .sky:
+                return NSColor(calibratedRed: 0.35, green: 0.71, blue: 0.96, alpha: 1.0)
+            case .navy:
+                return NSColor(calibratedRed: 0.11, green: 0.18, blue: 0.39, alpha: 1.0)
+            case .slate:
+                return NSColor(calibratedRed: 0.36, green: 0.40, blue: 0.47, alpha: 1.0)
+            case .lavender:
+                return NSColor(calibratedRed: 0.70, green: 0.61, blue: 0.94, alpha: 1.0)
+            case .magenta:
+                return NSColor(calibratedRed: 0.77, green: 0.24, blue: 0.75, alpha: 1.0)
+            case .brown:
+                return NSColor(calibratedRed: 0.48, green: 0.32, blue: 0.19, alpha: 1.0)
+            case .sand:
+                return NSColor(calibratedRed: 0.85, green: 0.78, blue: 0.63, alpha: 1.0)
             }
         }
     }

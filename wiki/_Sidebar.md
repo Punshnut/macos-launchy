@@ -4,6 +4,7 @@
 - [Getting Started](Getting-Started)
 - [Fullscreen and Floaty Mode](Fullscreen-and-Floaty-Mode)
 - [Backgrounds and Colors](Backgrounds-and-Colors)
+- [Liquid Glass and Appearance](Liquid-Glass-and-Appearance)
 - [Search](Search)
 - [Organizing Your Apps](Organizing-Your-Apps)
 - [Multi-Selection](Multi-Selection)

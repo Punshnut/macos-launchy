@@ -630,16 +630,18 @@ struct SettingsWindow: View {
             Text(String(localized: "SettingsSolidColorPickerLabel"))
                 .font(.caption)
                 .foregroundColor(.secondary)
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 32), spacing: 12)], spacing: 12) {
-                ForEach(LauncherSettings.SolidBackgroundColor.allCases, id: \.self) { colorOption in
-                    let isSelected = settingsStore.settingsSnapshot.solidBackgroundColor == colorOption
-                    Button {
-                        settingsStore.setSolidBackgroundColor(colorOption)
-                    } label: {
-                        SettingsSwatch(color: Color(nsColor: colorOption.nsColor), isSelected: isSelected)
+            ForEach(LauncherSettings.SolidBackgroundColor.paletteRows, id: \.self) { row in
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 32), spacing: 12)], spacing: 12) {
+                    ForEach(row, id: \.self) { colorOption in
+                        let isSelected = settingsStore.settingsSnapshot.solidBackgroundColor == colorOption
+                        Button {
+                            settingsStore.setSolidBackgroundColor(colorOption)
+                        } label: {
+                            SettingsSwatch(color: Color(nsColor: colorOption.nsColor), isSelected: isSelected)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(colorOption.displayName)
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(colorOption.displayName)
                 }
             }
         }

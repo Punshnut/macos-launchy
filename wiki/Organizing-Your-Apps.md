@@ -29,6 +29,9 @@ drop an app into an existing folder the same way. This is the move for
 grouping things you use together, work apps, creative tools, games, so they
 read as one tile instead of scattering across pages.
 
+On macOS 26 and later you can draw folders as Liquid Glass, see
+[Liquid Glass and Appearance](Liquid-Glass-and-Appearance).
+
 Folders are part of your saved arrangement, so a full reset removes them
 (see "Resetting without losing your work" below). Launchy also keeps
 automatic backups, so a grouping you care about is easy to get back.

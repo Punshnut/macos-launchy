@@ -3,6 +3,10 @@
 Open Settings with `Cmd` + `,`, or from the menu bar item. It's organized
 into four tabs, here's what each one is for and when you'd reach for it.
 
+On macOS 26 and later the Settings window itself uses Liquid Glass and
+follows your system's Liquid Glass setting, see
+[Liquid Glass and Appearance](Liquid-Glass-and-Appearance).
+
 ## Visuals
 
 The biggest tab, covering how the grid looks and behaves:
@@ -16,8 +20,9 @@ The biggest tab, covering how the grid looks and behaves:
   effect. The change shows right away if the panel is open.
 - **Background style**: standard, light blur, transparent, or solid color.
   See [Backgrounds and Colors](Backgrounds-and-Colors) for how each style
-  looks in light and dark mode. The solid option has twelve colors (System, Graphite,
-  Indigo, Blue, Cyan, Teal, Green, Mint, Yellow, Orange, Pink, Purple).
+  looks in light and dark mode. The solid option has 24 colors in two rows (System, Graphite,
+  Slate, Navy, Blue, Indigo, Purple, Lavender, Sky, Cyan, Teal, Mint; then Forest,
+  Green, Lime, Yellow, Gold, Orange, Coral, Red, Pink, Magenta, Brown, Sand).
 - **Icon size**: small, medium, or large, which also sets how many apps fit
   on a page (7x5, 6x4, and 5x3). Icons are sized to fit the grid, so fewer
   columns and rows mean bigger icons, in both modes. Large only applies in
@@ -27,6 +32,9 @@ The biggest tab, covering how the grid looks and behaves:
   size slider while active, and icons resize to fit. Turn it off to go back
   to the icon size presets. Changing the grid re-flows your pages, so
   folders and order stay as they are.
+- **Liquid Glass folders** (macOS 26 and later): an opt-in switch that draws
+  folders as Liquid Glass. Off by default. See
+  [Liquid Glass and Appearance](Liquid-Glass-and-Appearance).
 - **Paging direction**: horizontal or vertical, which also determines which
   way swipes and arrow keys move between pages - see
   [Gestures](Gestures) and [Keyboard Shortcuts](Keyboard-Shortcuts).

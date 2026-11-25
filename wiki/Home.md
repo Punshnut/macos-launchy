@@ -28,6 +28,11 @@ auto-updates itself once installed.
 3. **Make it yours.** Right-click a tile to rename or hide it, hold `Option`
    while dragging to build a folder, and press `Escape` to back out.
 
+## Requirements
+
+Launchy runs on macOS 13 (Ventura) or later. The Liquid Glass look needs
+macOS 26 or later; older systems keep the classic frosted look.
+
 ## Which mode fits?
 
 | | Fullscreen | Floaty |
@@ -56,6 +61,9 @@ New to Launchy? Start here:
 
 Once you're up and running, these pages cover specific things you can do:
 
+- [Liquid Glass and Appearance](Liquid-Glass-and-Appearance) - the macOS 26
+  glass look, the opt-in glass folders, and how it follows your system
+  settings.
 - [Search](Search) - finding an app in a keystroke or two, in any language.
 - [Organizing Your Apps](Organizing-Your-Apps) - folders, custom names,
   hiding clutter, and rearranging the grid.

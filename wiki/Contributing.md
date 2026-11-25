@@ -29,6 +29,10 @@ cd macos-launchy
 - `Package.swift` - the Swift package definition. Targets macOS 13+, pulls in
   [Sparkle](https://github.com/sparkle-project/Sparkle) for auto-updates.
 - `App/` - the app's Swift sources.
+  Shared Liquid Glass helpers (macOS 26+ with a fallback for older versions)
+  live in `App/GlassSurface.swift` and `App/GlassControls.swift`. Wrap any
+  new glass API in `#available(macOS 26, *)` and keep the old look as the
+  else branch.
 - `Resources/` - `Info.plist`, localizations (`*.lproj`), and `Launchy.icon`
   (the app icon, built with Icon Composer).
 - `scripts/` - public build tooling.

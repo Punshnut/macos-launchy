@@ -51,6 +51,20 @@ apps normally appear within a moment. If an app lives in `~/Applications`,
 make sure **Include user Applications folder** is on in the Hidden Apps
 tab, and check that the app isn't ticked as hidden there.
 
+## Folders or Settings don't look like Liquid Glass
+
+Liquid Glass needs macOS 26 or later, and folders also need the **Liquid
+Glass folders** switch in Settings → Visuals (it is off by default). If
+**Reduce Transparency** is on in System Settings → Accessibility → Display,
+Launchy shows solid surfaces and classic folders instead. See
+[Liquid Glass and Appearance](Liquid-Glass-and-Appearance).
+
+## Glass folders are hard to read
+
+Glass shows what is behind it. Over a very busy or bright wallpaper, switch
+Settings → Visuals → **Background style** to **Solid color** or **Light
+blur**, or turn off **Liquid Glass folders**.
+
 ## Reporting a bug? Attach the log
 
 Launchy writes a small log of the current session to

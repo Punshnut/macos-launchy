@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "கோப்புறையிலிருந்து நீக்கு";
 "SettingsFolderGlassToggle" = "Liquid Glass கோப்புறைகள்";
 "SettingsFolderGlassBody" = "கோப்புறைகளை Liquid Glass ஆகக் காட்டி, macOS-இன் Liquid Glass அமைப்பைப் பின்பற்றும். macOS 26 அல்லது அதற்குப் பிந்தையது தேவை.";
+"ItemActionCreateFolderWithSelection" = "தேர்வுடன் கோப்புறை உருவாக்கு";
+"ItemActionAddSelectionToFolder" = "தேர்வை கோப்புறையில் சேர்";
+"BackupVersionMismatchBody" = "இந்த காப்புப்பிரதி Launchy-இன் புதிய பதிப்பால் உருவாக்கப்பட்டது. Launchy-ஐ புதுப்பித்து மீண்டும் முயற்சிக்கவும்.";

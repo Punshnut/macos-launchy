@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Ondoa kwenye folda";
 "SettingsFolderGlassToggle" = "Folda za Liquid Glass";
 "SettingsFolderGlassBody" = "Huonyesha folda kama Liquid Glass na hufuata mpangilio wa Liquid Glass wa macOS. Inahitaji macOS 26 au mpya zaidi.";
+"ItemActionCreateFolderWithSelection" = "Tengeneza folda kwa vilivyochaguliwa";
+"ItemActionAddSelectionToFolder" = "Ongeza vilivyochaguliwa kwenye folda";
+"BackupVersionMismatchBody" = "Nakala hii ya akiba iliundwa kwa toleo jipya zaidi la Launchy. Sasisha Launchy kisha ujaribu tena.";

@@ -31,7 +31,9 @@ The biggest tab, covering how the grid looks and behaves:
   and rows (2 to 7). It works in fullscreen and floaty, replaces the icon
   size slider while active, and icons resize to fit. Turn it off to go back
   to the icon size presets. Changing the grid re-flows your pages, so
-  folders and order stay as they are.
+  folders and order stay as they are, and switching back restores your
+  original pages (see
+  [Organizing Your Apps](Organizing-Your-Apps#changing-the-grid-size-doesnt-scramble-your-pages)).
 - **Liquid Glass folders** (macOS 26 and later): an opt-in switch that draws
   folders as Liquid Glass. Off by default. See
   [Liquid Glass and Appearance](Liquid-Glass-and-Appearance).

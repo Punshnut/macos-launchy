@@ -130,14 +130,18 @@ final class ItemArrangementStore {
 
         guard lookup.isEmpty == false else {
             cachedItems = orderedItems.map(persistedItem(from:))
-            cachedPageSizes = resolvedPageSizes(
-                storedSizes: cachedPageSizes,
+            cachedPageSizes = canonicalPageSizes(
+                cachedPageSizes,
+                itemCount: orderedItems.count,
+                pageCapacity: pageCapacity
+            )
+            saveItems()
+            return (orderedItems, displayPageSizes(
+                canonical: cachedPageSizes,
                 itemCount: orderedItems.count,
                 pageCapacity: pageCapacity,
                 fillsGapsAutomatically: fillsGapsAutomatically
-            )
-            saveItems()
-            return (orderedItems, cachedPageSizes)
+            ))
         }
 
         let remainingApps: [AppItem]
@@ -156,17 +160,11 @@ final class ItemArrangementStore {
             }
         }
 
-        var workingPageSizes: [Int] = []
-        if fillsGapsAutomatically == false {
-            workingPageSizes = normalizePageSizes(
-                cachedPageSizes,
-                itemCount: orderedItems.count,
-                pageCapacity: pageCapacity
-            )
-            if workingPageSizes.isEmpty, orderedItems.isEmpty == false {
-                workingPageSizes = densePageSizes(for: orderedItems.count, pageCapacity: pageCapacity)
-            }
-        }
+        var workingPageSizes = canonicalPageSizes(
+            cachedPageSizes,
+            itemCount: orderedItems.count,
+            pageCapacity: pageCapacity
+        )
 
         for app in remainingApps {
             var renamed = app
@@ -180,30 +178,40 @@ final class ItemArrangementStore {
                 )
                 orderedItems.insert(.app(renamed), at: insertIndex)
             } else {
-                let insertIndex = orderedItems.count
-                orderedItems.insert(.app(renamed), at: insertIndex)
+                orderedItems.append(.app(renamed))
                 appendNewItem(atEndOf: &workingPageSizes, pageCapacity: pageCapacity)
             }
         }
 
         cachedItems = orderedItems.map(persistedItem(from:))
+        // In fill-gaps mode new apps were appended to the flat order only; the stored
+        // layout stays canonical and is re-derived (densely) for display below.
         if fillsGapsAutomatically {
-            cachedPageSizes = densePageSizes(for: orderedItems.count, pageCapacity: pageCapacity)
-        } else {
-            cachedPageSizes = normalizePageSizes(
-                workingPageSizes,
+            workingPageSizes = canonicalPageSizes(
+                cachedPageSizes,
                 itemCount: orderedItems.count,
                 pageCapacity: pageCapacity
             )
         }
+        cachedPageSizes = canonicalPageSizes(
+            workingPageSizes,
+            itemCount: orderedItems.count,
+            pageCapacity: pageCapacity
+        )
         saveItems()
-        return (orderedItems, cachedPageSizes)
+        return (orderedItems, displayPageSizes(
+            canonical: cachedPageSizes,
+            itemCount: orderedItems.count,
+            pageCapacity: pageCapacity,
+            fillsGapsAutomatically: fillsGapsAutomatically
+        ))
     }
 
     /// Saves a new linear order of items including folders and their contents.
     func saveOrderedItems(_ items: [LauncherItem], pageSizes: [Int], pageCapacity: Int) {
         cachedItems = items.map(persistedItem(from:))
-        cachedPageSizes = normalizePageSizes(pageSizes, itemCount: items.count, pageCapacity: pageCapacity)
+        // The edited layout (already shaped for the current grid) becomes the new canonical layout.
+        cachedPageSizes = canonicalPageSizes(pageSizes, itemCount: items.count, pageCapacity: pageCapacity)
         saveItems()
     }
 
@@ -269,19 +277,29 @@ final class ItemArrangementStore {
         cachedPageSizes = []
     }
 
-    /// Resolves final page sizes based on fill-gaps mode and normalized persisted values.
-    private func resolvedPageSizes(
-        storedSizes: [Int],
+    /// Derives the page sizes shown for the current grid from the stored canonical layout.
+    /// Pages larger than the capacity are split into consecutive pages right after themselves,
+    /// so growing the grid back reproduces the canonical layout exactly.
+    func displayPageSizes(
+        canonical: [Int],
         itemCount: Int,
         pageCapacity: Int,
         fillsGapsAutomatically: Bool
     ) -> [Int] {
+        guard itemCount > 0, pageCapacity > 0 else { return [] }
         guard fillsGapsAutomatically == false else {
             return densePageSizes(for: itemCount, pageCapacity: pageCapacity)
         }
-
-        let normalized = normalizePageSizes(storedSizes, itemCount: itemCount, pageCapacity: pageCapacity)
-        return normalized.isEmpty ? densePageSizes(for: itemCount, pageCapacity: pageCapacity) : normalized
+        var result: [Int] = []
+        for size in canonicalPageSizes(canonical, itemCount: itemCount, pageCapacity: pageCapacity) {
+            var remaining = size
+            while remaining > 0 {
+                let chunk = min(pageCapacity, remaining)
+                result.append(chunk)
+                remaining -= chunk
+            }
+        }
+        return result
     }
 
     /// Packs items densely into pages of `pageCapacity`.
@@ -308,32 +326,32 @@ final class ItemArrangementStore {
             return
         }
 
+        let limit = max(pageCapacity, pageSizes.max() ?? 0)
         if pageSizes.isEmpty {
             pageSizes = [1]
-        } else if let last = pageSizes.last, last < pageCapacity {
+        } else if let last = pageSizes.last, last < limit {
             pageSizes[pageSizes.count - 1] = last + 1
         } else {
             pageSizes.append(1)
         }
     }
 
-    /// Clamps and rebalances page-size arrays to match exact item count and capacity.
-    private func normalizePageSizes(_ sizes: [Int], itemCount: Int, pageCapacity: Int) -> [Int] {
+    /// Fixes totals of the canonical layout without clamping pages to the current grid,
+    /// so a temporary grid change never destroys the user's page structure.
+    private func canonicalPageSizes(_ sizes: [Int], itemCount: Int, pageCapacity: Int) -> [Int] {
         guard itemCount > 0, pageCapacity > 0 else { return [] }
 
-        var normalized = sizes.compactMap { value -> Int? in
-            let bounded = min(max(value, 0), pageCapacity)
-            return bounded > 0 ? bounded : nil
-        }
+        var normalized = sizes.filter { $0 > 0 }
         if normalized.isEmpty {
-            normalized.append(min(itemCount, pageCapacity))
+            return densePageSizes(for: itemCount, pageCapacity: pageCapacity)
         }
 
         let total = normalized.reduce(0, +)
         if total < itemCount {
             var remaining = itemCount - total
+            let limit = max(pageCapacity, normalized.max() ?? 0)
             while remaining > 0 {
-                let portion = min(pageCapacity, remaining)
+                let portion = min(limit, remaining)
                 normalized.append(portion)
                 remaining -= portion
             }
@@ -344,10 +362,7 @@ final class ItemArrangementStore {
                 normalized[index] -= reduction
                 surplus -= reduction
             }
-
-            while let last = normalized.last, last == 0 {
-                normalized.removeLast()
-            }
+            normalized.removeAll { $0 == 0 }
         }
 
         return normalized

@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "إزالة من المجلد";
 "SettingsFolderGlassToggle" = "مجلدات Liquid Glass";
 "SettingsFolderGlassBody" = "يعرض المجلدات بتأثير Liquid Glass ويتبع إعداد Liquid Glass في macOS. يتطلب macOS 26 أو أحدث.";
+"ItemActionCreateFolderWithSelection" = "إنشاء مجلد من التحديد";
+"ItemActionAddSelectionToFolder" = "إضافة التحديد إلى مجلد";
+"BackupVersionMismatchBody" = "تم إنشاء هذه النسخة الاحتياطية بإصدار أحدث من Launchy. حدّث Launchy وأعد المحاولة.";

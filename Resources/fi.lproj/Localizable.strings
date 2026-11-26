@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Poista kansiosta";
 "SettingsFolderGlassToggle" = "Liquid Glass -kansiot";
 "SettingsFolderGlassBody" = "Näyttää kansiot Liquid Glass -tyylillä ja noudattaa macOS:n Liquid Glass -asetusta. Vaatii macOS 26:n tai uudemman.";
+"ItemActionCreateFolderWithSelection" = "Luo kansio valinnasta";
+"ItemActionAddSelectionToFolder" = "Lisää valinta kansioon";
+"BackupVersionMismatchBody" = "Tämä varmuuskopio on luotu Launchyn uudemmalla versiolla. Päivitä Launchy ja yritä uudelleen.";

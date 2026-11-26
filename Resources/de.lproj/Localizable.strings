@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Aus Ordner entfernen";
 "SettingsFolderGlassToggle" = "Liquid-Glass-Ordner";
 "SettingsFolderGlassBody" = "Zeigt Ordner als Liquid Glass und folgt deiner macOS-Einstellung für Liquid Glass. Erfordert macOS 26 oder neuer.";
+"ItemActionCreateFolderWithSelection" = "Ordner mit Auswahl erstellen";
+"ItemActionAddSelectionToFolder" = "Auswahl zum Ordner hinzufügen";
+"BackupVersionMismatchBody" = "Dieses Backup wurde mit einer neueren Version von Launchy erstellt. Aktualisiere Launchy und versuche es erneut.";

@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Ta bort från mapp";
 "SettingsFolderGlassToggle" = "Liquid Glass-mappar";
 "SettingsFolderGlassBody" = "Visar mappar som Liquid Glass och följer macOS-inställningen för Liquid Glass. Kräver macOS 26 eller senare.";
+"ItemActionCreateFolderWithSelection" = "Skapa mapp med markeringen";
+"ItemActionAddSelectionToFolder" = "Lägg till markeringen i mappen";
+"BackupVersionMismatchBody" = "Den här säkerhetskopian skapades med en nyare version av Launchy. Uppdatera Launchy och försök igen.";

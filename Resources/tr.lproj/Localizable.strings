@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Klasörden çıkar";
 "SettingsFolderGlassToggle" = "Liquid Glass klasörler";
 "SettingsFolderGlassBody" = "Klasörleri Liquid Glass olarak gösterir ve macOS Liquid Glass ayarını izler. macOS 26 veya üstü gerekir.";
+"ItemActionCreateFolderWithSelection" = "Seçimle klasör oluştur";
+"ItemActionAddSelectionToFolder" = "Seçimi klasöre ekle";
+"BackupVersionMismatchBody" = "Bu yedek, Launchy'nin daha yeni bir sürümüyle oluşturuldu. Launchy'yi güncelleyip tekrar deneyin.";

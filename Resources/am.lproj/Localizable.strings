@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "ከአቃፊ አስወግድ";
 "SettingsFolderGlassToggle" = "የLiquid Glass አቃፊዎች";
 "SettingsFolderGlassBody" = "አቃፊዎችን እንደ Liquid Glass ያሳያል እና የmacOS Liquid Glass ቅንብርን ይከተላል። macOS 26 ወይም ከዚያ በላይ ያስፈልጋል።";
+"ItemActionCreateFolderWithSelection" = "ከምርጫው ጋር ፎልደር ፍጠር";
+"ItemActionAddSelectionToFolder" = "ምርጫውን ወደ ፎልደር ጨምር";
+"BackupVersionMismatchBody" = "ይህ ምትኬ በአዲሱ የLaunchy ስሪት ተፈጥሯል። Launchyን አዘምነው እንደገና ይሞክሩ።";

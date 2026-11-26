@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Eltávolítás a mappából";
 "SettingsFolderGlassToggle" = "Liquid Glass mappák";
 "SettingsFolderGlassBody" = "A mappákat Liquid Glass stílusban jeleníti meg, és követi a macOS Liquid Glass beállítását. macOS 26 vagy újabb szükséges.";
+"ItemActionCreateFolderWithSelection" = "Mappa létrehozása a kijelöléssel";
+"ItemActionAddSelectionToFolder" = "Kijelölés hozzáadása a mappához";
+"BackupVersionMismatchBody" = "Ez a biztonsági mentés a Launchy újabb verziójával készült. Frissítsd a Launchyt, és próbáld újra.";

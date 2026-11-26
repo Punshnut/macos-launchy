@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Прибрати з папки";
 "SettingsFolderGlassToggle" = "Папки Liquid Glass";
 "SettingsFolderGlassBody" = "Показує папки в стилі Liquid Glass і враховує налаштування Liquid Glass у macOS. Потрібна macOS 26 або новіша.";
+"ItemActionCreateFolderWithSelection" = "Створити папку з вибраного";
+"ItemActionAddSelectionToFolder" = "Додати вибране до папки";
+"BackupVersionMismatchBody" = "Цю резервну копію створено в новішій версії Launchy. Оновіть Launchy і спробуйте ще раз.";

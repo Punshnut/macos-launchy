@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "フォルダから取り出す";
 "SettingsFolderGlassToggle" = "Liquid Glassフォルダ";
 "SettingsFolderGlassBody" = "フォルダをLiquid Glassで表示し、macOSのLiquid Glass設定に従います。macOS 26以降が必要です。";
+"ItemActionCreateFolderWithSelection" = "選択項目でフォルダを作成";
+"ItemActionAddSelectionToFolder" = "選択項目をフォルダに追加";
+"BackupVersionMismatchBody" = "このバックアップは、より新しいバージョンのLaunchyで作成されました。Launchyをアップデートしてからもう一度お試しください。";

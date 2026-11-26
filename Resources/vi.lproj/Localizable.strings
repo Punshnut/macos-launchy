@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Xóa khỏi thư mục";
 "SettingsFolderGlassToggle" = "Thư mục Liquid Glass";
 "SettingsFolderGlassBody" = "Hiển thị thư mục dạng Liquid Glass và theo cài đặt Liquid Glass của macOS. Yêu cầu macOS 26 trở lên.";
+"ItemActionCreateFolderWithSelection" = "Tạo thư mục với mục đã chọn";
+"ItemActionAddSelectionToFolder" = "Thêm mục đã chọn vào thư mục";
+"BackupVersionMismatchBody" = "Bản sao lưu này được tạo bằng phiên bản Launchy mới hơn. Hãy cập nhật Launchy rồi thử lại.";

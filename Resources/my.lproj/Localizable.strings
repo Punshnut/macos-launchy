@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Folder မှ ဖယ်ရှားရန်";
 "SettingsFolderGlassToggle" = "Liquid Glass ဖိုလ်ဒါများ";
 "SettingsFolderGlassBody" = "ဖိုလ်ဒါများကို Liquid Glass အဖြစ်ပြပြီး macOS ၏ Liquid Glass ဆက်တင်ကို လိုက်နာသည်။ macOS 26 သို့မဟုတ် ထို့ထက်မြင့်သည် လိုအပ်သည်။";
+"ItemActionCreateFolderWithSelection" = "ရွေးထားသည့်အရာများဖြင့် Folder ဖန်တီး";
+"ItemActionAddSelectionToFolder" = "ရွေးထားသည့်အရာများကို Folder ထဲထည့်";
+"BackupVersionMismatchBody" = "ဤ backup ကို Launchy ၏ ပိုအသစ်သော ဗားရှင်းဖြင့် ဖန်တီးထားသည်။ Launchy ကို အပ်ဒိတ်လုပ်ပြီး ထပ်စမ်းကြည့်ပါ။";

@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Keluarkan dari folder";
 "SettingsFolderGlassToggle" = "Folder Liquid Glass";
 "SettingsFolderGlassBody" = "Menampilkan folder sebagai Liquid Glass dan mengikuti pengaturan Liquid Glass macOS. Memerlukan macOS 26 atau lebih baru.";
+"ItemActionCreateFolderWithSelection" = "Buat folder dengan pilihan";
+"ItemActionAddSelectionToFolder" = "Tambahkan pilihan ke folder";
+"BackupVersionMismatchBody" = "Cadangan ini dibuat dengan Launchy versi yang lebih baru. Perbarui Launchy lalu coba lagi.";

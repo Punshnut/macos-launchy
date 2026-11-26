@@ -108,6 +108,23 @@ Visuals: pick a different fixed page, or tell Launchy to always stay on
 whichever page you last viewed instead of reverting at all. See
 [Settings Overview](Settings-Overview) for details.
 
+## Changing the grid size doesn't scramble your pages
+
+Launchy remembers your pages exactly as you arranged them, separately from
+how many icons currently fit on screen. When you pick a smaller icon size,
+switch presets, use a custom grid, or move between Floaty and Fullscreen,
+a page that no longer fits is simply shown as extra pages right after
+itself. Nothing is deleted, and the order of your apps and folders never
+changes.
+
+Go back to the bigger grid and your original pages come right back, with the
+same apps and folders in the same positions. The one exception: if you
+rearrange things while on the smaller grid, that new arrangement becomes
+your layout. Apps you install in the meantime are added at the end.
+
+With **Auto-fill gaps** on, pages are always packed tightly
+instead, so gaps are closed regardless of grid size.
+
 ## Dock menu
 
 Right-click the Dock icon for a quick-launch menu of your apps and folders

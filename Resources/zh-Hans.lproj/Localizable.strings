@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "从文件夹中移除";
 "SettingsFolderGlassToggle" = "液态玻璃文件夹";
 "SettingsFolderGlassBody" = "以液态玻璃样式显示文件夹，并遵循 macOS 的液态玻璃设置。需要 macOS 26 或更高版本。";
+"ItemActionCreateFolderWithSelection" = "用所选项目创建文件夹";
+"ItemActionAddSelectionToFolder" = "将所选项目添加到文件夹";
+"BackupVersionMismatchBody" = "此备份由更新版本的 Launchy 创建。请更新 Launchy 后重试。";

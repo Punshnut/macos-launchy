@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "นำออกจากโฟลเดอร์";
 "SettingsFolderGlassToggle" = "โฟลเดอร์ Liquid Glass";
 "SettingsFolderGlassBody" = "แสดงโฟลเดอร์แบบ Liquid Glass และทำตามการตั้งค่า Liquid Glass ของ macOS ต้องใช้ macOS 26 ขึ้นไป";
+"ItemActionCreateFolderWithSelection" = "สร้างโฟลเดอร์จากรายการที่เลือก";
+"ItemActionAddSelectionToFolder" = "เพิ่มรายการที่เลือกลงในโฟลเดอร์";
+"BackupVersionMismatchBody" = "ข้อมูลสำรองนี้สร้างโดย Launchy เวอร์ชันที่ใหม่กว่า โปรดอัปเดต Launchy แล้วลองอีกครั้ง";

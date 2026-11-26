@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Quitar de la carpeta";
 "SettingsFolderGlassToggle" = "Carpetas Liquid Glass";
 "SettingsFolderGlassBody" = "Muestra las carpetas con Liquid Glass y sigue el ajuste de Liquid Glass de macOS. Requiere macOS 26 o posterior.";
+"ItemActionCreateFolderWithSelection" = "Crear carpeta con la selección";
+"ItemActionAddSelectionToFolder" = "Agregar la selección a la carpeta";
+"BackupVersionMismatchBody" = "Este respaldo se creó con una versión más reciente de Launchy. Actualiza Launchy e inténtalo de nuevo.";

@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Remover da pasta";
 "SettingsFolderGlassToggle" = "Pastas Liquid Glass";
 "SettingsFolderGlassBody" = "Mostra as pastas como Liquid Glass e segue o ajuste de Liquid Glass do macOS. Requer macOS 26 ou posterior.";
+"ItemActionCreateFolderWithSelection" = "Criar pasta com a seleção";
+"ItemActionAddSelectionToFolder" = "Adicionar a seleção à pasta";
+"BackupVersionMismatchBody" = "Este backup foi criado por uma versão mais recente do Launchy. Atualize o Launchy e tente novamente.";

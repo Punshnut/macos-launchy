@@ -51,6 +51,33 @@ apps normally appear within a moment. If an app lives in `~/Applications`,
 make sure **Include user Applications folder** is on in the Hidden Apps
 tab, and check that the app isn't ticked as hidden there.
 
+## My pages look different after changing the grid or icon size
+
+Page boundaries depend on how many icons fit. On a smaller grid a full page
+is shown as two or more pages, and nothing is lost. Switch back to the
+previous grid (same preset or custom columns and rows, in the same mode) and
+your original pages return. Floaty and Fullscreen can have different grids,
+so check which mode you're in. If you moved things around while on the
+smaller grid, that arrangement is now your layout. See
+[Organizing Your Apps](Organizing-Your-Apps#changing-the-grid-size-doesnt-scramble-your-pages).
+
+## There are gaps or half-empty pages
+
+That's the point of **Auto-fill gaps**: with it off, Launchy keeps
+pages exactly as you left them, including partly empty ones. Turn it on in
+Settings → Visuals to pack everything tightly. It applies at any grid size.
+
+## New apps landed on the last page
+
+New apps are added at the end so your existing pages never shift. Use
+**Move to Page**, or drag them where you want them.
+
+## An app is missing after I installed or moved it
+
+Besides the Hidden Apps tab, check that the app isn't inside a folder you
+forgot about, and that it isn't one of the
+system apps grouped under the **macOS** or **macOS system tools** folders.
+
 ## Folders or Settings don't look like Liquid Glass
 
 Liquid Glass needs macOS 26 or later, and folders also need the **Liquid

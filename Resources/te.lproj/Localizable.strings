@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "ఫోల్డర్ నుండి తీసివేయండి";
 "SettingsFolderGlassToggle" = "Liquid Glass ఫోల్డర్లు";
 "SettingsFolderGlassBody" = "ఫోల్డర్లను Liquid Glass గా చూపిస్తుంది మరియు macOS Liquid Glass సెట్టింగ్‌ను అనుసరిస్తుంది. macOS 26 లేదా తరువాతి వెర్షన్ అవసరం.";
+"ItemActionCreateFolderWithSelection" = "ఎంపికతో ఫోల్డర్ సృష్టించండి";
+"ItemActionAddSelectionToFolder" = "ఎంపికను ఫోల్డర్‌కు జోడించండి";
+"BackupVersionMismatchBody" = "ఈ బ్యాకప్ Launchy కొత్త వెర్షన్‌తో సృష్టించబడింది. Launchyని అప్‌డేట్ చేసి మళ్లీ ప్రయత్నించండి.";

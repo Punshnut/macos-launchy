@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Odebrat ze složky";
 "SettingsFolderGlassToggle" = "Složky Liquid Glass";
 "SettingsFolderGlassBody" = "Zobrazuje složky jako Liquid Glass a řídí se nastavením Liquid Glass v macOS. Vyžaduje macOS 26 nebo novější.";
+"ItemActionCreateFolderWithSelection" = "Vytvořit složku z výběru";
+"ItemActionAddSelectionToFolder" = "Přidat výběr do složky";
+"BackupVersionMismatchBody" = "Tato záloha byla vytvořena novější verzí Launchy. Aktualizujte Launchy a zkuste to znovu.";

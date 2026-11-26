@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "폴더에서 제거";
 "SettingsFolderGlassToggle" = "Liquid Glass 폴더";
 "SettingsFolderGlassBody" = "폴더를 Liquid Glass로 표시하며 macOS의 Liquid Glass 설정을 따릅니다. macOS 26 이상이 필요합니다.";
+"ItemActionCreateFolderWithSelection" = "선택 항목으로 폴더 만들기";
+"ItemActionAddSelectionToFolder" = "선택 항목을 폴더에 추가";
+"BackupVersionMismatchBody" = "이 백업은 더 최신 버전의 Launchy에서 만들어졌습니다. Launchy를 업데이트한 후 다시 시도하세요.";

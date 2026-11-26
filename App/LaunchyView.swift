@@ -1068,7 +1068,9 @@ struct LauncherView: View {
             if fillsGapsAutomatically {
                 pageSizes = densePageSizes(for: orderedItems.count)
             } else {
-                pageSizes = normalizePageSizes(pageSizes, itemCount: orderedItems.count)
+                // Re-derive from the delegate-supplied layout (shaped for the new grid) rather than
+                // re-clamping local sizes, which would lose the canonical page structure.
+                pageSizes = normalizePageSizes(initialPageSizes, itemCount: orderedItems.count)
             }
             ensureCurrentPageWithinBounds()
             pagerDragOffset = 0

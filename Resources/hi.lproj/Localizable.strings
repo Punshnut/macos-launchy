@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "फ़ोल्डर से निकालें";
 "SettingsFolderGlassToggle" = "Liquid Glass फ़ोल्डर";
 "SettingsFolderGlassBody" = "फ़ोल्डर को Liquid Glass के रूप में दिखाता है और macOS की Liquid Glass सेटिंग का पालन करता है। macOS 26 या उसके बाद का संस्करण आवश्यक है।";
+"ItemActionCreateFolderWithSelection" = "चयन के साथ फ़ोल्डर बनाएं";
+"ItemActionAddSelectionToFolder" = "चयन को फ़ोल्डर में जोड़ें";
+"BackupVersionMismatchBody" = "यह बैकअप Launchy के नए संस्करण से बनाया गया था। Launchy को अपडेट करें और फिर से कोशिश करें।";

@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Retirer du dossier";
 "SettingsFolderGlassToggle" = "Dossiers Liquid Glass";
 "SettingsFolderGlassBody" = "Affiche les dossiers en Liquid Glass et suit le réglage Liquid Glass de macOS. Nécessite macOS 26 ou version ultérieure.";
+"ItemActionCreateFolderWithSelection" = "Créer un dossier avec la sélection";
+"ItemActionAddSelectionToFolder" = "Ajouter la sélection au dossier";
+"BackupVersionMismatchBody" = "Cette sauvegarde a été créée avec une version plus récente de Launchy. Mettez à jour Launchy et réessayez.";

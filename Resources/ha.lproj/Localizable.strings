@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Cire daga fayil";
 "SettingsFolderGlassToggle" = "Manyan fayiloli na Liquid Glass";
 "SettingsFolderGlassBody" = "Yana nuna manyan fayiloli a matsayin Liquid Glass kuma yana bin saitin Liquid Glass na macOS. Yana buƙatar macOS 26 ko sabo.";
+"ItemActionCreateFolderWithSelection" = "Ƙirƙiri fayil da abin da aka zaɓa";
+"ItemActionAddSelectionToFolder" = "Ƙara abin da aka zaɓa cikin fayil";
+"BackupVersionMismatchBody" = "An ƙirƙiri wannan madadin da sabon sigar Launchy. Sabunta Launchy sannan ka sake gwadawa.";

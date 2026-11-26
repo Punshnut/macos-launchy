@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Usuń z folderu";
 "SettingsFolderGlassToggle" = "Foldery Liquid Glass";
 "SettingsFolderGlassBody" = "Wyświetla foldery jako Liquid Glass i stosuje ustawienie Liquid Glass w macOS. Wymaga macOS 26 lub nowszego.";
+"ItemActionCreateFolderWithSelection" = "Utwórz folder z zaznaczenia";
+"ItemActionAddSelectionToFolder" = "Dodaj zaznaczenie do folderu";
+"BackupVersionMismatchBody" = "Ta kopia zapasowa została utworzona w nowszej wersji Launchy. Zaktualizuj Launchy i spróbuj ponownie.";

@@ -235,3 +235,6 @@
 "ItemActionRemoveFromFolder" = "Keluarkan daripada folder";
 "SettingsFolderGlassToggle" = "Folder Liquid Glass";
 "SettingsFolderGlassBody" = "Memaparkan folder sebagai Liquid Glass dan mengikuti tetapan Liquid Glass macOS. Memerlukan macOS 26 atau lebih baharu.";
+"ItemActionCreateFolderWithSelection" = "Cipta folder dengan pilihan";
+"ItemActionAddSelectionToFolder" = "Tambah pilihan ke folder";
+"BackupVersionMismatchBody" = "Sandaran ini dicipta dengan versi Launchy yang lebih baharu. Kemas kini Launchy dan cuba lagi.";
